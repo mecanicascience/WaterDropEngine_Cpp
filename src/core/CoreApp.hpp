@@ -2,8 +2,8 @@
 
 #include "WdeWindow.hpp"
 #include "WdeInstanceDevice.hpp"
-#include "WdeSwapChain.hpp"
-#include "../rendering/WdeDefaultGraphicPipeline.hpp"
+#include "../rendering/WdeSwapChain.hpp"
+#include "../rendering/WdeDefaultGraphicsPipeline.hpp"
 
 namespace wde {
     class CoreApp {
@@ -28,6 +28,6 @@ namespace wde {
             WdeWindow wdeWindow {WIDTH, HEIGHT, "WaterDrop Engine Window"};
             WdeInstanceDevice wdeInstanceDevice {wdeWindow};
             WdeSwapChain wdeSwapChain {wdeInstanceDevice, wdeWindow};
-            WdeDefaultGraphicPipeline wdeGraphicsPipeline {};
+            WdeDefaultGraphicsPipeline wdeGraphicsPipeline {wdeInstanceDevice, wdeSwapChain};
     };
 }

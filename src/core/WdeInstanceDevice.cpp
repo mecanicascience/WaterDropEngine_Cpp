@@ -1,8 +1,6 @@
 #include "WdeInstanceDevice.hpp"
 
 namespace wde {
-    WdeInstanceDevice::WdeInstanceDevice(WdeWindow &window) : window{window} { }
-
     WdeInstanceDevice::~WdeInstanceDevice() {
         vkDestroyDevice(device, nullptr);
 
@@ -177,9 +175,13 @@ namespace wde {
             throw std::runtime_error("Failed to create logical device.");
         }
 
+        // Select queues IDs
+        uint32_t graphicsQueueIndex = 0;
+        uint32_t presentQueueIndex = 0;
+
         // Add queues handle to the device
-        vkGetDeviceQueue(device, indices.graphicsFamily, 0, &graphicsQueue);
-        vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
+        vkGetDeviceQueue(device, indices.graphicsFamily, graphicsQueueIndex, &graphicsQueue);
+        vkGetDeviceQueue(device, indices.presentFamily, presentQueueIndex, &presentQueue);
     }
 
 

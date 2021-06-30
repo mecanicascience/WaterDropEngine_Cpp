@@ -1,9 +1,10 @@
 #include "WdeSwapChain.hpp"
 
 namespace wde {
-    WdeSwapChain::WdeSwapChain(WdeInstanceDevice &device, WdeWindow &window) : device{device}, window{window} { }
-
     WdeSwapChain::~WdeSwapChain() {
+        // Destroy render pass
+        vkDestroyRenderPass(device.getDevice(), renderPass, nullptr);
+
         // Destroy swap chain
         vkDestroySwapchainKHR(device.getDevice(), swapChain, nullptr);
 
@@ -19,15 +20,20 @@ namespace wde {
 
         // Create a basic image view for every image in the swap chain
         createImageViews();
+
+        // Tell Vulkan about frame-buffers used for rendering (we currently want 1 rendering pass that renders the full scene)
+        // Render passes are responsible of passing data from one pipeline to another
+        createRenderPasses();
     }
+
 
     void WdeSwapChain::createSwapChain() {
         VkPhysicalDevice physicalDevice = device.getPhysicalDevice();
         SwapChainSupportDetails swapChainSupport = device.querySwapChainSupport(physicalDevice);
 
         // Choose the best image data from what's available
-        VkSurfaceFormatKHR surfaceFormat = window.chooseBestSwapSurfaceFormat(swapChainSupport.formats);
-        VkPresentModeKHR presentMode = window.chooseBestSwapPresentMode(swapChainSupport.presentModes);
+        VkSurfaceFormatKHR surfaceFormat = wde::WdeWindow::chooseBestSwapSurfaceFormat(swapChainSupport.formats);
+        VkPresentModeKHR presentMode = wde::WdeWindow::chooseBestSwapPresentMode(swapChainSupport.presentModes);
         VkExtent2D extent = window.chooseBestSwapExtent(swapChainSupport.capabilities);
 
         // Log output format
@@ -117,6 +123,64 @@ namespace wde {
             if (vkCreateImageView(device.getDevice(), &createInfo, nullptr, &swapChainImageViews[i]) != VK_SUCCESS) {
                 throw std::runtime_error("failed to create image views!");
             }
+        }
+    }
+
+    void WdeSwapChain::createRenderPasses() {
+        // == Attachment description ==
+        VkAttachmentDescription colorAttachment {};
+        colorAttachment.format = swapChainImageFormat;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT; // should match the swap chain images
+
+        /* loadOp (what to do with data before rendering) :
+         * VK_ATTACHMENT_LOAD_OP_LOAD: Preserve the existing contents of the attachment
+         * VK_ATTACHMENT_LOAD_OP_CLEAR: Clear the values to a constant at the start
+         * VK_ATTACHMENT_LOAD_OP_DONT_CARE: Existing contents are undefined; we don't care about them */
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // Clear to black before new frame
+
+        /* storeOp (what to do after rendering) :
+         *  VK_ATTACHMENT_STORE_OP_STORE: Rendered contents will be stored in memory and can be read later
+         *  VK_ATTACHMENT_STORE_OP_DONT_CARE: Contents of the framebuffer will be undefined after the rendering operation */
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // We need to store frame to see it
+
+        // Same but to stencil data
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+
+        /* Different values based on what we want to do with the images :
+         * VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: Images used as color attachment
+         * VK_IMAGE_LAYOUT_PRESENT_SRC_KHR: Images to be presented in the swap chain
+         * VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: Images to be used as destination for a memory copy operation */
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED; // layout before render pass (VK_IMAGE_LAYOUT_UNDEFINED = don't care)
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // layout after render pass to auto transition to (need to be ready for presentation)
+
+
+        // == Sub-passes ==
+        VkAttachmentReference colorAttachmentRef {};
+        colorAttachmentRef.attachment = 0; // Reference to attachment 0 in array (/!\ ref in shader as layout(location = 0) /!\)
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // layout after sub-render pass to auto transition to
+
+        VkSubpassDescription subpass {};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS; // graphics subpass (not a compute one)
+
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &colorAttachmentRef;
+        // subpass.pInputAttachments (read from a shader)
+        // subpass.pResolveAttachments (used for multisampling)
+        // subpass.pDepthStencilAttachment (for depth and stencil data)
+        // subpass.pPreserveAttachments (not used by subpass, but data must be preserved)
+
+
+        // == Render pass (reference subpasses to one render pass) ==
+        VkRenderPassCreateInfo renderPassInfo{};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount = 1;
+        renderPassInfo.pAttachments = &colorAttachment;
+        renderPassInfo.subpassCount = 1;
+        renderPassInfo.pSubpasses = &subpass;
+
+        if (vkCreateRenderPass(device.getDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create render pass.");
         }
     }
 }

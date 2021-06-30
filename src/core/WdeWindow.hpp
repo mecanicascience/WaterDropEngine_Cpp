@@ -20,7 +20,7 @@ namespace wde {
              * @param height
              * @param windowName
              */
-            WdeWindow(int width, int height, std::string name);
+            WdeWindow(int width, int height, std::string name) : width{width}, height{height}, windowName{name} {};
 
             /** Destructs the window */
             ~WdeWindow();
@@ -54,14 +54,14 @@ namespace wde {
              * @param availableFormats
              * @return The best available format (preferably VK_FORMAT_B8G8R8A8_SRGB as a SRGB color space)
              */
-            VkSurfaceFormatKHR chooseBestSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+            static VkSurfaceFormatKHR chooseBestSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
             /**
              * Choose the best presentation mode (frame rendering mode)
              * @param availablePresentModes
              * @return The best available presentation mode (preferably VK_PRESENT_MODE_MAILBOX_KHR)
              */
-            VkPresentModeKHR chooseBestSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+            static VkPresentModeKHR chooseBestSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 
             /**
              * Choose the best swap extent mode (frame rendering resolution)

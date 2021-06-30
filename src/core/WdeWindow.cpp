@@ -1,8 +1,6 @@
 #include "WdeWindow.hpp"
 
 namespace wde {
-    WdeWindow::WdeWindow(int width, int height, std::string windowName) : width{width}, height{height}, windowName{windowName} { }
-
     WdeWindow::~WdeWindow() {
         glfwDestroyWindow(this->window);
         glfwTerminate(); // terminates GLFW library
@@ -62,12 +60,12 @@ namespace wde {
         }
         else {
             // Clamp the frame resolution to the image width and height
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
+            int widthLoc, heightLoc;
+            glfwGetFramebufferSize(window, &widthLoc, &heightLoc);
 
             VkExtent2D actualExtent = {
-                    static_cast<uint32_t>(width),
-                    static_cast<uint32_t>(height)
+                static_cast<uint32_t>(widthLoc),
+                static_cast<uint32_t>(heightLoc)
             };
 
             actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);

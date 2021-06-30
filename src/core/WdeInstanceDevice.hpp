@@ -42,7 +42,7 @@ namespace wde {
                     const bool enableValidationLayers = true;
             #endif
 
-            WdeInstanceDevice(WdeWindow &window);
+            WdeInstanceDevice(WdeWindow &window) : window{window} {};
             ~WdeInstanceDevice();
 
             // Not copyable or movable
@@ -95,9 +95,9 @@ namespace wde {
             VkSurfaceKHR surface;
 
             // Queues (VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT)
-            /** Graphics operations queue passed to the physical device (drawing points, lines, triangles) */
+            /** Graphics operations queue passed to the physical device (contains drawing points, lines, triangles) */
             VkQueue graphicsQueue;
-            /** Graphics presentation queue passed to the physical device (present infos to the GPU) */
+            /** Graphics presentation queue passed to the physical device (can present infos to the GPU) */
             VkQueue presentQueue;
 
 

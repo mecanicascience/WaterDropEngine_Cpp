@@ -9,7 +9,7 @@ add_subdirectory(lib/glfw)
 add_subdirectory(lib/glm)
 
 # Setup executable and librairies refs
-add_executable(${PROJECT_NAME}-Main src/main.cpp src/core/WdeWindow.hpp src/core/WdeWindow.cpp src/core/CoreApp.hpp src/core/CoreApp.cpp src/core/WdeInstanceDevice.cpp src/core/WdeInstanceDevice.hpp src/utils/Constants.cpp src/utils/Constants.hpp src/core/WdeSwapChain.cpp src/core/WdeSwapChain.hpp src/rendering/WdeDefaultGraphicPipeline.cpp src/rendering/WdeDefaultGraphicPipeline.hpp)
+add_executable(${PROJECT_NAME}-Main src/main.cpp src/core/WdeWindow.hpp src/core/WdeWindow.cpp src/core/CoreApp.hpp src/core/CoreApp.cpp src/core/WdeInstanceDevice.cpp src/core/WdeInstanceDevice.hpp src/utils/Constants.cpp src/utils/Constants.hpp src/rendering/WdeSwapChain.cpp src/rendering/WdeSwapChain.hpp src/rendering/WdeDefaultGraphicsPipeline.cpp src/rendering/WdeDefaultGraphicsPipeline.hpp src/utils/Utils.cpp src/utils/Utils.hpp)
 
 # Add shaders
 FILE(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/shaders")
