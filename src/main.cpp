@@ -1,11 +1,12 @@
-#include "FirstApp.hpp"
+#include "core/CoreApp.hpp"
 
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
 
 int main() {
-    wde::FirstApp app {};
+    // App creation (only create classes)
+    wde::CoreApp app {};
 
     try {
         std::cout << "=== Initializing program ===" << std::endl;

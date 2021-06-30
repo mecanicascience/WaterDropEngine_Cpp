@@ -1,11 +1,12 @@
 #pragma once
 
-#include "engine/WdeWindow.hpp"
-#include "engine/WdePipeline.hpp"
-#include "engine/WdeInstanceDevice.hpp"
+#include "WdeWindow.hpp"
+#include "WdeInstanceDevice.hpp"
+#include "WdeSwapChain.hpp"
+#include "../rendering/WdeDefaultGraphicPipeline.hpp"
 
 namespace wde {
-    class FirstApp {
+    class CoreApp {
         public:
             /** Fixed window width */
             static constexpr int WIDTH = 800;
@@ -22,14 +23,11 @@ namespace wde {
             /** Clean up everything else */
             void cleanUp();
 
+
         private:
             WdeWindow wdeWindow {WIDTH, HEIGHT, "WaterDrop Engine Window"};
             WdeInstanceDevice wdeInstanceDevice {wdeWindow};
-            /* WdePipeline wdePipeline {
-                wdeDevice,
-                "shaders/simpleShader.vert.spv",
-                "shaders/simpleShader.frag.spv",
-                WdePipeline::defaultPipelineConfigInfo(WIDTH, HEIGHT)
-            };*/
+            WdeSwapChain wdeSwapChain {wdeInstanceDevice, wdeWindow};
+            WdeDefaultGraphicPipeline wdeGraphicsPipeline {};
     };
 }

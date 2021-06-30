@@ -6,7 +6,7 @@
 #include <unordered_set>
 
 #include "WdeWindow.hpp"
-#include "../Constants.hpp"
+#include "../utils/Constants.hpp"
 
 namespace wde {
     /** Struct that handles any type of Queue */
@@ -54,6 +54,26 @@ namespace wde {
             /** Initialize Vulkan device */
             void initialize();
 
+            // Public getters
+            VkPhysicalDevice getPhysicalDevice() { return physicalDevice; };
+            VkDevice getDevice() { return device; };
+            VkSurfaceKHR getSurface() { return surface; };
+
+            // Helper functions
+            /**
+            * @param device
+            * @return The list of queues supported by the device
+            */
+            QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
+
+            /**
+             * Get the swap chain details of the given device
+             * @param device The device
+             * @return The details of the swap chain of the device
+             */
+            SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
+
+
 
         private :
             WdeWindow &window;
@@ -74,9 +94,10 @@ namespace wde {
             /** Vulkan representation of the Window (pushes graphics to the swap-chain) */
             VkSurfaceKHR surface;
 
-            /** Graphics operations queue passed to the physical device */
+            // Queues (VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT)
+            /** Graphics operations queue passed to the physical device (drawing points, lines, triangles) */
             VkQueue graphicsQueue;
-            /** Graphics presentation queue passed to the physical device (allows device to present images to surface) */
+            /** Graphics presentation queue passed to the physical device (present infos to the GPU) */
             VkQueue presentQueue;
 
 
@@ -95,9 +116,6 @@ namespace wde {
 
             /** Setup the logical device to interact with the physical device */
             void createLogicalDevice();
-
-            /** Setup the Vulkan swap-chain to store frame data given by GLFW */
-            void createSwapChain();
 
 
 
@@ -132,19 +150,6 @@ namespace wde {
              * @param createInfo The struct that needs to be updated
              */
             static void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT &createInfo);
-
-            /**
-             * @param device
-             * @return The list of queues supported by the device
-             */
-            QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
-            /**
-             * Get the swap chain details of the given device
-             * @param device The device
-             * @return The details of the swap chain of the device
-             */
-            SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
     };
 
 

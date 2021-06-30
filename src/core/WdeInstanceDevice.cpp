@@ -29,9 +29,6 @@ namespace wde {
 
         // Create logical device to interact with the physical device (store to this->device)
         createLogicalDevice();
-
-        // Setup the Vulkan swap-chain (to store frame data)
-        createSwapChain();
     }
 
 
@@ -185,17 +182,6 @@ namespace wde {
         vkGetDeviceQueue(device, indices.presentFamily, 0, &presentQueue);
     }
 
-    void WdeInstanceDevice::createSwapChain() {
-        SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
-
-        // Choose the best image data from what's available
-        VkSurfaceFormatKHR surfaceFormat = window.chooseBestSwapSurfaceFormat(swapChainSupport.formats);
-        VkPresentModeKHR presentMode = window.chooseBestSwapPresentMode(swapChainSupport.presentModes);
-        VkExtent2D extent = window.chooseBestSwapExtent(swapChainSupport.capabilities);
-
-
-    }
-
 
 
 
@@ -323,16 +309,17 @@ namespace wde {
         createInfo.pUserData = nullptr; // Optional
     }
 
-    QueueFamilyIndices WdeInstanceDevice::findQueueFamilies(VkPhysicalDevice device) {
+
+    QueueFamilyIndices WdeInstanceDevice::findQueueFamilies(VkPhysicalDevice devicePhys) {
         QueueFamilyIndices indices;
 
         // Count queue family indices
         uint32_t queueFamilyCount = 0;
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+        vkGetPhysicalDeviceQueueFamilyProperties(devicePhys, &queueFamilyCount, nullptr);
 
         // Get queue family indices
         std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-        vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+        vkGetPhysicalDeviceQueueFamilyProperties(devicePhys, &queueFamilyCount, queueFamilies.data());
 
         // Find queues that supports VK_QUEUE_GRAPHICS_BLIT && vkGetPhysicalDeviceSurfaceSupportKHR
         int i = 0;
@@ -343,7 +330,7 @@ namespace wde {
             }
 
             VkBool32 presentSupport = false;
-            vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+            vkGetPhysicalDeviceSurfaceSupportKHR(devicePhys, i, surface, &presentSupport);
             if (queueFamily.queueCount > 0 && presentSupport) {
                 indices.presentFamily = i;
                 indices.presentFamilyHasValue = true;
@@ -359,28 +346,28 @@ namespace wde {
         return indices;
     }
 
-    SwapChainSupportDetails WdeInstanceDevice::querySwapChainSupport(VkPhysicalDevice device) {
+    SwapChainSupportDetails WdeInstanceDevice::querySwapChainSupport(VkPhysicalDevice devicePhys) {
         SwapChainSupportDetails details;
 
         // Get basic surface capabilities
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);
+        vkGetPhysicalDeviceSurfaceCapabilitiesKHR(devicePhys, surface, &details.capabilities);
 
         // Query supported formats
         uint32_t formatCount;
-        vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, nullptr);
+        vkGetPhysicalDeviceSurfaceFormatsKHR(devicePhys, surface, &formatCount, nullptr);
 
         if (formatCount != 0) {
             details.formats.resize(formatCount);
-            vkGetPhysicalDeviceSurfaceFormatsKHR(device, surface, &formatCount, details.formats.data());
+            vkGetPhysicalDeviceSurfaceFormatsKHR(devicePhys, surface, &formatCount, details.formats.data());
         }
 
         // Query supported presentation modes
         uint32_t presentModeCount;
-        vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, nullptr);
+        vkGetPhysicalDeviceSurfacePresentModesKHR(devicePhys, surface, &presentModeCount, nullptr);
 
         if (presentModeCount != 0) {
             details.presentModes.resize(presentModeCount);
-            vkGetPhysicalDeviceSurfacePresentModesKHR(device, surface, &presentModeCount, details.presentModes.data());
+            vkGetPhysicalDeviceSurfacePresentModesKHR(devicePhys, surface, &presentModeCount, details.presentModes.data());
         }
 
         return details;
