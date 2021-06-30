@@ -1,35 +1,29 @@
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
+#include "FirstApp.hpp"
 
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#include <glm/vec4.hpp>
-#include <glm/mat4x4.hpp>
-
+#include <cstdlib>
 #include <iostream>
+#include <stdexcept>
 
 int main() {
-    glfwInit();
+    wde::FirstApp app {};
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    GLFWwindow* window = glfwCreateWindow(800, 600, "Vulkan window", nullptr, nullptr);
+    try {
+        std::cout << "=== Initializing program ===" << std::endl;
+        app.init();
 
-    uint32_t extensionCount = 0;
-    vkEnumerateInstanceExtensionProperties(nullptr, &extensionCount, nullptr);
+        std::cout << "=== Initialization done ===" << std::endl << std::endl << std::endl << "=== Starting program ===" << std::endl;
+        app.run();
 
-    std::cout << extensionCount << " extensions supported\n";
+        std::cout << "=== Program ended ===" << std::endl << std::endl << std::endl << "=== Cleaning up ===" << std::endl;
+        app.cleanUp();
 
-    glm::mat4 matrix;
-    glm::vec4 vec;
-    auto test = matrix * vec;
-
-    while(!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
+        std::cout << "=== End of program ===" << std::endl;
+    }
+    catch (const std::exception &e) {
+        std::cerr << "Exception caught : " << e.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-
-    return 0;
+    return EXIT_SUCCESS;
 }
+
