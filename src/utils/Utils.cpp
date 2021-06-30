@@ -6,7 +6,7 @@ namespace wde {
 
         // Can't open file
         if (!file.is_open()) {
-            throw std::runtime_error("failed to open file!");
+            throw std::runtime_error("Failed to open file '" + fileName + "'.");
         }
 
         // Read file
