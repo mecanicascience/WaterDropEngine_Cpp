@@ -10,13 +10,12 @@ namespace wde {
     void WdeWindow::initialize() {
         glfwInit();
         glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
-        glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE); // Currently not resizable (not implemented)
 
         this->window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
-    }
 
-    void WdeWindow::run() {
-        glfwPollEvents();
+        // Add callbacks
+        //glfwSetWindowUserPointer(window, this);
+        //glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
     }
 
     bool WdeWindow::shouldClose() {
@@ -29,6 +28,11 @@ namespace wde {
         }
     }
 
+    void WdeWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+        // On new window size
+        auto app = reinterpret_cast<WdeWindow*>(glfwGetWindowUserPointer(window));
+        //app->renderer->shouldResizeFrameBuffer();
+    }
 
 
     VkSurfaceFormatKHR WdeWindow::chooseBestSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {

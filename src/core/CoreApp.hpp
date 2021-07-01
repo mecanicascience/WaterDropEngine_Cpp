@@ -4,6 +4,8 @@
 #include "WdeInstanceDevice.hpp"
 #include "../rendering/WdeSwapChain.hpp"
 #include "../rendering/WdeDefaultGraphicsPipeline.hpp"
+#include "../rendering/WdeRenderer.hpp"
+#include "../rendering/WdePipeline.hpp"
 
 namespace wde {
     class CoreApp {
@@ -29,5 +31,6 @@ namespace wde {
             WdeInstanceDevice wdeInstanceDevice {wdeWindow};
             WdeSwapChain wdeSwapChain {wdeInstanceDevice, wdeWindow};
             WdeDefaultGraphicsPipeline wdeGraphicsPipeline {wdeInstanceDevice, wdeSwapChain};
+            WdeRenderer wdeRenderer {wdeWindow, wdeInstanceDevice, wdeSwapChain, wdeGraphicsPipeline};
     };
 }

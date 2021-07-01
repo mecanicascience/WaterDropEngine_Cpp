@@ -58,6 +58,8 @@ namespace wde {
             VkPhysicalDevice getPhysicalDevice() { return physicalDevice; };
             VkDevice getDevice() { return device; };
             VkSurfaceKHR getSurface() { return surface; };
+            VkQueue getGraphicsQueue() { return graphicsQueue; }
+            VkQueue getPresentQueue() { return presentQueue; }
 
             // Helper functions
             /**

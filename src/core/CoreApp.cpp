@@ -16,13 +16,24 @@ namespace wde {
 
         // Initialize the main graphics pipeline
         wdeGraphicsPipeline.initialize(vertShaderLocation, fragShaderLocation);
+
+        // Initialize the graphics renderer
+        wdeRenderer.initialize();
+
+        // Set references
+        wdeSwapChain.setGraphicsPipeline(&wdeGraphicsPipeline);
+        wdeSwapChain.setRenderer(&wdeRenderer);
+        //wdeWindow.setRenderer(&wdeRenderer);
     }
 
     void CoreApp::run() {
         std::cout << "Program started." << std::endl;
         while(!wdeWindow.shouldClose()) {
-            wdeWindow.run(); // keystrokes, user click button, ...
+            glfwPollEvents(); // Extracts keystrokes, user click button, ...
+            wdeRenderer.drawFrame(); // Draw next frame
         }
+
+        vkDeviceWaitIdle(wdeInstanceDevice.getDevice()); // wait for app to finish drawing frame (because we use async funcs)
     }
 
     void CoreApp::cleanUp() {

@@ -1,26 +1,7 @@
 #include "WdeDefaultGraphicsPipeline.hpp"
 
 namespace wde {
-    WdeDefaultGraphicsPipeline::~WdeDefaultGraphicsPipeline() {
-        // Destroy graphics pipeline
-        vkDestroyPipeline(device.getDevice(), graphicsPipeline, nullptr);
-
-        // Destroy pipeline layout
-        vkDestroyPipelineLayout(device.getDevice(), pipelineLayout, nullptr);
-    }
-
-
-    void WdeDefaultGraphicsPipeline::initialize(std::string &shaderVertLocation, std::string &shaderFragLocation) {
-        createGraphicsPipeline(shaderVertLocation, shaderFragLocation);
-    }
-
     void WdeDefaultGraphicsPipeline::createGraphicsPipeline(std::string &shaderVertLocation, std::string &shaderFragLocation) {
-        createDefaultGraphicsPipeline(shaderVertLocation, shaderFragLocation);
-    }
-
-
-
-    void WdeDefaultGraphicsPipeline::createDefaultGraphicsPipeline(std::string &shaderVertLocation, std::string &shaderFragLocation) {
         auto vertShaderCode = Utils::readFile(shaderVertLocation);
         auto fragShaderCode = Utils::readFile(shaderFragLocation);
 
@@ -42,11 +23,12 @@ namespace wde {
         fragShaderStageInfo.module = fragShaderModule;
         fragShaderStageInfo.pName = "main";
 
+
+
         // Shaders infos list
         VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
-
-
+        // Get default pipeline
         // ==== Choose pipeline rendering configuration ====
 
         // == Vertex input (select format of data passed to vertex shader and buffers from where to fetch) ==
@@ -145,7 +127,7 @@ namespace wde {
         // == Color blending (combine shader color with color already in framebuffer) ==
         VkPipelineColorBlendAttachmentState colorBlendAttachment{};
         colorBlendAttachment.colorWriteMask =
-                  VK_COLOR_COMPONENT_R_BIT
+                VK_COLOR_COMPONENT_R_BIT
                 | VK_COLOR_COMPONENT_G_BIT
                 | VK_COLOR_COMPONENT_B_BIT
                 | VK_COLOR_COMPONENT_A_BIT;
@@ -230,7 +212,7 @@ namespace wde {
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
         pipelineInfo.basePipelineIndex = -1; // Optional
 
-        // =====
+
 
 
         // Create the graphic pipeline
@@ -242,23 +224,5 @@ namespace wde {
         // Destroy temp modules
         vkDestroyShaderModule(device.getDevice(), fragShaderModule, nullptr);
         vkDestroyShaderModule(device.getDevice(), vertShaderModule, nullptr);
-    }
-
-
-
-    VkShaderModule WdeDefaultGraphicsPipeline::createShaderModule(const std::vector<char>& code) {
-        // Create infos
-        VkShaderModuleCreateInfo createInfo{};
-        createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-        createInfo.codeSize = code.size();
-        createInfo.pCode = reinterpret_cast<const uint32_t*>(code.data());
-
-        // Create Module
-        VkShaderModule shaderModule;
-        if (vkCreateShaderModule(device.getDevice(), &createInfo, nullptr, &shaderModule) != VK_SUCCESS) {
-            throw std::runtime_error("Failed to create shader module.");
-        }
-
-        return shaderModule;
     }
 }

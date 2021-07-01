@@ -8,6 +8,7 @@
 #include <cstdint> // Necessary for UINT32_MAX
 #include <algorithm> // Necessary for std::min/std::max
 
+
 namespace wde {
     /**
      * The main WaterDropEngine window
@@ -30,12 +31,12 @@ namespace wde {
             /** Compares two windows (Copy not allowed - Only one window) */
             WdeWindow &operator=(const WdeWindow &) = delete;
 
+            // Setters
+            //void setRenderer(WdeRenderer *rendererRef) { renderer = rendererRef; }
+
 
             /** Initialisation of the window */
             void initialize();
-
-            /** Run the events */
-            void run();
 
             /** @return true if the window should close, false instead */
             bool shouldClose();
@@ -46,6 +47,14 @@ namespace wde {
              * @param surface A reference to the surface (link between the window and Vulkan)
              */
             void createWindowSurface(VkInstance instance, VkSurfaceKHR *surface);
+
+            /**
+             * Call this callback when the GLFW window has been resized
+             * @param window
+             * @param width
+             * @param height
+             */
+            static void framebufferResizeCallback(GLFWwindow* window, int width, int height);
 
 
 
@@ -73,6 +82,8 @@ namespace wde {
 
 
         private:
+            //WdeRenderer *renderer = nullptr;
+
             const int width;
             const int height;
 

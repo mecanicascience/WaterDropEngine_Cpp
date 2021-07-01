@@ -2,16 +2,7 @@
 
 namespace wde {
     WdeSwapChain::~WdeSwapChain() {
-        // Destroy render pass
-        vkDestroyRenderPass(device.getDevice(), renderPass, nullptr);
-
-        // Destroy swap chain
-        vkDestroySwapchainKHR(device.getDevice(), swapChain, nullptr);
-
-        // Destroy images
-        for (auto imageView : swapChainImageViews) {
-            vkDestroyImageView(device.getDevice(), imageView, nullptr);
-        }
+        cleanUpSwapChain();
     }
 
     void WdeSwapChain::initialize() {
@@ -24,6 +15,9 @@ namespace wde {
         // Tell Vulkan about frame-buffers used for rendering (we currently want 1 rendering pass that renders the full scene)
         // Render passes are responsible of passing data from one pipeline to another
         createRenderPasses();
+
+        // Create the frame buffers
+        createFrameBuffers();
     }
 
 
@@ -40,14 +34,15 @@ namespace wde {
         std::cout << std::endl << "Selected a surface format of VkFormat(" << surfaceFormat.format << ") with a color space of VkColorSpaceKHR(" << surfaceFormat.colorSpace << ")." << std::endl;
         std::cout << "Selected image ratio of " << extent.width << "x" << extent.height << " px." << std::endl;
 
-        // We choose to have as possible, the min image (+ 1 for safety) in the swap chain
+        // We choose to have as possible, the min image (+ 1 to avoid waiting for next image) in the swap chain
         uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
         if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
             imageCount = swapChainSupport.capabilities.maxImageCount;
         }
+        std::cout << "The swap-chain will support a count of " + std::to_string(imageCount) + " images." << std::endl;
 
         // Create struct
-        VkSwapchainCreateInfoKHR createInfo{};
+        VkSwapchainCreateInfoKHR createInfo {};
         createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
         createInfo.surface = device.getSurface();
         createInfo.minImageCount = imageCount;
@@ -93,6 +88,46 @@ namespace wde {
         swapChainImageFormat = surfaceFormat.format;
         swapChainExtent = extent;
     }
+
+    void WdeSwapChain::recreateSwapChain() {
+        vkDeviceWaitIdle(device.getDevice());
+
+        createSwapChain();
+        createImageViews();
+        createRenderPasses();
+
+        std::string pathVert = "shaders/simpleShader.vert.spv";
+        std::string pathFrag = "shaders/simpleShader.frag.spv";
+        pipeline->createGraphicsPipeline(pathVert, pathFrag);
+        createFrameBuffers();
+        renderer->createCommandBuffers();
+    }
+
+    void WdeSwapChain::cleanUpSwapChain() {
+        // Destroy frame buffers
+        for (auto framebuffer : swapChainFramebuffers) {
+            vkDestroyFramebuffer(device.getDevice(), framebuffer, nullptr);
+        }
+
+        // Destroy command buffers
+        renderer->clearCommandBuffers();
+
+        // Destroy pipelines
+        pipeline->destroyPipeline();
+
+        // Destroy render pass
+        vkDestroyRenderPass(device.getDevice(), renderPass, nullptr);
+
+        // Destroy swap chain
+        vkDestroySwapchainKHR(device.getDevice(), swapChain, nullptr);
+
+        // Destroy images views
+        for (auto imageView : swapChainImageViews) {
+            vkDestroyImageView(device.getDevice(), imageView, nullptr);
+        }
+    }
+
+
 
     void WdeSwapChain::createImageViews() {
         // Setup each image view for each frame
@@ -172,6 +207,16 @@ namespace wde {
 
 
         // == Render pass (reference subpasses to one render pass) ==
+        // Wait that we have acquired the image before passing it to the render pass
+        VkSubpassDependency dependency {};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL; // indices of dependency subpass (external input)
+        dependency.dstSubpass = 0; // indices of dependent subpass (0 = index of our first subpass)
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; // Wait for swap chain to read from image before accessing
+        dependency.srcAccessMask = 0;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; // Wait for color attachment
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+        // Render pass struct
         VkRenderPassCreateInfo renderPassInfo{};
         renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
         renderPassInfo.attachmentCount = 1;
@@ -179,8 +224,34 @@ namespace wde {
         renderPassInfo.subpassCount = 1;
         renderPassInfo.pSubpasses = &subpass;
 
+        renderPassInfo.dependencyCount = 1;
+        renderPassInfo.pDependencies = &dependency;
+
+        // Create render pass
         if (vkCreateRenderPass(device.getDevice(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
             throw std::runtime_error("Failed to create render pass.");
+        }
+    }
+
+    void WdeSwapChain::createFrameBuffers() {
+        swapChainFramebuffers.resize(swapChainImageViews.size());
+
+        // Create frame buffers from image views
+        for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+            VkImageView attachments[] = { swapChainImageViews[i] };
+
+            VkFramebufferCreateInfo framebufferInfo{};
+            framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+            framebufferInfo.renderPass = renderPass; // Render pass compatible with the frame buffer
+            framebufferInfo.attachmentCount = 1;
+            framebufferInfo.pAttachments = attachments; // VkImageVie objects bound to
+            framebufferInfo.width = swapChainExtent.width;
+            framebufferInfo.height = swapChainExtent.height;
+            framebufferInfo.layers = 1; // Our swap chain are single images
+
+            if (vkCreateFramebuffer(device.getDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
+                throw std::runtime_error("Failed to create framebuffer.");
+            }
         }
     }
 }
