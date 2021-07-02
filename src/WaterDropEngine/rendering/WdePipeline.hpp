@@ -25,8 +25,6 @@ namespace wde {
              */
             void initialize(std::string &shaderVertLocation, std::string &shaderFragLocation) {
                 createGraphicsPipeline(shaderVertLocation, shaderFragLocation);
-
-                pipelineDestroyed = false;
             }
 
             void destroyPipeline() {
@@ -86,7 +84,6 @@ namespace wde {
                 return shaderModule;
             }
 
-        private:
             bool pipelineDestroyed = true;
     };
 }

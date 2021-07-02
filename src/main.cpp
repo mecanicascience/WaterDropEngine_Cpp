@@ -1,8 +1,9 @@
-#include "core/CoreApp.hpp"
-
 #include <cstdlib>
 #include <iostream>
 #include <stdexcept>
+
+#include "WaterDropEngine/core/CoreApp.hpp"
+
 
 int main() {
     // App creation (only create classes)

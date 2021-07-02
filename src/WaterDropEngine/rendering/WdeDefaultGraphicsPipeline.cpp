@@ -224,5 +224,8 @@ namespace wde {
         // Destroy temp modules
         vkDestroyShaderModule(device.getDevice(), fragShaderModule, nullptr);
         vkDestroyShaderModule(device.getDevice(), vertShaderModule, nullptr);
+
+        // Say that pipeline created
+        pipelineDestroyed = false;
     }
 }

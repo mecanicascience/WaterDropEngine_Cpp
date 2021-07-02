@@ -4,12 +4,12 @@
 #include "WdePipeline.hpp"
 #include "WdeRenderer.hpp"
 #include "WdeDefaultGraphicsPipeline.hpp"
-#include "../core/WdeWindow.hpp"
 
 #include <vulkan/vulkan.h>
 
 namespace wde {
     class WdeRenderer;
+    class WdeWindow;
 
     class WdeSwapChain {
         public:

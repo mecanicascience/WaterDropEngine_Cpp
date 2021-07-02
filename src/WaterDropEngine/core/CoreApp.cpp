@@ -23,7 +23,7 @@ namespace wde {
         // Set references
         wdeSwapChain.setGraphicsPipeline(&wdeGraphicsPipeline);
         wdeSwapChain.setRenderer(&wdeRenderer);
-        //wdeWindow.setRenderer(&wdeRenderer);
+        wdeWindow.setRenderer(&wdeRenderer);
     }
 
     void CoreApp::run() {

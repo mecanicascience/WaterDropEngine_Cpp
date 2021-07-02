@@ -109,8 +109,8 @@ namespace wde {
 
         // Submits to presentation queue
         result = vkQueuePresentKHR(device.getPresentQueue(), &presentInfo);
-        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) { // Needs to be reset
-            framebufferResized = false;
+        if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.sendInfoShouldResizeFrameBuffer) { // Needs to be reset
+            window.sendInfoShouldResizeFrameBuffer = false;
             swapChain.recreateSwapChain();
         }
         else if (result != VK_SUCCESS) {

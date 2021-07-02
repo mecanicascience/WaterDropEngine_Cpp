@@ -9,12 +9,18 @@
 #include <algorithm> // Necessary for std::min/std::max
 
 
+
 namespace wde {
+    class WdeRenderer;
+
     /**
      * The main WaterDropEngine window
      */
     class WdeWindow {
         public:
+            bool sendInfoShouldResizeFrameBuffer = false;
+
+
             /**
              * Creates a new glfw window
              * @param width
@@ -31,8 +37,11 @@ namespace wde {
             /** Compares two windows (Copy not allowed - Only one window) */
             WdeWindow &operator=(const WdeWindow &) = delete;
 
+            // Getters
+            GLFWwindow* getWindow() { return window; }
+
             // Setters
-            //void setRenderer(WdeRenderer *rendererRef) { renderer = rendererRef; }
+            void setRenderer(WdeRenderer *rendererRef) { renderer = rendererRef; }
 
 
             /** Initialisation of the window */
@@ -82,7 +91,7 @@ namespace wde {
 
 
         private:
-            //WdeRenderer *renderer = nullptr;
+            WdeRenderer *renderer;
 
             const int width;
             const int height;

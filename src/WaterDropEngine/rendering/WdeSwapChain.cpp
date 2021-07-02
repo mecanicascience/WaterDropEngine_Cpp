@@ -90,8 +90,21 @@ namespace wde {
     }
 
     void WdeSwapChain::recreateSwapChain() {
+        // Handle minimization (wait)
+        int width = 0, height = 0;
+        glfwGetFramebufferSize(window.getWindow(), &width, &height);
+        while (width == 0 || height == 0) {
+            glfwGetFramebufferSize(window.getWindow(), &width, &height);
+            glfwWaitEvents();
+        }
+
+        // Wait until operations finished
         vkDeviceWaitIdle(device.getDevice());
 
+        // Destroy last swap chain
+        cleanUpSwapChain();
+
+        // Create new swap chain
         createSwapChain();
         createImageViews();
         createRenderPasses();
@@ -118,13 +131,13 @@ namespace wde {
         // Destroy render pass
         vkDestroyRenderPass(device.getDevice(), renderPass, nullptr);
 
-        // Destroy swap chain
-        vkDestroySwapchainKHR(device.getDevice(), swapChain, nullptr);
-
         // Destroy images views
         for (auto imageView : swapChainImageViews) {
             vkDestroyImageView(device.getDevice(), imageView, nullptr);
         }
+
+        // Destroy swap chain
+        vkDestroySwapchainKHR(device.getDevice(), swapChain, nullptr);
     }
 
 

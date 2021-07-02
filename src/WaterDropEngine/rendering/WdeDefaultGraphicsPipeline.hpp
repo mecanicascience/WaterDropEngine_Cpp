@@ -5,10 +5,10 @@
 #include <iostream>
 #include <vulkan/vulkan_core.h>
 
-#include "../utils/Utils.hpp"
 #include "../core/WdeInstanceDevice.hpp"
 #include "WdeSwapChain.hpp"
-#include "WdePipeline.hpp"
+#include "../utils/Utils.hpp"
+
 
 namespace wde {
     class WdeDefaultGraphicsPipeline : public WdePipeline {

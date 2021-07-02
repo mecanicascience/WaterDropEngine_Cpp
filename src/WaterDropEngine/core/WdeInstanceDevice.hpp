@@ -5,8 +5,8 @@
 #include <set>
 #include <unordered_set>
 
-#include "WdeWindow.hpp"
 #include "../utils/Constants.hpp"
+#include "../core/WdeWindow.hpp"
 
 namespace wde {
     /** Struct that handles any type of Queue */
