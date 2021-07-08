@@ -26,7 +26,6 @@ namespace wde::renderEngine {
 
 
 	bool WdeRenderEngine::shouldEnd() {
-		Logger::info("Test", LoggerChannel::RENDERING_ENGINE);
 		return true;
 	}
 }
