@@ -2,7 +2,21 @@
 
 namespace wde {
     WdeSwapChain::~WdeSwapChain() {
-        cleanUpSwapChain();
+        // Destroy frame buffers
+        for (auto framebuffer : swapChainFramebuffers) {
+            vkDestroyFramebuffer(device.getDevice(), framebuffer, nullptr);
+        }
+
+        // Destroy render pass
+        vkDestroyRenderPass(device.getDevice(), renderPass, nullptr);
+
+        // Destroy images views
+        for (auto imageView : swapChainImageViews) {
+            vkDestroyImageView(device.getDevice(), imageView, nullptr);
+        }
+
+        // Destroy swap chain
+        vkDestroySwapchainKHR(device.getDevice(), swapChain, nullptr);
     }
 
     void WdeSwapChain::initialize() {
@@ -79,6 +93,7 @@ namespace wde {
         if (vkCreateSwapchainKHR(device.getDevice(), &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
             throw std::runtime_error("Failed to create swap chain.");
         }
+        std::cout << "Created swap chain." << std::endl;
 
         // Say to store swap chain items to swapChainImages
         vkGetSwapchainImagesKHR(device.getDevice(), swapChain, &imageCount, nullptr);
@@ -109,8 +124,8 @@ namespace wde {
         createImageViews();
         createRenderPasses();
 
-        std::string pathVert = "shaders/simpleShader.vert.spv";
-        std::string pathFrag = "shaders/simpleShader.frag.spv";
+        std::string pathVert = "res/shaders/simpleShader.vert.spv";
+        std::string pathFrag = "res/shaders/simpleShader.frag.spv";
         pipeline->createGraphicsPipeline(pathVert, pathFrag);
         createFrameBuffers();
         renderer->createCommandBuffers();

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vulkan/vulkan_core.h>
 
-#include "../core/WdeInstanceDevice.hpp"
+#include "../../core/WdeInstanceDevice.hpp"
 #include "WdeSwapChain.hpp"
 #include "../utils/Utils.hpp"
 

@@ -2,8 +2,8 @@
 
 namespace wde {
     void CoreApp::init() {
-        std::string fragShaderLocation = "shaders/simpleShader.frag.spv";
-        std::string vertShaderLocation = "shaders/simpleShader.vert.spv";
+        std::string fragShaderLocation = "res/shaders/simpleShader.frag.spv";
+        std::string vertShaderLocation = "res/shaders/simpleShader.vert.spv";
 
         // Initialize the GLFW window
         wdeWindow.initialize();

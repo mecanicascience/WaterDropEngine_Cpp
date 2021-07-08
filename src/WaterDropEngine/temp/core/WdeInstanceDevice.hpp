@@ -6,7 +6,7 @@
 #include <unordered_set>
 
 #include "../utils/Constants.hpp"
-#include "../core/WdeWindow.hpp"
+#include "WdeWindow.hpp"
 
 namespace wde {
     /** Struct that handles any type of Queue */
@@ -81,6 +81,8 @@ namespace wde {
             WdeWindow &window;
             VkInstance instance{};
 
+            /** Enable verbose validation layers */
+            static const bool enableVerboseValidationLayers = false;
             /** Enabled validation layers (VK_LAYER_KHRONOS_validation = every layer enabled) */
             const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
             /** Enabled device extensions (VK_KHR_SWAPCHAIN_EXTENSION_NAME = can GPU displays images) */

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../core/WdeInstanceDevice.hpp"
+#include "../../core/WdeInstanceDevice.hpp"
 #include "WdeSwapChain.hpp"
 #include "WdePipeline.hpp"
 

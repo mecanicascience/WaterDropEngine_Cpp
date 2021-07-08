@@ -1,18 +1,14 @@
 #pragma once
 
-// Includes every .h files (to be used only by clients)
+#include "WdeCommon/WdeError/WdeStatus.hpp"
 
-// == Core ==
-#include "core/CoreApp.hpp"
-#include "core/WdeInstanceDevice.hpp"
-#include "core/WdeWindow.hpp"
+namespace wde {
+	class WaterDropEngine {
+		public:
+			WaterDropEngine() = default;
+			~WaterDropEngine() = default;
 
-// == Rendering ==
-#include "rendering/WdeDefaultGraphicsPipeline.hpp"
-#include "rendering/WdePipeline.hpp"
-#include "rendering/WdeRenderer.hpp"
-#include "rendering/WdeSwapChain.hpp"
-
-// == Utils ==
-#include "utils/Constants.hpp"
-#include "utils/Utils.hpp"
+			/** Initialize the program */
+			WdeStatus initialize();
+	};
+}
