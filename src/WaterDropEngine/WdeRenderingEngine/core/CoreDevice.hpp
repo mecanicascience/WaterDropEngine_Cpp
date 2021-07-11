@@ -50,7 +50,7 @@ namespace wde::renderEngine {
 			VkQueue& getPresentQueue() { return presentQueue; }
 			int getDeviceID() { return deviceId; }
 
-			void setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef);
+			void setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer &renderer);
 
 
 
@@ -65,7 +65,7 @@ namespace wde::renderEngine {
 			/** Reference to the device swapChain */
 			SwapChain swapchain {};
 			/** Reference to the binded graphics pipeline */
-			GraphicsPipeline *graphicsPipeline = nullptr;
+			std::shared_ptr<GraphicsPipeline> graphicsPipeline {};
 
 
 			/** Corresponding id of the device (used for initialization only) */

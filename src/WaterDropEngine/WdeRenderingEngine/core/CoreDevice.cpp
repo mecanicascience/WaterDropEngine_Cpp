@@ -6,10 +6,6 @@ namespace wde::renderEngine {
 
 	// Called by external function
 	void CoreDevice::cleanUp() {
-		// Delete pointer to graphics pipeline
-		delete graphicsPipeline;
-		graphicsPipeline = nullptr;
-
 		// Destroy swapChain
 		swapchain.cleanUp(device);
 
@@ -31,9 +27,9 @@ namespace wde::renderEngine {
 		return isThisDeviceSuitable;
 	}
 
-	void CoreDevice::setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef) {
+	void CoreDevice::setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer& renderer) {
 		// Initialize graphics pipeline
-		this->graphicsPipeline = &graphicsPipelineRef;
+		this->graphicsPipeline.reset(&graphicsPipelineRef);
 
 		// Create swap chain render passes
 		this->graphicsPipeline->createRenderPasses(device, swapchain.getImageFormat());
@@ -45,6 +41,7 @@ namespace wde::renderEngine {
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 
 		// Initialize graphics pipeline renderer
+		this->graphicsPipeline->setRenderer(renderer);
 		this->graphicsPipeline->getRenderer().initialize(physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 

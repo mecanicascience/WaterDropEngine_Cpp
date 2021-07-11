@@ -36,8 +36,8 @@ namespace wde::renderEngine {
 			 * @param device
 			 * @param graphicsPipeline
 			 */
-			void setDeviceGraphicsPipeline(CoreDevice &device, GraphicsPipeline &graphicsPipeline) {
-				instance.getDeviceByID(device.getDeviceID()).setGraphicsPipeline(instance.getSurface(), graphicsPipeline);
+			void setDeviceGraphicsPipeline(CoreDevice &device, GraphicsPipeline &graphicsPipeline, Renderer &renderer) {
+				instance.getDeviceByID(device.getDeviceID()).setGraphicsPipeline(instance.getSurface(), graphicsPipeline, renderer);
 			}
 
 

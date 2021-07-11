@@ -9,7 +9,7 @@ namespace wde::renderEngine {
 		destroyPipeline(device);
 
 		// Clean Up renderer
-		renderer.cleanUp(device);
+		renderer->cleanUp(device);
 	}
 
 
@@ -346,6 +346,6 @@ namespace wde::renderEngine {
 	}
 
 	void GraphicsPipeline::drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue) {
-		renderer.drawFrame(window, device, physicalDevice, surface, swapChain, graphicsQueue, presentQueue);
+		renderer->drawFrame(window, device, physicalDevice, surface, swapChain, graphicsQueue, presentQueue);
 	}
 }

@@ -5,7 +5,7 @@
 
 #include "../../../WdeCommon/WdeError/WdeException.hpp"
 #include "../../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
-#include "../Renderer.hpp"
+#include "../renderer/Renderer.hpp"
 
 namespace wde::renderEngine {
 	class SwapChain;
@@ -49,8 +49,12 @@ namespace wde::renderEngine {
 
 			// Getters and setters
 			VkPipeline& getPipeline() { return graphicsPipeline; }
-			Renderer& getRenderer() { return renderer; }
+			Renderer& getRenderer() { return *renderer; }
 			VkRenderPass& getRenderPass() { return renderPass; }
+
+			void setRenderer(Renderer &renderer) {
+				this->renderer.reset(&renderer);
+			}
 
 
 			/**
@@ -78,7 +82,7 @@ namespace wde::renderEngine {
 			VkRenderPass renderPass;
 
 			/** The attached renderer */
-			Renderer renderer;
+			std::shared_ptr<Renderer> renderer {};
 
 			/** True if the pipeline has not been yet destroyed */
 			bool pipelineDestroyed = true;

@@ -3,9 +3,9 @@
 #include <vulkan/vulkan_core.h>
 #include <vector>
 
-#include "../core/CoreUtils.hpp"
-#include "../../WdeCommon/WdeError/WdeException.hpp"
-#include "SwapChain.hpp"
+#include "../../core/CoreUtils.hpp"
+#include "../../../WdeCommon/WdeError/WdeException.hpp"
+#include "../SwapChain.hpp"
 
 namespace wde::renderEngine {
 	class Renderer {
@@ -14,10 +14,6 @@ namespace wde::renderEngine {
 			Renderer() {}
 			~Renderer() {}
 			void cleanUp(VkDevice &device);
-
-			// Avoid copys
-			Renderer(const Renderer &) = delete;
-			Renderer &operator=(const Renderer &) = delete;
 
 			// Core functions
 			/**
@@ -75,7 +71,7 @@ namespace wde::renderEngine {
 			 * @param swapChainFrameBuffer
 			 * @param swapChainExtent
 			 */
-			void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent);
+			virtual void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
 
 
 		private:

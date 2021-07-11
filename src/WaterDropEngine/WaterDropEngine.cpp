@@ -19,7 +19,9 @@ namespace wde {
 			// Set the default graphics pipeline
 			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
 			renderEngine::GraphicsDefaultPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
-			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), graphicsPipeline);
+			renderEngine::DefaultRenderer renderer {};
+
+			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), graphicsPipeline, renderer);
 
 			Logger::debug("======== Initialization done ========\n\n", LoggerChannel::MAIN);
 
