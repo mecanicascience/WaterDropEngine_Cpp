@@ -65,6 +65,14 @@ namespace wde {
 			static void err(const std::string &message, LoggerChannel channel);
 
 
+			/**
+			 * Forces a message to be displayed on the console
+			 * @param message The std::string message
+			 * @param channel The channel of the message
+			 */
+			static void forceLog(const std::string &message, LoggerChannel channel);
+
+
 
 		private:
 			/** List of activated channels */

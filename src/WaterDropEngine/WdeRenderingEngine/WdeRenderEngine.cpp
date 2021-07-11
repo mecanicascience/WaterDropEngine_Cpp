@@ -1,10 +1,16 @@
 #include "WdeRenderEngine.hpp"
-#include "../WdeCommon/WdeLogger/Logger.hpp"
 
 namespace wde::renderEngine {
 	WdeStatus WdeRenderEngine::initialize() {
 		Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
-		// Initialize here ...
+
+		// Initialize the GLFW window
+		window.initialize();
+
+		// Initialize the Vulkan instance, the surface, and the devices
+		instance.initialize(window);
+
+
 		Logger::debug("== Initialization Done ==", LoggerChannel::RENDERING_ENGINE);
 
 		return WdeStatus::WDE_SUCCESS;
@@ -12,13 +18,16 @@ namespace wde::renderEngine {
 
 
 	WdeStatus WdeRenderEngine::tick() {
+		glfwPollEvents(); // Poll GLFW events (user interactions, close event, ...)
+		instance.getSelectedDevice().drawFrame(window);
+
 		return WdeStatus::WDE_SUCCESS;
 	}
 
 
 	WdeStatus WdeRenderEngine::cleanUp() {
 		Logger::debug("== Cleaning up Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
-		// Clean up here ...
+		// Nothing to do here (auto call to class destructor)
 		Logger::debug("== Cleaning up Done ==", LoggerChannel::RENDERING_ENGINE);
 
 		return WdeStatus::WDE_SUCCESS;
@@ -26,6 +35,6 @@ namespace wde::renderEngine {
 
 
 	bool WdeRenderEngine::shouldEnd() {
-		return true;
+		return window.shouldClose();
 	}
 }

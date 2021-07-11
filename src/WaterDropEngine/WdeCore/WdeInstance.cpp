@@ -1,19 +1,14 @@
 #include "WdeInstance.hpp"
-#include "../WdeCommon/WdeLogger/Logger.hpp"
-#include "../WdeCommon/WdeError/WdeException.hpp"
 
 namespace wde {
-	WdeStatus WdeInstance::initialize() {
+	WdeStatus WdeInstance::initialize(Logger::LoggerLogLevel logLevel, std::vector<LoggerChannel> logActivatedChannels) {
 		// Initialize Logging system
-		auto logLevel = Logger::LoggerLogLevel::DEBUG;
-		std::vector<LoggerChannel> activatedChannels = { LoggerChannel::MAIN, LoggerChannel::RENDERING_ENGINE, LoggerChannel::COMMON };
-
-		Logger::initialize(logLevel, activatedChannels);
+		Logger::initialize(logLevel, logActivatedChannels);
 
 
 		// Initialize 3D Rendering engine
 		if (wdeRenderingEngine.initialize() != WdeStatus::WDE_SUCCESS)
-			throw WdeException("Failed to initialize the Rendering Engine.");
+			throw WdeException("Failed to initialize the Rendering Engine.", LoggerChannel::MAIN);
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;
@@ -28,9 +23,15 @@ namespace wde {
 
 			// Run
 			if (wdeRenderingEngine.tick() != WdeStatus::WDE_SUCCESS)
-				throw WdeException("Error while ticking for Rendering Engine.");
+				throw WdeException("Error while ticking for Rendering Engine.", LoggerChannel::MAIN);
 
 			Logger::debug("====== End of tick. ======\n\n", LoggerChannel::MAIN);
+		}
+
+		// Wait until every used device are ready
+		auto devices = wdeRenderingEngine.getInstance().getDevices();
+		for (auto device : devices) {
+			vkDeviceWaitIdle(device.getDevice());
 		}
 
 		// Returns Success
@@ -42,7 +43,7 @@ namespace wde {
 	WdeStatus WdeInstance::cleanUp() {
 		// CleanUp 3D Rendering Engine
 		if (wdeRenderingEngine.cleanUp() != WdeStatus::WDE_SUCCESS)
-			throw WdeException("Failed to clean up the Rendering Engine.");
+			throw WdeException("Failed to clean up the Rendering Engine.", LoggerChannel::MAIN);
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;

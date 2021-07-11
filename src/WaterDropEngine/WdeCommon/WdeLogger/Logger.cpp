@@ -33,6 +33,11 @@ namespace wde {
 	}
 
 
+	void Logger::forceLog(const std::string &message, LoggerChannel channel) {
+		outputMessage(getFormatedMessage(message, " MAIN  ", channel));
+	}
+
+
 
 	bool Logger::checkValidInput(LoggerChannel channel, LoggerLogLevel providedLogLevel) {
 		return

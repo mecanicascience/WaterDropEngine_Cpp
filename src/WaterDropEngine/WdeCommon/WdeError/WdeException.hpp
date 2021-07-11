@@ -4,10 +4,13 @@
 #include <string>
 #include <utility>
 
+#include "../../WdeCommon/WdeError/WdeStatus.hpp"
+#include "../WdeLogger/Logger.hpp"
+
 namespace wde {
 	class WdeException : public std::exception {
 		public:
-			WdeException(std::string message) : _message{std::move(message)} {}
+			WdeException(std::string message, LoggerChannel channel) : _message{std::move(message)}, _channel{channel} {};
 
 			/**
 			 * Describes the error with a verbose message
@@ -15,6 +18,13 @@ namespace wde {
 			 */
 			virtual const char* what() const noexcept override {
 				return _message.c_str();
+			}
+
+			/**
+			 * @return The corresponding error channel
+			 */
+			virtual const LoggerChannel getChannel() const noexcept {
+				return _channel;
 			}
 
 			/**
@@ -35,6 +45,10 @@ namespace wde {
 
 
 		private:
+			/** The error message */
 			std::string _message;
+
+			/** The corresponding channel */
+			LoggerChannel _channel;
 	};
 }

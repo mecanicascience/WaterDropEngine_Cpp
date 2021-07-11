@@ -9,8 +9,12 @@ namespace wde {
 			WdeInstance() = default;
 			~WdeInstance() = default;
 
-			/** Initialize the WdeInstance and all of its important different class components */
-			WdeStatus initialize();
+			/**
+			 * Initialize the WdeInstance and all of its important different class components
+			 * @param logLevel The level of the displayed console log
+			 * @param logActivatedChannels A vector containing a list of every enabled channels
+			 */
+			WdeStatus initialize(Logger::LoggerLogLevel logLevel, std::vector<LoggerChannel> logActivatedChannels);
 
 			/** Run the WdeInstance and all of its important different class components */
 			WdeStatus run();
@@ -19,7 +23,10 @@ namespace wde {
 			WdeStatus cleanUp();
 
 
-		private:
+			renderEngine::WdeRenderEngine& getWdeRenderingEngine() { return wdeRenderingEngine; };
+
+	private:
+			/** The main rendering engine */
 			renderEngine::WdeRenderEngine wdeRenderingEngine {};
 	};
 }
