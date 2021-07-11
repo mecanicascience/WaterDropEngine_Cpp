@@ -23,6 +23,7 @@ namespace wde {
 			WdeStatus cleanUp();
 
 
+			// Getters and setters
 			renderEngine::WdeRenderEngine& getWdeRenderingEngine() { return wdeRenderingEngine; };
 
 	private:

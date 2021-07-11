@@ -66,9 +66,9 @@ namespace wde::renderEngine {
 			void drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue);
 
 
-	protected:
-			std::string &shaderVertLocation;
-			std::string &shaderFragLocation;
+		protected:
+			std::string shaderVertLocation = "undefined";
+			std::string shaderFragLocation = "undefined";
 
 			/** Pipeline layout to pass uniform values (dynamic state variables given to pipeline config) */
 			VkPipelineLayout pipelineLayout {};

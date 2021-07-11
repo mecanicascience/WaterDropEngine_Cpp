@@ -29,6 +29,17 @@ namespace wde::renderEngine {
 
 			/** @return the CoreInstance */
 			CoreInstance& getInstance() { return instance; }
+			/** @return the selected device */
+			CoreDevice& getSelectedDevice() { return instance.getSelectedDevice(); }
+			/**
+			 * Set the rendering graphics pipeline for a specified device
+			 * @param device
+			 * @param graphicsPipeline
+			 */
+			void setDeviceGraphicsPipeline(CoreDevice &device, GraphicsPipeline &graphicsPipeline) {
+				instance.getDeviceByID(device.getDeviceID()).setGraphicsPipeline(instance.getSurface(), graphicsPipeline);
+			}
+
 
 
 		private:

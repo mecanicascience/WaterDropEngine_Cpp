@@ -27,6 +27,9 @@ namespace wde::renderEngine {
 
 
 	void SwapChain::recreateSwapChain(GLFWwindow *window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface) {
+		// Wait for device
+		vkDeviceWaitIdle(device);
+
 		createSwapChain(window, physicalDevice, surface, device);
 		createImageViews(device);
 	}

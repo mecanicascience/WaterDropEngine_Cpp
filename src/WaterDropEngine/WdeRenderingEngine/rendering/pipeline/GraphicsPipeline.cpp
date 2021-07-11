@@ -26,6 +26,8 @@ namespace wde::renderEngine {
 
 
 	void GraphicsPipeline::createDefaultGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
+		std::cout << shaderFragLocation;
+
 		auto vertShaderCode = WdeFileUtils::readFile(shaderVertLocation);
 		auto fragShaderCode = WdeFileUtils::readFile(shaderFragLocation);
 
@@ -39,6 +41,7 @@ namespace wde::renderEngine {
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Say at what part of the rendering shader will be used
 		vertShaderStageInfo.module = vertShaderModule;
 		vertShaderStageInfo.pName = "main"; // entrypoint
+
 
 		// Create frag shader infos
 		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};

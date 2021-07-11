@@ -42,6 +42,7 @@ namespace wde::renderEngine {
 			VkSurfaceKHR& getSurface() { return surface; }
 			CoreDevice& getSelectedDevice() { return devicesList[selectedDeviceId]; }
 			std::vector<CoreDevice>& getDevices() { return devicesList; }
+			CoreDevice& getDeviceByID(int id) { return devicesList[id]; }
 
 
 

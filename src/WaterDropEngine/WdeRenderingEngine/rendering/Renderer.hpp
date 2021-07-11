@@ -62,13 +62,28 @@ namespace wde::renderEngine {
 
 			// Getter and setters
 			size_t& getCurrentFrame() { return currentFrame; }
+			bool shouldRecreateSwapChain() { return shouldRecreateSwapChainBool; }
+			void setShouldRecreateSwapChain(bool val) { shouldRecreateSwapChainBool = val; }
 
 
+		protected:
+			/**
+			 * Create render passes
+			 * @param commandBuffer
+			 * @param graphicsPipeline
+			 * @param renderPass
+			 * @param swapChainFrameBuffer
+			 * @param swapChainExtent
+			 */
+			void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent);
 
 
 		private:
 			/** Max frames count that can be processed at the same time */
 			const int MAX_FRAMES_IN_FLIGHT = 2;
+
+			/** Recreate a swap chain if this value is true */
+			bool shouldRecreateSwapChainBool;
 
 
 			/** Manage memory that is used to store buffers - command buffers allocated from them */

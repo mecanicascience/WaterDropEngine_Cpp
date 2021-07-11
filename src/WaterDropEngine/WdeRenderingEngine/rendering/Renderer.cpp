@@ -48,7 +48,7 @@ namespace wde::renderEngine {
 				&imageIndex); // output index of swap chain image that became available (frame is at swapChainImages[imageIndex])
 
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) { // Need to be reset
-			swapChain.recreateSwapChain(window.getWindow(), device, physicalDevice, surface);
+			shouldRecreateSwapChainBool = true;
 			return;
 		}
 		else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
@@ -113,7 +113,7 @@ namespace wde::renderEngine {
 		result = vkQueuePresentKHR(presentQueue, &presentInfo);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || window.sendInfoShouldResizeFrameBuffer) { // Needs to be reset
 			window.sendInfoShouldResizeFrameBuffer = false;
-			swapChain.recreateSwapChain(window.getWindow(), device, physicalDevice, surface);
+			shouldRecreateSwapChainBool = true;
 		}
 		else if (result != VK_SUCCESS) {
 			throw WdeException("Failed to present swap chain image.", LoggerChannel::RENDERING_ENGINE);
@@ -179,40 +179,8 @@ namespace wde::renderEngine {
 			}
 
 
-
-			// === Starts a render pass ===
-			VkRenderPassBeginInfo renderPassInfo{};
-			renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			renderPassInfo.renderPass = renderPass; // attached render pass
-			renderPassInfo.framebuffer = swapChainFrameBuffers[i]; // attached frame buffer
-
-			renderPassInfo.renderArea.offset = {0, 0};
-			renderPassInfo.renderArea.extent = swapChainExtent; // drawing size
-
-			// Clear colors
-			VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f}; // black
-			renderPassInfo.clearValueCount = 1;
-			renderPassInfo.pClearValues = &clearColor;
-
-			vkCmdBeginRenderPass(commandBuffers[i], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-
-			// === Binds to the graphics pipeline ===
-			vkCmdBindPipeline(commandBuffers[i], // attached command buffers
-			                  VK_PIPELINE_BIND_POINT_GRAPHICS, // tell graphics or compute pipeline
-			                  graphicsPipeline);
-
-
-			// === Tell to draw the triangle ===
-			vkCmdDraw(commandBuffers[i],
-			          3, // 3 vertices to draw
-			          1, // instanced rendering (1 if not doing that)
-			          0, // Offset into vertex buffer
-			          0); // Offset into instanced rendering
-
-
-			// === End render pass ===
-			vkCmdEndRenderPass(commandBuffers[i]);
+			// Generate the render passes for this command buffer
+			createRenderPasses(commandBuffers[i], graphicsPipeline, renderPass, swapChainFrameBuffers[i], swapChainExtent);
 
 
 			// Test if success
@@ -245,5 +213,43 @@ namespace wde::renderEngine {
 				throw WdeException("Failed to create synchronization objects for the " + std::to_string(i) + "th frame.", LoggerChannel::RENDERING_ENGINE);
 			}
 		}
+	}
+
+
+
+	void Renderer::createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) {
+		// === Starts a render pass ===
+		VkRenderPassBeginInfo renderPassInfo{};
+		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		renderPassInfo.renderPass = renderPass; // attached render pass
+		renderPassInfo.framebuffer = swapChainFrameBuffer; // attached frame buffer
+
+		renderPassInfo.renderArea.offset = {0, 0};
+		renderPassInfo.renderArea.extent = swapChainExtent; // drawing size
+
+		// Clear colors
+		VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f}; // black
+		renderPassInfo.clearValueCount = 1;
+		renderPassInfo.pClearValues = &clearColor;
+
+		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+
+
+		// === Binds to the graphics pipeline ===
+		vkCmdBindPipeline(commandBuffer, // attached command buffers
+		                  VK_PIPELINE_BIND_POINT_GRAPHICS, // tell graphics or compute pipeline
+		                  graphicsPipeline);
+
+
+		// === Tell to draw the triangle ===
+		vkCmdDraw(commandBuffer,
+		          3, // 3 vertices to draw
+		          1, // instanced rendering (1 if not doing that)
+		          0, // Offset into vertex buffer
+		          0); // Offset into instanced rendering
+
+
+		// === End render pass ===
+		vkCmdEndRenderPass(commandBuffer);
 	}
 }

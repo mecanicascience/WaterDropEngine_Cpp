@@ -69,6 +69,7 @@ namespace wde::renderEngine {
 		swapchain.recreateSwapChain(window, device, physicalDevice, instance.getSurface());
 		graphicsPipeline->createRenderPasses(device, swapchain.getImageFormat());
 
+		// Create new pipeline
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 		graphicsPipeline->getRenderer().createCommandBuffers(device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
@@ -200,6 +201,12 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDevice::drawFrame(CoreWindow &window) {
+		if (graphicsPipeline->getRenderer().shouldRecreateSwapChain()) {
+			recreateSwapChain(window.getWindow());
+			graphicsPipeline->getRenderer().setShouldRecreateSwapChain(false);
+			return;
+		}
+
 		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
 	}
 }

@@ -48,6 +48,7 @@ namespace wde::renderEngine {
 			VkDevice& getDevice() { return device; };
 			VkQueue& getGraphicsQueue() { return graphicsQueue; }
 			VkQueue& getPresentQueue() { return presentQueue; }
+			int getDeviceID() { return deviceId; }
 
 			void setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef);
 

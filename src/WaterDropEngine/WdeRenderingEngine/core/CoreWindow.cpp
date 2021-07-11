@@ -1,4 +1,5 @@
 #include "CoreWindow.hpp"
+#include "../../WdeCommon/WdeLogger/Logger.hpp"
 
 namespace wde::renderEngine {
 	CoreWindow::~CoreWindow() {

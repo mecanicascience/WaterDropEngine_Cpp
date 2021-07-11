@@ -16,9 +16,10 @@ namespace wde {
 			if (instance.initialize(logLevel, activatedChannels) != WdeStatus::WDE_SUCCESS)
 				throw WdeException("Error initializing engine", LoggerChannel::MAIN);
 
-			// Set the graphics pipeline
+			// Set the default graphics pipeline
+			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
 			renderEngine::GraphicsDefaultPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
-			instance.getWdeRenderingEngine().getInstance().getSelectedDevice().setGraphicsPipeline(instance.getWdeRenderingEngine().getInstance().getSurface(), graphicsPipeline);
+			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), graphicsPipeline);
 
 			Logger::debug("======== Initialization done ========\n\n", LoggerChannel::MAIN);
 
