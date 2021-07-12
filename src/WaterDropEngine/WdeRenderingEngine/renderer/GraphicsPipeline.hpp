@@ -61,8 +61,6 @@ namespace wde::renderEngine {
 		protected:
 			// The struct with pipelines config infos
 			struct PipelineConfigInfo {
-				VkViewport viewport;
-				VkRect2D scissor;
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo;
 				VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 				VkPipelineRasterizationStateCreateInfo rasterizationInfo;
@@ -70,22 +68,17 @@ namespace wde::renderEngine {
 				VkPipelineColorBlendAttachmentState colorBlendAttachment;
 				VkPipelineColorBlendStateCreateInfo colorBlendInfo;
 				VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+				VkPipelineViewportStateCreateInfo viewportInfo;
+				std::vector<VkDynamicState> dynamicStateEnables;
+				VkPipelineDynamicStateCreateInfo dynamicStateInfo;
 			};
 
 			// Core functions
-			/**
-			 * @param width The width of the window
-			 * @param height The height of the window
-			 * @return The corresponding pipelines config infos
-			 */
-			virtual PipelineConfigInfo getPipelineConfigInfo(uint32_t width, uint32_t height) = 0;
+			/** @param configInfo The config infos to modify */
+			virtual void setPipelineConfigInfo(PipelineConfigInfo& configInfo) = 0;
 
-			/**
-			 * @param width The width of the window
-			 * @param height The height of the window
-			 * @return The default pipelines config info
-			 */
-			static PipelineConfigInfo getDefaultPipelineConfigInfo(uint32_t width, uint32_t height);
+			/** @param configInfo The config infos to modify */
+			static void setDefaultPipelineConfigInfo(PipelineConfigInfo& configInfo);
 
 
 

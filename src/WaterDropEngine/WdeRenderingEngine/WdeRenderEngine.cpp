@@ -18,8 +18,15 @@ namespace wde::renderEngine {
 
 	WdeStatus WdeRenderEngine::tick() {
 		glfwPollEvents(); // Poll GLFW events (user interactions, close event, ...)
-		instance.getSelectedDevice().drawFrame(window);
+		return draw();
+	}
 
+	WdeStatus WdeRenderEngine::draw() {
+		instance.getSelectedDevice().drawFrame(window);
+		return WdeStatus::WDE_SUCCESS;
+	}
+	WdeStatus WdeRenderEngine::forceDraw() {
+		instance.getSelectedDevice().forceDrawFrame(window);
 		return WdeStatus::WDE_SUCCESS;
 	}
 

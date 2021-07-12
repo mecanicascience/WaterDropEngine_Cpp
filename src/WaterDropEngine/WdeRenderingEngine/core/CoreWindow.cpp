@@ -1,5 +1,5 @@
 #include "CoreWindow.hpp"
-#include "../../WdeCommon/WdeLogger/Logger.hpp"
+#include "../WdeRenderEngine.hpp"
 
 namespace wde::renderEngine {
 	void CoreWindow::initialize() {
@@ -29,8 +29,15 @@ namespace wde::renderEngine {
 
 	void CoreWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 		// On new window size
-		auto app = reinterpret_cast<CoreWindow*>(glfwGetWindowUserPointer(window));
-		app->sendInfoShouldResizeFrameBuffer = true;
+		auto appWindow = reinterpret_cast<CoreWindow*>(glfwGetWindowUserPointer(window));
+		appWindow->sendInfoShouldResizeFrameBuffer = true;
+		appWindow->width = width;
+		appWindow->height = height;
+
+		// Send resize infos
+		appWindow->renderEngine.draw();
+		// Draw the next frame to the window
+		appWindow->renderEngine.forceDraw();
 	}
 
 

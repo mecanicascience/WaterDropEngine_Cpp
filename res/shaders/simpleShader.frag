@@ -1,8 +1,9 @@
 #version 450
 
+// Input values from the vertex shader
 layout(location = 0) in vec3 fragColor;
 
-// Select framebuffer at index O
+// Output to the swapchain value
 layout(location = 0) out vec4 outColor;
 
 // Run for every fragment (line between two vertex, after rasterisation)

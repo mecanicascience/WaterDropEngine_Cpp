@@ -12,6 +12,6 @@ namespace wde::renderEngine {
 			 * @param height The height of the window
 			 * @return The corresponding pipelines config infos
 			 */
-			PipelineConfigInfo getPipelineConfigInfo(uint32_t width, uint32_t height);
+			void setPipelineConfigInfo(PipelineConfigInfo& configInfo);
 	};
 }

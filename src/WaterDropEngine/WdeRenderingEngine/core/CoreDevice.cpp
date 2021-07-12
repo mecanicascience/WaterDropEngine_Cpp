@@ -1,6 +1,5 @@
 #include "CoreDevice.hpp"
 #include "CoreInstance.hpp"
-#include "../utils/RenderingUtils.hpp"
 
 namespace wde::renderEngine {
 	bool CoreDevice::initialize() {
@@ -96,6 +95,14 @@ namespace wde::renderEngine {
 		// Draw the next frame to the window
 		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
 	}
+
+	void CoreDevice::forceDrawFrame(CoreWindow &window) {
+		// Draw the next frame to the window
+		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
+	}
+
+
+
 
 	void CoreDevice::recreateSwapChain(GLFWwindow *window) {
 		// Handle minimization (wait)

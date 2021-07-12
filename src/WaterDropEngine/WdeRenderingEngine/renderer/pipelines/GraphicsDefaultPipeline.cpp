@@ -1,8 +1,8 @@
 #include "GraphicsDefaultPipeline.hpp"
 
 namespace wde::renderEngine {
-	GraphicsPipeline::PipelineConfigInfo GraphicsDefaultPipeline::getPipelineConfigInfo(uint32_t width, uint32_t height) {
+	void GraphicsDefaultPipeline::setPipelineConfigInfo(PipelineConfigInfo& configInfo) {
 		// Uses the default graphics pipelines infos
-		return getDefaultPipelineConfigInfo(width, height);
+		setDefaultPipelineConfigInfo(configInfo);
 	}
 }

@@ -6,7 +6,11 @@
 #include <vulkan/vulkan_core.h>
 #include <vector>
 
+#include "../../WdeCommon/WdeLogger/Logger.hpp"
+
 namespace wde::renderEngine {
+	class WdeRenderEngine;
+
 	class CoreWindow {
 		public:
 			// Public variables
@@ -20,7 +24,7 @@ namespace wde::renderEngine {
 		     * @param height
 		     * @param windowName
 		     */
-			CoreWindow(int width, int height, std::string name) : width{width}, height{height}, windowName{std::move(name)} {};
+			CoreWindow(WdeRenderEngine &renderEngine, int width, int height, std::string name) : renderEngine{renderEngine}, width{width}, height{height}, windowName{std::move(name)} {};
 
 			/** Destruct the GLFW window (only 1/app) */
 			~CoreWindow() = default;
@@ -37,6 +41,8 @@ namespace wde::renderEngine {
 
 			// Getters and setters
 			GLFWwindow* getWindow() { return window; }
+			int getWidth() { return width; };
+			int getHeight() { return height; };
 
 
 			// Main functions
@@ -82,10 +88,13 @@ namespace wde::renderEngine {
 
 
 		private:
+			/** A reference to the render engine */
+			WdeRenderEngine &renderEngine;
+
 			/** GLFW Window width */
-			const int width;
+			int width;
 			/** GLFW Window height */
-			const int height;
+			int height;
 			/** GLFW displayed name of the Window */
 			std::string windowName;
 

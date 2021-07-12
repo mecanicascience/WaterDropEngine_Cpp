@@ -8,6 +8,7 @@
 #include "CoreUtils.hpp"
 #include "../renderer/SwapChain.hpp"
 #include "../renderer/GraphicsPipeline.hpp"
+#include "../utils/RenderingUtils.hpp"
 
 
 namespace wde::renderEngine {
@@ -37,6 +38,12 @@ namespace wde::renderEngine {
 			 * @param window
 			 */
 			 void drawFrame(CoreWindow &window);
+
+			/**
+			* Force the drawing of the next frame to the screen
+			* @param window
+			*/
+			void forceDrawFrame(CoreWindow &window);
 
 
 			/**

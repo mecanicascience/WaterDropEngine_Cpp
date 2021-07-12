@@ -23,6 +23,18 @@ namespace wde::renderEngine {
 		// Start renderer pass
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
+		// Update viewport and scissor size
+		VkViewport viewport{};
+		viewport.x = 0.0f;
+		viewport.y = 0.0f;
+		viewport.width = static_cast<float>(swapChainExtent.width);
+		viewport.height = static_cast<float>(swapChainExtent.height);
+		viewport.minDepth = 0.0f;
+		viewport.maxDepth = 1.0f;
+		VkRect2D scissor{{0, 0}, swapChainExtent};
+		vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
+		vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
+
 
 		// === Binds to the graphics pipelines ===
 		vkCmdBindPipeline(commandBuffer, // attached command buffers

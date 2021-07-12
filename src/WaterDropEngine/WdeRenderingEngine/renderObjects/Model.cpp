@@ -1,5 +1,4 @@
 #include "Model.hpp"
-#include "../utils/RenderingUtils.hpp"
 
 namespace wde::renderEngine {
 	Model::Model(VkDevice &device, VkPhysicalDevice &physicalDevice, const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices) {
@@ -94,13 +93,13 @@ namespace wde::renderEngine {
 	std::array<VkVertexInputAttributeDescription, 2> Model::Vertex::getAttributeDescriptions() {
 		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions {};
 
-		// Vertex position values
+		// Vertex position values (at index 0)
 		attributeDescriptions[0].binding = 0;
 		attributeDescriptions[0].location = 0;
 		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-		attributeDescriptions[0].offset = 0;
+		attributeDescriptions[0].offset = offsetof(Vertex, position);
 
-		// Vertex color values
+		// Vertex color values (at index 1)
 		attributeDescriptions[1].binding = 0;
 		attributeDescriptions[1].location = 1;
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;

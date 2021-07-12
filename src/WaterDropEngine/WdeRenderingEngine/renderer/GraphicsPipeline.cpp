@@ -16,7 +16,8 @@ namespace wde::renderEngine {
 
 	void GraphicsPipeline::createGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
 		// Get pipelines infos
-		PipelineConfigInfo configInfo = getPipelineConfigInfo(swapChainExtent.width, swapChainExtent.height);
+		PipelineConfigInfo configInfo {};
+		setPipelineConfigInfo(configInfo);
 
 		// Read shaders
 		auto vertShaderCode = WdeFileUtils::readFile(shaderVertLocation);
@@ -82,23 +83,15 @@ namespace wde::renderEngine {
 		pipelineInfo.stageCount = 2; // fragment, then vertex shaders
 		pipelineInfo.pStages = shaderStages;
 
-		// Final struct
-		VkPipelineViewportStateCreateInfo viewportInfo {};
-		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		viewportInfo.viewportCount = 1; // Can use multiple viewports (require GPU feature)
-		viewportInfo.pViewports = &configInfo.viewport;
-		viewportInfo.scissorCount = 1; // Can use multiple scissors (require GPU feature)
-		viewportInfo.pScissors = &configInfo.scissor;
-
 		// Fixed-function state (fixed-functions stages of the pipelines : input assembly, rasterizer, viewport, color blending)
 		pipelineInfo.pVertexInputState = &configInfo.vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-		pipelineInfo.pViewportState = &viewportInfo;
+		pipelineInfo.pViewportState = &configInfo.viewportInfo;
 		pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
 		pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
 		pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
 		pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
-		pipelineInfo.pDynamicState = nullptr; // Optional
+		pipelineInfo.pDynamicState = &configInfo.dynamicStateInfo;
 
 		// Pipeline layout (uniform and push values referenced by the shader and can be updated)
 		pipelineInfo.layout = pipelineLayout;
@@ -127,10 +120,7 @@ namespace wde::renderEngine {
 		pipelineDestroyed = false;
 	}
 
-	GraphicsPipeline::PipelineConfigInfo GraphicsPipeline::getDefaultPipelineConfigInfo(uint32_t width, uint32_t height) {
-		PipelineConfigInfo configInfo {};
-
-
+	void GraphicsPipeline::setDefaultPipelineConfigInfo(PipelineConfigInfo& configInfo) {
 		// == Input assembly (groups vertex data into primitives for processing by rest of pipelines) ==
 		/* Usual topology values :
 		 * VK_PRIMITIVE_TOPOLOGY_POINT_LIST : points from vertices
@@ -151,17 +141,13 @@ namespace wde::renderEngine {
 
 
 		// == Viewports and scissors (transform vertices from device coords to window coords) ==
-		// We want to render to the window from (0, 0) to (width, height)
-		configInfo.viewport.x = 0.0f;
-		configInfo.viewport.y = 0.0f;
-		configInfo.viewport.width = static_cast<float>(width);
-		configInfo.viewport.height = static_cast<float>(height);
-		configInfo.viewport.minDepth = 0.0f;
-		configInfo.viewport.maxDepth = 1.0f;
-
-		// The viewport and renderer image zone should be the same
-		configInfo.scissor.offset = {0, 0};
-		configInfo.scissor.extent = {width, height};
+		// Done elsewhere to handle window resize
+		// Final struct
+		configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		configInfo.viewportInfo.viewportCount = 1; // Can use multiple viewports (require GPU feature)
+		configInfo.viewportInfo.pViewports = nullptr;
+		configInfo.viewportInfo.scissorCount = 1; // Can use multiple scissors (require GPU feature)
+		configInfo.viewportInfo.pScissors = nullptr;
 
 
 		// == Rasterization (vertices given by vertex shaders turned into fragments to be colored) ==
@@ -252,8 +238,12 @@ namespace wde::renderEngine {
 		configInfo.depthStencilInfo.front = {};  // Optional
 		configInfo.depthStencilInfo.back = {};   // Optional
 
-
-		return configInfo;
+		// Enable dynamic states (handle resizment)
+		configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+		configInfo.dynamicStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+		configInfo.dynamicStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+		configInfo.dynamicStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
+		configInfo.dynamicStateInfo.flags = 0;
 	}
 
 

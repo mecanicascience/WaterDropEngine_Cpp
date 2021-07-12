@@ -8,6 +8,7 @@
 #include <vulkan/vulkan_core.h>
 
 #include "../../WdeCommon/WdeError/WdeException.hpp"
+#include "../utils/RenderingUtils.hpp"
 
 namespace wde::renderEngine {
 	class Model {

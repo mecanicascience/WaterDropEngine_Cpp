@@ -21,6 +21,10 @@ namespace wde::renderEngine {
 			WdeStatus initialize();
 			/** Called when a new tick on the gameLoop happend */
 			WdeStatus tick();
+			/** Draws the next frame to the screen */
+			WdeStatus draw();
+			/** Force the drawing of the next frame to the screen */
+			WdeStatus forceDraw();
 			/** Cleans up the renderer engine instance */
 			WdeStatus cleanUp();
 
@@ -50,7 +54,7 @@ namespace wde::renderEngine {
 			static constexpr int HEIGHT = 600;
 
 			// Class variables
-			CoreWindow window {WIDTH, HEIGHT, Constants::APPLICATION_NAME + " Window"};
+			CoreWindow window {*this, WIDTH, HEIGHT, Constants::APPLICATION_NAME + " Window"};
 			CoreInstance instance {window};
 	};
 }
