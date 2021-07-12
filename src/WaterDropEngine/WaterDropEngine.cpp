@@ -15,12 +15,20 @@ namespace wde {
 			Logger::forceLog("======== Initializing program ========", LoggerChannel::MAIN);
 			if (instance.initialize(logLevel, activatedChannels) != WdeStatus::WDE_SUCCESS)
 				throw WdeException("Error initializing engine", LoggerChannel::MAIN);
+			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
+
+			// Load models
+			const std::vector<renderEngine::Model::Vertex> vertices {
+					{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+					{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+					{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}
+			};
+			renderEngine::Model model {renderingEngine.getSelectedDevice().getDevice(), renderingEngine.getSelectedDevice().getPhysicalDevice(), vertices};
+			renderingEngine.getSelectedDevice().setModel(model);
 
 			// Set the default graphics pipelines
-			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
 			renderEngine::GraphicsDefaultPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
 			renderEngine::DefaultRenderer renderer {};
-
 			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), graphicsPipeline, renderer);
 
 			Logger::debug("======== Initialization done ========\n\n", LoggerChannel::MAIN);

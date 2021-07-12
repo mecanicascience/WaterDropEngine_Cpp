@@ -1,9 +1,9 @@
 #include "DefaultRenderer.hpp"
 
 namespace wde::renderEngine {
-	void DefaultRenderer::createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) {
+	void DefaultRenderer::createRenderPasses(Model& model, VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) {
 		// === Starts a render pass ===
-		VkRenderPassBeginInfo renderPassInfo{};
+		VkRenderPassBeginInfo renderPassInfo {};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		renderPassInfo.renderPass = renderPass; // attached render pass
 		renderPassInfo.framebuffer = swapChainFrameBuffer; // attached frame buffer
@@ -29,13 +29,9 @@ namespace wde::renderEngine {
 		                  VK_PIPELINE_BIND_POINT_GRAPHICS, // tell graphics or compute pipelines
 		                  graphicsPipeline);
 
-
-		// === Tell to draw the triangle ===
-		vkCmdDraw(commandBuffer,
-		          3, // 3 vertices to draw
-		          1, // instanced renderer (1 if not doing that)
-		          0, // Offset into vertex buffer
-		          0); // Offset into instanced renderer
+		// Bind the models to the command buffer
+		model.bind(commandBuffer);
+		model.draw(commandBuffer);
 
 
 		// === End render pass ===

@@ -50,6 +50,16 @@ namespace wde::renderEngine {
 		// Shaders infos list
 		VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
+		// == Vertex input (select format of data passed to vertex shader and buffers from where to fetch) ==
+		auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
+		auto attributeDescriptions = Model::Vertex::getAttributeDescriptions();
+		configInfo.vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+		// Vertex buffers
+		configInfo.vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		configInfo.vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+		configInfo.vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		configInfo.vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
 		// Set pipelines config infos
 		// Create pipelines uniform values
 		VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
@@ -119,14 +129,6 @@ namespace wde::renderEngine {
 
 	GraphicsPipeline::PipelineConfigInfo GraphicsPipeline::getDefaultPipelineConfigInfo(uint32_t width, uint32_t height) {
 		PipelineConfigInfo configInfo {};
-
-
-		// == Vertex input (select format of data passed to vertex shader and buffers from where to fetch) ==
-		configInfo.vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		configInfo.vertexInputInfo.vertexBindingDescriptionCount = 0; // Don't use buffer (hard coded positions from now in shader)
-		configInfo.vertexInputInfo.pVertexBindingDescriptions = nullptr; // Optional
-		configInfo.vertexInputInfo.vertexAttributeDescriptionCount = 0; // Don't use buffer (hard coded positions from now in shader)
-		configInfo.vertexInputInfo.pVertexAttributeDescriptions = nullptr; // Optional
 
 
 		// == Input assembly (groups vertex data into primitives for processing by rest of pipelines) ==

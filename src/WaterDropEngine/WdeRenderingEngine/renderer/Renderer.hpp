@@ -6,6 +6,7 @@
 #include "../core/CoreUtils.hpp"
 #include "../../WdeCommon/WdeError/WdeException.hpp"
 #include "SwapChain.hpp"
+#include "../renderObjects/Model.hpp"
 
 namespace wde::renderEngine {
 	class Renderer {
@@ -22,13 +23,14 @@ namespace wde::renderEngine {
 			// Core functions
 			/**
 			 * Initialize the Renderer
+			 * @param model
 			 * @param physicalDevice
 			 * @param device
 			 * @param swapChain
 			 * @param surface
 			 * @param graphicsPipeline
 			 */
-			void initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
+			void initialize(Model &model, VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
 			                VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages);
 
 
@@ -62,7 +64,7 @@ namespace wde::renderEngine {
 			 * @param swapChainExtent
 			 * @param renderPass
 			 */
-			void createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
+			void createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
 
 			/**
 			 * Creates the command pool (this->commandPool)
@@ -84,13 +86,14 @@ namespace wde::renderEngine {
 		protected:
 			/**
 			 * Create render passes
+			 * @param model
 			 * @param commandBuffer
 			 * @param graphicsPipeline
 			 * @param renderPass
 			 * @param swapChainFrameBuffer
 			 * @param swapChainExtent
 			 */
-			virtual void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
+			virtual void createRenderPasses(Model& model, VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
 
 
 

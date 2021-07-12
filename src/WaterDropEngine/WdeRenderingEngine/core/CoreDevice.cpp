@@ -1,5 +1,6 @@
 #include "CoreDevice.hpp"
 #include "CoreInstance.hpp"
+#include "../utils/RenderingUtils.hpp"
 
 namespace wde::renderEngine {
 	bool CoreDevice::initialize() {
@@ -19,6 +20,10 @@ namespace wde::renderEngine {
 
 	// Called by external function
 	void CoreDevice::cleanUp() {
+		// Clear model
+		model->cleanUp(device);
+		model = nullptr;
+
 		// Clean up the swapChain full system
 		cleanUpSwapChain();
 
@@ -77,7 +82,7 @@ namespace wde::renderEngine {
 
 		// Initialize graphics pipelines renderers
 		Logger::debug("Creating the pipeline renderers.", LoggerChannel::RENDERING_ENGINE);
-		this->graphicsPipeline->getRenderer().initialize(physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
+		this->graphicsPipeline->getRenderer().initialize(*model, physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 
 	void CoreDevice::drawFrame(CoreWindow &window) {
@@ -115,7 +120,7 @@ namespace wde::renderEngine {
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 		swapchain.createDepthResources(*this);
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
-		graphicsPipeline->getRenderer().createCommandBuffers(device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
+		graphicsPipeline->getRenderer().createCommandBuffers(*model, device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 
 		// Resize the imagesInFlight size based on the new swapChainImages size
 		graphicsPipeline->getRenderer().getImagesInFlight().resize(swapchain.getSwapChainImages().size(), VK_NULL_HANDLE);
@@ -285,7 +290,7 @@ namespace wde::renderEngine {
 		VkMemoryAllocateInfo allocInfo{};
 		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		allocInfo.allocationSize = memRequirements.size;
-		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+		allocInfo.memoryTypeIndex = RenderingUtils::findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
 		if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
 			throw WdeException("Failed to allocate image memory.", LoggerChannel::RENDERING_ENGINE);
@@ -294,18 +299,5 @@ namespace wde::renderEngine {
 		if (vkBindImageMemory(device, image, imageMemory, 0) != VK_SUCCESS) {
 			throw WdeException("Failed to bind image memory.", LoggerChannel::RENDERING_ENGINE);
 		}
-	}
-
-	uint32_t CoreDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-		VkPhysicalDeviceMemoryProperties memProperties;
-		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
-		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
-			if ((typeFilter & (1 << i)) &&
-			    (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-				return i;
-			}
-		}
-
-		throw WdeException("Failed to find suitable memory type.", LoggerChannel::RENDERING_ENGINE);
 	}
 }

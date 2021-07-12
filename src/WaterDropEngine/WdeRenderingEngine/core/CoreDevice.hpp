@@ -74,6 +74,7 @@ namespace wde::renderEngine {
 			VkQueue& getPresentQueue() { return presentQueue; }
 			int getDeviceID() { return deviceId; }
 
+			void setModel(Model& model) { this->model = &model; }
 			void setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer &renderer);
 
 
@@ -85,7 +86,7 @@ namespace wde::renderEngine {
 			/** Reference to the CoreInstance instance */
 			CoreInstance &instance;
 			/** Reference to the GLFW window */
-			GLFWwindow *window;
+			GLFWwindow *window = nullptr;
 			/** Reference to the device swapChain */
 			SwapChain swapchain {};
 			/** Reference to the binded graphics pipelines */
@@ -101,6 +102,8 @@ namespace wde::renderEngine {
 			VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 			/** The corresponding logical device */
 			VkDevice device;
+			/** Model reference */
+			Model *model = nullptr;
 
 
 			// Queues (VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT)
@@ -133,12 +136,5 @@ namespace wde::renderEngine {
 			 * @return Return true if the device support the required extensions
 			 */
 			bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-
-			/**
-			 * @param typeFilter
-			 * @param properties
-			 * @return The type of memory used by the device
-			 */
-			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	};
 }

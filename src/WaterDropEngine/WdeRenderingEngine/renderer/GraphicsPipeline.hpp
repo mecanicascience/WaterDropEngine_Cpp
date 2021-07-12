@@ -6,6 +6,7 @@
 #include "../../WdeCommon/WdeError/WdeException.hpp"
 #include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 #include "Renderer.hpp"
+#include "../renderObjects/Model.hpp"
 
 namespace wde::renderEngine {
 	class SwapChain;
