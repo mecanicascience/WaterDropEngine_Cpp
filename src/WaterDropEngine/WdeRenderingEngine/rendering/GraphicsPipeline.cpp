@@ -32,21 +32,27 @@ namespace wde::renderEngine {
 		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Say at what part of the rendering shader will be used
 		vertShaderStageInfo.module = vertShaderModule;
 		vertShaderStageInfo.pName = "main"; // entrypoint
+		vertShaderStageInfo.flags = 0;
+		vertShaderStageInfo.pNext = nullptr;
+		vertShaderStageInfo.pSpecializationInfo = nullptr;
 
 
 		// Create frag shader infos
-		VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
+		VkPipelineShaderStageCreateInfo fragShaderStageInfo {};
 		fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 		fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
 		fragShaderStageInfo.module = fragShaderModule;
 		fragShaderStageInfo.pName = "main";
+		fragShaderStageInfo.flags = 0;
+		fragShaderStageInfo.pNext = nullptr;
+		fragShaderStageInfo.pSpecializationInfo = nullptr;
 
 		// Shaders infos list
 		VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
 		// Set pipelines config infos
 		// Create pipelines uniform values
-		VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+		VkPipelineLayoutCreateInfo pipelineLayoutInfo {};
 		pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutInfo.setLayoutCount = 0; // Optional
 		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
@@ -66,10 +72,18 @@ namespace wde::renderEngine {
 		pipelineInfo.stageCount = 2; // fragment, then vertex shaders
 		pipelineInfo.pStages = shaderStages;
 
+		// Final struct
+		VkPipelineViewportStateCreateInfo viewportInfo {};
+		viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+		viewportInfo.viewportCount = 1; // Can use multiple viewports (require GPU feature)
+		viewportInfo.pViewports = &configInfo.viewport;
+		viewportInfo.scissorCount = 1; // Can use multiple scissors (require GPU feature)
+		viewportInfo.pScissors = &configInfo.scissor;
+
 		// Fixed-function state (fixed-functions stages of the pipelines : input assembly, rasterizer, viewport, color blending)
 		pipelineInfo.pVertexInputState = &configInfo.vertexInputInfo;
 		pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-		pipelineInfo.pViewportState = &configInfo.viewportInfo;
+		pipelineInfo.pViewportState = &viewportInfo;
 		pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
 		pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
 		pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
@@ -86,7 +100,6 @@ namespace wde::renderEngine {
 		// If the pipelines derives from a parent one
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
 		pipelineInfo.basePipelineIndex = -1; // Optional
-
 
 
 
@@ -147,13 +160,6 @@ namespace wde::renderEngine {
 		// The viewport and rendering image zone should be the same
 		configInfo.scissor.offset = {0, 0};
 		configInfo.scissor.extent = {width, height};
-
-		// Final struct
-		configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-		configInfo.viewportInfo.viewportCount = 1; // Can use multiple viewports (require GPU feature)
-		configInfo.viewportInfo.pViewports = &configInfo.viewport;
-		configInfo.viewportInfo.scissorCount = 1; // Can use multiple scissors (require GPU feature)
-		configInfo.viewportInfo.pScissors = &configInfo.scissor;
 
 
 		// == Rasterization (vertices given by vertex shaders turned into fragments to be colored) ==

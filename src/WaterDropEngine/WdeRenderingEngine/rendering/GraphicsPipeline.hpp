@@ -63,7 +63,6 @@ namespace wde::renderEngine {
 				VkViewport viewport;
 				VkRect2D scissor;
 				VkPipelineVertexInputStateCreateInfo vertexInputInfo;
-				VkPipelineViewportStateCreateInfo viewportInfo;
 				VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
 				VkPipelineRasterizationStateCreateInfo rasterizationInfo;
 				VkPipelineMultisampleStateCreateInfo multisampleInfo;
