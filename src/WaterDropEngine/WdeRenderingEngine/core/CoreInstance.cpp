@@ -19,15 +19,19 @@ namespace wde::renderEngine {
 	// Core functions
 	WdeStatus CoreInstance::initialize(CoreWindow &windowCore) {
 		// Create a Vulkan instance
+		Logger::debug("Creating Vulkan instance.", LoggerChannel::RENDERING_ENGINE);
 		createVulkanInstance();
 
 		// Create the surface (link between the Window and the instance)
+		Logger::debug("Creating surface.", LoggerChannel::RENDERING_ENGINE);
 		createSurface();
 
 		// Setup the debug messenger (uses debugCallback as the layer callback)
+		Logger::debug("Creating DebugMessenger callback.", LoggerChannel::RENDERING_ENGINE);
 		setupDebugMessenger();
 
 		// Setup every devices and select one (we choose to only use one physical device)
+		Logger::debug("Selecting devices.", LoggerChannel::RENDERING_ENGINE);
 		setupDevices(windowCore);
 
 		// Return success
@@ -122,10 +126,12 @@ namespace wde::renderEngine {
 
 		// Setup devices and select main device (in this code, we choose to only use one physical device)
 		for (int i = 0; i < devicesList.size(); i++) {
+			Logger::debug("== Initializing device n=" + std::to_string(i + 1) + "/" + std::to_string(devicesList.size()) + " ==", LoggerChannel::RENDERING_ENGINE);
 			bool isSuitable = devicesList[i].initialize();
 
 			if (isSuitable)
 				selectedDeviceId = i;
+			Logger::debug("== End initializing device ==", LoggerChannel::RENDERING_ENGINE);
 		}
 
 		// Outputs infos
@@ -134,7 +140,7 @@ namespace wde::renderEngine {
 
 		VkPhysicalDeviceProperties properties;
 		vkGetPhysicalDeviceProperties(devicesList[selectedDeviceId].getPhysicalDevice(), &properties);
-		Logger::debug("Selected GPU " + std::string(properties.deviceName) + ".", LoggerChannel::RENDERING_ENGINE);
+		Logger::debug("Selected GPU " + std::string(properties.deviceName) + " as default graphics device.", LoggerChannel::RENDERING_ENGINE);
 	}
 
 

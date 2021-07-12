@@ -18,9 +18,11 @@ namespace wde::renderEngine {
 
 	void SwapChain::initialize(GLFWwindow *window, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, VkDevice &device) {
 		// Create swap chain (stores to this->swapChain and to this->swapChainImages)
+		Logger::debug("Creating Swap-Chain.", LoggerChannel::RENDERING_ENGINE);
 		createSwapChain(window, physicalDevice, surface, device);
 
 		// Create a basic image view for every image in the swap chain
+		Logger::debug("Creating image views.", LoggerChannel::RENDERING_ENGINE);
 		createImageViews(device);
 	}
 

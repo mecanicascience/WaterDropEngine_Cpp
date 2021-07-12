@@ -5,11 +5,11 @@ namespace wde::renderEngine {
 		Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 
 		// Initialize the GLFW window
+		Logger::debug("Initializing GLFW window.", LoggerChannel::RENDERING_ENGINE);
 		window.initialize();
 
 		// Initialize the Vulkan instance, the surface, and the devices
 		instance.initialize(window);
-
 
 		Logger::debug("== Initialization Done ==", LoggerChannel::RENDERING_ENGINE);
 

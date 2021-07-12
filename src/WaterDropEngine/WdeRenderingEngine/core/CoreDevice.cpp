@@ -16,9 +16,11 @@ namespace wde::renderEngine {
 
 	bool CoreDevice::initialize() {
 		// Select the corresponding physical device and check if it supports Vulkan
+		Logger::debug("Selecting physical device.", LoggerChannel::RENDERING_ENGINE);
 		selectPhysicalDevice();
 
 		// Pick the best logical corresponding device to interact with the physical device (store to this->device)
+		Logger::debug("Selecting logical device.", LoggerChannel::RENDERING_ENGINE);
 		createLogicalDevice();
 
 		// Create the associated swap chain
