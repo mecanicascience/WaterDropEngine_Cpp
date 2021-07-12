@@ -58,3 +58,6 @@ You can find further information and library credits down below.
 - You can check the [wiki](https://github.com/mecanicascience/PhysicsSimulationEngine/wiki) to learn how to use the library, or to find any technical information you might need.
 - WaterDropEngine uses [Vulkan](https://www.vulkan.org/), [GLFW](https://www.glfw.org/) and [GLM](https://github.com/g-truc/glm).
 
+## Engine structure
+![engine structure](https://github.com/mecanicascience/WaterDropEngine/blob/main/imgs/Engine%20Structure/engineStructure.png)
+
