@@ -33,16 +33,38 @@ namespace wde::renderEngine {
 			bool initialize();
 
 			/**
+			 * Draw frame to the screen
+			 * @param window
+			 */
+			 void drawFrame(CoreWindow &window);
+
+
+			/**
 			 * Recreate the swap chain when needed
 			 * @param window A reference to the GLFW Window
 			 */
 			void recreateSwapChain(GLFWwindow *window);
 
+
+			// Utils
 			/**
-			 * Draw frame to the screen
-			 * @param window
-			 */
-			 void drawFrame(CoreWindow &window);
+			* @param candidates
+			* @param tiling
+			* @param features
+			* @return The perfect candidat between a set of choice
+			*/
+			VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+			/** Find the compatible depth format */
+			VkFormat findDepthFormat();
+
+			/**
+			* Create an image based on the provided infos
+			* @param imageInfo
+			* @param properties
+			* @param image
+			* @param imageMemory
+			*/
+			void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
 
 
 			// Getters and setters
@@ -111,5 +133,12 @@ namespace wde::renderEngine {
 			 * @return Return true if the device support the required extensions
 			 */
 			bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+
+			/**
+			 * @param typeFilter
+			 * @param properties
+			 * @return The type of memory used by the device
+			 */
+			uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 	};
 }

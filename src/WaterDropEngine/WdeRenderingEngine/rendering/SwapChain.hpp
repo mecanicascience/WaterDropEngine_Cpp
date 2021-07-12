@@ -13,6 +13,8 @@
 
 
 namespace wde::renderEngine {
+	class CoreDevice;
+
 	class SwapChain {
 		public:
 			// Constructors
@@ -32,6 +34,8 @@ namespace wde::renderEngine {
 			void initialize(GLFWwindow *window, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, VkDevice &device);
 			/** Create the frame buffers already referenced by the render passes */
 			void createFrameBuffers(VkRenderPass &renderPass, VkDevice &device);
+			/** Create the depth buffers */
+			void createDepthResources(CoreDevice &device);
 
 
 			// Getters
@@ -46,12 +50,20 @@ namespace wde::renderEngine {
 		private:
 			/** The swap chain (stores images to be rendered to the GPU for Vulkan) as VkImages in the swapChainImages vector */
 			VkSwapchainKHR swapChain;
+			/** Holds our framebuffers */
+			std::vector<VkFramebuffer> swapChainFramebuffers;
 			/** Frames waiting to be rendered */
 			std::vector<VkImage> swapChainImages;
 			/** We choose to create 1 image view for each image in the swapChain */
 			std::vector<VkImageView> swapChainImageViews;
-			/** Holds our framebuffers */
-			std::vector<VkFramebuffer> swapChainFramebuffers;
+
+
+			/** Attach depth to an image */
+			std::vector<VkImage> depthImages;
+			/** Memory of the device for depth images */
+			std::vector<VkDeviceMemory> depthImageMemorys;
+			/** Attached depth views */
+			std::vector<VkImageView> depthImageViews;
 
 			// Swap chain selected best config
 			VkFormat swapChainImageFormat;

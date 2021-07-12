@@ -12,10 +12,15 @@ namespace wde::renderEngine {
 		renderPassInfo.renderArea.extent = swapChainExtent; // drawing size
 
 		// Clear colors
-		VkClearValue clearColor = {0.0f, 0.0f, 0.0f, 1.0f}; // black
-		renderPassInfo.clearValueCount = 1;
-		renderPassInfo.pClearValues = &clearColor;
+		std::array<VkClearValue, 2> clearValues{};
+		// index 0 = color attachment, index 1 = depth attachment
+		clearValues[0].color = {0.1f, 0.1f, 0.1f, 1.0f};
+		clearValues[1].depthStencil = {1.0f, 0};
 
+		renderPassInfo.clearValueCount = clearValues.size();
+		renderPassInfo.pClearValues = clearValues.data();
+
+		// Start rendering pass
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 

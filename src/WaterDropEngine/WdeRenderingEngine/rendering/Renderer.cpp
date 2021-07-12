@@ -3,9 +3,6 @@
 namespace wde::renderEngine {
 	void Renderer::initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
 							  VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages) {
-		// Create the command pool (allocate memory to buffers)
-		createCommandPool(physicalDevice, device, surface);
-
 		// Allocate command buffers
 		createCommandBuffers(device, graphicsPipeline, swapChainFrameBuffers, swapChainExtent, renderPass);
 
@@ -31,7 +28,25 @@ namespace wde::renderEngine {
 
 
 
-	void Renderer::createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat) {
+	void Renderer::createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat, VkFormat depthFormat) {
+		// == Depth pass ==
+		VkAttachmentDescription depthAttachment{};
+		depthAttachment.format = depthFormat;
+		depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+		depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+		depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+		depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+		depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+		depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+		// Depth attachment references
+		VkAttachmentReference depthAttachmentRef{};
+		depthAttachmentRef.attachment = 1;
+		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+
+
 		// == Attachment description ==
 		VkAttachmentDescription colorAttachment {};
 		colorAttachment.format = swapChainImageFormat;
@@ -70,9 +85,9 @@ namespace wde::renderEngine {
 
 		subpass.colorAttachmentCount = 1;
 		subpass.pColorAttachments = &colorAttachmentRef;
+		subpass.pDepthStencilAttachment = &depthAttachmentRef;
 		// subpass.pInputAttachments (read from a shader)
 		// subpass.pResolveAttachments (used for multisampling)
-		// subpass.pDepthStencilAttachment (for depth and stencil data)
 		// subpass.pPreserveAttachments (not used by subpass, but data must be preserved)
 
 
@@ -87,10 +102,11 @@ namespace wde::renderEngine {
 		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
 		// Render pass struct
+		std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
 		VkRenderPassCreateInfo renderPassInfo{};
 		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = 1;
-		renderPassInfo.pAttachments = &colorAttachment;
+		renderPassInfo.attachmentCount = attachments.size();
+		renderPassInfo.pAttachments = attachments.data();
 		renderPassInfo.subpassCount = 1;
 		renderPassInfo.pSubpasses = &subpass;
 

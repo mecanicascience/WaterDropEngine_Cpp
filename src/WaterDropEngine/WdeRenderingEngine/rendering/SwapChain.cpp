@@ -1,4 +1,5 @@
 #include "SwapChain.hpp"
+#include "../core/CoreDevice.hpp"
 
 namespace wde::renderEngine {
 	void SwapChain::initialize(GLFWwindow *window, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, VkDevice &device) {
@@ -14,6 +15,16 @@ namespace wde::renderEngine {
 	void SwapChain::cleanUpFrameBuffers(VkDevice &device) {
 		for (auto framebuffer : swapChainFramebuffers) {
 			vkDestroyFramebuffer(device, framebuffer, nullptr);
+		}
+
+		for (auto & depthImageView : depthImageViews) {
+			vkDestroyImageView(device, depthImageView, nullptr);
+		}
+		for (auto & depthImage : depthImages) {
+			vkDestroyImage(device, depthImage, nullptr);
+		}
+		for (auto & depthImageMemory : depthImageMemorys) {
+			vkFreeMemory(device, depthImageMemory, nullptr);
 		}
 	}
 
@@ -145,19 +156,64 @@ namespace wde::renderEngine {
 
 		// Create frame buffers from image views
 		for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-			VkImageView attachments[] = { swapChainImageViews[i] };
+			std::array<VkImageView, 2> attachments = {swapChainImageViews[i], depthImageViews[i]};
 
 			VkFramebufferCreateInfo framebufferInfo{};
 			framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 			framebufferInfo.renderPass = renderPass; // Render pass compatible with the frame buffer
-			framebufferInfo.attachmentCount = 1;
-			framebufferInfo.pAttachments = attachments; // VkImageVie objects bound to
+			framebufferInfo.attachmentCount = attachments.size();
+			framebufferInfo.pAttachments = attachments.data(); // VkImageVie objects bound to
 			framebufferInfo.width = swapChainExtent.width;
 			framebufferInfo.height = swapChainExtent.height;
 			framebufferInfo.layers = 1; // Our swap chain are single images
 
 			if (vkCreateFramebuffer(device, &framebufferInfo, nullptr, &swapChainFramebuffers[i]) != VK_SUCCESS) {
-				throw std::runtime_error("Failed to create framebuffer.");
+				throw WdeException("Failed to create framebuffer.", LoggerChannel::RENDERING_ENGINE);
+			}
+		}
+	}
+
+	void SwapChain::createDepthResources(CoreDevice &device) {
+		// Find depth best format
+		VkFormat supportedDepthFormat = device.findDepthFormat();
+
+		// Resize values
+		depthImages.resize(swapChainImages.size());
+		depthImageMemorys.resize(swapChainImages.size());
+		depthImageViews.resize(swapChainImages.size());
+
+		for (int i = 0; i < depthImages.size(); i++) {
+			VkImageCreateInfo imageInfo{};
+			imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
+			imageInfo.imageType = VK_IMAGE_TYPE_2D;
+			imageInfo.extent.width = swapChainExtent.width;
+			imageInfo.extent.height = swapChainExtent.height;
+			imageInfo.extent.depth = 1;
+			imageInfo.mipLevels = 1;
+			imageInfo.arrayLayers = 1;
+			imageInfo.format = supportedDepthFormat;
+			imageInfo.tiling = VK_IMAGE_TILING_OPTIMAL;
+			imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+			imageInfo.usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+			imageInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+			imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+			imageInfo.flags = 0;
+
+			device.createImageWithInfo(imageInfo, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImages[i], depthImageMemorys[i]);
+
+			VkImageViewCreateInfo viewInfo{};
+			viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
+			viewInfo.image = depthImages[i];
+			viewInfo.viewType = VK_IMAGE_VIEW_TYPE_2D;
+			viewInfo.format = supportedDepthFormat;
+			viewInfo.subresourceRange.aspectMask = VK_IMAGE_ASPECT_DEPTH_BIT;
+			viewInfo.subresourceRange.baseMipLevel = 0;
+			viewInfo.subresourceRange.levelCount = 1;
+			viewInfo.subresourceRange.baseArrayLayer = 0;
+			viewInfo.subresourceRange.layerCount = 1;
+
+			if (vkCreateImageView(device.getDevice(), &viewInfo, nullptr, &depthImageViews[i]) != VK_SUCCESS) {
+				throw WdeException("Failed to create texture image view.", LoggerChannel::RENDERING_ENGINE);
 			}
 		}
 	}

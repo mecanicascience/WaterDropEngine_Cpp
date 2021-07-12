@@ -50,28 +50,47 @@ namespace wde::renderEngine {
 		swapchain.cleanUpImageViewsAndSwapChain(device);
 	}
 
-
-
-
 	void CoreDevice::setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer& renderer) {
 		// Initialize graphics pipelines
 		this->graphicsPipeline = &graphicsPipelineRef;
 
 		// Create swap chain render passes
+		Logger::debug("Creating swapchain render passes.", LoggerChannel::RENDERING_ENGINE);
 		this->graphicsPipeline->setRenderer(renderer);
-		this->graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat());
+		this->graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat(), findDepthFormat());
 
 		// Create the graphics pipelines
+		Logger::debug("Creating the graphics pipeline.", LoggerChannel::RENDERING_ENGINE);
 		this->graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), this->graphicsPipeline->getRenderPass());
 
+		// Create the command pool (allocate memory to buffers)
+		Logger::debug("Creating the command pool.", LoggerChannel::RENDERING_ENGINE);
+		this->graphicsPipeline->getRenderer().createCommandPool(physicalDevice, device, surface);
+
+		// Create the depth resources
+		Logger::debug("Creating the depth resources.", LoggerChannel::RENDERING_ENGINE);
+		swapchain.createDepthResources(*this);
+
 		// Create the frame buffers
+		Logger::debug("Creating the frame buffers.", LoggerChannel::RENDERING_ENGINE);
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 
 		// Initialize graphics pipelines renderers
+		Logger::debug("Creating the pipeline renderers.", LoggerChannel::RENDERING_ENGINE);
 		this->graphicsPipeline->getRenderer().initialize(physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 
+	void CoreDevice::drawFrame(CoreWindow &window) {
+		// Recreate the swapChain if needed (like if a user resized the window)
+		if (graphicsPipeline->getRenderer().shouldRecreateSwapChain()) {
+			recreateSwapChain(window.getWindow());
+			graphicsPipeline->getRenderer().setShouldRecreateSwapChain(false);
+			return;
+		}
 
+		// Draw the next frame to the window
+		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
+	}
 
 	void CoreDevice::recreateSwapChain(GLFWwindow *window) {
 		// Handle minimization (wait)
@@ -90,16 +109,19 @@ namespace wde::renderEngine {
 
 		// Create new swap chain
 		swapchain.recreateSwapChain(window, device, physicalDevice, instance.getSurface());
-		graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat());
+		graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat(), findDepthFormat());
 
 		// Create new pipelines
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
+		swapchain.createDepthResources(*this);
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 		graphicsPipeline->getRenderer().createCommandBuffers(device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 
 		// Resize the imagesInFlight size based on the new swapChainImages size
 		graphicsPipeline->getRenderer().getImagesInFlight().resize(swapchain.getSwapChainImages().size(), VK_NULL_HANDLE);
 	}
+
+
 
 
 
@@ -185,28 +207,6 @@ namespace wde::renderEngine {
 
 
 
-	bool CoreDevice::isDeviceSuitable(VkPhysicalDevice physicalDeviceRef) {
-		QueueFamilyIndices indices = CoreUtils::findQueueFamilies(physicalDeviceRef, instance.getSurface());
-		bool isCompleteIndicesQueues = indices.isComplete(); // Required queues supported
-
-		bool extensionsSupported = checkDeviceExtensionSupport(physicalDeviceRef); // Required extensions supported
-
-		bool swapChainAdequate = false;
-		if (extensionsSupported) { // Supports at least one image rendering type
-			SwapChainSupportDetails swapChainSupport = CoreUtils::querySwapChainSupport(physicalDevice, instance.getSurface());
-			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
-		}
-
-		VkPhysicalDeviceFeatures supportedFeatures;
-		vkGetPhysicalDeviceFeatures(physicalDeviceRef, &supportedFeatures);
-		bool supportAnisotropy = supportedFeatures.samplerAnisotropy; // Supports sampler Anisotropy
-
-		return isCompleteIndicesQueues && extensionsSupported && swapChainAdequate && supportAnisotropy;
-	}
-
-
-
-
 	// Helper functions
 	bool CoreDevice::checkDeviceExtensionSupport(VkPhysicalDevice physicalDeviceRef) {
 		// List every extensions available on the device
@@ -226,15 +226,86 @@ namespace wde::renderEngine {
 		return requiredExtensions.empty();
 	}
 
-	void CoreDevice::drawFrame(CoreWindow &window) {
-		// Recreate the swapChain if needed (like if a user resized the window)
-		if (graphicsPipeline->getRenderer().shouldRecreateSwapChain()) {
-			recreateSwapChain(window.getWindow());
-			graphicsPipeline->getRenderer().setShouldRecreateSwapChain(false);
-			return;
+	bool CoreDevice::isDeviceSuitable(VkPhysicalDevice physicalDeviceRef) {
+		QueueFamilyIndices indices = CoreUtils::findQueueFamilies(physicalDeviceRef, instance.getSurface());
+		bool isCompleteIndicesQueues = indices.isComplete(); // Required queues supported
+
+		bool extensionsSupported = checkDeviceExtensionSupport(physicalDeviceRef); // Required extensions supported
+
+		bool swapChainAdequate = false;
+		if (extensionsSupported) { // Supports at least one image rendering type
+			SwapChainSupportDetails swapChainSupport = CoreUtils::querySwapChainSupport(physicalDevice, instance.getSurface());
+			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 		}
 
-		// Draw the next frame to the window
-		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
+		VkPhysicalDeviceFeatures supportedFeatures;
+		vkGetPhysicalDeviceFeatures(physicalDeviceRef, &supportedFeatures);
+		bool supportAnisotropy = supportedFeatures.samplerAnisotropy; // Supports sampler Anisotropy
+
+		return isCompleteIndicesQueues && extensionsSupported && swapChainAdequate && supportAnisotropy;
+	}
+
+	VkFormat CoreDevice::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+		for (VkFormat format : candidates) {
+			// Get infos about the device and the candidat
+			VkFormatProperties props;
+			vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+
+			// Best formats that we want
+			if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+				return format;
+			}
+			else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+				return format;
+			}
+		}
+
+		throw WdeException("Failed to find supported format.", LoggerChannel::RENDERING_ENGINE);
+	}
+
+	VkFormat CoreDevice::findDepthFormat() {
+		return findSupportedFormat(
+				{VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT},
+				VK_IMAGE_TILING_OPTIMAL,
+				VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+		);
+	}
+
+
+
+
+	void CoreDevice::createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory) {
+		if (vkCreateImage(device, &imageInfo, nullptr, &image) != VK_SUCCESS) {
+			throw WdeException("Failed to create image.", LoggerChannel::RENDERING_ENGINE);
+		}
+
+		VkMemoryRequirements memRequirements;
+		vkGetImageMemoryRequirements(device, image, &memRequirements);
+
+		VkMemoryAllocateInfo allocInfo{};
+		allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+		allocInfo.allocationSize = memRequirements.size;
+		allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
+
+		if (vkAllocateMemory(device, &allocInfo, nullptr, &imageMemory) != VK_SUCCESS) {
+			throw WdeException("Failed to allocate image memory.", LoggerChannel::RENDERING_ENGINE);
+		}
+
+		if (vkBindImageMemory(device, image, imageMemory, 0) != VK_SUCCESS) {
+			throw WdeException("Failed to bind image memory.", LoggerChannel::RENDERING_ENGINE);
+		}
+	}
+
+	uint32_t CoreDevice::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+		VkPhysicalDeviceMemoryProperties memProperties;
+		vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
+		for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
+			if ((typeFilter & (1 << i)) &&
+			    (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
+				return i;
+			}
+		}
+
+		throw WdeException("Failed to find suitable memory type.", LoggerChannel::RENDERING_ENGINE);
 	}
 }

@@ -36,8 +36,9 @@ namespace wde::renderEngine {
 			 * Creates the render passes of the Renderer
 			 * @param device
 			 * @param swapChain
+			 * @param depthFormat
 			 */
-			void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat);
+			void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat, VkFormat depthFormat);
 
 
 			/**
@@ -63,6 +64,14 @@ namespace wde::renderEngine {
 			 */
 			void createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
 
+			/**
+			 * Creates the command pool (this->commandPool)
+			 * @param physicalDevice
+			 * @param device
+			 * @param surface
+			 */
+			void createCommandPool(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface);
+
 
 			// Getter and setters
 			size_t& getCurrentFrame() { return currentFrame; }
@@ -82,6 +91,7 @@ namespace wde::renderEngine {
 			 * @param swapChainExtent
 			 */
 			virtual void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
+
 
 
 		private:
@@ -116,9 +126,6 @@ namespace wde::renderEngine {
 
 
 			// Core functions
-			/** Creates the command pool (this->commandPool) */
-			void createCommandPool(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface);
-
 			/** Create semaphores for operations sync */
 			void createSyncObjects(VkDevice &device, std::vector<VkImage>& swapChainImages);
 	};
