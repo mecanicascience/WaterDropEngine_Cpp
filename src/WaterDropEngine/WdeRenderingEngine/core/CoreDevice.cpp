@@ -167,7 +167,7 @@ namespace wde::renderEngine {
 			queueCreateInfos.push_back(queueCreateInfo);
 		}
 
-		// Specify used device extensions (allow queues, rendering and optionally validation layers)
+		// Specify used device extensions (allow queues, renderer and optionally validation layers)
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
 
@@ -233,7 +233,7 @@ namespace wde::renderEngine {
 		bool extensionsSupported = checkDeviceExtensionSupport(physicalDeviceRef); // Required extensions supported
 
 		bool swapChainAdequate = false;
-		if (extensionsSupported) { // Supports at least one image rendering type
+		if (extensionsSupported) { // Supports at least one image renderer type
 			SwapChainSupportDetails swapChainSupport = CoreUtils::querySwapChainSupport(physicalDevice, instance.getSurface());
 			swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
 		}

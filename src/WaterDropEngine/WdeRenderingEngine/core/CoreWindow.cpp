@@ -56,12 +56,12 @@ namespace wde::renderEngine {
 		// We choose to use VK_PRESENT_MODE_MAILBOX_KHR (if buffer empty, use it for parallel computing) if available
 		for (const auto& availablePresentMode : availablePresentModes) {
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-				Logger::info("Chose MailBox rendering mode.", LoggerChannel::RENDERING_ENGINE);
+				Logger::info("Chose MailBox renderer mode.", LoggerChannel::RENDERING_ENGINE);
 				return availablePresentMode;
 			}
 		}
 
-		Logger::info("Chose V-Sync rendering mode.", LoggerChannel::RENDERING_ENGINE);
+		Logger::info("Chose V-Sync renderer mode.", LoggerChannel::RENDERING_ENGINE);
 		return VK_PRESENT_MODE_FIFO_KHR; // default
 	}
 

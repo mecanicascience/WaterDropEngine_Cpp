@@ -113,7 +113,7 @@ namespace wde::renderEngine {
 
 			/** Semaphores for when an image is available (id = frame id to be rendered) */
 			std::vector<VkSemaphore> imageAvailableSemaphores;
-			/** Semaphores for when an image is done rendering (id = frame id to be rendered) */
+			/** Semaphores for when an image is done renderer (id = frame id to be rendered) */
 			std::vector<VkSemaphore> renderFinishedSemaphores;
 			/** Fences for when GPU is ready to be called by CPU (we wait for fences to continue) */
 			std::vector<VkFence> inFlightFences;

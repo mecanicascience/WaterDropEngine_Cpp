@@ -20,7 +20,7 @@ namespace wde::renderEngine {
 		renderPassInfo.clearValueCount = clearValues.size();
 		renderPassInfo.pClearValues = clearValues.data();
 
-		// Start rendering pass
+		// Start renderer pass
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 
@@ -33,9 +33,9 @@ namespace wde::renderEngine {
 		// === Tell to draw the triangle ===
 		vkCmdDraw(commandBuffer,
 		          3, // 3 vertices to draw
-		          1, // instanced rendering (1 if not doing that)
+		          1, // instanced renderer (1 if not doing that)
 		          0, // Offset into vertex buffer
-		          0); // Offset into instanced rendering
+		          0); // Offset into instanced renderer
 
 
 		// === End render pass ===

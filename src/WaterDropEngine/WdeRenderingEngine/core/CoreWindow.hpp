@@ -58,21 +58,21 @@ namespace wde::renderEngine {
 
 			// Utils functions
 			/**
-			 * Choose the best swap surface format for rendering (color depth)
+			 * Choose the best swap surface format for renderer (color depth)
 			 * @param availableFormats
 			 * @return The best available format (preferably VK_FORMAT_B8G8R8A8_SRGB as a SRGB color space)
 			 */
 			static VkSurfaceFormatKHR chooseBestSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
 			/**
-			 * Choose the best presentation mode (frame rendering mode)
+			 * Choose the best presentation mode (frame renderer mode)
 			 * @param availablePresentModes
 			 * @return The best available presentation mode (preferably VK_PRESENT_MODE_MAILBOX_KHR)
 			 */
 			static VkPresentModeKHR chooseBestSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
 
 			/**
-			 * Choose the best swap extent mode (frame rendering resolution)
+			 * Choose the best swap extent mode (frame renderer resolution)
 			 * @param *window
 			 * @param capabilities
 			 * @return The best swap extent mode (preferably the same as the pixel width and height of the image)

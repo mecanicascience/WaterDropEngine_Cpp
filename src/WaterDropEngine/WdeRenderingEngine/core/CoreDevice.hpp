@@ -6,8 +6,8 @@
 #include "../../WdeCommon/WdeLogger/Logger.hpp"
 #include "../../WdeCommon/WdeError/WdeException.hpp"
 #include "CoreUtils.hpp"
-#include "../rendering/SwapChain.hpp"
-#include "../rendering/GraphicsPipeline.hpp"
+#include "../renderer/SwapChain.hpp"
+#include "../renderer/GraphicsPipeline.hpp"
 
 
 namespace wde::renderEngine {

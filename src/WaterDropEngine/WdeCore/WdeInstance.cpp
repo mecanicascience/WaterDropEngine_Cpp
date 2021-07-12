@@ -18,7 +18,7 @@ namespace wde {
 
 	WdeStatus WdeInstance::run() {
 		// Main game loop
-		while (!wdeRenderingEngine.shouldEnd()) { // Ask the rendering engine if we need to quit
+		while (!wdeRenderingEngine.shouldEnd()) { // Ask the renderer engine if we need to quit
 			Logger::debug("====== Updating new frame. ======", LoggerChannel::MAIN);
 
 			// Run

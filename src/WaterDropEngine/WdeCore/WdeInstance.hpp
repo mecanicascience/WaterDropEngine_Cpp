@@ -27,7 +27,7 @@ namespace wde {
 			renderEngine::WdeRenderEngine& getWdeRenderingEngine() { return wdeRenderingEngine; };
 
 	private:
-			/** The main rendering engine */
+			/** The main renderer engine */
 			renderEngine::WdeRenderEngine wdeRenderingEngine {};
 	};
 }

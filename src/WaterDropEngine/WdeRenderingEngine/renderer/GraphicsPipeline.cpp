@@ -29,7 +29,7 @@ namespace wde::renderEngine {
 		// Create vertex shader infos
 		VkPipelineShaderStageCreateInfo vertShaderStageInfo {};
 		vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Say at what part of the rendering shader will be used
+		vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT; // Say at what part of the renderer shader will be used
 		vertShaderStageInfo.module = vertShaderModule;
 		vertShaderStageInfo.pName = "main"; // entrypoint
 		vertShaderStageInfo.flags = 0;
@@ -157,7 +157,7 @@ namespace wde::renderEngine {
 		configInfo.viewport.minDepth = 0.0f;
 		configInfo.viewport.maxDepth = 1.0f;
 
-		// The viewport and rendering image zone should be the same
+		// The viewport and renderer image zone should be the same
 		configInfo.scissor.offset = {0, 0};
 		configInfo.scissor.extent = {width, height};
 

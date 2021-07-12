@@ -52,15 +52,15 @@ namespace wde::renderEngine {
 		colorAttachment.format = swapChainImageFormat;
 		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT; // should match the swap chain images
 
-		/* loadOp (what to do with data before rendering) :
+		/* loadOp (what to do with data before renderer) :
 		 * VK_ATTACHMENT_LOAD_OP_LOAD: Preserve the existing contents of the attachment
 		 * VK_ATTACHMENT_LOAD_OP_CLEAR: Clear the values to a constant at the start
 		 * VK_ATTACHMENT_LOAD_OP_DONT_CARE: Existing contents are undefined; we don't care about them */
 		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // Clear to black before new frame
 
-		/* storeOp (what to do after rendering) :
+		/* storeOp (what to do after renderer) :
 		 *  VK_ATTACHMENT_STORE_OP_STORE: Rendered contents will be stored in memory and can be read later
-		 *  VK_ATTACHMENT_STORE_OP_DONT_CARE: Contents of the framebuffer will be undefined after the rendering operation */
+		 *  VK_ATTACHMENT_STORE_OP_DONT_CARE: Contents of the framebuffer will be undefined after the renderer operation */
 		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // We need to store frame to see it
 
 		// Same but to stencil data
@@ -286,7 +286,7 @@ namespace wde::renderEngine {
 
 		VkFenceCreateInfo fenceInfo {};
 		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Fence are enabled in init (to launch the program on the first frame rendering)
+		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Fence are enabled in init (to launch the program on the first frame renderer)
 
 		// Create semaphores and connect them
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {

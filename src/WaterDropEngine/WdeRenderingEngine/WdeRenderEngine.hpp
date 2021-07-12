@@ -6,7 +6,7 @@
 #include "../WdeCommon/WdeError/WdeException.hpp"
 #include "core/CoreWindow.hpp"
 #include "core/CoreInstance.hpp"
-#include "rendering/pipelines/GraphicsDefaultPipeline.hpp"
+#include "renderer/pipelines/GraphicsDefaultPipeline.hpp"
 
 
 namespace wde::renderEngine {
@@ -17,11 +17,11 @@ namespace wde::renderEngine {
 			~WdeRenderEngine() = default;
 
 			// Body functions
-			/** Creates a new rendering engine instance */
+			/** Creates a new renderer engine instance */
 			WdeStatus initialize();
 			/** Called when a new tick on the gameLoop happend */
 			WdeStatus tick();
-			/** Cleans up the rendering engine instance */
+			/** Cleans up the renderer engine instance */
 			WdeStatus cleanUp();
 
 			/** @return true if the application must stop */
@@ -32,7 +32,7 @@ namespace wde::renderEngine {
 			/** @return the selected device */
 			CoreDevice& getSelectedDevice() { return instance.getSelectedDevice(); }
 			/**
-			 * Set the rendering graphics pipelines for a specified device
+			 * Set the renderer graphics pipelines for a specified device
 			 * @param device
 			 * @param graphicsPipeline
 			 */
