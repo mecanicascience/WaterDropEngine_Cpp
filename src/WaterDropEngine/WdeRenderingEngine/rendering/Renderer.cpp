@@ -146,7 +146,7 @@ namespace wde::renderEngine {
 		submitInfo.waitSemaphoreCount = 1;
 		submitInfo.pWaitSemaphores = waitSemaphores;
 
-		// Stage of the pipeline to wait for the semaphore (wait at writing to color attachment, can already start vertex shader and so on)
+		// Stage of the pipelines to wait for the semaphore (wait at writing to color attachment, can already start vertex shader and so on)
 		VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 		submitInfo.pWaitDstStageMask = waitStages;
 

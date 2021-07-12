@@ -3,9 +3,9 @@
 #include <string>
 #include <vulkan/vulkan_core.h>
 
-#include "../../../WdeCommon/WdeError/WdeException.hpp"
-#include "../../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
-#include "../renderer/Renderer.hpp"
+#include "../../WdeCommon/WdeError/WdeException.hpp"
+#include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
+#include "Renderer.hpp"
 
 namespace wde::renderEngine {
 	class SwapChain;
@@ -20,28 +20,20 @@ namespace wde::renderEngine {
 				: shaderVertLocation(shaderVertLocation), shaderFragLocation(shaderFragLocation), renderer() { };
 			virtual ~GraphicsPipeline() {}
 
-			/** Clean up the graphics pipeline */
+			/** Clean up the graphics pipelines */
 			void cleanUp();
 			void cleanUpPipeline(VkDevice &device);
 
 
 			/**
-			 * Creates the graphic pipeline
+			 * Creates the graphic pipelines
 			 * @param device
 			 * @param swapChain
 			 * @param swapChainExtent
 			 * @param renderPass
 			 */
-			virtual void createGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) = 0;
+			void createGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
 
-
-
-			/**
-			 * Creates the render passes of the Renderer
-			 * @param device
-			 * @param swapChain
-			 */
-			//void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat);
 
 
 			// Getters and setters
@@ -49,9 +41,7 @@ namespace wde::renderEngine {
 			Renderer& getRenderer() { return *renderer; }
 			VkRenderPass& getRenderPass() { return renderer->getRenderPass(); }
 
-			void setRenderer(Renderer &renderer) {
-				this->renderer = &renderer;
-			}
+			void setRenderer(Renderer &renderer) { this->renderer = &renderer; }
 
 
 			/**
@@ -68,33 +58,57 @@ namespace wde::renderEngine {
 
 
 		protected:
+			// The struct with pipelines config infos
+			struct PipelineConfigInfo {
+				VkViewport viewport;
+				VkRect2D scissor;
+				VkPipelineVertexInputStateCreateInfo vertexInputInfo;
+				VkPipelineViewportStateCreateInfo viewportInfo;
+				VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
+				VkPipelineRasterizationStateCreateInfo rasterizationInfo;
+				VkPipelineMultisampleStateCreateInfo multisampleInfo;
+				VkPipelineColorBlendAttachmentState colorBlendAttachment;
+				VkPipelineColorBlendStateCreateInfo colorBlendInfo;
+				VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+			};
+
+			// Core functions
+			/**
+			 * @param width The width of the window
+			 * @param height The height of the window
+			 * @return The corresponding pipelines config infos
+			 */
+			virtual PipelineConfigInfo getPipelineConfigInfo(uint32_t width, uint32_t height) = 0;
+
+			/**
+			 * @param width The width of the window
+			 * @param height The height of the window
+			 * @return The default pipelines config info
+			 */
+			static PipelineConfigInfo getDefaultPipelineConfigInfo(uint32_t width, uint32_t height);
+
+
+
+
+
+		private:
 			std::string shaderVertLocation = "undefined";
 			std::string shaderFragLocation = "undefined";
 
-			/** Pipeline layout to pass uniform values (dynamic state variables given to pipeline config) */
+			/** Pipeline layout to pass uniform values (dynamic state variables given to pipelines config) */
 			VkPipelineLayout pipelineLayout {};
-			/** The main created graphic pipeline */
+			/** The main created graphic pipelines */
 			VkPipeline graphicsPipeline {};
 
 
-			/** The attached renderer */
+			/** The attached renderers */
 			Renderer* renderer {};
 
-			/** True if the pipeline has not been yet destroyed */
+			/** True if the pipelines has not been yet destroyed */
 			bool pipelineDestroyed = true;
 
 
-
-			// Helper functions
-			/**
-			 * Creates the default graphics pipeline
-			 * @param device
-			 * @param swapChain
-			 * @param swapChainExtent
-			 * @param renderPass
-			 */
-			void createDefaultGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
-
+			// Core functions
 			/**
 			 * @param code The id of the image view buffer
 			 * @param device

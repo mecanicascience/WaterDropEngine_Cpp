@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Renderer.hpp"
+#include "../Renderer.hpp"
 
 namespace wde::renderEngine {
 	class DefaultRenderer : public Renderer {

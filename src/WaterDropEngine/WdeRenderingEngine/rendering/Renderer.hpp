@@ -3,9 +3,9 @@
 #include <vulkan/vulkan_core.h>
 #include <vector>
 
-#include "../../core/CoreUtils.hpp"
-#include "../../../WdeCommon/WdeError/WdeException.hpp"
-#include "../SwapChain.hpp"
+#include "../core/CoreUtils.hpp"
+#include "../../WdeCommon/WdeError/WdeException.hpp"
+#include "SwapChain.hpp"
 
 namespace wde::renderEngine {
 	class Renderer {
@@ -14,7 +14,7 @@ namespace wde::renderEngine {
 			Renderer() {}
 			virtual ~Renderer() {}
 
-			/** Clean up and destroy renderer */
+			/** Clean up and destroy renderers */
 			void cleanUp(VkDevice &device);
 			/** Clean up the command buffers */
 			void cleanUpCommandBuffers(VkDevice &device);

@@ -19,9 +19,9 @@ namespace wde::renderEngine {
 		vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
 
-		// === Binds to the graphics pipeline ===
+		// === Binds to the graphics pipelines ===
 		vkCmdBindPipeline(commandBuffer, // attached command buffers
-		                  VK_PIPELINE_BIND_POINT_GRAPHICS, // tell graphics or compute pipeline
+		                  VK_PIPELINE_BIND_POINT_GRAPHICS, // tell graphics or compute pipelines
 		                  graphicsPipeline);
 
 

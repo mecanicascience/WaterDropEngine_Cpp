@@ -7,7 +7,7 @@
 #include "../../WdeCommon/WdeError/WdeException.hpp"
 #include "CoreUtils.hpp"
 #include "../rendering/SwapChain.hpp"
-#include "../rendering/pipeline/GraphicsPipeline.hpp"
+#include "../rendering/GraphicsPipeline.hpp"
 
 
 namespace wde::renderEngine {
@@ -66,7 +66,7 @@ namespace wde::renderEngine {
 			GLFWwindow *window;
 			/** Reference to the device swapChain */
 			SwapChain swapchain {};
-			/** Reference to the binded graphics pipeline */
+			/** Reference to the binded graphics pipelines */
 			GraphicsPipeline* graphicsPipeline {};
 
 

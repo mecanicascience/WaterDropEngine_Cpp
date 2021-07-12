@@ -4,7 +4,7 @@
 #include "WdeCommon/WdeLogger/Logger.hpp"
 #include "WdeCommon/WdeError/WdeException.hpp"
 #include "WdeCore/WdeInstance.hpp"
-#include "WdeRenderingEngine/rendering/renderer/DefaultRenderer.hpp"
+#include "WdeRenderingEngine/rendering/renderers/DefaultRenderer.hpp"
 
 namespace wde {
 	class WaterDropEngine {

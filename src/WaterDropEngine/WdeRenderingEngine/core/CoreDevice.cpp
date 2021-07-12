@@ -22,7 +22,7 @@ namespace wde::renderEngine {
 		// Clean up the swapChain full system
 		cleanUpSwapChain();
 
-		// Clean up renderer
+		// Clean up renderers
 		graphicsPipeline->getRenderer().cleanUp(device);
 
 		// Destroy device
@@ -31,7 +31,7 @@ namespace wde::renderEngine {
 		// Delete pointers to window
 		window = nullptr;
 
-		// Delete reference to pipeline
+		// Delete reference to pipelines
 		graphicsPipeline->cleanUp();
 		graphicsPipeline = nullptr;
 	}
@@ -54,20 +54,20 @@ namespace wde::renderEngine {
 
 
 	void CoreDevice::setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer& renderer) {
-		// Initialize graphics pipeline
+		// Initialize graphics pipelines
 		this->graphicsPipeline = &graphicsPipelineRef;
 
 		// Create swap chain render passes
 		this->graphicsPipeline->setRenderer(renderer);
 		this->graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat());
 
-		// Create the graphics pipeline
+		// Create the graphics pipelines
 		this->graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), this->graphicsPipeline->getRenderPass());
 
 		// Create the frame buffers
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 
-		// Initialize graphics pipeline renderer
+		// Initialize graphics pipelines renderers
 		this->graphicsPipeline->getRenderer().initialize(physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 
@@ -92,7 +92,7 @@ namespace wde::renderEngine {
 		swapchain.recreateSwapChain(window, device, physicalDevice, instance.getSurface());
 		graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat());
 
-		// Create new pipeline
+		// Create new pipelines
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 		graphicsPipeline->getRenderer().createCommandBuffers(device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());

@@ -6,7 +6,7 @@
 #include "../WdeCommon/WdeError/WdeException.hpp"
 #include "core/CoreWindow.hpp"
 #include "core/CoreInstance.hpp"
-#include "rendering/pipeline/GraphicsDefaultPipeline.hpp"
+#include "rendering/pipelines/GraphicsDefaultPipeline.hpp"
 
 
 namespace wde::renderEngine {
@@ -32,7 +32,7 @@ namespace wde::renderEngine {
 			/** @return the selected device */
 			CoreDevice& getSelectedDevice() { return instance.getSelectedDevice(); }
 			/**
-			 * Set the rendering graphics pipeline for a specified device
+			 * Set the rendering graphics pipelines for a specified device
 			 * @param device
 			 * @param graphicsPipeline
 			 */
