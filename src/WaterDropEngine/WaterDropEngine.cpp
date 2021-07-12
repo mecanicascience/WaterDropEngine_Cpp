@@ -2,6 +2,15 @@
 
 
 namespace wde {
+	void WaterDropEngine::setupRenderEngine(renderEngine::GraphicsPipeline& graphicsPipeline, renderEngine::Renderer& renderer, std::vector<renderEngine::Model::Vertex>& vertices, std::vector<uint16_t>& indices) {
+		this->graphicsPipeline = &graphicsPipeline;
+		this->renderer = &renderer;
+		this->vertices = &vertices;
+		this->indices = &indices;
+	}
+
+
+
 	WdeStatus WaterDropEngine::initialize() {
 		try {
 			// Log level
@@ -15,26 +24,16 @@ namespace wde {
 			Logger::forceLog("======== Initializing program ========", LoggerChannel::MAIN);
 			if (instance.initialize(logLevel, activatedChannels) != WdeStatus::WDE_SUCCESS)
 				throw WdeException("Error initializing engine", LoggerChannel::MAIN);
+
+			// Setup render engine
 			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
 
 			// Load models
-			const std::vector<renderEngine::Model::Vertex> vertices = {
-					{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-					{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-					{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-					{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-			};
-			const std::vector<uint16_t> indices = {
-					0, 1, 2, 2, 3, 0
-			};
-
-			renderEngine::Model model {renderingEngine.getSelectedDevice().getDevice(), renderingEngine.getSelectedDevice().getPhysicalDevice(), vertices, indices};
+			renderEngine::Model model {renderingEngine.getSelectedDevice().getDevice(), renderingEngine.getSelectedDevice().getPhysicalDevice(), *vertices, *indices};
 			renderingEngine.getSelectedDevice().setModel(model);
 
 			// Set the default graphics pipelines
-			renderEngine::GraphicsDefaultPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
-			renderEngine::DefaultRenderer renderer {};
-			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), graphicsPipeline, renderer);
+			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), *graphicsPipeline, *renderer);
 
 			Logger::debug("======== Initialization done ========\n\n", LoggerChannel::MAIN);
 
