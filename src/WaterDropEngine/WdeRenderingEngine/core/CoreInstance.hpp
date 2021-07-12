@@ -22,7 +22,7 @@ namespace wde::renderEngine {
 			/** Create a Vulkan Instance (only 1/app) */
 			CoreInstance(CoreWindow &window) : window{window} {};
 			/** Destroy the Instance (only 1/app) */
-			~CoreInstance();
+			~CoreInstance() = default;
 
 
 			// Disables copy
@@ -35,6 +35,8 @@ namespace wde::renderEngine {
 			// Core functions
 			/** Initialize the Vulkan instance */
 			WdeStatus initialize(CoreWindow &window);
+			/** Clean up the Vulkan instance */
+			void cleanUp();
 
 
 			// Getters and setters

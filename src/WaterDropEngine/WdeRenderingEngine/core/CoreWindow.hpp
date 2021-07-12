@@ -23,7 +23,9 @@ namespace wde::renderEngine {
 			CoreWindow(int width, int height, std::string name) : width{width}, height{height}, windowName{std::move(name)} {};
 
 			/** Destruct the GLFW window (only 1/app) */
-			~CoreWindow();
+			~CoreWindow() = default;
+			/** Clean up the window */
+			void cleanUp();
 
 
 			// Disables copy

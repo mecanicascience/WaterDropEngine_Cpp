@@ -1,33 +1,20 @@
 #include "GraphicsPipeline.hpp"
 
 namespace wde::renderEngine {
-	void GraphicsPipeline::cleanUp(VkDevice &device) {
-		// Destroy render pass
-		vkDestroyRenderPass(device, renderPass, nullptr);
-
-		// Destroy pipeline if not destroyed
-		destroyPipeline(device);
-
-		// Clean Up renderer
-		renderer->cleanUp(device);
+	void GraphicsPipeline::cleanUp() {
+		// DeReference pointers
+		renderer = nullptr;
 	}
 
-
-
-	void GraphicsPipeline::destroyPipeline(VkDevice &device) {
-		if (pipelineDestroyed)
-			return;
-
+	void GraphicsPipeline::cleanUpPipeline(VkDevice &device) {
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-
-		pipelineDestroyed = true;
+		vkDestroyRenderPass(device, renderPass, nullptr);
 	}
+
 
 
 	void GraphicsPipeline::createDefaultGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
-		std::cout << shaderFragLocation;
-
 		auto vertShaderCode = WdeFileUtils::readFile(shaderVertLocation);
 		auto fragShaderCode = WdeFileUtils::readFile(shaderFragLocation);
 

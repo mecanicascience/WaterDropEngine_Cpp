@@ -5,7 +5,6 @@ namespace wde::renderEngine {
 		Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 
 		// Initialize the GLFW window
-		Logger::debug("Initializing GLFW window.", LoggerChannel::RENDERING_ENGINE);
 		window.initialize();
 
 		// Initialize the Vulkan instance, the surface, and the devices
@@ -27,7 +26,8 @@ namespace wde::renderEngine {
 
 	WdeStatus WdeRenderEngine::cleanUp() {
 		Logger::debug("== Cleaning up Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
-		// Nothing to do here (auto call to class destructor)
+		instance.cleanUp();
+		window.cleanUp();
 		Logger::debug("== Cleaning up Done ==", LoggerChannel::RENDERING_ENGINE);
 
 		return WdeStatus::WDE_SUCCESS;

@@ -21,9 +21,11 @@ namespace wde::renderEngine {
 			 */
 			CoreDevice(CoreInstance &instance, int deviceId, GLFWwindow *window) : instance{instance}, deviceId{deviceId}, window{window} {}
 			/** Destruct the device */
-			~CoreDevice();
+			~CoreDevice() = default;
 			/** Clean up the device */
 			void cleanUp();
+			/** Clean up the swapChain full system */
+			void cleanUpSwapChain();
 
 
 			// Core functions
@@ -65,7 +67,7 @@ namespace wde::renderEngine {
 			/** Reference to the device swapChain */
 			SwapChain swapchain {};
 			/** Reference to the binded graphics pipeline */
-			std::shared_ptr<GraphicsPipeline> graphicsPipeline {};
+			GraphicsPipeline* graphicsPipeline {};
 
 
 			/** Corresponding id of the device (used for initialization only) */

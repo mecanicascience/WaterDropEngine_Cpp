@@ -1,21 +1,6 @@
 #include "CoreInstance.hpp"
-#include "CoreWindow.hpp"
 
 namespace wde::renderEngine {
-	CoreInstance::~CoreInstance() {
-		for (CoreDevice &deviceC : devicesList) {
-			deviceC.cleanUp();
-		}
-
-		if (enableValidationLayers) {
-			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-		}
-
-		vkDestroySurfaceKHR(instance, surface, nullptr);
-		vkDestroyInstance(instance, nullptr);
-	}
-
-
 	// Core functions
 	WdeStatus CoreInstance::initialize(CoreWindow &windowCore) {
 		// Create a Vulkan instance
@@ -38,11 +23,27 @@ namespace wde::renderEngine {
 		return WdeStatus::WDE_SUCCESS;
 	}
 
+	void CoreInstance::cleanUp() {
+		for (CoreDevice &deviceC : devicesList) {
+			deviceC.cleanUp();
+		}
+
+		if (enableValidationLayers) {
+			DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+		}
+
+		vkDestroySurfaceKHR(instance, surface, nullptr);
+		vkDestroyInstance(instance, nullptr);
+	}
+
+
+
 
 
 
 	void CoreInstance::createVulkanInstance() {
 		// Check if required debug layers are all available
+		Logger::debug("Checking validation layer support.", LoggerChannel::RENDERING_ENGINE);
 		if (enableValidationLayers && !checkValidationLayerSupport()) {
 			throw WdeException("Validation layers requested, but not available.", LoggerChannel::RENDERING_ENGINE);
 		}
@@ -62,6 +63,7 @@ namespace wde::renderEngine {
 		createInfo.pApplicationInfo = &appInfo;
 
 		// Tell Vulkan that we use GLFW and others extensions
+		Logger::debug("Getting required extensions.", LoggerChannel::RENDERING_ENGINE);
 		auto extensions = getRequiredExtensions();
 		createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
 		createInfo.ppEnabledExtensionNames = extensions.data();
@@ -81,11 +83,13 @@ namespace wde::renderEngine {
 		}
 
 		// Create Vulkan instance
+		Logger::debug("Creating the Vulkan instance.", LoggerChannel::RENDERING_ENGINE);
 		if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
 			throw WdeException("Failed to create Vulkan instance.", LoggerChannel::RENDERING_ENGINE);
 		}
 
 		// Check if every required extension is available (avoid VK_ERROR_EXTENSION_NOT_PRESENT)
+		Logger::debug("Checking if every extension is available.", LoggerChannel::RENDERING_ENGINE);
 		hasRequiredExtensions();
 	}
 
@@ -115,7 +119,7 @@ namespace wde::renderEngine {
 
 		Logger::debug("Found " + std::to_string(deviceCount) + " GPU(s).", LoggerChannel::RENDERING_ENGINE);
 		if (deviceCount == 0)
-			throw WdeException("Failed to find GPUs with Vulkan support", LoggerChannel::RENDERING_ENGINE);
+			throw WdeException("Failed to find GPUs with Vulkan support.", LoggerChannel::RENDERING_ENGINE);
 
 
 		// Create devices

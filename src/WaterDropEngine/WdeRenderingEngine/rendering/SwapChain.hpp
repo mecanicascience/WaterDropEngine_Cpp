@@ -21,8 +21,11 @@ namespace wde::renderEngine {
 
 			/** Recreate the swap chain if swap chain no more compatible (like windows size changed) */
 			void recreateSwapChain(GLFWwindow *window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface);
-			/** CleanUp the swapChain */
-			void cleanUp(VkDevice &device);
+			/** CleanUp the frameBuffers */
+			void cleanUpFrameBuffers(VkDevice &device);
+			/** CleanUp the image views and the swapChain */
+			void cleanUpImageViewsAndSwapChain(VkDevice &device);
+
 
 			// Core functions
 			/** Initialize SwapChain linked to the device */

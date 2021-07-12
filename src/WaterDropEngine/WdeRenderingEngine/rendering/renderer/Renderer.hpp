@@ -12,8 +12,12 @@ namespace wde::renderEngine {
 		public:
 			// Constructors
 			Renderer() {}
-			~Renderer() {}
+			virtual ~Renderer() {}
+
+			/** Clean up and destroy renderer */
 			void cleanUp(VkDevice &device);
+			/** Clean up the command buffers */
+			void cleanUpCommandBuffers(VkDevice &device);
 
 			// Core functions
 			/**
@@ -50,16 +54,12 @@ namespace wde::renderEngine {
 			 */
 			void createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
 
-			/**
-			 * Empty the command buffers
-			 * @param &device
-			 */
-			void clearCommandBuffers(VkDevice &device);
 
 			// Getter and setters
 			size_t& getCurrentFrame() { return currentFrame; }
 			bool shouldRecreateSwapChain() { return shouldRecreateSwapChainBool; }
 			void setShouldRecreateSwapChain(bool val) { shouldRecreateSwapChainBool = val; }
+			std::vector<VkFence>& getImagesInFlight() { return imagesInFlight; }
 
 
 		protected:

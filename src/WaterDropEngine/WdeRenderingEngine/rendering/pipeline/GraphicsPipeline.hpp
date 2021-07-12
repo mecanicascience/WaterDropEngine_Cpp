@@ -18,15 +18,12 @@ namespace wde::renderEngine {
 			 */
 			GraphicsPipeline(std::string &shaderVertLocation, std::string &shaderFragLocation)
 				: shaderVertLocation(shaderVertLocation), shaderFragLocation(shaderFragLocation), renderer() { };
-			virtual ~GraphicsPipeline() = default;
-			void cleanUp(VkDevice &device);
+			virtual ~GraphicsPipeline() {}
 
+			/** Clean up the graphics pipeline */
+			void cleanUp();
+			void cleanUpPipeline(VkDevice &device);
 
-			/**
-			 * Destroy the pipeline
-			 * @param device
-			 */
-			void destroyPipeline(VkDevice &device);
 
 			/**
 			 * Creates the graphic pipeline
@@ -53,7 +50,7 @@ namespace wde::renderEngine {
 			VkRenderPass& getRenderPass() { return renderPass; }
 
 			void setRenderer(Renderer &renderer) {
-				this->renderer.reset(&renderer);
+				this->renderer = &renderer;
 			}
 
 
@@ -82,7 +79,7 @@ namespace wde::renderEngine {
 			VkRenderPass renderPass;
 
 			/** The attached renderer */
-			std::shared_ptr<Renderer> renderer {};
+			Renderer* renderer {};
 
 			/** True if the pipeline has not been yet destroyed */
 			bool pipelineDestroyed = true;

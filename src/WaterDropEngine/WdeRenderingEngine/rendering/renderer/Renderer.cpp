@@ -1,10 +1,19 @@
 #include "Renderer.hpp"
 
 namespace wde::renderEngine {
-	void Renderer::cleanUp(VkDevice &device) {
-		// Destroy command buffers
-		clearCommandBuffers(device);
+	void Renderer::initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
+							  VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages) {
+		// Create the command pool (allocate memory to buffers)
+		createCommandPool(physicalDevice, device, surface);
 
+		// Allocate command buffers
+		createCommandBuffers(device, graphicsPipeline, swapChainFrameBuffers, swapChainExtent, renderPass);
+
+		// Create semaphores for sync
+		createSyncObjects(device, swapChainImages);
+	}
+
+	void Renderer::cleanUp(VkDevice &device) {
 		// Destroy semaphores and fences
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -16,17 +25,8 @@ namespace wde::renderEngine {
 		vkDestroyCommandPool(device, commandPool, nullptr);
 	}
 
-
-	void Renderer::initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
-							  VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages) {
-		// Create the command pool (allocate memory to buffers)
-		createCommandPool(physicalDevice, device, surface);
-
-		// Allocate command buffers
-		createCommandBuffers(device, graphicsPipeline, swapChainFrameBuffers, swapChainExtent, renderPass);
-
-		// Create semaphores for sync
-		createSyncObjects(device, swapChainImages);
+	void Renderer::cleanUpCommandBuffers(VkDevice &device) {
+		vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 	}
 
 
@@ -122,13 +122,6 @@ namespace wde::renderEngine {
 
 		// Go to next frame
 		currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
-	}
-
-
-	void Renderer::clearCommandBuffers(VkDevice &device) {
-		// Command buffers not already empty
-		if (!commandBuffers.empty())
-			vkFreeCommandBuffers(device, commandPool, static_cast<uint32_t>(commandBuffers.size()), commandBuffers.data());
 	}
 
 

@@ -1,21 +1,6 @@
 #include "SwapChain.hpp"
 
 namespace wde::renderEngine {
-	void SwapChain::cleanUp(VkDevice &device) {
-		// Destroy frame buffers
-		for (auto framebuffer : swapChainFramebuffers) {
-			vkDestroyFramebuffer(device, framebuffer, nullptr);
-		}
-
-		// Destroy images views
-		for (auto imageView : swapChainImageViews) {
-			vkDestroyImageView(device, imageView, nullptr);
-		}
-
-		// Destroy swap chain
-		vkDestroySwapchainKHR(device, swapChain, nullptr);
-	}
-
 	void SwapChain::initialize(GLFWwindow *window, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, VkDevice &device) {
 		// Create swap chain (stores to this->swapChain and to this->swapChainImages)
 		Logger::debug("Creating Swap-Chain.", LoggerChannel::RENDERING_ENGINE);
@@ -26,13 +11,27 @@ namespace wde::renderEngine {
 		createImageViews(device);
 	}
 
+	void SwapChain::cleanUpFrameBuffers(VkDevice &device) {
+		for (auto framebuffer : swapChainFramebuffers) {
+			vkDestroyFramebuffer(device, framebuffer, nullptr);
+		}
+	}
+
+	void SwapChain::cleanUpImageViewsAndSwapChain(VkDevice &device) {
+		for (auto imageView : swapChainImageViews) {
+			vkDestroyImageView(device, imageView, nullptr);
+		}
+
+		vkDestroySwapchainKHR(device, swapChain, nullptr);
+	}
+
 
 
 	void SwapChain::recreateSwapChain(GLFWwindow *window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface) {
-		// Wait for device
-		vkDeviceWaitIdle(device);
-
+		// Create new swapChain
 		createSwapChain(window, physicalDevice, surface, device);
+
+		// Create new image views
 		createImageViews(device);
 	}
 

@@ -1,23 +1,30 @@
 #include "CoreWindow.hpp"
-#include "../../WdeCommon/WdeLogger/Logger.hpp"
 
 namespace wde::renderEngine {
-	CoreWindow::~CoreWindow() {
-		glfwDestroyWindow(window);
-		glfwTerminate(); // terminates GLFW library
-	}
-
-
 	void CoreWindow::initialize() {
+		// Initialize the window
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
 
+		// Create the window
 		window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
 
 		// Add callbacks
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 	}
+
+	void CoreWindow::cleanUp() {
+		// Terminate the GLFW window
+		glfwDestroyWindow(window);
+		glfwTerminate(); // terminates GLFW library
+
+		// Clears window pointer
+		window = nullptr;
+	}
+
+
+
 
 	void CoreWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 		// On new window size

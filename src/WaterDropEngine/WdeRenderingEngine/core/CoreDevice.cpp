@@ -2,18 +2,6 @@
 #include "CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	CoreDevice::~CoreDevice() = default;
-
-	// Called by external function
-	void CoreDevice::cleanUp() {
-		// Destroy swapChain
-		swapchain.cleanUp(device);
-
-		// Destroy device
-		vkDestroyDevice(device, nullptr);
-	}
-
-
 	bool CoreDevice::initialize() {
 		// Select the corresponding physical device and check if it supports Vulkan
 		Logger::debug("Selecting physical device.", LoggerChannel::RENDERING_ENGINE);
@@ -29,9 +17,45 @@ namespace wde::renderEngine {
 		return isThisDeviceSuitable;
 	}
 
+	// Called by external function
+	void CoreDevice::cleanUp() {
+		// Clean up the swapChain full system
+		cleanUpSwapChain();
+
+		// Clean up renderer
+		graphicsPipeline->getRenderer().cleanUp(device);
+
+		// Destroy device
+		vkDestroyDevice(device, nullptr);
+
+		// Delete pointers to window
+		window = nullptr;
+
+		// Delete reference to pipeline
+		graphicsPipeline->cleanUp();
+		graphicsPipeline = nullptr;
+	}
+
+	void CoreDevice::cleanUpSwapChain() {
+		// Clean Up Frame buffers
+		swapchain.cleanUpFrameBuffers(device);
+
+		// Clean up command buffers
+		graphicsPipeline->getRenderer().cleanUpCommandBuffers(device);
+
+		// Destroy Pipeline
+		graphicsPipeline->cleanUpPipeline(device);
+
+		// Destroy image views and swapChain
+		swapchain.cleanUpImageViewsAndSwapChain(device);
+	}
+
+
+
+
 	void CoreDevice::setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer& renderer) {
 		// Initialize graphics pipeline
-		this->graphicsPipeline.reset(&graphicsPipelineRef);
+		this->graphicsPipeline = &graphicsPipelineRef;
 
 		// Create swap chain render passes
 		this->graphicsPipeline->createRenderPasses(device, swapchain.getImageFormat());
@@ -62,7 +86,7 @@ namespace wde::renderEngine {
 		vkDeviceWaitIdle(device);
 
 		// Destroy last swap chain
-		swapchain.cleanUp(device);
+		cleanUpSwapChain();
 
 		// Create new swap chain
 		swapchain.recreateSwapChain(window, device, physicalDevice, instance.getSurface());
@@ -72,6 +96,9 @@ namespace wde::renderEngine {
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 		graphicsPipeline->getRenderer().createCommandBuffers(device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
+
+		// Resize the imagesInFlight size based on the new swapChainImages size
+		graphicsPipeline->getRenderer().getImagesInFlight().resize(swapchain.getSwapChainImages().size(), VK_NULL_HANDLE);
 	}
 
 
@@ -200,12 +227,14 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDevice::drawFrame(CoreWindow &window) {
+		// Recreate the swapChain if needed (like if a user resized the window)
 		if (graphicsPipeline->getRenderer().shouldRecreateSwapChain()) {
 			recreateSwapChain(window.getWindow());
 			graphicsPipeline->getRenderer().setShouldRecreateSwapChain(false);
 			return;
 		}
 
+		// Draw the next frame to the window
 		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
 	}
 }

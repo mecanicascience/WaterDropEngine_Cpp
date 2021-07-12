@@ -116,3 +116,4 @@ namespace wde {
 			static void outputError(const std::string &message);
 		};
 }
+
