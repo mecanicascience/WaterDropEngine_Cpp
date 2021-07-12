@@ -31,6 +31,15 @@ namespace wde::renderEngine {
 			void initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
 			                VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages);
 
+
+			/**
+			 * Creates the render passes of the Renderer
+			 * @param device
+			 * @param swapChain
+			 */
+			void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat);
+
+
 			/**
 			 * Draws the next frame
 			 * @param window
@@ -60,6 +69,7 @@ namespace wde::renderEngine {
 			bool shouldRecreateSwapChain() { return shouldRecreateSwapChainBool; }
 			void setShouldRecreateSwapChain(bool val) { shouldRecreateSwapChainBool = val; }
 			std::vector<VkFence>& getImagesInFlight() { return imagesInFlight; }
+			VkRenderPass& getRenderPass() { return renderPass; }
 
 
 		protected:
@@ -80,6 +90,9 @@ namespace wde::renderEngine {
 
 			/** Recreate a swap chain if this value is true */
 			bool shouldRecreateSwapChainBool;
+
+			/** The swap-chain render pass */
+			VkRenderPass renderPass;
 
 
 			/** Manage memory that is used to store buffers - command buffers allocated from them */

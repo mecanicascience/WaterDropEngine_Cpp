@@ -9,7 +9,7 @@ namespace wde::renderEngine {
 	void GraphicsPipeline::cleanUpPipeline(VkDevice &device) {
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-		vkDestroyRenderPass(device, renderPass, nullptr);
+		vkDestroyRenderPass(device, renderer->getRenderPass(), nullptr);
 	}
 
 
@@ -241,78 +241,6 @@ namespace wde::renderEngine {
 
 		// Say that pipeline created
 		pipelineDestroyed = false;
-	}
-
-	void GraphicsPipeline::createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat) {
-		// == Attachment description ==
-		VkAttachmentDescription colorAttachment {};
-		colorAttachment.format = swapChainImageFormat;
-		colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT; // should match the swap chain images
-
-		/* loadOp (what to do with data before rendering) :
-		 * VK_ATTACHMENT_LOAD_OP_LOAD: Preserve the existing contents of the attachment
-		 * VK_ATTACHMENT_LOAD_OP_CLEAR: Clear the values to a constant at the start
-		 * VK_ATTACHMENT_LOAD_OP_DONT_CARE: Existing contents are undefined; we don't care about them */
-		colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // Clear to black before new frame
-
-		/* storeOp (what to do after rendering) :
-		 *  VK_ATTACHMENT_STORE_OP_STORE: Rendered contents will be stored in memory and can be read later
-		 *  VK_ATTACHMENT_STORE_OP_DONT_CARE: Contents of the framebuffer will be undefined after the rendering operation */
-		colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE; // We need to store frame to see it
-
-		// Same but to stencil data
-		colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-		colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-
-		/* Different values based on what we want to do with the images :
-		 * VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL: Images used as color attachment
-		 * VK_IMAGE_LAYOUT_PRESENT_SRC_KHR: Images to be presented in the swap chain
-		 * VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL: Images to be used as destination for a memory copy operation */
-		colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED; // layout before render pass (VK_IMAGE_LAYOUT_UNDEFINED = don't care)
-		colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // layout after render pass to auto transition to (need to be ready for presentation)
-
-
-		// == Sub-passes ==
-		VkAttachmentReference colorAttachmentRef {};
-		colorAttachmentRef.attachment = 0; // Reference to attachment 0 in array (/!\ ref in shader as layout(location = 0) /!\)
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // layout after sub-render pass to auto transition to
-
-		VkSubpassDescription subpass {};
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS; // graphics subpass (not a compute one)
-
-		subpass.colorAttachmentCount = 1;
-		subpass.pColorAttachments = &colorAttachmentRef;
-		// subpass.pInputAttachments (read from a shader)
-		// subpass.pResolveAttachments (used for multisampling)
-		// subpass.pDepthStencilAttachment (for depth and stencil data)
-		// subpass.pPreserveAttachments (not used by subpass, but data must be preserved)
-
-
-		// == Render pass (reference subpasses to one render pass) ==
-		// Wait that we have acquired the image before passing it to the render pass
-		VkSubpassDependency dependency {};
-		dependency.srcSubpass = VK_SUBPASS_EXTERNAL; // indices of dependency subpass (external input)
-		dependency.dstSubpass = 0; // indices of dependent subpass (0 = index of our first subpass)
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; // Wait for swap chain to read from image before accessing
-		dependency.srcAccessMask = 0;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; // Wait for color attachment
-		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-		// Render pass struct
-		VkRenderPassCreateInfo renderPassInfo{};
-		renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-		renderPassInfo.attachmentCount = 1;
-		renderPassInfo.pAttachments = &colorAttachment;
-		renderPassInfo.subpassCount = 1;
-		renderPassInfo.pSubpasses = &subpass;
-
-		renderPassInfo.dependencyCount = 1;
-		renderPassInfo.pDependencies = &dependency;
-
-		// Create render pass
-		if (vkCreateRenderPass(device, &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
-			throw WdeException("Failed to create render pass.", LoggerChannel::RENDERING_ENGINE);
-		}
 	}
 
 

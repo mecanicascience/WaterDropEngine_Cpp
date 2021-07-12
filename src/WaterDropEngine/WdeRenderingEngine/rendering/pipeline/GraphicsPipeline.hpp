@@ -41,13 +41,13 @@ namespace wde::renderEngine {
 			 * @param device
 			 * @param swapChain
 			 */
-			void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat);
+			//void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat);
 
 
 			// Getters and setters
 			VkPipeline& getPipeline() { return graphicsPipeline; }
 			Renderer& getRenderer() { return *renderer; }
-			VkRenderPass& getRenderPass() { return renderPass; }
+			VkRenderPass& getRenderPass() { return renderer->getRenderPass(); }
 
 			void setRenderer(Renderer &renderer) {
 				this->renderer = &renderer;
@@ -75,8 +75,7 @@ namespace wde::renderEngine {
 			VkPipelineLayout pipelineLayout {};
 			/** The main created graphic pipeline */
 			VkPipeline graphicsPipeline {};
-			/** The swap-chain render pass */
-			VkRenderPass renderPass;
+
 
 			/** The attached renderer */
 			Renderer* renderer {};

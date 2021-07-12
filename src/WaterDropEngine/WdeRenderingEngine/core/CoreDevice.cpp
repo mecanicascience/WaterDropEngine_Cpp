@@ -58,7 +58,8 @@ namespace wde::renderEngine {
 		this->graphicsPipeline = &graphicsPipelineRef;
 
 		// Create swap chain render passes
-		this->graphicsPipeline->createRenderPasses(device, swapchain.getImageFormat());
+		this->graphicsPipeline->setRenderer(renderer);
+		this->graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat());
 
 		// Create the graphics pipeline
 		this->graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), this->graphicsPipeline->getRenderPass());
@@ -67,7 +68,6 @@ namespace wde::renderEngine {
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 
 		// Initialize graphics pipeline renderer
-		this->graphicsPipeline->setRenderer(renderer);
 		this->graphicsPipeline->getRenderer().initialize(physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 
@@ -90,7 +90,7 @@ namespace wde::renderEngine {
 
 		// Create new swap chain
 		swapchain.recreateSwapChain(window, device, physicalDevice, instance.getSurface());
-		graphicsPipeline->createRenderPasses(device, swapchain.getImageFormat());
+		graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat());
 
 		// Create new pipeline
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
