@@ -12,13 +12,14 @@ WdeStatus CoreApp::initialize() {
 	};
 	std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
 
-	// Choose Render Pipeline
-	wde::renderEngine::GraphicsDefaultPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
 
-	// Choose renderer
-	wde::renderEngine::DefaultRenderer renderer {};
 
-	// Setup render engine datas
+	// Choose Render Pipeline and renderer
+	CoreAppPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
+	CoreAppRenderer renderer {};
+
+
+	// Setup render engine data
 	engine.setupRenderEngine(graphicsPipeline, renderer, vertices, indices);
 
 

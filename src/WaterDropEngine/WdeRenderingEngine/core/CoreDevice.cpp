@@ -81,7 +81,9 @@ namespace wde::renderEngine {
 
 		// Initialize graphics pipelines renderers
 		Logger::debug("Creating the pipeline renderers.", LoggerChannel::RENDERING_ENGINE);
-		this->graphicsPipeline->getRenderer().initialize(*model, physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
+		this->graphicsPipeline->getRenderer().initialize(
+				*model, physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), graphicsPipeline->getPipelineLayout(),
+				swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 
 	void CoreDevice::drawFrame(CoreWindow &window) {
@@ -127,7 +129,9 @@ namespace wde::renderEngine {
 		graphicsPipeline->createGraphicsPipeline(device, swapchain.getSwapChain(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 		swapchain.createDepthResources(*this);
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
-		graphicsPipeline->getRenderer().createCommandBuffers(*model, device, graphicsPipeline->getPipeline(), swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
+		graphicsPipeline->getRenderer().createCommandBuffers(
+				*model, device, graphicsPipeline->getPipeline(), graphicsPipeline->getPipelineLayout(), swapchain.getSwapChainFrameBuffers(),
+				swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 
 		// Resize the imagesInFlight size based on the new swapChainImages size
 		graphicsPipeline->getRenderer().getImagesInFlight().resize(swapchain.getSwapChainImages().size(), VK_NULL_HANDLE);

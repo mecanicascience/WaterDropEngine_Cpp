@@ -1,12 +1,22 @@
 #pragma once
 
 #include "../src/WaterDropEngine/WaterDropEngine.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/renderer/pipelines/GraphicsDefaultPipeline.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/renderer/renderers/DefaultRenderer.hpp"
+#include "renderEngine/CoreAppPipeline.hpp"
+#include "renderEngine/CoreAppRenderer.hpp"
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
 
 using namespace wde;
 class CoreApp {
     public:
+		// Setup push constants
+		struct SimplePushConstantData {
+			glm::vec2 offset;
+			alignas(16) glm::vec3 color;
+		};
+
         /** Create a new application */
         CoreApp() = default;
 

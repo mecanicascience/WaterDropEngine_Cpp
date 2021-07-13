@@ -31,7 +31,7 @@ namespace wde::renderEngine {
 			 * @param graphicsPipeline
 			 */
 			void initialize(Model &model, VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
-			                VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages);
+			                VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages);
 
 
 			/**
@@ -60,11 +60,12 @@ namespace wde::renderEngine {
 			 * Initialize the command buffers (this->commandBuffers)
 			 * @param device
 			 * @param graphicsPipeline
+			 * @param pipelineLayout
 			 * @param swapChainFrameBuffers
 			 * @param swapChainExtent
 			 * @param renderPass
 			 */
-			void createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
+			void createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
 
 			/**
 			 * Creates the command pool (this->commandPool)
@@ -93,7 +94,7 @@ namespace wde::renderEngine {
 			 * @param swapChainFrameBuffer
 			 * @param swapChainExtent
 			 */
-			virtual void createRenderPasses(Model& model, VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
+			virtual void createRenderPasses(Model& model, VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
 
 
 

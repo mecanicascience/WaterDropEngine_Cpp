@@ -2,9 +2,9 @@
 
 namespace wde::renderEngine {
 	void Renderer::initialize(Model &model, VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
-							  VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages) {
+							  VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages) {
 		// Allocate command buffers
-		createCommandBuffers(model, device, graphicsPipeline, swapChainFrameBuffers, swapChainExtent, renderPass);
+		createCommandBuffers(model, device, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent, renderPass);
 
 		// Create semaphores for sync
 		createSyncObjects(device, swapChainImages);
@@ -233,7 +233,7 @@ namespace wde::renderEngine {
 		}
 	}
 
-	void Renderer::createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
+	void Renderer::createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
 		commandBuffers.resize(swapChainFrameBuffers.size());
 
 		// Create allocation infos about buffer allocation
@@ -263,7 +263,7 @@ namespace wde::renderEngine {
 
 
 			// Generate the render passes for this command buffer
-			createRenderPasses(model, commandBuffers[i], graphicsPipeline, renderPass, swapChainFrameBuffers[i], swapChainExtent);
+			createRenderPasses(model, commandBuffers[i], graphicsPipeline, pipelineLayout, renderPass, swapChainFrameBuffers[i], swapChainExtent);
 
 
 			// Test if success

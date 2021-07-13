@@ -41,6 +41,7 @@ namespace wde::renderEngine {
 			VkPipeline& getPipeline() { return graphicsPipeline; }
 			Renderer& getRenderer() { return *renderer; }
 			VkRenderPass& getRenderPass() { return renderer->getRenderPass(); }
+			VkPipelineLayout& getPipelineLayout() { return pipelineLayout; }
 
 			void setRenderer(Renderer &renderer) { this->renderer = &renderer; }
 
@@ -76,6 +77,10 @@ namespace wde::renderEngine {
 			// Core functions
 			/** @param configInfo The config infos to modify */
 			virtual void setPipelineConfigInfo(PipelineConfigInfo& configInfo) = 0;
+
+			/** @param configInfo The config info to modify */
+			virtual void setGraphicsPipelineLayout(VkPipelineLayoutCreateInfo& configInfo) = 0;
+
 
 			/** @param configInfo The config infos to modify */
 			static void setDefaultPipelineConfigInfo(PipelineConfigInfo& configInfo);

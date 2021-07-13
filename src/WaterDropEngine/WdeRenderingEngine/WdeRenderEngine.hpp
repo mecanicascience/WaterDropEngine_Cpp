@@ -6,7 +6,6 @@
 #include "../WdeCommon/WdeError/WdeException.hpp"
 #include "core/CoreWindow.hpp"
 #include "core/CoreInstance.hpp"
-#include "renderer/pipelines/GraphicsDefaultPipeline.hpp"
 
 
 namespace wde::renderEngine {

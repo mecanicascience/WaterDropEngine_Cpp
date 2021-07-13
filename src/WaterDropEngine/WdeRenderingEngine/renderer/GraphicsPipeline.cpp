@@ -17,6 +17,7 @@ namespace wde::renderEngine {
 	void GraphicsPipeline::createGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
 		// Get pipelines infos
 		PipelineConfigInfo configInfo {};
+		setDefaultPipelineConfigInfo(configInfo);
 		setPipelineConfigInfo(configInfo);
 
 		// Read shaders
@@ -69,6 +70,7 @@ namespace wde::renderEngine {
 		pipelineLayoutInfo.pSetLayouts = nullptr; // Optional
 		pipelineLayoutInfo.pushConstantRangeCount = 0; // Optional
 		pipelineLayoutInfo.pPushConstantRanges = nullptr; // Optional
+		setGraphicsPipelineLayout(pipelineLayoutInfo);
 
 		if (vkCreatePipelineLayout(device, &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
 			throw WdeException("Failed to create pipelines layout.", LoggerChannel::RENDERING_ENGINE);
