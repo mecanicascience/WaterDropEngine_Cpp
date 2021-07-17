@@ -2,11 +2,9 @@
 
 
 namespace wde {
-	void WaterDropEngine::setupRenderEngine(renderEngine::GraphicsPipeline& graphicsPipeline, renderEngine::Renderer& renderer, std::vector<renderEngine::Model::Vertex>& vertices, std::vector<uint16_t>& indices) {
+	void WaterDropEngine::setupRenderEngine(renderEngine::GraphicsPipeline& graphicsPipeline, renderEngine::Renderer& renderer) {
 		this->graphicsPipeline = &graphicsPipeline;
 		this->renderer = &renderer;
-		this->vertices = &vertices;
-		this->indices = &indices;
 	}
 
 
@@ -29,8 +27,8 @@ namespace wde {
 			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
 
 			// Load models
-			renderEngine::Model model {renderingEngine.getSelectedDevice().getDevice(), renderingEngine.getSelectedDevice().getPhysicalDevice(), *vertices, *indices};
-			renderingEngine.getSelectedDevice().setModel(model);
+			/*renderEngine::Model model {renderingEngine.getSelectedDevice().getDevice(), renderingEngine.getSelectedDevice().getPhysicalDevice()};
+			renderingEngine.getSelectedDevice().setModel(model);*/
 
 			// Set the default graphics pipelines
 			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), *graphicsPipeline, *renderer);

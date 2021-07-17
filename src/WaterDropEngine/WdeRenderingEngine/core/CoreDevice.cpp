@@ -19,15 +19,12 @@ namespace wde::renderEngine {
 
 	// Called by external function
 	void CoreDevice::cleanUp() {
-		// Clear model
-		model->cleanUp(device);
-		model = nullptr;
-
 		// Clean up the swapChain full system
 		cleanUpSwapChain();
 
 		// Clean up renderers
 		graphicsPipeline->getRenderer().cleanUp(device);
+		graphicsPipeline->getRenderer().cleanUpRenderer(device);
 
 		// Destroy device
 		vkDestroyDevice(device, nullptr);
@@ -61,6 +58,7 @@ namespace wde::renderEngine {
 		// Create swap chain render passes
 		Logger::debug("Creating swapchain render passes.", LoggerChannel::RENDERING_ENGINE);
 		this->graphicsPipeline->setRenderer(renderer);
+		this->graphicsPipeline->getRenderer().loadGameObjects(device, physicalDevice);
 		this->graphicsPipeline->getRenderer().createRenderPasses(device, swapchain.getImageFormat(), findDepthFormat());
 
 		// Create the graphics pipelines
@@ -82,7 +80,7 @@ namespace wde::renderEngine {
 		// Initialize graphics pipelines renderers
 		Logger::debug("Creating the pipeline renderers.", LoggerChannel::RENDERING_ENGINE);
 		this->graphicsPipeline->getRenderer().initialize(
-				*model, physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), graphicsPipeline->getPipelineLayout(),
+				physicalDevice, device, surface, this->graphicsPipeline->getRenderPass(), graphicsPipeline->getPipeline(), graphicsPipeline->getPipelineLayout(),
 				swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent(), swapchain.getSwapChainImages());
 	}
 
@@ -130,7 +128,7 @@ namespace wde::renderEngine {
 		swapchain.createDepthResources(*this);
 		swapchain.createFrameBuffers(graphicsPipeline->getRenderPass(), device);
 		graphicsPipeline->getRenderer().createCommandBuffers(
-				*model, device, graphicsPipeline->getPipeline(), graphicsPipeline->getPipelineLayout(), swapchain.getSwapChainFrameBuffers(),
+				device, graphicsPipeline->getPipeline(), graphicsPipeline->getPipelineLayout(), swapchain.getSwapChainFrameBuffers(),
 				swapchain.getSwapChainExtent(), graphicsPipeline->getRenderPass());
 
 		// Resize the imagesInFlight size based on the new swapChainImages size

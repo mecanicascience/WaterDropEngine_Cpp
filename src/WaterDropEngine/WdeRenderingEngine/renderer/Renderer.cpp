@@ -1,16 +1,16 @@
 #include "Renderer.hpp"
 
 namespace wde::renderEngine {
-	void Renderer::initialize(Model &model, VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
+	void Renderer::initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
 							  VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages) {
 		// Allocate command buffers
-		createCommandBuffers(model, device, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent, renderPass);
+		createCommandBuffers(device, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent, renderPass);
 
 		// Create semaphores for sync
 		createSyncObjects(device, swapChainImages);
 	}
 
-	void Renderer::cleanUp(VkDevice &device) {
+	void Renderer::cleanUpRenderer(VkDevice &device) {
 		// Destroy semaphores and fences
 		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 			vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -233,7 +233,7 @@ namespace wde::renderEngine {
 		}
 	}
 
-	void Renderer::createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
+	void Renderer::createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
 		commandBuffers.resize(swapChainFrameBuffers.size());
 
 		// Create allocation infos about buffer allocation
@@ -263,7 +263,7 @@ namespace wde::renderEngine {
 
 
 			// Generate the render passes for this command buffer
-			createRenderPasses(model, commandBuffers[i], graphicsPipeline, pipelineLayout, renderPass, swapChainFrameBuffers[i], swapChainExtent);
+			createRenderPasses(commandBuffers[i], graphicsPipeline, pipelineLayout, renderPass, swapChainFrameBuffers[i], swapChainExtent);
 
 
 			// Test if success

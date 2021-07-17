@@ -2,6 +2,11 @@
 
 // Input values from the vertex shader
 layout(location = 0) in vec3 fragColor;
+layout(push_constant) uniform Push {
+    mat2 transform;
+    vec2 offset;
+    vec3 color;
+} inPush;
 
 // Output to the swapchain value
 layout(location = 0) out vec4 outColor;

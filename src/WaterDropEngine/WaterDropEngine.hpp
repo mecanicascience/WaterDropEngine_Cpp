@@ -18,7 +18,7 @@ namespace wde {
 			 * @param vertices
 			 * @param indices
 			 */
-			void setupRenderEngine(renderEngine::GraphicsPipeline& graphicsPipeline, renderEngine::Renderer& renderer, std::vector<renderEngine::Model::Vertex>& vertices, std::vector<uint16_t>& indices);
+			void setupRenderEngine(renderEngine::GraphicsPipeline& graphicsPipeline, renderEngine::Renderer& renderer);
 
 			/** Initialize the program */
 			WdeStatus initialize();

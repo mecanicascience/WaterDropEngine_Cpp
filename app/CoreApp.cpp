@@ -3,27 +3,18 @@
 
 WdeStatus CoreApp::initialize() {
 	// == Setup render engine ==
-	// Create Model data
-	std::vector<wde::renderEngine::Model::Vertex> vertices = {
-			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-	};
-	std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
-
-
-
-	// Choose Render Pipeline and renderer
+	// Choose Render Pipeline
 	CoreAppPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
+
+	// Choose Custom Renderer
 	CoreAppRenderer renderer {};
 
 
 	// Setup render engine data
-	engine.setupRenderEngine(graphicsPipeline, renderer, vertices, indices);
+	engine.setupRenderEngine(graphicsPipeline, renderer);
 
 
-    // == Initialize engine ==
+	// == Initialize engine ==
 	WdeStatus status = engine.initialize();
-    return status;
+	return status;
 }

@@ -15,22 +15,23 @@ namespace wde::renderEngine {
 			Renderer() {}
 			virtual ~Renderer() {}
 
+			/** Clean up children */
+			virtual void cleanUp(VkDevice &device) = 0;
 			/** Clean up and destroy renderers */
-			void cleanUp(VkDevice &device);
+			void cleanUpRenderer(VkDevice &device);
 			/** Clean up the command buffers */
 			void cleanUpCommandBuffers(VkDevice &device);
 
 			// Core functions
 			/**
 			 * Initialize the Renderer
-			 * @param model
 			 * @param physicalDevice
 			 * @param device
 			 * @param swapChain
 			 * @param surface
 			 * @param graphicsPipeline
 			 */
-			void initialize(Model &model, VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
+			void initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
 			                VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages);
 
 
@@ -65,7 +66,7 @@ namespace wde::renderEngine {
 			 * @param swapChainExtent
 			 * @param renderPass
 			 */
-			void createCommandBuffers(Model &model, VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
+			void createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
 
 			/**
 			 * Creates the command pool (this->commandPool)
@@ -74,6 +75,8 @@ namespace wde::renderEngine {
 			 * @param surface
 			 */
 			void createCommandPool(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface);
+
+			virtual void loadGameObjects(VkDevice &device, VkPhysicalDevice &physicalDevice) = 0;
 
 
 			// Getter and setters
@@ -87,15 +90,13 @@ namespace wde::renderEngine {
 		protected:
 			/**
 			 * Create render passes
-			 * @param model
 			 * @param commandBuffer
 			 * @param graphicsPipeline
 			 * @param renderPass
 			 * @param swapChainFrameBuffer
 			 * @param swapChainExtent
 			 */
-			virtual void createRenderPasses(Model& model, VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
-
+			virtual void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
 
 
 		private:
