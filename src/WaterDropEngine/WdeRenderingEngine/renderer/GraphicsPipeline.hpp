@@ -56,7 +56,8 @@ namespace wde::renderEngine {
 			 * @param graphicsQueue
 			 * @param presentQueue
 			 */
-			void drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue);
+			void drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue,
+			               std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent);
 
 
 		protected:

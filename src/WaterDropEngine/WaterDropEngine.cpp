@@ -26,10 +26,6 @@ namespace wde {
 			// Setup render engine
 			renderEngine::WdeRenderEngine& renderingEngine = instance.getWdeRenderingEngine();
 
-			// Load models
-			/*renderEngine::Model model {renderingEngine.getSelectedDevice().getDevice(), renderingEngine.getSelectedDevice().getPhysicalDevice()};
-			renderingEngine.getSelectedDevice().setModel(model);*/
-
 			// Set the default graphics pipelines
 			renderingEngine.setDeviceGraphicsPipeline(renderingEngine.getSelectedDevice(), *graphicsPipeline, *renderer);
 

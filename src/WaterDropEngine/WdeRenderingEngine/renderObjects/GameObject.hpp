@@ -14,6 +14,7 @@ namespace wde::renderEngine {
 			const float s = glm::sin(rotation);
 			const float c = glm::cos(rotation);
 			glm::mat2 rotMatrix{{c, s}, {-s, c}};
+			Logger::info(std::to_string(rotation), LoggerChannel::RENDERING_ENGINE);
 
 			glm::mat2 scaleMat{{scale.x, .0f}, {.0f, scale.y}};
 			return rotMatrix * scaleMat;

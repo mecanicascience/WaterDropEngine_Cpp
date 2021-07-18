@@ -121,7 +121,8 @@ namespace wde::renderEngine {
 
 
 
-	void Renderer::drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue) {
+	void Renderer::drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue,
+	                         VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent) {
 		// Wait for the current frame being rendered at the current frame index
 		vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
@@ -145,6 +146,10 @@ namespace wde::renderEngine {
 			throw WdeException("Failed to acquire swap chain image.", LoggerChannel::RENDERING_ENGINE);
 		}
 
+		// Update command buffers
+		recordCommandBuffer(imageIndex, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent);
+
+
 		// Wait if a previous frame is using this image (i.e. there is its fence to wait on)
 		if (imagesInFlight[imageIndex] != VK_NULL_HANDLE)
 			vkWaitForFences(device, 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
@@ -153,7 +158,7 @@ namespace wde::renderEngine {
 
 
 
-		// == Execute to command buffer with image as attachment in framebuffer ==
+		// == Submits command buffers ==
 		VkSubmitInfo submitInfo {};
 		submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -226,7 +231,7 @@ namespace wde::renderEngine {
 		VkCommandPoolCreateInfo poolInfo {};
 		poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 		poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily; // Connect graphics queues and command buffer
-		poolInfo.flags = 0; // Optional
+		poolInfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT | VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT; // Optional
 
 		if (vkCreateCommandPool(device, &poolInfo, nullptr, &commandPool) != VK_SUCCESS) {
 			throw WdeException("Failed to create command pool.", LoggerChannel::RENDERING_ENGINE);
@@ -250,26 +255,30 @@ namespace wde::renderEngine {
 			throw WdeException("Failed to allocate command buffers.", LoggerChannel::RENDERING_ENGINE);
 		}
 
-		for (size_t i = 0; i < commandBuffers.size(); i++) {
-			// === Starts command buffer recording ===
-			VkCommandBufferBeginInfo beginInfo {};
-			beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			beginInfo.flags = 0; // Optional
-			beginInfo.pInheritanceInfo = nullptr; // Optional
+		for (int i = 0; i < commandBuffers.size(); i++) {
+			recordCommandBuffer(i, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent);
+		}
+	}
 
-			if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
-				throw WdeException("Failed to begin recording command buffer.", LoggerChannel::RENDERING_ENGINE);
-			}
+	void Renderer::recordCommandBuffer(int imageIndex, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent) {
+		// === Starts command buffer recording ===
+		VkCommandBufferBeginInfo beginInfo {};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		beginInfo.flags = 0; // Optional
+		beginInfo.pInheritanceInfo = nullptr; // Optional
+
+		if (vkBeginCommandBuffer(commandBuffers[imageIndex], &beginInfo) != VK_SUCCESS) {
+			throw WdeException("Failed to begin recording command buffer.", LoggerChannel::RENDERING_ENGINE);
+		}
 
 
-			// Generate the render passes for this command buffer
-			createRenderPasses(commandBuffers[i], graphicsPipeline, pipelineLayout, renderPass, swapChainFrameBuffers[i], swapChainExtent);
+		// Generate the render passes for this command buffer
+		createRenderPasses(commandBuffers[imageIndex], graphicsPipeline, pipelineLayout, renderPass, swapChainFrameBuffers[imageIndex], swapChainExtent);
 
 
-			// Test if success
-			if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
-				throw WdeException("Failed to record command buffer.", LoggerChannel::RENDERING_ENGINE);
-			}
+		// Test if success
+		if (vkEndCommandBuffer(commandBuffers[imageIndex]) != VK_SUCCESS) {
+			throw WdeException("Failed to record command buffer.", LoggerChannel::RENDERING_ENGINE);
 		}
 	}
 

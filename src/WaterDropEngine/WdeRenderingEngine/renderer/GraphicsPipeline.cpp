@@ -268,7 +268,7 @@ namespace wde::renderEngine {
 		return shaderModule;
 	}
 
-	void GraphicsPipeline::drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue) {
-		renderer->drawFrame(window, device, physicalDevice, surface, swapChain, graphicsQueue, presentQueue);
+	void GraphicsPipeline::drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent) {
+		renderer->drawFrame(window, device, physicalDevice, surface, swapChain, graphicsQueue, presentQueue, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent);
 	}
 }

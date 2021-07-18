@@ -54,7 +54,8 @@ namespace wde::renderEngine {
 			 * @param graphicsQueue
 			 * @param presentQueue
 			 */
-			void drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue);
+			void drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue,
+			               VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent);
 
 
 			/**
@@ -67,6 +68,8 @@ namespace wde::renderEngine {
 			 * @param renderPass
 			 */
 			void createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
+
+			void recordCommandBuffer(int imageIndex, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent);
 
 			/**
 			 * Creates the command pool (this->commandPool)

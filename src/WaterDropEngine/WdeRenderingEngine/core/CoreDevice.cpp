@@ -93,12 +93,12 @@ namespace wde::renderEngine {
 		}
 
 		// Draw the next frame to the window
-		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
+		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue, swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent());
 	}
 
 	void CoreDevice::forceDrawFrame(CoreWindow &window) {
 		// Draw the next frame to the window
-		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue);
+		graphicsPipeline->drawFrame(window, device, physicalDevice, instance.getSurface(), swapchain, graphicsQueue, presentQueue, swapchain.getSwapChainFrameBuffers(), swapchain.getSwapChainExtent());
 	}
 
 

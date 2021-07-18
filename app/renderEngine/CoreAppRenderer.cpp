@@ -39,7 +39,7 @@ void CoreAppRenderer::loadGameObjects(VkDevice &device, VkPhysicalDevice &physic
 
 void CoreAppRenderer::renderGameObjects(VkCommandBuffer &commandBuffer, VkPipelineLayout &pipelineLayout) {
 	for (auto& obj : gameObjects) {
-		obj.transform2d.rotation = glm::mod(obj.transform2d.rotation + 0.001f, glm::two_pi<float>());
+		obj.transform2d.rotation += 0.005;
 
 		CoreApp::SimplePushConstantData push {};
 		push.offset = obj.transform2d.translation;
