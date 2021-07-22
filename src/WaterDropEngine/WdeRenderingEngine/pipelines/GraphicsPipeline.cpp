@@ -1,12 +1,15 @@
+#include "../../../wde.hpp"
 #include "GraphicsPipeline.hpp"
 
 namespace wde::renderEngine {
 	void GraphicsPipeline::cleanUp() {
+		WDE_PROFILE_FUNCTION();
 		// DeReference pointers
 		renderer = nullptr;
 	}
 
 	void GraphicsPipeline::cleanUpPipeline(VkDevice &device) {
+		WDE_PROFILE_FUNCTION();
 		vkDestroyPipeline(device, graphicsPipeline, nullptr);
 		vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
 		vkDestroyRenderPass(device, renderer->getRenderPass(), nullptr);
@@ -15,6 +18,7 @@ namespace wde::renderEngine {
 
 
 	void GraphicsPipeline::createGraphicsPipeline(VkDevice &device, VkSwapchainKHR &swapChain, VkExtent2D &swapChainExtent, VkRenderPass &renderPass) {
+		WDE_PROFILE_FUNCTION();
 		// Get pipelines infos
 		PipelineConfigInfo configInfo {};
 		setDefaultPipelineConfigInfo(configInfo);
@@ -52,11 +56,11 @@ namespace wde::renderEngine {
 		// Shaders infos list
 		VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
-		// == Vertex input (select format of data passed to vertex shader and buffers from where to fetch) ==
+		// == Vertex input (select format of data passed to vertex shader and commands from where to fetch) ==
 		auto bindingDescriptions = Model::Vertex::getBindingDescriptions();
 		auto attributeDescriptions = Model::Vertex::getAttributeDescriptions();
 		configInfo.vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		// Vertex buffers
+		// Vertex commands
 		configInfo.vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
 		configInfo.vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
 		configInfo.vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
@@ -253,6 +257,7 @@ namespace wde::renderEngine {
 
 
 	VkShaderModule GraphicsPipeline::createShaderModule(const std::vector<char>& code, VkDevice &device) {
+		WDE_PROFILE_FUNCTION();
 		// Create infos
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -269,6 +274,7 @@ namespace wde::renderEngine {
 	}
 
 	void GraphicsPipeline::drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent) {
+		WDE_PROFILE_FUNCTION();
 		renderer->drawFrame(window, device, physicalDevice, surface, swapChain, graphicsQueue, presentQueue, graphicsPipeline, pipelineLayout, swapChainFrameBuffers, swapChainExtent);
 	}
 }

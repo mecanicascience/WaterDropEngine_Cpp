@@ -1,47 +1,47 @@
 #include "WdeRenderEngine.hpp"
 
 namespace wde::renderEngine {
-	WdeStatus WdeRenderEngine::initialize() {
+	// Core functions
+	void WdeRenderEngine::initialize() {
 		Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
-
 		// Initialize the GLFW window
-		window.initialize();
+		_window.initialize();
+		CoreInstance::get().setWindow(&_window);
 
 		// Initialize the Vulkan instance, the surface, and the devices
-		instance.initialize(window);
-
+		CoreInstance::get().initialize();
 		Logger::debug("== Initialization Done ==", LoggerChannel::RENDERING_ENGINE);
-
-		return WdeStatus::WDE_SUCCESS;
 	}
 
 
-	WdeStatus WdeRenderEngine::tick() {
-		glfwPollEvents(); // Poll GLFW events (user interactions, close event, ...)
-		return draw();
+	void WdeRenderEngine::tick() {
+		glfwPollEvents(); // Poll GLFW events (user interactions, close event, waiting during minimizing, ...)
+		draw(); // Draw next frame to the screen
 	}
 
-	WdeStatus WdeRenderEngine::draw() {
-		instance.getSelectedDevice().drawFrame(window);
-		return WdeStatus::WDE_SUCCESS;
-	}
-	WdeStatus WdeRenderEngine::forceDraw() {
-		instance.getSelectedDevice().forceDrawFrame(window);
-		return WdeStatus::WDE_SUCCESS;
+	void WdeRenderEngine::draw() {
+		// The selected device will draw the next frame to the screen
+		Logger::debug("Drawing frame to the screen.", LoggerChannel::RENDERING_ENGINE);
+		CoreInstance::get().getSelectedDevice().draw();
 	}
 
 
-	WdeStatus WdeRenderEngine::cleanUp() {
+	void WdeRenderEngine::cleanUp() {
 		Logger::debug("== Cleaning up Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
-		instance.cleanUp();
-		window.cleanUp();
+		CoreInstance::get().cleanUp();
+		_window.cleanUp();
 		Logger::debug("== Cleaning up Done ==", LoggerChannel::RENDERING_ENGINE);
-
-		return WdeStatus::WDE_SUCCESS;
 	}
 
 
+
+
+	// Helper functions
 	bool WdeRenderEngine::shouldEnd() {
-		return window.shouldClose();
+		return _window.shouldClose();
+	}
+
+	void WdeRenderEngine::waitForDevicesReady() {
+		CoreInstance::get().waitForDevicesReady();
 	}
 }

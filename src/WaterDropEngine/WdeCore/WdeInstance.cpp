@@ -5,10 +5,8 @@ namespace wde {
 		// Initialize Logging system
 		Logger::initialize(logLevel, logActivatedChannels);
 
-
 		// Initialize 3D Rendering engine
-		if (wdeRenderingEngine.initialize() != WdeStatus::WDE_SUCCESS)
-			throw WdeException("Failed to initialize the Rendering Engine.", LoggerChannel::MAIN);
+		wdeRenderingEngine.initialize();
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;
@@ -22,17 +20,13 @@ namespace wde {
 			Logger::debug("====== Updating new frame. ======", LoggerChannel::MAIN);
 
 			// Run
-			if (wdeRenderingEngine.tick() != WdeStatus::WDE_SUCCESS)
-				throw WdeException("Error while ticking for Rendering Engine.", LoggerChannel::MAIN);
+			wdeRenderingEngine.tick();
 
 			Logger::debug("====== End of tick. ======\n\n", LoggerChannel::MAIN);
 		}
 
 		// Wait until every used device are ready
-		auto devices = wdeRenderingEngine.getInstance().getDevices();
-		for (auto device : devices) {
-			vkDeviceWaitIdle(device.getDevice());
-		}
+		wdeRenderingEngine.waitForDevicesReady();
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;
@@ -42,8 +36,7 @@ namespace wde {
 
 	WdeStatus WdeInstance::cleanUp() {
 		// CleanUp 3D Rendering Engine
-		if (wdeRenderingEngine.cleanUp() != WdeStatus::WDE_SUCCESS)
-			throw WdeException("Failed to clean up the Rendering Engine.", LoggerChannel::MAIN);
+		wdeRenderingEngine.cleanUp();
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;

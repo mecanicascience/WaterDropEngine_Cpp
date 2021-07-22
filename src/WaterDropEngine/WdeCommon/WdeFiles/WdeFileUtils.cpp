@@ -14,7 +14,7 @@ namespace wde {
 		std::vector<char> buffer(fileSize);
 
 		file.seekg(0);
-		file.read(buffer.data(), fileSize);
+		file.read(buffer.data(), (std::streamsize) fileSize);
 
 		// Close and return
 		file.close();

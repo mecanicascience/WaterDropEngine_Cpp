@@ -16,14 +16,14 @@ namespace wde {
 			 * Describes the error with a verbose message
 			 * @return A formatted string
 			 */
-			virtual const char* what() const noexcept override {
+			const char* what() const noexcept override {
 				return _message.c_str();
 			}
 
 			/**
 			 * @return The corresponding error channel
 			 */
-			virtual const LoggerChannel getChannel() const noexcept {
+			const LoggerChannel getChannel() const noexcept {
 				return _channel;
 			}
 
@@ -47,7 +47,6 @@ namespace wde {
 		private:
 			/** The error message */
 			std::string _message;
-
 			/** The corresponding channel */
 			LoggerChannel _channel;
 	};

@@ -2,95 +2,48 @@
 #include "../WdeRenderEngine.hpp"
 
 namespace wde::renderEngine {
+	// Core functions
 	void CoreWindow::initialize() {
+		WDE_PROFILE_FUNCTION();
 		// Initialize the window
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
 
 		// Create the window
-		window = glfwCreateWindow(width, height, windowName.c_str(), nullptr, nullptr);
+		_window = glfwCreateWindow(_width, _height, _windowName.c_str(), nullptr, nullptr);
 
 		// Add callbacks
-		glfwSetWindowUserPointer(window, this);
-		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+		glfwSetWindowUserPointer(_window, this);
+		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 	}
 
 	void CoreWindow::cleanUp() {
+		WDE_PROFILE_FUNCTION();
 		// Terminate the GLFW window
-		glfwDestroyWindow(window);
+		glfwDestroyWindow(_window);
 		glfwTerminate(); // terminates GLFW library
 
 		// Clears window pointer
-		window = nullptr;
+		_window = nullptr;
 	}
 
 
 
-
+	// Helper functions
 	void CoreWindow::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 		// On new window size
 		auto appWindow = reinterpret_cast<CoreWindow*>(glfwGetWindowUserPointer(window));
 		appWindow->sendInfoShouldResizeFrameBuffer = true;
-		appWindow->width = width;
-		appWindow->height = height;
+		appWindow->_width = width;
+		appWindow->_height = height;
 
 		// Send resize infos
-		appWindow->renderEngine.draw();
-		// Draw the next frame to the window
-		appWindow->renderEngine.forceDraw();
+		appWindow->_renderEngine.draw();
 	}
 
 
 
 	bool CoreWindow::shouldClose() {
-		return glfwWindowShouldClose(window);
-	}
-
-
-
-	VkSurfaceFormatKHR CoreWindow::chooseBestSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
-		// We choose to use VK_FORMAT_B8G8R8A8_SRGB as a SRGB color space if available
-		for (const auto& availableFormat : availableFormats) {
-			if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-				return availableFormat;
-			}
-		}
-
-		return availableFormats[0]; // default
-	}
-
-	VkPresentModeKHR CoreWindow::chooseBestSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
-		// We choose to use VK_PRESENT_MODE_MAILBOX_KHR (if buffer empty, use it for parallel computing) if available
-		for (const auto& availablePresentMode : availablePresentModes) {
-			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-				Logger::info("Chose MailBox renderer mode.", LoggerChannel::RENDERING_ENGINE);
-				return availablePresentMode;
-			}
-		}
-
-		Logger::info("Chose V-Sync renderer mode.", LoggerChannel::RENDERING_ENGINE);
-		return VK_PRESENT_MODE_FIFO_KHR; // default
-	}
-
-	VkExtent2D CoreWindow::chooseBestSwapExtent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR& capabilities) {
-		if (capabilities.currentExtent.width != UINT32_MAX) {
-			// Targeted resolution is available
-			return capabilities.currentExtent;
-		}
-		else {
-			// Clamp the frame resolution to the image width and height
-			int widthLoc, heightLoc;
-			glfwGetFramebufferSize(window, &widthLoc, &heightLoc);
-
-			VkExtent2D actualExtent = {
-					static_cast<uint32_t>(widthLoc),
-					static_cast<uint32_t>(heightLoc)
-			};
-
-			actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-			actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-			return actualExtent;
-		}
+		return glfwWindowShouldClose(_window);
 	}
 }

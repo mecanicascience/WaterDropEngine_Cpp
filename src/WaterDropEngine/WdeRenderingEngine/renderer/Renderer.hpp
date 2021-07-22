@@ -1,140 +1,66 @@
 #pragma once
 
-#include <vulkan/vulkan_core.h>
-#include <vector>
-
-#include "../core/CoreUtils.hpp"
-#include "../../WdeCommon/WdeError/WdeException.hpp"
-#include "SwapChain.hpp"
-#include "../renderObjects/Model.hpp"
+#include "../../../wde.hpp"
+#include "passes/RenderPass.hpp"
+#include "managers/SubrenderersManager.hpp"
+#include "descriptors/RenderStage.hpp"
 
 namespace wde::renderEngine {
-	class Renderer {
+	/**
+	 * Class used to manage RenderPass objects to create a list of render pass.
+	 */
+	class Renderer : NonCopyable {
 		public:
-			// Constructors
-			Renderer() {}
-			virtual ~Renderer() {}
-
-			/** Clean up children */
-			virtual void cleanUp(VkDevice &device) = 0;
-			/** Clean up and destroy renderers */
-			void cleanUpRenderer(VkDevice &device);
-			/** Clean up the command buffers */
-			void cleanUpCommandBuffers(VkDevice &device);
-
 			// Core functions
 			/**
-			 * Initialize the Renderer
-			 * @param physicalDevice
-			 * @param device
-			 * @param swapChain
-			 * @param surface
-			 * @param graphicsPipeline
+			 * Create a new renderer.
+			 * Use this method to create the RenderPass objects to create a list of render pass.
 			 */
-			void initialize(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface, VkRenderPass &renderPass,
-			                VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, std::vector<VkImage>& swapChainImages);
+			Renderer() = default;
+			virtual ~Renderer() = default;
+
+			void cleanUp() {
+				// Clean up render passes
+				for (auto& pass : _renderPasses) {
+					pass->cleanUp();
+				}
+			};
+
+			/** Initialize the renderer */
+			virtual void initialize() = 0;
+			/** Starts the renderer */
+			virtual void start() = 0;
 
 
+			// Setters
 			/**
-			 * Creates the render passes of the Renderer
-			 * @param device
-			 * @param swapChain
-			 * @param depthFormat
-			 */
-			void createRenderPasses(VkDevice &device, VkFormat &swapChainImageFormat, VkFormat depthFormat);
-
-
-			/**
-			 * Draws the next frame
-			 * @param window
-			 * @param device
-			 * @param physicalDevice
-			 * @param surface
-			 * @param swapChain
-			 * @param graphicsQueue
-			 * @param presentQueue
-			 */
-			void drawFrame(CoreWindow &window, VkDevice &device, VkPhysicalDevice &physicalDevice, VkSurfaceKHR &surface, SwapChain &swapChain, VkQueue &graphicsQueue, VkQueue &presentQueue,
-			               VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent);
-
-
-			/**
-			 * Initialize the command buffers (this->commandBuffers)
-			 * @param device
-			 * @param graphicsPipeline
-			 * @param pipelineLayout
-			 * @param swapChainFrameBuffers
-			 * @param swapChainExtent
+			 * Add a render pass to the renderer list
 			 * @param renderPass
 			 */
-			void createCommandBuffers(VkDevice &device, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent, VkRenderPass &renderPass);
-
-			void recordCommandBuffer(int imageIndex, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, std::vector<VkFramebuffer> &swapChainFrameBuffers, VkExtent2D &swapChainExtent);
-
+			void addRenderPass(std::unique_ptr<RenderPass> &&renderPass) {
+				_renderPasses.emplace_back(std::move(renderPass));
+			}
 			/**
-			 * Creates the command pool (this->commandPool)
-			 * @param physicalDevice
-			 * @param device
-			 * @param surface
+			 * Adds a Sub-render
+			 * @tparam T The Sub-render type
+			 * @param renderStage The Sub-render stage { render pass ID, sub-passID }
+			 * @tparam Args The constructor arg types
+			 * @param args The constructor arguments
 			 */
-			void createCommandPool(VkPhysicalDevice &physicalDevice, VkDevice &device, VkSurfaceKHR &surface);
+			template<typename T, typename... Args>
+			T *addSubrenderer(const RenderStage &renderStage, Args &&...args) {
+				return _subrenderersManager.add<T>(renderStage, std::make_unique<T>(renderStage, std::forward<Args>(args)...));
+			}
 
-			virtual void loadGameObjects(VkDevice &device, VkPhysicalDevice &physicalDevice) = 0;
-
-
-			// Getter and setters
-			size_t& getCurrentFrame() { return currentFrame; }
-			bool shouldRecreateSwapChain() { return shouldRecreateSwapChainBool; }
-			void setShouldRecreateSwapChain(bool val) { shouldRecreateSwapChainBool = val; }
-			std::vector<VkFence>& getImagesInFlight() { return imagesInFlight; }
-			VkRenderPass& getRenderPass() { return renderPass; }
-
-
-		protected:
-			/**
-			 * Create render passes
-			 * @param commandBuffer
-			 * @param graphicsPipeline
-			 * @param renderPass
-			 * @param swapChainFrameBuffer
-			 * @param swapChainExtent
-			 */
-			virtual void createRenderPasses(VkCommandBuffer &commandBuffer, VkPipeline &graphicsPipeline, VkPipelineLayout &pipelineLayout, VkRenderPass &renderPass, VkFramebuffer &swapChainFrameBuffer, VkExtent2D &swapChainExtent) = 0;
+			// Getters
+			std::vector<std::unique_ptr<RenderPass>>& getRenderPasses() { return _renderPasses; }
+			SubrenderersManager& getSubRenderersManager() { return _subrenderersManager; }
 
 
 		private:
-			/** Max frames count that can be processed at the same time */
-			const int MAX_FRAMES_IN_FLIGHT = 2;
-
-			/** Recreate a swap chain if this value is true */
-			bool shouldRecreateSwapChainBool;
-
-			/** The swap-chain render pass */
-			VkRenderPass renderPass;
-
-
-			/** Manage memory that is used to store buffers - command buffers allocated from them */
-			VkCommandPool commandPool;
-			/** The command buffers (one for each VkFrameBuffer - auto submits to command queues for processing) */
-			std::vector<VkCommandBuffer> commandBuffers;
-
-
-			/** Semaphores for when an image is available (id = frame id to be rendered) */
-			std::vector<VkSemaphore> imageAvailableSemaphores;
-			/** Semaphores for when an image is done renderer (id = frame id to be rendered) */
-			std::vector<VkSemaphore> renderFinishedSemaphores;
-			/** Fences for when GPU is ready to be called by CPU (we wait for fences to continue) */
-			std::vector<VkFence> inFlightFences;
-			/** Fences for which swap chain images are already being processed */
-			std::vector<VkFence> imagesInFlight;
-
-			/** The current frame for the semaphores to use right pair */
-			size_t currentFrame = 0;
-
-
-
-			// Core functions
-			/** Create semaphores for operations sync */
-			void createSyncObjects(VkDevice &device, std::vector<VkImage>& swapChainImages);
+			/** The list of every render passes */
+			std::vector<std::unique_ptr<RenderPass>> _renderPasses;
+			/** The sub-renderers manager class */
+			SubrenderersManager _subrenderersManager {};
 	};
 }

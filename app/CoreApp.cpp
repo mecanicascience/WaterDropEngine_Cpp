@@ -2,19 +2,23 @@
 
 
 WdeStatus CoreApp::initialize() {
-	// == Setup render engine ==
-	// Choose Render Pipeline
-	CoreAppPipeline graphicsPipeline {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"};
-
-	// Choose Custom Renderer
-	CoreAppRenderer renderer {};
-
-
-	// Setup render engine data
-	engine.setupRenderEngine(graphicsPipeline, renderer);
-
-
 	// == Initialize engine ==
-	WdeStatus status = engine.initialize();
-	return status;
+	// Create rendering engine
+	WaterDropEngine engine {};
+
+	// Set renderer
+	renderEngine::CoreInstance::get().setRenderer(std::make_unique<CoreAppRenderer>());
+
+	// Initialize main engine
+	WdeStatus statusInit = engine.initialize();
+	if (statusInit != WdeStatus::WDE_SUCCESS)
+		return statusInit;
+
+
+	// == Run engine ==
+	WdeStatus statusRun = engine.run();
+	if (statusRun != WdeStatus::WDE_SUCCESS)
+		return statusRun;
+
+	return WdeStatus::WDE_SUCCESS;
 }

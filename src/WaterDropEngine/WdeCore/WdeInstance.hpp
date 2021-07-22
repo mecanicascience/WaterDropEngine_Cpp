@@ -1,14 +1,14 @@
 #pragma once
 
-#include "../WdeCommon/WdeError/WdeStatus.hpp"
+#include "../../wde.hpp"
 #include "../WdeRenderingEngine/WdeRenderEngine.hpp"
 
 namespace wde {
-	class WdeInstance {
+	/**
+	 * A unique WaterDropEngine instance. This class will initialize every core engines.
+	 */
+	class WdeInstance : NonCopyable {
 		public:
-			WdeInstance() = default;
-			~WdeInstance() = default;
-
 			/**
 			 * Initialize the WdeInstance and all of its important different class components
 			 * @param logLevel The level of the displayed console log
@@ -22,9 +22,6 @@ namespace wde {
 			/** CleanUp the WdeInstance and all of its important different class components */
 			WdeStatus cleanUp();
 
-
-			// Getters and setters
-			renderEngine::WdeRenderEngine& getWdeRenderingEngine() { return wdeRenderingEngine; };
 
 	private:
 			/** The main renderer engine */

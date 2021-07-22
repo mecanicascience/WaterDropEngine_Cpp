@@ -1,147 +1,85 @@
 #pragma once
 
 #include <vulkan/vulkan_core.h>
-#include <set>
 
-#include "../../WdeCommon/WdeLogger/Logger.hpp"
-#include "../../WdeCommon/WdeError/WdeException.hpp"
-#include "CoreUtils.hpp"
-#include "../renderer/SwapChain.hpp"
-#include "../renderer/GraphicsPipeline.hpp"
-#include "../utils/RenderingUtils.hpp"
-
+#include "../../../wde.hpp"
+#include "CoreWindow.hpp"
+#include "CoreDeviceHelper.hpp"
+#include "../renderer/passes/SwapChain.hpp"
+#include "../renderer/descriptors/RenderStage.hpp"
+#include "../renderer/passes/RenderPass.hpp"
 
 namespace wde::renderEngine {
-	class CoreInstance;
-	class CoreDevice {
+	/**
+	 * A unique instance of a corresponding physical device on the machine
+	 */
+	class CoreDevice : NonCopyable {
 		public:
-			/**
-			 * Creates a new device
-			 * @param instance A reference of the Vulkan instance
-			 * @param deviceId The id of the device in the listDevice() array
-			 */
-			CoreDevice(CoreInstance &instance, int deviceId, GLFWwindow *window) : instance{instance}, deviceId{deviceId}, window{window} {}
-			/** Destruct the device */
-			~CoreDevice() = default;
-			/** Clean up the device */
-			void cleanUp();
-			/** Clean up the swapChain full system */
-			void cleanUpSwapChain();
+			CoreDevice(int deviceID, CoreWindow &window, VkInstance &instance, VkSurfaceKHR &surface)
+				: _deviceID{deviceID}, _window{window}, _instance{instance}, _surface{surface} {};
 
 
 			// Core functions
 			/** Initialize the device */
-			bool initialize();
-
-			/**
-			 * Draw frame to the screen
-			 * @param window
-			 */
-			 void drawFrame(CoreWindow &window);
-
-			/**
-			* Force the drawing of the next frame to the screen
-			* @param window
-			*/
-			void forceDrawFrame(CoreWindow &window);
-
-
-			/**
-			 * Recreate the swap chain when needed
-			 * @param window A reference to the GLFW Window
-			 */
-			void recreateSwapChain(GLFWwindow *window);
-
-
-			// Utils
-			/**
-			* @param candidates
-			* @param tiling
-			* @param features
-			* @return The perfect candidat between a set of choice
-			*/
-			VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-			/** Find the compatible depth format */
-			VkFormat findDepthFormat();
-
-			/**
-			* Create an image based on the provided infos
-			* @param imageInfo
-			* @param properties
-			* @param image
-			* @param imageMemory
-			*/
-			void createImageWithInfo(const VkImageCreateInfo &imageInfo, VkMemoryPropertyFlags properties, VkImage &image, VkDeviceMemory &imageMemory);
+			void initialize();
+			/** Draws the next frame to the screen */
+			void draw();
+			/** Cleanup the device */
+			void cleanUp();
 
 
 			// Getters and setters
-			VkPhysicalDevice& getPhysicalDevice() { return physicalDevice; }
-			VkDevice& getDevice() { return device; };
-			VkQueue& getGraphicsQueue() { return graphicsQueue; }
-			VkQueue& getPresentQueue() { return presentQueue; }
-			int getDeviceID() { return deviceId; }
+			VkPhysicalDevice& getPhysicalDevice() { return _physicalDevice; }
+			VkDevice& getDevice() { return _device; }
+			VkQueue& getGraphicsQueue() { return _graphicsQueue; }
+			VkQueue& getPresentQueue() { return _presentQueue; }
+			SwapChain& getSwapChain() { return _swapchain; }
 
-			void setModel(Model& model) { this->model = &model; }
-			void setGraphicsPipeline(VkSurfaceKHR surface, GraphicsPipeline& graphicsPipelineRef, Renderer &renderer);
+
+			// Helpers
+			/** @return true is the device supports every required instructions */
+			bool isDeviceSuitable() { return CoreDeviceHelper::isDeviceSuitable(_physicalDevice, _deviceExtensions); };
+
+			/**
+			 * Starts a new render pass
+			 * @param renderPass The corresponding render pass
+			 * @return false If the render pass is out of date
+			 */
+			bool startRenderPass(RenderPass &renderPass);
+			/** Ends the given render pass */
+			void endRenderPass(RenderPass &renderPass);
 
 
 
 		private:
+			// References
+			CoreWindow& _window;
+			/** The Vulkan unique instance */
+			VkInstance& _instance;
+			/** The Vulkan unique surface */
+			VkSurfaceKHR& _surface;
+
+			// WDE values
+			/** The ID of the device */
+			int _deviceID = 0;
 			/** Enabled device extensions (VK_KHR_SWAPCHAIN_EXTENSION_NAME = can GPU displays images) */
-			const std::vector<const char *> deviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-
-			/** Reference to the CoreInstance instance */
-			CoreInstance &instance;
-			/** Reference to the GLFW window */
-			GLFWwindow *window = nullptr;
-			/** Reference to the device swapChain */
-			SwapChain swapchain {};
-			/** Reference to the binded graphics pipelines */
-			GraphicsPipeline* graphicsPipeline {};
+			const std::vector<const char *> _deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
 
 
-			/** Corresponding id of the device (used for initialization only) */
-			int deviceId;
-			/** True if this device is a suitable Vulkan device */
-			bool isThisDeviceSuitable = false;
-
+			// Device Vulkan values
 			/** The corresponding physical device */
-			VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+			VkPhysicalDevice _physicalDevice = nullptr;
 			/** The corresponding logical device */
-			VkDevice device;
-			/** Model reference */
-			Model *model = nullptr;
+			VkDevice _device = nullptr;
+
+			/** The swap chain */
+			SwapChain _swapchain {};
 
 
 			// Queues (VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT)
 			/** Graphics operations queue of the device (contains drawing points, lines, triangles) */
-			VkQueue graphicsQueue;
+			VkQueue _graphicsQueue;
 			/** Graphics presentation queue of the device (can present infos to the GPU) */
-			VkQueue presentQueue;
-
-
-
-			// Core functions
-			/** Select the corresponding physical device */
-			void selectPhysicalDevice();
-
-			/** Setup the logical device to interact with the physical device */
-			void createLogicalDevice();
-
-
-
-			// Helper functions
-			/**
-			 * Check if a physical device supports everything needed
-			 * @param physicalDevice
-			 * @return true if everything is supported
-			 */
-			bool isDeviceSuitable(VkPhysicalDevice physicalDevice);
-
-			/**
-			 * @param device
-			 * @return Return true if the device support the required extensions
-			 */
-			bool checkDeviceExtensionSupport(VkPhysicalDevice device);
+			VkQueue _presentQueue;
 	};
 }

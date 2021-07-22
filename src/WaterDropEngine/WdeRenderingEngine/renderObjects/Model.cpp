@@ -2,18 +2,18 @@
 
 namespace wde::renderEngine {
 	Model::Model(VkDevice &device, VkPhysicalDevice &physicalDevice, const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices) {
-		// Create buffers
-		Logger::debug("Creating vertex and index buffers.", LoggerChannel::RENDERING_ENGINE);
+		// Create commands
+		Logger::debug("Creating vertex and index commands.", LoggerChannel::RENDERING_ENGINE);
 		createVertexBuffers(device, physicalDevice, vertices);
 		createIndexBuffers(device, physicalDevice, indices);
 	}
 
 	void Model::cleanUp(VkDevice &device) {
-		// Destroy vertex buffers
+		// Destroy vertex commands
 		vkDestroyBuffer(device, vertexBuffer, nullptr);
 		vkFreeMemory(device, vertexBufferMemory, nullptr);
 
-		// Destroy index buffers
+		// Destroy index commands
 		vkDestroyBuffer(device, indexBuffer, nullptr);
 		vkFreeMemory(device, indexBufferMemory, nullptr);
 	}
@@ -67,7 +67,7 @@ namespace wde::renderEngine {
 		VkDeviceSize offsets[] = {0};
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
 
-		// Bind index buffers into the commandBuffer with index of offsets[]
+		// Bind index commands into the commandBuffer with index of offsets[]
 		vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16); // VK_INDEX_TYPE_UINT16 or VK_INDEX_TYPE_UINT32
 	}
 

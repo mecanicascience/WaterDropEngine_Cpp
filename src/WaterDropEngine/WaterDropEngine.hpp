@@ -1,34 +1,20 @@
 #pragma once
 
-#include "WdeCommon/WdeError/WdeStatus.hpp"
-#include "WdeCommon/WdeLogger/Logger.hpp"
-#include "WdeCommon/WdeError/WdeException.hpp"
+#include "../wde.hpp"
 #include "WdeCore/WdeInstance.hpp"
 
 namespace wde {
-	class WaterDropEngine {
+	class WaterDropEngine : NonCopyable {
 		public:
-			WaterDropEngine() = default;
-			~WaterDropEngine() = default;
-
-			/**
-			 * Setup the rendering engine
-			 * @param graphicsPipeline
-			 * @param renderer
-			 * @param vertices
-			 * @param indices
-			 */
-			void setupRenderEngine(renderEngine::GraphicsPipeline& graphicsPipeline, renderEngine::Renderer& renderer);
-
+			/** Creates the engine */
+			WaterDropEngine();
 			/** Initialize the program */
 			WdeStatus initialize();
-
+			/** Runs the program */
+			WdeStatus run();
 
 		private:
-			// RenderingEngine
-			renderEngine::GraphicsPipeline* graphicsPipeline = nullptr;
-			renderEngine::Renderer* renderer = nullptr;
-			std::vector<renderEngine::Model::Vertex>* vertices = nullptr;
-			std::vector<uint16_t>* indices = nullptr;
+			/** The WaterDropInstance */
+			std::unique_ptr<WdeInstance> _instance;
 	};
 }

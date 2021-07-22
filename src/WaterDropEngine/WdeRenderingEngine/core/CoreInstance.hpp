@@ -5,102 +5,142 @@
 #include <GLFW/glfw3.h>
 #include <unordered_set>
 #include <set>
+#include <map>
 
-#include "../../WdeCommon/WdeError/WdeStatus.hpp"
-#include "../../WdeCommon/WdeError/WdeException.hpp"
-#include "../../WdeCommon/WdeUtils/Constants.hpp"
-#include "../../WdeCommon/WdeLogger/Logger.hpp"
+#include "../../../wde.hpp"
 #include "CoreDevice.hpp"
-
+#include "../renderer/Renderer.hpp"
+#include "../commands/CommandBuffer.hpp"
+#include "../commands/CommandPool.hpp"
 
 namespace wde::renderEngine {
 	class CoreWindow;
 
-	class CoreInstance {
+	/**
+	 * Class of the Graphics Engine core instance
+	 */
+	class CoreInstance : NonCopyable {
 		public:
-			// Instantiation
-			/** Create a Vulkan Instance (only 1/app) */
-			CoreInstance(CoreWindow &window) : window{window} {};
-			/** Destroy the Instance (only 1/app) */
-			~CoreInstance() = default;
-
-
-			// Disables copy
-			/** Create a copy of a instance (Not allowed - Only one instance in RenderEngine) */
-			CoreInstance(const CoreInstance &) = delete;
-			/** Compares two instance (Copy not allowed - Only one instance in RenderEngine) */
-			CoreInstance &operator=(const CoreInstance &) = delete;
+			// Class instance
+			static CoreInstance& get();
 
 
 			// Core functions
 			/** Initialize the Vulkan instance */
-			WdeStatus initialize(CoreWindow &window);
+			void initialize();
 			/** Clean up the Vulkan instance */
 			void cleanUp();
 
-
 			// Getters and setters
-			VkInstance getVulkanInstance() { return instance; }
-			VkSurfaceKHR& getSurface() { return surface; }
-			CoreDevice& getSelectedDevice() { return devicesList[selectedDeviceId]; }
-			std::vector<CoreDevice>& getDevices() { return devicesList; }
-			CoreDevice& getDeviceByID(int id) { return devicesList[id]; }
+			CoreDevice& getSelectedDevice() { return *_devicesList[_selectedDeviceID]; };
+			VkInstance& getInstance() { return _instance; }
+			VkSurfaceKHR& getSurface() { return _surface; }
+			GLFWwindow* getWindow() { return _window->getWindow(); };
+			bool enableValidationLayers() const { return _enableValidationLayers; }
+			std::vector<const char *> getValidationLayers() { return _validationLayers; }
+			Renderer* getRenderer() const { return _renderer.get(); }
+			std::vector<VkFence>& getImagesInFlightFences() { return _inFlightFences; }
+			std::vector<VkSemaphore>& getImagesAvailableSemaphores() { return _imageAvailableSemaphores; }
+			std::vector<VkSemaphore>& getImagesRenderFinishedSemaphores() { return _renderFinishedSemaphores; }
+			std::size_t& getCurrentFrame() { return _currentFrame; }
+			const int getMaxFramesInFlight() { return MAX_FRAMES_IN_FLIGHT; }
+
+			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
+			std::shared_ptr<CommandPool>& getCommandPool(const std::thread::id &threadID = std::this_thread::get_id()) {
+				if (auto it = _commandPools.find(threadID); it != _commandPools.end())
+					return it->second;
+				return _commandPools.emplace(threadID, std::make_shared<CommandPool>(threadID)).first->second;
+			}
+
+			void setWindow(CoreWindow *window) { _window = window; }
+			/**
+			 * Sets the current renderer to a new renderer.
+			 * @param renderer The new renderer.
+			 */
+			 void setRenderer(std::unique_ptr<Renderer> &&renderer) { _renderer = std::move(renderer); }
 
 
-
-			// Publics static values
-			#ifdef NDEBUG // if compile mode = not debug, disable validation layers
-					const bool enableValidationLayers = false;
-			#else
-					const bool enableValidationLayers = true;
-			#endif
-
-			/** Enabled validation layers (VK_LAYER_KHRONOS_validation = every layer enabled) */
-			const std::vector<const char *> validationLayers = {"VK_LAYER_KHRONOS_validation"};
+			// Helper functions
+			/** Wait for every devices to be ready */
+			void waitForDevicesReady();
 
 
+	private:
+			CoreInstance() = default;
+			~CoreInstance() = default;
 
-		private:
-			/** The debug messenger callback */
-			VkDebugUtilsMessengerEXT debugMessenger;
 
-			/** A reference to the Window */
-			CoreWindow &window;
+			// References to external objects
+			/** The associated GLFW window */
+			CoreWindow* _window = nullptr;
+			/** The given renderer */
+			std::unique_ptr<Renderer> _renderer;
 
+			// Vulkan values
 			/** A reference to the Vulkan instance */
-			VkInstance instance;
-			/** A reference to the surface */
-			VkSurfaceKHR surface;
+			VkInstance _instance = VK_NULL_HANDLE;
+			/** A reference to the Vulkan surface */
+			VkSurfaceKHR _surface = VK_NULL_HANDLE;
 
+			// Devices
 			/** A list of every device in the running machine */
-			std::vector<CoreDevice> devicesList;
+			std::vector<std::unique_ptr<CoreDevice>> _devicesList;
 			/** Main selected device id in array */
-			int selectedDeviceId = -1;
+			int _selectedDeviceID = 0;
+
+
+			// Rendering commands objects
+			/** Command pools (one for each thread) */
+			std::map<std::thread::id, std::shared_ptr<CommandPool>> _commandPools;
+			/** Frames associated command commands */
+			std::vector<std::unique_ptr<CommandBuffer>> _commandBuffers;
+
+			// Rendering Sync objects
+			/** Max frames being processed at the same time */
+			const int MAX_FRAMES_IN_FLIGHT = 3;
+			/** Current drawn frame (% MAX_FRAMES_IN_FLIGHT) */
+			std::size_t _currentFrame = 0;
+			/** Signals when the corresponding image is done being used by the GPU (CPU-GPU synchronization) */
+			std::vector<VkFence> _inFlightFences;
+			/** Signals when the corresponding image has been acquired and is ready for rendering */
+			std::vector<VkSemaphore> _imageAvailableSemaphores;
+			/** Signals when the corresponding image rendering is done, and presentation can happen */
+			std::vector<VkSemaphore> _renderFinishedSemaphores;
+
+
+			// Debug callbacks and layers
+			#ifdef NDEBUG // if compile mode = not debug, disable validation layers
+					const bool _enableValidationLayers = false;
+			#else
+					const bool _enableValidationLayers = true;
+			#endif
+			/** Enabled validation layers (VK_LAYER_KHRONOS_validation = every layer enabled) */
+			const std::vector<const char *> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
+			/** The debug messenger callback */
+			VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
 
 
 
-			// Core functions
+
+			// Setup functions
 			/** Create a Vulkan instance */
 			void createVulkanInstance();
-
 			/** Create the surface (link between the Window and the instance) */
 			void createSurface();
-
 			/** Setup the debug messenger Vulkan's layers callback */
 			void setupDebugMessenger();
-
 			/** Setup devices list */
-			void setupDevices(CoreWindow &windowCore);
+			void setupDevices();
+			/** Setup command commands and buffer rendering fences */
+			void setupCommandBuffers();
 
 
 
 			// Helper functions
 			/** @return a list of the extensions required by Vulkan */
 			std::vector<const char *> getRequiredExtensions();
-
 			/** Check if every required extension are available and loaded (avoid VK_ERROR_EXTENSION_NOT_PRESENT) */
 			void hasRequiredExtensions();
-
 
 
 			// Debug messages support
@@ -114,6 +154,8 @@ namespace wde::renderEngine {
 	};
 
 
+
+	// Helper functions
 	/** The debug callback by Vulkan validation layers @return VK_FALSE */
 	static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(
 			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
