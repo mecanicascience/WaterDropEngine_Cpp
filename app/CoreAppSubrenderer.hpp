@@ -2,6 +2,7 @@
 
 #include "../src/WaterDropEngine/WdeRenderingEngine/renderer/Subrenderer.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/structures/Model.hpp"
 
 namespace wde::renderEngine {
 	class CoreAppSubrenderer : public Subrenderer {
@@ -12,8 +13,13 @@ namespace wde::renderEngine {
 			/** Records commands on the given command buffer */
 			void render(const CommandBuffer &commandBuffer) override;
 
+			// Set model
+			void setModel(std::unique_ptr<Model> &&model) { _model = std::move(model); }
+
 		private:
 			/** The rendering graphics pipeline */
-			PipelineGraphics pipeline;
+			PipelineGraphics _pipeline;
+			/** The element model */
+			std::unique_ptr<Model> _model;
 	};
 }

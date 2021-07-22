@@ -5,6 +5,7 @@
 #include "../src/WaterDropEngine/WdeRenderingEngine/renderer/descriptors/RenderSubpassType.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/renderer/passes/RenderPass.hpp"
 #include "../src/WaterDropEngine/WdeCommon/WdeMaths/Color.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/structures/Model.hpp"
 
 #include "CoreAppSubrenderer.hpp"
 

@@ -1,11 +1,14 @@
 #pragma once
 
 #include <utility>
+#include <algorithm>
 
 #include "../../../wde.hpp"
 #include "Pipeline.hpp"
 #include "../renderer/descriptors/RenderStage.hpp"
 #include "ShaderUtils.hpp"
+#include "../structures/Model.hpp"
+#include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 
 namespace wde::renderEngine {
 	class PipelineGraphics : public Pipeline {
@@ -15,12 +18,13 @@ namespace wde::renderEngine {
 			 * Creates a new graphics pipeline
 			 * @param renderStage The associated pipeline rendering stage
 			 * @param shaderStages Paths of the pipeline shaders
+			 * @param vertexInputs The models vertices
 			 * @param vertexTopology The pipeline graphics topology (VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST by default, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, ...)
 			 * @param polygonDrawMode How the vertices will be bounded from the indices (VK_POLYGON_MODE_FILL by default, VK_POLYGON_MODE_LINE, VK_POLYGON_MODE_POINT)
 			 * @param cullingMode The pipeline culling mode (default VK_CULL_MODE_BACK_BIT (culling enabled for faces backing their faces), VK_CULL_MODE_NONE, VK_CULL_MODE_FRONT_BIT)
 			 * @param normalOrientation How the normals will be computed from the indices order (default VK_FRONT_FACE_CLOCKWISE, VK_FRONT_FACE_COUNTER_CLOCKWISE)
 			 */
-			PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages,
+			PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs,
 			                 VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                 VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_CLOCKWISE);
 
@@ -61,6 +65,7 @@ namespace wde::renderEngine {
 			// Pipeline description parameters
 			RenderStage _renderStage;
 			std::vector<std::string> _shaderStages;
+			std::vector<Model::VertexInput> _vertexInputs;
 			VkPrimitiveTopology _vertexTopology;
 			VkPolygonMode _polygonDrawMode;
 			VkCullModeFlags _cullingMode;

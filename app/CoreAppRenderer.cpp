@@ -18,6 +18,17 @@ void CoreAppRenderer::initialize() {
 }
 
 void CoreAppRenderer::start() {
+	// Create a simple rectangle model
+	std::vector<Model::Vertex> vertices = {
+			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+	};
+	std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
+	auto rectangleModel = std::make_unique<Model>(vertices, indices);
+
 	// Adds a sub render stage to renderer in the render pass 0, and the sub-pass 0
-	this->addSubrenderer<CoreAppSubrenderer>({0, 0});
+	auto squareSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
+	squareSubrenderer->setModel(std::move(rectangleModel));
 }

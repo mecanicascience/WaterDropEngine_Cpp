@@ -1,12 +1,14 @@
 #include "PipelineGraphics.hpp"
-#include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	PipelineGraphics::PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, VkPrimitiveTopology vertexTopology,
-			VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation)
-			: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology),
+	PipelineGraphics::PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs,
+		      VkPrimitiveTopology vertexTopology, VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation)
+			: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)),
 			  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _normalOrientation(normalOrientation), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {
+
+		// Sorts the vertices
+		std::sort(_vertexInputs.begin(), _vertexInputs.end());
 
 		// Create the pipeline shader modules
 		createShaderModules();
@@ -185,12 +187,31 @@ namespace wde::renderEngine {
 
 
 	void PipelineGraphics::createPipeline() {
+		// Get vertices and indices bindings
+		std::vector<VkVertexInputBindingDescription> bindingDescriptions;
+		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+		uint32_t lastAttribute = 0;
+
+		for (const auto &vertexInput : _vertexInputs) {
+			for (const auto &binding : vertexInput.getBindingDescriptions())
+				bindingDescriptions.emplace_back(binding);
+
+			for (const auto &attribute : vertexInput.getAttributeDescriptions()) {
+				auto &newAttribute = attributeDescriptions.emplace_back(attribute);
+				newAttribute.location += lastAttribute;
+			}
+
+			if (!vertexInput.getAttributeDescriptions().empty())
+				lastAttribute = attributeDescriptions.back().location + 1;
+		}
+
+
 		// Set vertex inputs
 		_configInfo.vertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		_configInfo.vertexInputStateCreateInfo.vertexBindingDescriptionCount = 0; // Don't use buffer (hard coded positions from now in shader)
-		_configInfo.vertexInputStateCreateInfo.pVertexBindingDescriptions = nullptr; // Optional
-		_configInfo.vertexInputStateCreateInfo.vertexAttributeDescriptionCount = 0; // Don't use buffer (hard coded positions from now in shader)
-		_configInfo.vertexInputStateCreateInfo.pVertexAttributeDescriptions = nullptr; // Optional
+		_configInfo.vertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+		_configInfo.vertexInputStateCreateInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+		_configInfo.vertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		_configInfo.vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 
 
 		// Binds the pipeline infos in the pipeline create struct
