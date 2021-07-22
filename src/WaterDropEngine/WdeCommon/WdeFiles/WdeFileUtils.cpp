@@ -5,9 +5,8 @@ namespace wde {
 		std::ifstream file(fileName, std::ios::ate | std::ios::binary);
 
 		// Can't open file
-		if (!file.is_open()) {
+		if (!file.is_open())
 			throw WdeException("Failed to open file '" + fileName + "'.", LoggerChannel::COMMON);
-		}
 
 		// Read file
 		size_t fileSize = (size_t) file.tellg();

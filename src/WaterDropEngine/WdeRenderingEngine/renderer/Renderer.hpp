@@ -55,6 +55,12 @@ namespace wde::renderEngine {
 			// Getters
 			std::vector<std::unique_ptr<RenderPass>>& getRenderPasses() { return _renderPasses; }
 			SubrenderersManager& getSubRenderersManager() { return _subrenderersManager; }
+			/** @return the render pass given the pass index */
+			RenderPass *getRenderPass(uint32_t index) const {
+				if (_renderPasses.empty() || _renderPasses.size() < index)
+					return nullptr;
+				return _renderPasses.at(index).get();
+			}
 
 
 		private:

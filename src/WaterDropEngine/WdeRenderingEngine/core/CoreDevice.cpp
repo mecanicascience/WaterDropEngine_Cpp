@@ -30,7 +30,7 @@ namespace wde::renderEngine {
 		Logger::debug("Acquiring swapchain next image.", LoggerChannel::RENDERING_ENGINE);
 		VkResult result = _swapchain.aquireNextImage(instance.getImagesInFlightFences()[currentFrame], instance.getImagesAvailableSemaphores()[currentFrame]);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) { // Need to be reset
-			// shouldRecreateSwapChainBool = true;
+			// TODO shouldRecreateSwapChainBool = true;
 			return;
 		}
 
