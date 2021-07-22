@@ -21,6 +21,11 @@ namespace wde::renderEngine {
 			 * @param swapchainFormat
 			 */
 			RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat);
+			/**
+			 * Initialize the Vulkan render pass
+			 * @param swapchainFormat
+			 */
+			void initialize(VkFormat swapchainFormat);
 			/** Clean up the render pass */
 			void cleanUp();
 
@@ -29,6 +34,8 @@ namespace wde::renderEngine {
 
 
 		private:
+			/** The reference to the parent render-pass */
+			RenderPass &_pass;
 			/** Associated Vulkan render pass */
 			VkRenderPass _renderPass = VK_NULL_HANDLE;
 	};

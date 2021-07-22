@@ -26,10 +26,13 @@ namespace wde::renderEngine {
 	}
 
 
-	void RenderPass::build(SwapChain &swapChain) {
+	void RenderPass::initialize(SwapChain &swapChain) {
 		// Creates associated render pass
 		if (!_renderPass)
 			_renderPass = std::make_unique<RenderPassVulkan>(*this, swapChain.getImageFormat());
+		else
+			_renderPass->initialize(swapChain.getImageFormat());
+
 
 		// Create associated frame buffers
 		_framebuffers = std::make_unique<Framebuffers>(*this, *_renderPass, swapChain );

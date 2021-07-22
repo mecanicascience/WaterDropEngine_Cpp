@@ -3,11 +3,15 @@
 #include "../../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	RenderPassVulkan::RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat) {
+	RenderPassVulkan::RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat) : _pass(pass) {
+		initialize(swapchainFormat);
+	}
+
+	void RenderPassVulkan::initialize(VkFormat swapchainFormat) {
 		// Creates the render passes attachments description structures
 		std::vector<VkAttachmentDescription> attachmentDescriptions;
 
-		for (const auto &attachment : pass.getAttachments()) {
+		for (const auto &attachment : _pass.getAttachments()) {
 			VkAttachmentDescription attachmentDescription {};
 			attachmentDescription.samples = VK_SAMPLE_COUNT_1_BIT; // should match the swap chain images
 
@@ -52,13 +56,13 @@ namespace wde::renderEngine {
 		// Create each sub-passes and attachments
 		std::vector<std::unique_ptr<RenderSubpassDescription>> subpasses;
 		std::vector<VkSubpassDependency> dependencies;
-		for (const auto &subpassType : pass.getSubpasses()) {
+		for (const auto &subpassType : _pass.getSubpasses()) {
 			// Create Attachments
 			std::vector<VkAttachmentReference> subpassColorAttachments;
 			std::optional<uint32_t> depthAttachment;
 
 			for (const auto &attachmentBinding : subpassType.getAttachmentBindingIndices()) {
-				auto attachment = pass.getAttachment(attachmentBinding);
+				auto attachment = _pass.getAttachment(attachmentBinding);
 
 				if (!attachment) {
 					Logger::err("Failed to find a render pass attachment bound to an attachment binding.", LoggerChannel::RENDERING_ENGINE);
@@ -88,7 +92,7 @@ namespace wde::renderEngine {
 			subpassDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 			// Sub-passes
-			if (subpassType.getBindingIndex() == pass.getSubpasses().size()) {
+			if (subpassType.getBindingIndex() == _pass.getSubpasses().size()) {
 				subpassDependency.dstSubpass = VK_SUBPASS_EXTERNAL; // Indices of dependency sub-passes (external input)
 				subpassDependency.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
 				subpassDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; // Wait for swap chain to read from image before accessing

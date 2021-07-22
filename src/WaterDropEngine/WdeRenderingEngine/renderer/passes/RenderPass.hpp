@@ -21,10 +21,10 @@ namespace wde::renderEngine {
 			explicit RenderPass(std::vector<RenderPassAttachment> attachments = {}, std::vector<RenderSubpassType> subpasses = {});
 
 			/**
-			 * Builds the Render pass and binds it to a swapchain
+			 * Initialize the Render pass and binds it to a swapchain
 			 * @param swapChain
 			 */
-			void build(SwapChain &swapChain);
+			void initialize(SwapChain &swapChain);
 			/** Updates the render pass (updates the view size) */
 			void update();
 
@@ -41,7 +41,6 @@ namespace wde::renderEngine {
 			const RenderPassVulkan *getRenderPass() const { return _renderPass.get(); }
 			bool hasSwapchain() const { return _swapchainAttachment.has_value(); }
 			VkFramebuffer& getActiveFramebuffer(uint32_t activeSwapchainImage);
-
 
 
 		private:

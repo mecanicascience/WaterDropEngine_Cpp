@@ -16,6 +16,8 @@ namespace wde::renderEngine {
 			 */
 			CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 			~CommandBuffer() = default;
+
+			void initialize(bool begin);
 			void cleanUp();
 
 
@@ -36,6 +38,8 @@ namespace wde::renderEngine {
 		private:
 			/** True if the command buffer is running */
 			bool _running = false;
+			/** The buffer level */
+			VkCommandBufferLevel _bufferLevel;
 
 			/** The corresponding command buffer */
 			VkCommandBuffer _commandBuffer = VK_NULL_HANDLE;

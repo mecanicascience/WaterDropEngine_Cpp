@@ -74,6 +74,8 @@ namespace wde::renderEngine {
 
 			/** The swap chain */
 			SwapChain _swapchain {};
+			/** True if the swapchain should be recreated */
+			bool _shouldRecreateSwapchain = false;
 
 
 			// Queues (VK_QUEUE_GRAPHICS_BIT, VK_QUEUE_COMPUTE_BIT, VK_QUEUE_TRANSFER_BIT, VK_QUEUE_SPARSE_BINDING_BIT)

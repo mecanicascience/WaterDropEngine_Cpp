@@ -3,14 +3,18 @@
 
 namespace wde::renderEngine {
 	// Core functions
-	CommandBuffer::CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel) {
+	CommandBuffer::CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel) : _bufferLevel(bufferLevel) {
+		initialize(begin);
+	}
+
+	void CommandBuffer::initialize(bool begin) {
 		// Create allocation infos about buffer allocation
 		VkCommandBufferAllocateInfo allocInfo {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool = CoreInstance::get().getCommandPool()->getCommandPool();
 		// Primary (can be submit to queue but cannot be called from other command commands) or
 		// Secondary (cannot be submit directly but can be called from primary command commands) command commands
-		allocInfo.level = bufferLevel;
+		allocInfo.level = _bufferLevel;
 		allocInfo.commandBufferCount = 1;
 
 		// Allocate

@@ -17,6 +17,13 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDevice::draw() {
+		// Recreate the swapChain if needed (like if a user resized the window)
+		if (_shouldRecreateSwapchain) {
+			CoreInstance::get().recreateSwapChain();
+			_shouldRecreateSwapchain = false;
+		}
+		Logger::debug("Drawing next frame to the screen.", LoggerChannel::RENDERING_ENGINE);
+
 		CoreInstance &instance = CoreInstance::get();
 		std::size_t &currentFrame = instance.getCurrentFrame();
 
@@ -30,7 +37,7 @@ namespace wde::renderEngine {
 		Logger::debug("Acquiring swapchain next image.", LoggerChannel::RENDERING_ENGINE);
 		VkResult result = _swapchain.aquireNextImage(instance.getImagesInFlightFences()[currentFrame], instance.getImagesAvailableSemaphores()[currentFrame]);
 		if (result == VK_ERROR_OUT_OF_DATE_KHR) { // Need to be reset
-			// TODO shouldRecreateSwapChainBool = true;
+			_shouldRecreateSwapchain = true;
 			return;
 		}
 
@@ -76,12 +83,6 @@ namespace wde::renderEngine {
 
 	// Helper functions
 	bool CoreDevice::startRenderPass(RenderPass &renderPass) {
-		// Render stage is outdated
-		// TODO if (renderPass.isOutOfDate()) {
-			// TODO recreatePass(renderPass);
-			// TODO return false;
-		//}
-
 		auto &commandBuffer = CoreInstance::get().getCommandBuffers()[_swapchain.getActiveImageIndex()];
 
 		// Begin command buffer recording
@@ -143,9 +144,9 @@ namespace wde::renderEngine {
 
 		// Present the presentation queue to the swapchain
 		auto presentResult = _swapchain.presentToQueue(_presentQueue, instance.getImagesRenderFinishedSemaphores()[currentFrame]);
-		if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR) { // TODO || instance.getWindow().sendInfoShouldResizeFrameBuffer
-			// TODO framebufferResized = true;
-			// TODO recreateSwapchain();
+		if (presentResult == VK_ERROR_OUT_OF_DATE_KHR || presentResult == VK_SUBOPTIMAL_KHR || CoreInstance::get().getCoreWindow().sendInfoShouldResizeFrameBuffer) {
+			CoreInstance::get().getCoreWindow().sendInfoShouldResizeFrameBuffer = false;
+			_shouldRecreateSwapchain = true;
 		}
 		else if (presentResult != VK_SUCCESS)
 			throw WdeException("Failed to present swap chain image.", LoggerChannel::RENDERING_ENGINE);

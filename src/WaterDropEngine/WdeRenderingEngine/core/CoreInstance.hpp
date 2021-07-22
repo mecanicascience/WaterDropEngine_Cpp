@@ -30,6 +30,8 @@ namespace wde::renderEngine {
 			void initialize();
 			/** Clean up the Vulkan instance */
 			void cleanUp();
+			/** Recreate the full swapchain */
+			void recreateSwapChain();
 
 			// Getters and setters
 			CoreDevice& getSelectedDevice() { return *_devicesList[_selectedDeviceID]; };
@@ -44,6 +46,7 @@ namespace wde::renderEngine {
 			std::vector<VkSemaphore>& getImagesRenderFinishedSemaphores() { return _renderFinishedSemaphores; }
 			std::size_t& getCurrentFrame() { return _currentFrame; }
 			const int getMaxFramesInFlight() { return MAX_FRAMES_IN_FLIGHT; }
+			CoreWindow& getCoreWindow() { return *_window; }
 
 			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
 			std::shared_ptr<CommandPool>& getCommandPool(const std::thread::id &threadID = std::this_thread::get_id()) {

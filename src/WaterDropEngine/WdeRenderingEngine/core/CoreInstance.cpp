@@ -40,10 +40,10 @@ namespace wde::renderEngine {
 		Logger::debug("Initializing renderer.", LoggerChannel::RENDERING_ENGINE);
 		_renderer->initialize();
 
-		// Build render passes
+		// Initialize render passes
 		Logger::debug("Building render passes.", LoggerChannel::RENDERING_ENGINE);
 		for (const auto &pass : _renderer->getRenderPasses())
-			pass->build(getSelectedDevice().getSwapChain());
+			pass->initialize(getSelectedDevice().getSwapChain());
 
 		// Starts renderer
 		Logger::debug("Starting renderer.", LoggerChannel::RENDERING_ENGINE);
@@ -87,6 +87,48 @@ namespace wde::renderEngine {
 
 		// Dereference renderer
 		_renderer = nullptr;
+	}
+
+	void CoreInstance::recreateSwapChain() {
+		Logger::debug("Swapchain is outdated, recreating it.", LoggerChannel::RENDERING_ENGINE);
+		// Handle minimization (wait)
+		int width = 0, height = 0;
+		glfwGetFramebufferSize(_window->getWindow(), &width, &height);
+		while (width == 0 || height == 0) {
+			glfwGetFramebufferSize(_window->getWindow(), &width, &height);
+			glfwWaitEvents();
+		}
+
+		// Wait until devices operations finished
+		waitForDevicesReady();
+
+
+		// == Clean up ==
+		// Clean up renderer
+		for (auto &pass : _renderer->getRenderPasses())
+			pass->cleanUp();
+
+		// Clean up command buffers
+		for (auto &cmdBuffer : _commandBuffers)
+			cmdBuffer->cleanUp();
+
+		// Destroy last swapchain
+		for (auto &device : _devicesList)
+			device->getSwapChain().cleanUp();
+
+
+		// == Recreate ==
+		// Recreate swapchain
+		for (auto &device : _devicesList)
+			device->getSwapChain().initialize();
+
+		// Recreate command buffers
+		for (auto &cmdBuffer : _commandBuffers)
+			cmdBuffer->initialize(false);
+
+		// Recreate render passes
+		for (auto &pass : _renderer->getRenderPasses())
+			pass->initialize(getSelectedDevice().getSwapChain());
 	}
 
 

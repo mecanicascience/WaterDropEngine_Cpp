@@ -38,7 +38,7 @@ namespace wde::renderEngine {
 		appWindow->_height = height;
 
 		// Send resize infos
-		appWindow->_renderEngine.draw();
+		WdeRenderEngine::draw();
 	}
 
 
