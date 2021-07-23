@@ -4,12 +4,14 @@ void CoreAppRenderer::initialize() {
 	// == Creates the render pass 0 ==
 	// List of all attachments for the render pass
 	std::vector<RenderPassAttachment> renderPassAttachments0 = {
-			// Creates a reference to the swapchain images at the index of 0
-			{0, "swapchain attachment", RenderPassAttachment::Type::Swapchain, Color(0, 0, 0)}
+			// Creates a depth image
+			{0, "Depth attachment", RenderPassAttachment::Type::Depth},
+			// Creates a reference to the swapchain images at the index of 1
+			{1, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, Color(0, 0, 0)}
 	};
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
-			{0, { 0 }} // create a sub-pass that has the attachment number 0 previously declared
+			{0, { 0, 1 }} // create a sub-pass that has the attachment number 0 and 1 previously declared
 	};
 
 	// Creates the render pass 0

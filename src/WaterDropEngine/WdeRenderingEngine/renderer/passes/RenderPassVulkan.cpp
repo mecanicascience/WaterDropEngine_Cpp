@@ -3,11 +3,11 @@
 #include "../../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	RenderPassVulkan::RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat) : _pass(pass) {
-		initialize(swapchainFormat);
+	RenderPassVulkan::RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat, VkFormat depthFormat) : _pass(pass) {
+		initialize(swapchainFormat, depthFormat);
 	}
 
-	void RenderPassVulkan::initialize(VkFormat swapchainFormat) {
+	void RenderPassVulkan::initialize(VkFormat swapchainFormat, VkFormat depthFormat) {
 		// Creates the render passes attachments description structures
 		std::vector<VkAttachmentDescription> attachmentDescriptions;
 
@@ -43,7 +43,8 @@ namespace wde::renderEngine {
 
 
 				case RenderPassAttachment::Type::Depth:
-					// Yet not done
+					attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+					attachmentDescription.format = depthFormat;
 					break;
 			}
 

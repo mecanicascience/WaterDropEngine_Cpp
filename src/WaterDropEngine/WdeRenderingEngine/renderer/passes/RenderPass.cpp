@@ -16,7 +16,8 @@ namespace wde::renderEngine {
 					break;
 
 				case RenderPassAttachment::Type::Depth:
-					// TODO Not implemented yet
+					clearValue.depthStencil = {1.0f, 0};
+					_depthAttachment = attachment;
 					break;
 			}
 
@@ -27,6 +28,10 @@ namespace wde::renderEngine {
 
 
 	void RenderPass::initialize(SwapChain &swapChain) {
+		// Creates optional depth-associated depth stencil
+		if (_depthAttachment)
+			_depthStencil = std::make_unique<ImageDepth>(_renderArea.getExtent(), VK_SAMPLE_COUNT_1_BIT);
+
 		// Creates associated render pass
 		if (!_renderPass)
 			_renderPass = std::make_unique<RenderPassVulkan>(*this, swapChain.getImageFormat());

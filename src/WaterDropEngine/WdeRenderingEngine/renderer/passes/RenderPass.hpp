@@ -48,6 +48,7 @@ namespace wde::renderEngine {
 			/** The corresponding render pass */
 			std::unique_ptr<RenderPassVulkan> _renderPass;
 			std::unique_ptr<Framebuffers> _framebuffers;
+			std::optional<RenderPassAttachment> _depthAttachment;
 
 
 			// Constructor data

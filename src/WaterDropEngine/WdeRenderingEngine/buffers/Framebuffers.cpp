@@ -20,7 +20,7 @@ namespace wde::renderEngine {
 						break;
 
 					case RenderPassAttachment::Type::Depth:
-						// TODO
+						attachments.emplace_back(depthStencil.getView());
 						break;
 				}
 			}

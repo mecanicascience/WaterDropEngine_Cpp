@@ -19,13 +19,15 @@ namespace wde::renderEngine {
 			 * Creates a new Vulkan render pass given the format
 			 * @param pass
 			 * @param swapchainFormat
+			 * @param depthFormat
 			 */
-			RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat);
+			RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat, VkFormat depthFormat);
 			/**
 			 * Initialize the Vulkan render pass
 			 * @param swapchainFormat
+			 * @param depthFormat
 			 */
-			void initialize(VkFormat swapchainFormat);
+			void initialize(VkFormat swapchainFormat, VkFormat depthFormat);
 			/** Clean up the render pass */
 			void cleanUp();
 
