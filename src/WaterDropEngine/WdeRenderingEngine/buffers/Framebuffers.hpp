@@ -4,6 +4,7 @@
 #include "../renderer/passes/SwapChain.hpp"
 #include "../renderer/descriptors/RenderPassAttachment.hpp"
 #include "../renderer/passes/RenderPassVulkan.hpp"
+#include "../images/ImageDepth.hpp"
 
 namespace wde::renderEngine {
 	class RenderPass;
@@ -16,8 +17,9 @@ namespace wde::renderEngine {
 			 * @param renderPass The corresponding render pass object
 			 * @param renderPassVulkan The frame buffers corresponding Vulkan render passes
 			 * @param swapchain The frame buffers associated swapchain
+			 * @param depthStencil The associated depth stencil
 			 */
-			Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain);
+			Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil);
 			void cleanUp();
 
 

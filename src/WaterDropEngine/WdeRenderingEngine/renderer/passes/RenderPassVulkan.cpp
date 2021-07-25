@@ -43,8 +43,8 @@ namespace wde::renderEngine {
 
 
 				case RenderPassAttachment::Type::Depth:
-					attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-					attachmentDescription.format = depthFormat;
+                    attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+                    attachmentDescription.format = depthFormat;
 					break;
 			}
 

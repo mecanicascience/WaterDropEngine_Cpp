@@ -8,6 +8,7 @@
 #include "SwapChain.hpp"
 #include "RenderPassVulkan.hpp"
 #include "../../buffers/Framebuffers.hpp"
+#include "../../images/ImageDepth.hpp"
 
 namespace wde::renderEngine {
 	class RenderPass {
@@ -22,9 +23,9 @@ namespace wde::renderEngine {
 
 			/**
 			 * Initialize the Render pass and binds it to a swapchain
-			 * @param swapChain
+			 * @param swapchain
 			 */
-			void initialize(SwapChain &swapChain);
+			void initialize(SwapChain &swapchain);
 			/** Updates the render pass (updates the view size) */
 			void update();
 
@@ -47,8 +48,13 @@ namespace wde::renderEngine {
 			// Class internal data
 			/** The corresponding render pass */
 			std::unique_ptr<RenderPassVulkan> _renderPass;
+			/** The swapchain corresponding color frame buffers */
 			std::unique_ptr<Framebuffers> _framebuffers;
-			std::optional<RenderPassAttachment> _depthAttachment;
+
+			/** The optional associated depth attachment */
+            std::optional<RenderPassAttachment> _depthAttachment;
+            /** The optional depth image */
+            std::unique_ptr<ImageDepth> _depthStencil;
 
 
 			// Constructor data

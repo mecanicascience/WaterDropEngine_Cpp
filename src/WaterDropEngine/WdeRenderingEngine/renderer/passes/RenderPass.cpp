@@ -27,20 +27,24 @@ namespace wde::renderEngine {
 	}
 
 
-	void RenderPass::initialize(SwapChain &swapChain) {
-		// Creates optional depth-associated depth stencil
+	void RenderPass::initialize(SwapChain &swapchain) {
+		VkExtent2D swapchainExtent = swapchain.getExtent();
+		VkFormat swapchainFormat = swapchain.getImageFormat();
+		VkFormat depthFormat = _depthStencil ? _depthStencil->getFormat() : VK_FORMAT_UNDEFINED;
+
+		// Create depth stencil
 		if (_depthAttachment)
-			_depthStencil = std::make_unique<ImageDepth>(_renderArea.getExtent(), VK_SAMPLE_COUNT_1_BIT);
+			_depthStencil = std::make_unique<ImageDepth>(swapchainExtent);
 
 		// Creates associated render pass
 		if (!_renderPass)
-			_renderPass = std::make_unique<RenderPassVulkan>(*this, swapChain.getImageFormat());
+			_renderPass = std::make_unique<RenderPassVulkan>(*this, swapchainFormat, depthFormat);
 		else
-			_renderPass->initialize(swapChain.getImageFormat());
+			_renderPass->initialize(swapchainFormat, depthFormat);
 
 
 		// Create associated frame buffers
-		_framebuffers = std::make_unique<Framebuffers>(*this, *_renderPass, swapChain );
+		_framebuffers = std::make_unique<Framebuffers>(*this, *_renderPass, swapchain, *_depthStencil );
 	}
 
 	void RenderPass::update() { }

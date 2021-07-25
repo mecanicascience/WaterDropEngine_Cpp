@@ -58,6 +58,8 @@ namespace wde::renderEngine {
 		if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
 			imageCount = swapChainSupport.capabilities.maxImageCount;
 		}
+		if (imageCount < CoreInstance::get().getMaxFramesInFlight())
+		    CoreInstance::get().setFramesInFlightCount((int) imageCount);
 		Logger::debug("The swap-chain will support a count of " + std::to_string(imageCount) + " images.", LoggerChannel::RENDERING_ENGINE);
 
 		// Create struct

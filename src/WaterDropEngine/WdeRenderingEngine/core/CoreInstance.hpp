@@ -45,7 +45,7 @@ namespace wde::renderEngine {
 			std::vector<VkSemaphore>& getImagesAvailableSemaphores() { return _imageAvailableSemaphores; }
 			std::vector<VkSemaphore>& getImagesRenderFinishedSemaphores() { return _renderFinishedSemaphores; }
 			std::size_t& getCurrentFrame() { return _currentFrame; }
-			const int getMaxFramesInFlight() { return MAX_FRAMES_IN_FLIGHT; }
+			const int getMaxFramesInFlight() { return _currentFramesInFlightCount; }
 			CoreWindow& getCoreWindow() { return *_window; }
 
 			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
@@ -55,6 +55,7 @@ namespace wde::renderEngine {
 				return _commandPools.emplace(threadID, std::make_shared<CommandPool>(threadID)).first->second;
 			}
 
+			void setFramesInFlightCount(int count) { _currentFramesInFlightCount = count; }
 			void setWindow(CoreWindow *window) { _window = window; }
 			/**
 			 * Sets the current renderer to a new renderer.
@@ -100,7 +101,7 @@ namespace wde::renderEngine {
 
 			// Rendering Sync objects
 			/** Max frames being processed at the same time */
-			const int MAX_FRAMES_IN_FLIGHT = 3;
+			int _currentFramesInFlightCount = 3;
 			/** Current drawn frame (% MAX_FRAMES_IN_FLIGHT) */
 			std::size_t _currentFrame = 0;
 			/** Signals when the corresponding image is done being used by the GPU (CPU-GPU synchronization) */

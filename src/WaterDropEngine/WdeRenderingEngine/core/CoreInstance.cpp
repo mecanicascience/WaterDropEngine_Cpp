@@ -251,9 +251,9 @@ namespace wde::renderEngine {
 		}
 
 		// Resize semaphores, fences and command commands
-		_imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		_renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-		_inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+		_imageAvailableSemaphores.resize(_currentFramesInFlightCount);
+		_renderFinishedSemaphores.resize(_currentFramesInFlightCount);
+		_inFlightFences.resize(_currentFramesInFlightCount);
 		_commandBuffers.resize(getSelectedDevice().getSwapChain().getImageCount());
 
 		// Create structs
@@ -264,7 +264,7 @@ namespace wde::renderEngine {
 		fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 		fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Fence are enabled in init (to launch the program on the first frame renderer)
 
-		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		for (size_t i = 0; i < _currentFramesInFlightCount; i++) {
 			// Create semaphores
 			if (vkCreateSemaphore(getSelectedDevice().getDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS
 			    || vkCreateSemaphore(getSelectedDevice().getDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS

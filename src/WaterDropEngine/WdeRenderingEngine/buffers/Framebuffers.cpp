@@ -3,7 +3,7 @@
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	Framebuffers::Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain) {
+	Framebuffers::Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil) {
 		// No image attachment to create with depth and swapchain attachments
 		// ...
 
@@ -20,7 +20,7 @@ namespace wde::renderEngine {
 						break;
 
 					case RenderPassAttachment::Type::Depth:
-						attachments.emplace_back(depthStencil.getView());
+                        attachments.emplace_back(depthStencil.getView());
 						break;
 				}
 			}
