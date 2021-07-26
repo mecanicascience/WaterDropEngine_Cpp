@@ -11,10 +11,8 @@ namespace wde {
 		public:
 			/**
 			 * Initialize the WdeInstance and all of its important different class components
-			 * @param logLevel The level of the displayed console log
-			 * @param logActivatedChannels A vector containing a list of every enabled channels
 			 */
-			WdeStatus initialize(Logger::LoggerLogLevel logLevel, std::vector<LoggerChannel> logActivatedChannels);
+			WdeStatus initialize();
 
 			/** Run the WdeInstance and all of its important different class components */
 			WdeStatus run();

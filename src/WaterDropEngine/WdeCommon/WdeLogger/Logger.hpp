@@ -5,6 +5,9 @@
 #include <utility>
 #include <windows.h>
 #include <vector>
+#include <fstream>
+#include <chrono>
+#include "../WdeUtils/Constants.hpp"
 
 namespace wde {
 	/** List of different LoggerChannels */
@@ -17,6 +20,7 @@ namespace wde {
 
 	class Logger {
 		public:
+	        // Base parameters
 			/** Verbose log level class */
 			enum class LoggerLogLevel {
 				/** Log only errors */                ERR,
@@ -27,15 +31,70 @@ namespace wde {
 
 			/**
 			 * Initialize a new Logger with a new config
+			 * @param filepath
 			 * @param logLevel The LoggerLogLevel log output level
 			 * @param activatedChannels The list of every activated logged channels
 			 */
-			static void initialize(LoggerLogLevel& logLevel, std::vector<LoggerChannel>& activatedChannels) {
+			static void initialize(const std::string& filepath, LoggerLogLevel& logLevel, std::vector<LoggerChannel>& activatedChannels) {
 				Logger::_logLevel = logLevel;
 				Logger::_activatedChannels = activatedChannels;
+
+				// Gets time as format %Y.%m.%d-%H.%M.%S
+                std::time_t rawtime;
+                std::tm* timeinfo;
+                char buffer [80];
+                std::time(&rawtime);
+                timeinfo = std::localtime(&rawtime);
+                std::strftime(buffer,80,"%Y.%m.%d-%H.%M.%S", timeinfo);
+
+				// Initialize log file
+                _logFile.open(filepath + "logs_" + buffer + ".txt");
+                if (!_logFile.is_open())
+                    throw std::runtime_error("Couldn't open log file.");
+
+                // Log header
+                char buffer2 [80];
+                std::strftime(buffer2, 80, "%d/%m/%Y-%H:%M:%S", timeinfo);
+                std::time_t timer = std::time(nullptr);
+                _logFile << "  ======================================================================\n"
+                      << "    Begin Output log ("
+                      << buffer2
+                      << ") : "
+                      << Constants::APPLICATION_NAME << " - " << Constants::APPLICATION_VERSION_FORMATTED
+                      << "\n  ======================================================================\n\n";
+                _logFile.flush();
+
+                _logFileInitialized = true;
+			}
+
+			/**
+			 * Clean up the Logger and close the log file
+			 */
+			static void cleanUp() {
+                _logFileInitialized = false;
+
+                std::time_t rawtime;
+                std::tm* timeinfo;
+                char buffer [80];
+                std::time(&rawtime);
+                timeinfo = std::localtime(&rawtime);
+                std::strftime(buffer, 80, "%d/%m/%Y-%H:%M:%S", timeinfo);
+
+                // Log footer
+                _logFile << "  ======================================================================\n"
+                         << "     End Output log  ("
+                         << buffer
+                         << ") : "
+                         << Constants::APPLICATION_NAME << " - " << Constants::APPLICATION_VERSION_FORMATTED
+                         << "\n  ======================================================================\n\n";
+                _logFile.flush();
+
+                // Close file
+                _logFile.close();
 			}
 
 
+			// Output functions
 			/**
 			 * Prints a debug message to the console
 			 * @param message The std::string message
@@ -65,20 +124,17 @@ namespace wde {
 			static void err(const std::string &message, LoggerChannel channel);
 
 
-			/**
-			 * Forces a message to be displayed on the console
-			 * @param message The std::string message
-			 * @param channel The channel of the message
-			 */
-			static void forceLog(const std::string &message, LoggerChannel channel);
-
-
 
 		private:
+	        // Core parameters
 			/** List of activated channels */
 			static LoggerLogLevel _logLevel;
 			static std::vector<LoggerChannel> _activatedChannels;
+            static std::ofstream _logFile;
+            static bool _logFileInitialized;
 
+
+			// Helper functions
 			/**
 			 * @param channel The channel to check
 			 * @param providedLogLevel The log level of the message to be shown
@@ -102,7 +158,7 @@ namespace wde {
 			static std::string getNameOf(LoggerChannel channel);
 
 
-
+            // Log output functions
 			/**
 			 * Outputs a message to the console
 			 * @param message The message

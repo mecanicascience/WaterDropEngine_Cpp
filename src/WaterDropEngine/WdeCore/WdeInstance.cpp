@@ -1,10 +1,7 @@
 #include "WdeInstance.hpp"
 
 namespace wde {
-	WdeStatus WdeInstance::initialize(Logger::LoggerLogLevel logLevel, std::vector<LoggerChannel> logActivatedChannels) {
-		// Initialize Logging system
-		Logger::initialize(logLevel, logActivatedChannels);
-
+	WdeStatus WdeInstance::initialize() {
 		// Initialize 3D Rendering engine
 		wdeRenderingEngine.initialize();
 

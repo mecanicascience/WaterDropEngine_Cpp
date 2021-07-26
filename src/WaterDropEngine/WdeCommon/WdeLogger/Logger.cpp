@@ -1,6 +1,10 @@
 #include "Logger.hpp"
 
 namespace wde {
+    // Log file not initialized by default
+    bool Logger::_logFileInitialized = false;
+    std::ofstream Logger::_logFile;
+
 	// Initialize Log Level values
 	Logger::LoggerLogLevel Logger::_logLevel = Logger::LoggerLogLevel::DEBUG;
 	std::vector<LoggerChannel> Logger::_activatedChannels = { LoggerChannel::MAIN };
@@ -30,11 +34,6 @@ namespace wde {
 		if (!checkValidInput(channel, LoggerLogLevel::ERR))
 			return;
 		outputError(getFormatedMessage(message, " ERROR ", channel));
-	}
-
-
-	void Logger::forceLog(const std::string &message, LoggerChannel channel) {
-		outputMessage(getFormatedMessage(message, " MAIN  ", channel));
 	}
 
 
@@ -78,10 +77,24 @@ namespace wde {
 
 	// Message output
 	void Logger::outputMessage(const std::string &message) {
+	    // Outputs the message
 		std::cout << message << std::endl;
+
+		// Stores the message to the log file
+		if (_logFileInitialized) {
+            _logFile << message << std::endl;
+            _logFile.flush();
+		}
 	}
 
 	void Logger::outputError(const std::string &message) {
+        // Outputs the error
 		std::cerr << message << std::endl;
+
+        // Stores the error to the log file
+        if (_logFileInitialized) {
+            _logFile << message << std::endl;
+            _logFile.flush();
+        }
 	}
 }
