@@ -119,7 +119,7 @@ namespace wde::renderEngine {
 					const bool _enableValidationLayers = true;
 			#endif
 			/** Enabled validation layers (VK_LAYER_KHRONOS_validation = every layer enabled) */
-            const std::vector<const char *> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
+            static const std::vector<const char *> _validationLayers;
 			/** The debug messenger callback */
 			VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
 
@@ -178,4 +178,10 @@ namespace wde::renderEngine {
 			VkInstance instance,
 			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks *pAllocator);
+
+
+	/**
+	 * Initializing validation layers list
+	 */
+    const std::vector<const char *> CoreInstance::_validationLayers = { "VK_LAYER_KHRONOS_validation" };
 }
