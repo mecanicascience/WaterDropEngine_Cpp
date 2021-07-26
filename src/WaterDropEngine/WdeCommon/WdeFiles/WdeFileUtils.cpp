@@ -1,7 +1,9 @@
 #include "WdeFileUtils.hpp"
+#include "../../../wde.hpp"
 
 namespace wde {
 	std::vector<char> WdeFileUtils::readFile(const std::string &fileName) {
+        WDE_PROFILE_FUNCTION();
 		std::ifstream file(fileName, std::ios::ate | std::ios::binary);
 
 		// Can't open file

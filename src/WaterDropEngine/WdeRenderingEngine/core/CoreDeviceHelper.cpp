@@ -4,6 +4,7 @@
 namespace wde::renderEngine {
 	// Core functions
 	void CoreDeviceHelper::setupPhysicalDevice(int deviceID, VkPhysicalDevice &physicalDevice) {
+        WDE_PROFILE_FUNCTION();
 		// Count available physical devices
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(CoreInstance::get().getInstance(), &deviceCount, nullptr);
@@ -24,7 +25,8 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDeviceHelper::setupLogicalDeviceAndQueues(VkPhysicalDevice &physicalDevice, VkDevice &device, VkQueue &graphicsQueue, VkQueue &presentQueue, const std::vector<const char *> &deviceExtensions) {
-		// Get allowed devices queues types
+        WDE_PROFILE_FUNCTION();
+	    // Get allowed devices queues types
 		QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
 		// Specify queues to be created
@@ -84,7 +86,8 @@ namespace wde::renderEngine {
 
 	// Helper functions
 	QueueFamilyIndices CoreDeviceHelper::findQueueFamilies(VkPhysicalDevice &physicalDevice) {
-		QueueFamilyIndices indices;
+        WDE_PROFILE_FUNCTION();
+	    QueueFamilyIndices indices;
 
 		// Count queue family indices
 		uint32_t queueFamilyCount = 0;

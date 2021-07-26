@@ -3,6 +3,7 @@
 
 namespace wde::renderEngine {
 	void SwapChain::initialize() {
+        WDE_PROFILE_FUNCTION();
 		// Create swap chain (stores to this->swapChain and to this->swapChainImages)
 		Logger::debug("Creating swapchain.", LoggerChannel::RENDERING_ENGINE);
 		createSwapChain();
@@ -17,6 +18,7 @@ namespace wde::renderEngine {
 	}
 
 	void SwapChain::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		VkDevice &device = CoreInstance::get().getSelectedDevice().getDevice();
 
 		// Cleanup fences
@@ -39,6 +41,7 @@ namespace wde::renderEngine {
 
 
 	void SwapChain::createSwapChain() {
+        WDE_PROFILE_FUNCTION();
 		CoreDevice &device = CoreInstance::get().getSelectedDevice();
 		SwapChainSupportDetails swapChainSupport = CoreDeviceHelper::querySwapChainSupport(device.getPhysicalDevice());
 
@@ -112,6 +115,7 @@ namespace wde::renderEngine {
 	}
 
 	void SwapChain::createImageViews() {
+        WDE_PROFILE_FUNCTION();
 		// Setup one image view for each image in the swapChain
 		_swapChainImageViews.resize(_swapChainImages.size());
 
@@ -147,6 +151,7 @@ namespace wde::renderEngine {
 
 	// Helper
 	VkResult SwapChain::aquireNextImage(VkFence &inFlightFence, VkSemaphore &imageAvailableSemaphore) {
+        WDE_PROFILE_FUNCTION();
 		// Wait for the current frame being rendered at the current frame index
 		vkWaitForFences(CoreInstance::get().getSelectedDevice().getDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
 
@@ -165,6 +170,7 @@ namespace wde::renderEngine {
 	}
 
 	VkResult SwapChain::presentToQueue(VkQueue presentQueue, VkSemaphore& waitSemaphore) {
+        WDE_PROFILE_FUNCTION();
 		VkPresentInfoKHR presentInfo = {};
 
 		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;

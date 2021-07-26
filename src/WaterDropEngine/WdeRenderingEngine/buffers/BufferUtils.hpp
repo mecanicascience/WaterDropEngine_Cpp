@@ -13,7 +13,8 @@ namespace wde::renderEngine {
 			 * @param bufferMemory
 			 */
 			static void createBuffer(VkPhysicalDevice &physicalDevice, VkDevice &device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
-				// Create buffer infos
+                WDE_PROFILE_FUNCTION();
+			    // Create buffer infos
 				VkBufferCreateInfo  bufferInfo {};
 				bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 				bufferInfo.size = size;
@@ -48,7 +49,8 @@ namespace wde::renderEngine {
 			 * @return the memory ID
 			 */
 			static uint32_t findMemoryType(VkPhysicalDevice &physicalDevice, uint32_t typeFilter, VkMemoryPropertyFlags properties) {
-				VkPhysicalDeviceMemoryProperties memProperties;
+                WDE_PROFILE_FUNCTION();
+			    VkPhysicalDeviceMemoryProperties memProperties;
 				vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 				for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
 					if ((typeFilter & (1 << i)) &&

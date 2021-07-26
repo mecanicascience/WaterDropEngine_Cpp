@@ -4,7 +4,7 @@
 namespace wde::renderEngine {
 	// Core functions
 	void CoreWindow::initialize() {
-		WDE_PROFILE_FUNCTION();
+        WDE_PROFILE_FUNCTION();
 		// Initialize the window
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
@@ -18,7 +18,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreWindow::cleanUp() {
-		WDE_PROFILE_FUNCTION();
+        WDE_PROFILE_FUNCTION();
 		// Terminate the GLFW window
 		glfwDestroyWindow(_window);
 		glfwTerminate(); // terminates GLFW library

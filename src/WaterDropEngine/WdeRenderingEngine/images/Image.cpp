@@ -15,6 +15,7 @@ namespace wde::renderEngine {
     }
 
     Image::~Image() {
+        WDE_PROFILE_FUNCTION();
         VkDevice &device = CoreInstance::get().getSelectedDevice().getDevice();
 
         // Cleanup image view
@@ -29,6 +30,7 @@ namespace wde::renderEngine {
 
 
     void Image::createImage() {
+        WDE_PROFILE_FUNCTION();
         // Create image
         VkImageCreateInfo imageCreateInfo = {};
         imageCreateInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
@@ -66,6 +68,7 @@ namespace wde::renderEngine {
     }
 
     void Image::createImageView() {
+        WDE_PROFILE_FUNCTION();
         // Create image view
         VkImageViewCreateInfo viewInfo {};
         viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;

@@ -3,6 +3,7 @@
 
 namespace wde::renderEngine {
 	CommandPool::CommandPool(const std::thread::id &threadID) : _threadID(threadID) {
+        WDE_PROFILE_FUNCTION();
 		// Get supported queues
 		QueueFamilyIndices queueFamilyIndices = CoreDeviceHelper::findQueueFamilies(CoreInstance::get().getSelectedDevice().getPhysicalDevice());
 
@@ -22,6 +23,7 @@ namespace wde::renderEngine {
 	}
 
 	void CommandPool::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		// Destroy command pool
 		vkDestroyCommandPool(CoreInstance::get().getSelectedDevice().getDevice(), _commandPool, nullptr);
 	}

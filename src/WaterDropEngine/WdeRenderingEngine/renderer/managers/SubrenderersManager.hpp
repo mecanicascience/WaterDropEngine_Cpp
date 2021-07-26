@@ -34,6 +34,7 @@ namespace wde::renderEngine {
 			 * @param commandBuffer The corresponding command buffer
 			 */
 			void renderStage(const RenderStage &stage, const CommandBuffer &commandBuffer) {
+                WDE_PROFILE_FUNCTION();
 				for (const auto &[stageIndex, typeID] : _stages) {
 					if (stageIndex.first != stage)
 						continue;

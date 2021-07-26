@@ -8,6 +8,7 @@ namespace wde::renderEngine {
 	}
 
 	void CommandBuffer::initialize(bool begin) {
+        WDE_PROFILE_FUNCTION();
 		// Create allocation infos about buffer allocation
 		VkCommandBufferAllocateInfo allocInfo {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -28,6 +29,7 @@ namespace wde::renderEngine {
 	}
 
 	void CommandBuffer::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		// Cleanup command buffer
 		vkFreeCommandBuffers(CoreInstance::get().getSelectedDevice().getDevice(), CoreInstance::get().getCommandPool()->getCommandPool(), 1, &_commandBuffer);
 	}
@@ -35,6 +37,7 @@ namespace wde::renderEngine {
 
 	// Command buffer functions
 	void CommandBuffer::begin() {
+        WDE_PROFILE_FUNCTION();
 		if (_running)
 			return;
 
@@ -51,6 +54,7 @@ namespace wde::renderEngine {
 	}
 
 	void CommandBuffer::end() {
+        WDE_PROFILE_FUNCTION();
 		if (!_running)
 			return;
 
@@ -62,6 +66,7 @@ namespace wde::renderEngine {
 	}
 
 	void CommandBuffer::submit(VkFence fence, VkSemaphore const &waitSemaphore, VkSemaphore const &signalSemaphore) {
+        WDE_PROFILE_FUNCTION();
 		if (_running)
 			end();
 

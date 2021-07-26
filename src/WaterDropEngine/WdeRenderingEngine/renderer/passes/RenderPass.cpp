@@ -4,6 +4,7 @@
 namespace wde::renderEngine {
 	RenderPass::RenderPass(std::vector<RenderPassAttachment> attachments, std::vector<RenderSubpassType> subpasses)
 			: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)) {
+        WDE_PROFILE_FUNCTION();
 		// Stores attachments based on their types
 		for (const auto &attachment : _attachments) {
 			VkClearValue clearValue = {};
@@ -28,6 +29,7 @@ namespace wde::renderEngine {
 
 
 	void RenderPass::initialize(SwapChain &swapchain) {
+        WDE_PROFILE_FUNCTION();
 		VkExtent2D swapchainExtent = swapchain.getExtent();
 		VkFormat swapchainFormat = swapchain.getImageFormat();
 
@@ -47,9 +49,12 @@ namespace wde::renderEngine {
 		_framebuffers = std::make_unique<Framebuffers>(*this, *_renderPass, swapchain, *_depthStencil );
 	}
 
-	void RenderPass::update() { }
+	void RenderPass::update() {
+        WDE_PROFILE_FUNCTION();
+	}
 
 	void RenderPass::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		// Clean up frame buffers
 		if (_framebuffers)
 			_framebuffers->cleanUp();

@@ -17,6 +17,7 @@ namespace wde::renderEngine {
 			 * @param commandBuffer
 			 */
 			void bind(const CommandBuffer &commandBuffer) const {
+                WDE_PROFILE_FUNCTION();
 				vkCmdBindPipeline(commandBuffer, getPipelineBindPoint(), getPipeline());
 			}
 

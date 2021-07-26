@@ -5,6 +5,7 @@
 namespace wde::renderEngine {
 	// Core functions
 	void CoreDevice::initialize() {
+        WDE_PROFILE_FUNCTION();
 		// Setup physical device, device, graphics queue, presentation queue
 		Logger::debug("Binding physical device.", LoggerChannel::RENDERING_ENGINE);
 		CoreDeviceHelper::setupPhysicalDevice(_deviceID, _physicalDevice);
@@ -17,6 +18,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDevice::draw() {
+        WDE_PROFILE_FUNCTION();
 		// Recreate the swapChain if needed (like if a user resized the window)
 		if (_shouldRecreateSwapchain) {
 			CoreInstance::get().recreateSwapChain();
@@ -72,6 +74,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDevice::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		// Swapchain
 		_swapchain.cleanUp();
 
@@ -83,6 +86,7 @@ namespace wde::renderEngine {
 
 	// Helper functions
 	bool CoreDevice::startRenderPass(RenderPass &renderPass) {
+        WDE_PROFILE_FUNCTION();
 		auto &commandBuffer = CoreInstance::get().getCommandBuffers()[_swapchain.getActiveImageIndex()];
 
 		// Begin command buffer recording
@@ -125,6 +129,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreDevice::endRenderPass(RenderPass &renderPass) {
+        WDE_PROFILE_FUNCTION();
 		CoreInstance &instance = CoreInstance::get();
 		std::size_t &currentFrame = instance.getCurrentFrame();
 		auto &commandBuffer = CoreInstance::get().getCommandBuffers()[_swapchain.getActiveImageIndex()];

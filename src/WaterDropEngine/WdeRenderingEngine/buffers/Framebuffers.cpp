@@ -4,7 +4,8 @@
 
 namespace wde::renderEngine {
 	Framebuffers::Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil) {
-		// No image attachment to create with depth and swapchain attachments
+        WDE_PROFILE_FUNCTION();
+	    // No image attachment to create with depth and swapchain attachments
 		// ...
 
 		// Creating one frame buffer for each image in the swapchain
@@ -41,7 +42,8 @@ namespace wde::renderEngine {
 	}
 
 	void Framebuffers::cleanUp() {
-		// Cleanup frame buffers
+        WDE_PROFILE_FUNCTION();
+	    // Cleanup frame buffers
 		auto &device = CoreInstance::get().getSelectedDevice().getDevice();
 		for (auto framebuffer : _framebuffers)
 			vkDestroyFramebuffer(device, framebuffer, nullptr);

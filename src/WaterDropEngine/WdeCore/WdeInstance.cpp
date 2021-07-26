@@ -2,6 +2,7 @@
 
 namespace wde {
 	WdeStatus WdeInstance::initialize() {
+        WDE_PROFILE_FUNCTION();
 		// Initialize 3D Rendering engine
 		wdeRenderingEngine.initialize();
 
@@ -12,6 +13,7 @@ namespace wde {
 
 
 	WdeStatus WdeInstance::run() {
+        WDE_PROFILE_FUNCTION();
 		// Main game loop
 		while (!wdeRenderingEngine.shouldEnd()) { // Ask the renderer engine if we need to quit
 			Logger::debug("====== Updating new frame. ======", LoggerChannel::MAIN);
@@ -32,6 +34,7 @@ namespace wde {
 
 
 	WdeStatus WdeInstance::cleanUp() {
+	    WDE_PROFILE_FUNCTION();
 		// CleanUp 3D Rendering Engine
 		wdeRenderingEngine.cleanUp();
 

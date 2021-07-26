@@ -10,6 +10,7 @@ namespace wde::renderEngine {
 
 	// Core functions
 	void CoreInstance::initialize() {
+        WDE_PROFILE_FUNCTION();
 		// Create a Vulkan instance
 		Logger::debug("Creating Vulkan instance.", LoggerChannel::RENDERING_ENGINE);
 		createVulkanInstance();
@@ -51,6 +52,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreInstance::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		// Cleanup renderer
 		_renderer->cleanUp();
 		_renderer = nullptr;
@@ -90,6 +92,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreInstance::recreateSwapChain() {
+        WDE_PROFILE_FUNCTION();
 		Logger::debug("Swapchain is outdated, recreating it.", LoggerChannel::RENDERING_ENGINE);
 		// Handle minimization (wait)
 		int width = 0, height = 0;
@@ -136,6 +139,7 @@ namespace wde::renderEngine {
 
 	// Setup functions
 	void CoreInstance::createVulkanInstance() {
+        WDE_PROFILE_FUNCTION();
 		// Check if required debug layers are all available
 		Logger::debug("Checking validation layer support.", LoggerChannel::RENDERING_ENGINE);
 		if (_enableValidationLayers && !checkValidationLayerSupport())
@@ -187,12 +191,14 @@ namespace wde::renderEngine {
 	}
 
 	void CoreInstance::createSurface() {
+        WDE_PROFILE_FUNCTION();
 		if (glfwCreateWindowSurface(_instance, _window->getWindow(), nullptr, &_surface) != VK_SUCCESS) {
 			throw WdeException("Failed to create window surface.", LoggerChannel::RENDERING_ENGINE);
 		}
 	}
 
 	void CoreInstance::setupDebugMessenger() {
+        WDE_PROFILE_FUNCTION();
 		if (!_enableValidationLayers)
 			return;
 
@@ -207,6 +213,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreInstance::setupDevices() {
+        WDE_PROFILE_FUNCTION();
 		uint32_t deviceCount = 0;
 		vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
 
@@ -243,6 +250,7 @@ namespace wde::renderEngine {
 	}
 
 	void CoreInstance::setupCommandBuffers() {
+        WDE_PROFILE_FUNCTION();
 		// Destroy previous fences and semaphores
 		for (std::size_t i = 0; i < _inFlightFences.size(); i++) {
 			vkDestroyFence(getSelectedDevice().getDevice(), _inFlightFences[i], nullptr);
@@ -282,6 +290,7 @@ namespace wde::renderEngine {
 
 	// Helpers functions
 	void CoreInstance::waitForDevicesReady() {
+        WDE_PROFILE_FUNCTION();
 		for (auto &device : _devicesList)
 			vkDeviceWaitIdle(device->getDevice());
 	}

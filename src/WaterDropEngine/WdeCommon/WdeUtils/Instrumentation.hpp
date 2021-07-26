@@ -12,7 +12,7 @@
 #include "NonCopyable.hpp"
 
 
-// Creates logs into debug/ that can be viewed in chrome://tracing/
+// Creates logs into logs/ that can be viewed in chrome://tracing/
 namespace wde {
 	using floatingPointMicroseconds = std::chrono::duration<double, std::micro>;
 

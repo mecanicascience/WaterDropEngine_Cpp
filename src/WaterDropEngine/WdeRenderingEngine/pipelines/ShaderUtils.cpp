@@ -3,6 +3,7 @@
 
 namespace wde::renderEngine {
 	VkShaderModule ShaderUtils::createShaderModule(std::vector<char> shaderCode) {
+        WDE_PROFILE_FUNCTION();
 		// Create infos
 		VkShaderModuleCreateInfo createInfo{};
 		createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;

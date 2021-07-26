@@ -8,6 +8,7 @@ namespace wde::renderEngine {
 	}
 
 	void RenderPassVulkan::initialize(VkFormat swapchainFormat, VkFormat depthFormat) {
+        WDE_PROFILE_FUNCTION();
 		// Creates the render passes attachments description structures
 		std::vector<VkAttachmentDescription> attachmentDescriptions;
 
@@ -140,6 +141,7 @@ namespace wde::renderEngine {
 
 
 	void RenderPassVulkan::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		// Destroy render pass
 		vkDestroyRenderPass(CoreInstance::get().getSelectedDevice().getDevice(), _renderPass, nullptr);
 	}

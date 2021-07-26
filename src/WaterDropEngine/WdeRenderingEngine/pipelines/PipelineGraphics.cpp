@@ -6,6 +6,7 @@ namespace wde::renderEngine {
 		      VkPrimitiveTopology vertexTopology, VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation)
 			: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _depthMode(depthMode),
 			  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _normalOrientation(normalOrientation), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {
+        WDE_PROFILE_FUNCTION();
 
 		// Sorts the vertices
 		std::sort(_vertexInputs.begin(), _vertexInputs.end());
@@ -24,6 +25,7 @@ namespace wde::renderEngine {
 	}
 
 	PipelineGraphics::~PipelineGraphics() {
+        WDE_PROFILE_FUNCTION();
 		// Destroy shader modules
 		auto device = CoreInstance::get().getSelectedDevice().getDevice();
 		for (const auto &shaderModule : _shaderModules)
@@ -37,6 +39,7 @@ namespace wde::renderEngine {
 
 
 	void PipelineGraphics::createShaderModules() {
+        WDE_PROFILE_FUNCTION();
 		for (const std::string &shaderStage : _shaderStages) {
 			// Create shader module
 			std::vector<char> shaderContent = WdeFileUtils::readFile(shaderStage);
@@ -60,6 +63,7 @@ namespace wde::renderEngine {
 	}
 
 	void PipelineGraphics::createPipelineLayout() {
+        WDE_PROFILE_FUNCTION();
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
 		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutCreateInfo.setLayoutCount = 0; // Optional
@@ -74,6 +78,7 @@ namespace wde::renderEngine {
 
 
 	void PipelineGraphics::createPipelineAttributes() {
+        WDE_PROFILE_FUNCTION();
 		// == Input assembly (groups vertex data into primitives for processing by rest of pipelines) ==
 		_configInfo.inputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 		_configInfo.inputAssemblyState.topology = _vertexTopology;
@@ -200,6 +205,7 @@ namespace wde::renderEngine {
 
 
 	void PipelineGraphics::createPipeline() {
+        WDE_PROFILE_FUNCTION();
 		// Get vertices and indices bindings
 		std::vector<VkVertexInputBindingDescription> bindingDescriptions;
 		std::vector<VkVertexInputAttributeDescription> attributeDescriptions;

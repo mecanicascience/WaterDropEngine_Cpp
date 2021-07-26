@@ -3,6 +3,7 @@
 
 namespace wde::renderEngine {
 	Model::Model(const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices) {
+        WDE_PROFILE_FUNCTION();
 		// Set the vertices
 		createVertexBuffers(vertices);
 
@@ -11,6 +12,7 @@ namespace wde::renderEngine {
 	}
 
 	Model::~Model() {
+        WDE_PROFILE_FUNCTION();
 		auto &device = CoreInstance::get().getSelectedDevice().getDevice();
 
 		// Destroy vertex buffers
@@ -25,6 +27,7 @@ namespace wde::renderEngine {
 
 	// Core functions
 	void Model::createVertexBuffers(const std::vector<Vertex> &vertices) {
+        WDE_PROFILE_FUNCTION();
 		auto &device = CoreInstance::get().getSelectedDevice().getDevice();
 
 		_vertexCount = static_cast<uint32_t>(vertices.size());
@@ -44,6 +47,7 @@ namespace wde::renderEngine {
 	}
 
 	void Model::createIndexBuffers(const std::vector<uint16_t> &indices) {
+        WDE_PROFILE_FUNCTION();
 		auto &device = CoreInstance::get().getSelectedDevice().getDevice();
 
 		_indexCount = static_cast<uint32_t>(indices.size());
@@ -64,6 +68,7 @@ namespace wde::renderEngine {
 
 
 	void Model::render(const CommandBuffer &commandBuffer) {
+        WDE_PROFILE_FUNCTION();
 		// Bind our vertex into the commandBuffer with index of offsets[]
 		VkBuffer vertexBuffers[] = { _vertexBuffer };
 		VkDeviceSize offsets[] = { 0 };

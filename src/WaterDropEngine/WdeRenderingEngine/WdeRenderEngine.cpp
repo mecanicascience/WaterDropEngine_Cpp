@@ -3,6 +3,7 @@
 namespace wde::renderEngine {
 	// Core functions
 	void WdeRenderEngine::initialize() {
+        WDE_PROFILE_FUNCTION();
 		Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 		// Initialize the GLFW window
 		_window.initialize();
@@ -15,11 +16,13 @@ namespace wde::renderEngine {
 
 
 	void WdeRenderEngine::tick() {
+        WDE_PROFILE_FUNCTION();
 		glfwPollEvents(); // Poll GLFW events (user interactions, close event, waiting during minimizing, ...)
 		draw(); // Draw next frame to the screen
 	}
 
 	void WdeRenderEngine::draw() {
+        WDE_PROFILE_FUNCTION();
 		// The selected device will draw the next frame to the screen
 		Logger::debug("Drawing frame to the screen.", LoggerChannel::RENDERING_ENGINE);
 		CoreInstance::get().getSelectedDevice().draw();
@@ -27,6 +30,7 @@ namespace wde::renderEngine {
 
 
 	void WdeRenderEngine::cleanUp() {
+        WDE_PROFILE_FUNCTION();
 		Logger::debug("== Cleaning up Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 		CoreInstance::get().cleanUp();
 		_window.cleanUp();
@@ -42,6 +46,7 @@ namespace wde::renderEngine {
 	}
 
 	void WdeRenderEngine::waitForDevicesReady() {
+        WDE_PROFILE_FUNCTION();
 		CoreInstance::get().waitForDevicesReady();
 	}
 }
