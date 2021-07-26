@@ -13,6 +13,14 @@
 namespace wde::renderEngine {
 	class PipelineGraphics : public Pipeline {
 		public:
+            enum class Depth {
+                None = 0,
+                Read = 1,
+                Write = 2,
+                ReadWrite = Read | Write
+            };
+
+
 			// Constructors
 			/**
 			 * Creates a new graphics pipeline
@@ -24,7 +32,7 @@ namespace wde::renderEngine {
 			 * @param cullingMode The pipeline culling mode (default VK_CULL_MODE_BACK_BIT (culling enabled for faces backing their faces), VK_CULL_MODE_NONE, VK_CULL_MODE_FRONT_BIT)
 			 * @param normalOrientation How the normals will be computed from the indices order (default VK_FRONT_FACE_CLOCKWISE, VK_FRONT_FACE_COUNTER_CLOCKWISE)
 			 */
-			PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs,
+			PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs, Depth _depthMode,
 			                 VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                 VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_CLOCKWISE);
 
@@ -66,6 +74,7 @@ namespace wde::renderEngine {
 			RenderStage _renderStage;
 			std::vector<std::string> _shaderStages;
 			std::vector<Model::VertexInput> _vertexInputs;
+			Depth _depthMode;
 			VkPrimitiveTopology _vertexTopology;
 			VkPolygonMode _polygonDrawMode;
 			VkCullModeFlags _cullingMode;

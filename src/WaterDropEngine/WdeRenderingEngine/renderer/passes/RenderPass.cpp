@@ -30,11 +30,11 @@ namespace wde::renderEngine {
 	void RenderPass::initialize(SwapChain &swapchain) {
 		VkExtent2D swapchainExtent = swapchain.getExtent();
 		VkFormat swapchainFormat = swapchain.getImageFormat();
-		VkFormat depthFormat = _depthStencil ? _depthStencil->getFormat() : VK_FORMAT_UNDEFINED;
 
 		// Create depth stencil
 		if (_depthAttachment)
 			_depthStencil = std::make_unique<ImageDepth>(swapchainExtent);
+        VkFormat depthFormat = _depthStencil ? _depthStencil->getFormat() : VK_FORMAT_UNDEFINED;
 
 		// Creates associated render pass
 		if (!_renderPass)

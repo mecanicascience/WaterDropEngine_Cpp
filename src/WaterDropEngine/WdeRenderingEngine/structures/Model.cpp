@@ -32,8 +32,10 @@ namespace wde::renderEngine {
 			throw WdeException("Vertex count must be at least 3.", LoggerChannel::RENDERING_ENGINE);
 
 		VkDeviceSize bufferSize = sizeof(vertices[0]) * _vertexCount;
-		BufferUtils::createBuffer(bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _vertexBuffer, _vertexBufferMemory);
+		BufferUtils::createBuffer(CoreInstance::get().getSelectedDevice().getPhysicalDevice(),
+                                  CoreInstance::get().getSelectedDevice().getDevice(), bufferSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                  _vertexBuffer, _vertexBufferMemory);
 
 		void *data;
 		vkMapMemory(device, _vertexBufferMemory, 0, bufferSize, 0, &data);
@@ -49,8 +51,10 @@ namespace wde::renderEngine {
 			throw WdeException("Index count must be at least 3.", LoggerChannel::RENDERING_ENGINE);
 
 		VkDeviceSize bufferSize = sizeof(indices[0]) * _indexCount;
-		BufferUtils::createBuffer(bufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
-				VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, _indexBuffer, _indexBufferMemory);
+        BufferUtils::createBuffer(CoreInstance::get().getSelectedDevice().getPhysicalDevice(),
+                                  CoreInstance::get().getSelectedDevice().getDevice(), bufferSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+                                  VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+                                  _indexBuffer, _indexBufferMemory);
 
 		void *data;
 		vkMapMemory(device, _indexBufferMemory, 0, bufferSize, 0, &data);

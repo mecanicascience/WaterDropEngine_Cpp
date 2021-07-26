@@ -1,12 +1,9 @@
 #pragma once
 
-#include "../core/CoreInstance.hpp"
-
 namespace wde::renderEngine {
 	class BufferUtils {
 		public:
 			/**
-			 *
 			 * @param physicalDevice
 			 * @param device
 			 * @param size
@@ -15,9 +12,7 @@ namespace wde::renderEngine {
 			 * @param buffer
 			 * @param bufferMemory
 			 */
-			static void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
-				auto device = CoreInstance::get().getSelectedDevice().getDevice();
-
+			static void createBuffer(VkPhysicalDevice &physicalDevice, VkDevice &device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
 				// Create buffer infos
 				VkBufferCreateInfo  bufferInfo {};
 				bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
@@ -36,7 +31,7 @@ namespace wde::renderEngine {
 				VkMemoryAllocateInfo  allocInfo {};
 				allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 				allocInfo.allocationSize = memRequirements.size;
-				allocInfo.memoryTypeIndex = findMemoryType(CoreInstance::get().getSelectedDevice().getPhysicalDevice(), memRequirements.memoryTypeBits, properties);
+				allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);
 
 				if (vkAllocateMemory(device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS)
 					throw WdeException("Failed to allocate buffer memory.", LoggerChannel::RENDERING_ENGINE);

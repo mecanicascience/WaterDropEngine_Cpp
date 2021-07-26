@@ -20,6 +20,8 @@ namespace wde::renderEngine {
              * @param imageExtent
              */
             ImageDepth(VkExtent2D imageExtent)
-                : Image(imageExtent, findSupportedFormat(DEPTH_TRY_FORMATS, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT)) {}
+                : Image(VK_IMAGE_TYPE_2D, VK_IMAGE_VIEW_TYPE_2D, 1, findSupportedFormat(DEPTH_TRY_FORMATS, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT),
+                        {imageExtent.width, imageExtent.height, 1}, 1, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1) {}
     };
 }

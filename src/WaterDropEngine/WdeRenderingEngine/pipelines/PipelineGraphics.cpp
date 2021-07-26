@@ -2,9 +2,9 @@
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	PipelineGraphics::PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs,
+	PipelineGraphics::PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs, Depth depthMode,
 		      VkPrimitiveTopology vertexTopology, VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation)
-			: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)),
+			: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _depthMode(depthMode),
 			  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _normalOrientation(normalOrientation), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {
 
 		// Sorts the vertices
@@ -141,12 +141,25 @@ namespace wde::renderEngine {
 		_configInfo.depthStencilState.front = {};  // Optional
 		_configInfo.depthStencilState.back = {};   // Optional
 
-		// Enable depth read and write
-		_configInfo.depthStencilState.depthTestEnable = VK_TRUE;
-		_configInfo.depthStencilState.depthWriteEnable = VK_TRUE;
-		/*// Disable depth read and write
-		configInfo.depthStencilState.depthTestEnable = VK_FALSE;
-		configInfo.depthStencilState.depthWriteEnable = VK_FALSE;*/
+		// Enable or disable depth image read and write
+		switch (_depthMode) {
+            case Depth::None:
+                _configInfo.depthStencilState.depthTestEnable = VK_FALSE;
+                _configInfo.depthStencilState.depthWriteEnable = VK_FALSE;
+                break;
+            case Depth::Read:
+                _configInfo.depthStencilState.depthTestEnable = VK_TRUE;
+                _configInfo.depthStencilState.depthWriteEnable = VK_FALSE;
+                break;
+            case Depth::Write:
+                _configInfo.depthStencilState.depthTestEnable = VK_FALSE;
+                _configInfo.depthStencilState.depthWriteEnable = VK_TRUE;
+                break;
+            case Depth::ReadWrite:
+                _configInfo.depthStencilState.depthTestEnable = VK_TRUE;
+                _configInfo.depthStencilState.depthWriteEnable = VK_TRUE;
+                break;
+        }
 
 
 
