@@ -55,11 +55,8 @@ namespace wde {
                 // Log header
                 char buffer2 [80];
                 std::strftime(buffer2, 80, "%d/%m/%Y-%H:%M:%S", timeinfo);
-                std::time_t timer = std::time(nullptr);
                 _logFile << "  ======================================================================\n"
-                      << "    Begin Output log ("
-                      << buffer2
-                      << ") : "
+                      << "    Begin Output log (" << buffer2 << ") : "
                       << Constants::APPLICATION_NAME << " - " << Constants::APPLICATION_VERSION_FORMATTED
                       << "\n  ======================================================================\n\n";
                 _logFile.flush();
@@ -82,9 +79,7 @@ namespace wde {
 
                 // Log footer
                 _logFile << "  ======================================================================\n"
-                         << "     End Output log  ("
-                         << buffer
-                         << ") : "
+                         << "     End Output log  (" << buffer << ") : "
                          << Constants::APPLICATION_NAME << " - " << Constants::APPLICATION_VERSION_FORMATTED
                          << "\n  ======================================================================\n\n";
                 _logFile.flush();
