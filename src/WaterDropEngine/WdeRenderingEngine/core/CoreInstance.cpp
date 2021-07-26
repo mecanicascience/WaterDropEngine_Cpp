@@ -79,7 +79,7 @@ namespace wde::renderEngine {
 
 		// Destroy debug messenger callback
 		if (_enableValidationLayers)
-			DestroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
+			destroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
 
 		// Destroy Vulkan surface and instance
 		vkDestroySurfaceKHR(_instance, _surface, nullptr);
@@ -201,7 +201,7 @@ namespace wde::renderEngine {
 		populateDebugMessengerCreateInfo(createInfo);
 
 		// Tell vulkan to use our custom debug messenger
-		if (CreateDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS) {
+		if (createDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS) {
 			throw WdeException("Failed to set up debug messenger.", LoggerChannel::RENDERING_ENGINE);
 		}
 	}
@@ -390,7 +390,7 @@ namespace wde::renderEngine {
 		return VK_FALSE;
 	}
 
-	VkResult CreateDebugUtilsMessengerEXT(
+	VkResult createDebugUtilsMessengerEXT(
 			VkInstance instance,
 			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 			const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
@@ -402,7 +402,7 @@ namespace wde::renderEngine {
 			return VK_ERROR_EXTENSION_NOT_PRESENT;
 	}
 
-	void DestroyDebugUtilsMessengerEXT(
+	void destroyDebugUtilsMessengerEXT(
 			VkInstance instance,
 			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks *pAllocator) {

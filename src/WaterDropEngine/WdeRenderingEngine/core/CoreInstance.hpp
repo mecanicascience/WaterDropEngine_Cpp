@@ -119,7 +119,7 @@ namespace wde::renderEngine {
 					const bool _enableValidationLayers = true;
 			#endif
 			/** Enabled validation layers (VK_LAYER_KHRONOS_validation = every layer enabled) */
-			const std::vector<const char *> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
+            const std::vector<const char *> _validationLayers = { "VK_LAYER_KHRONOS_validation" };
 			/** The debug messenger callback */
 			VkDebugUtilsMessengerEXT _debugMessenger = VK_NULL_HANDLE;
 
@@ -168,13 +168,13 @@ namespace wde::renderEngine {
 			void* pUserData);
 
 	/** Creates the Vulkan layers Messenger */
-	VkResult CreateDebugUtilsMessengerEXT(
+	VkResult createDebugUtilsMessengerEXT(
 			VkInstance instance,
 			const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 			const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 
 	/** Destroy the Vulkan layers Messenger */
-	void DestroyDebugUtilsMessengerEXT(
+	void destroyDebugUtilsMessengerEXT(
 			VkInstance instance,
 			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks *pAllocator);
