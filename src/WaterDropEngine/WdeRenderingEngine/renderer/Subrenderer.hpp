@@ -14,7 +14,7 @@ namespace wde::renderEngine {
 			 * Creates a new renderer stage used to render a type of pipeline
 			 * @param stage The stage this renderer will be used in
 			 */
-			Subrenderer(const RenderStage &stage) : _stage(stage) {}
+            explicit Subrenderer(const RenderStage &stage) : _stage(stage) {}
 			virtual ~Subrenderer() = default;
 
 			/**

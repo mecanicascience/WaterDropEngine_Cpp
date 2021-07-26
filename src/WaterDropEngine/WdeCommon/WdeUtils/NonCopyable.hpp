@@ -13,7 +13,7 @@ namespace wde {
 
 
 		protected:
-			NonCopyable() = default;
+            explicit NonCopyable() = default;
 			virtual ~NonCopyable() = default;
 	};
 }

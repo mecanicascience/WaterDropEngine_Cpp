@@ -9,7 +9,7 @@ namespace wde::renderEngine {
 	 */
 	class Pipeline : NonCopyable {
 		public:
-			Pipeline() = default;
+            explicit Pipeline() = default;
 			virtual ~Pipeline() = default;
 
 			/**

@@ -10,7 +10,7 @@
 namespace wde {
 	class WdeException : public std::exception {
 		public:
-			WdeException(std::string message, LoggerChannel channel) : _message{std::move(message)}, _channel{channel} {};
+			explicit WdeException(std::string message, LoggerChannel channel) : _message{std::move(message)}, _channel{channel} {};
 
 			/**
 			 * Describes the error with a verbose message

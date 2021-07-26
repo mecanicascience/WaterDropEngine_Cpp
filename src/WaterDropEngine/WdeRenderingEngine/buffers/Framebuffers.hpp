@@ -19,7 +19,7 @@ namespace wde::renderEngine {
 			 * @param swapchain The frame buffers associated swapchain
 			 * @param depthStencil The associated depth stencil
 			 */
-			Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil);
+			explicit Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil);
 			void cleanUp();
 
 

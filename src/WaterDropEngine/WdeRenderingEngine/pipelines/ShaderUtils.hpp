@@ -8,7 +8,7 @@
 namespace wde::renderEngine {
 	class ShaderUtils {
 		public:
-			ShaderUtils() = default;
+            explicit ShaderUtils() = default;
 
 			// Core functions
 			/**

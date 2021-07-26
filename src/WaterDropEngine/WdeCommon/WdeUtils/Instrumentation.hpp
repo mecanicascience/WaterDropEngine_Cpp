@@ -84,7 +84,7 @@ namespace wde {
 			std::ofstream _outputStream;
 			std::mutex _mutex;
 
-			Instrumentor() : _currentSession(nullptr) { }
+            explicit Instrumentor() : _currentSession(nullptr) { }
 			~Instrumentor() { endSession(); }
 
 			void writeHeader() {
@@ -145,7 +145,7 @@ namespace wde {
 		};
 
 		template <size_t N, size_t K>
-		constexpr auto CleanupOutputString(const char(&expr)[N], const char(&remove)[K]) {
+		constexpr auto cleanupOutputString(const char(&expr)[N], const char(&remove)[K]) {
 			ChangeResult<N> result = {};
 
 			size_t srcIndex = 0;
@@ -166,7 +166,7 @@ namespace wde {
 
 	class Instrumentation {
 		public:
-			Instrumentation(const char* name) {
+            explicit Instrumentation(const char* name) {
 				#ifdef WDE_USE_PROFILING
 					_timerSession = new InstrumentationTimer(name);
 				#endif
@@ -193,7 +193,7 @@ namespace wde {
 	#define WDE_PROFILE_BEGIN_SESSION(name, filepath) Instrumentor::get().beginSession(name, filepath)
 	#define WDE_PROFILE_END_SESSION() Instrumentor::get().endSession()
 
-	#define WDE_PROFILE_SCOPE_LINE2(name, line) constexpr auto fixedName##line = instrumentorUtils::CleanupOutputString(name, "__cdecl ");\
+	#define WDE_PROFILE_SCOPE_LINE2(name, line) constexpr auto fixedName##line = instrumentorUtils::cleanupOutputString(name, "__cdecl ");\
 												   InstrumentationTimer timer##line(fixedName##line.data)
 	#define WDE_PROFILE_SCOPE_LINE(name, line) WDE_PROFILE_SCOPE_LINE2(name, line)
 	#define WDE_PROFILE_SCOPE(name) WDE_PROFILE_SCOPE_LINE(name, __LINE__)

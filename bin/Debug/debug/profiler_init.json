@@ -1,1 +1,1 @@
-{"otherData": {},"traceEvents":[{},{"cat":"function","dur":84022,"name":"void wde::renderEngine::CoreWindow::initialize()","ph":"X","pid":0,"tid":1,"ts":12949452345.500}]}
+{"otherData": {},"traceEvents":[{},{"cat":"function","dur":53242,"name":"void wde::renderEngine::CoreWindow::initialize()","ph":"X","pid":0,"tid":1,"ts":14319960616.700}]}

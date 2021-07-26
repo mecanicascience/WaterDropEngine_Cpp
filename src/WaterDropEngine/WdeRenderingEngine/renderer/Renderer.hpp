@@ -16,7 +16,7 @@ namespace wde::renderEngine {
 			 * Create a new renderer.
 			 * Use this method to create the RenderPass objects to create a list of render pass.
 			 */
-			Renderer() = default;
+            explicit Renderer() = default;
 			virtual ~Renderer() = default;
 
 			void cleanUp() {

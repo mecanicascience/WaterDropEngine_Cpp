@@ -70,7 +70,7 @@ namespace wde::renderEngine {
 
 
 	private:
-			CoreInstance() = default;
+            explicit CoreInstance() = default;
 			~CoreInstance() = default;
 
 

@@ -15,7 +15,7 @@ namespace wde::renderEngine {
 	 */
 	class CoreDevice : NonCopyable {
 		public:
-			CoreDevice(int deviceID, CoreWindow &window, VkInstance &instance, VkSurfaceKHR &surface)
+            explicit CoreDevice(int deviceID, CoreWindow &window, VkInstance &instance, VkSurfaceKHR &surface)
 				: _deviceID{deviceID}, _window{window}, _instance{instance}, _surface{surface} {};
 
 

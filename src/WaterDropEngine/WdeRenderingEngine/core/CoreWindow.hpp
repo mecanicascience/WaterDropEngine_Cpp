@@ -24,7 +24,7 @@ namespace wde::renderEngine {
 		     * @param height
 		     * @param windowName
 		     */
-			CoreWindow(WdeRenderEngine &renderEngine, int width, int height, std::string name)
+            explicit CoreWindow(WdeRenderEngine &renderEngine, int width, int height, std::string name)
 				: _renderEngine{renderEngine}, _width{width}, _height{height}, _windowName{std::move(name)} {};
 
 

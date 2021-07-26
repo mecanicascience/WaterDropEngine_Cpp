@@ -17,7 +17,7 @@ namespace wde::renderEngine {
 			 */
 			class VertexInput {
 				public:
-					VertexInput(std::vector<VkVertexInputBindingDescription> bindingDescriptions, std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
+                    VertexInput(std::vector<VkVertexInputBindingDescription> bindingDescriptions, std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
 							: _bindingDescriptions(std::move(bindingDescriptions)), _attributeDescriptions(std::move(attributeDescriptions)) { }
 
 					const std::vector<VkVertexInputBindingDescription> &getBindingDescriptions() const { return _bindingDescriptions; }
@@ -57,7 +57,7 @@ namespace wde::renderEngine {
 			 * @param vertices
 			 * @param indices
 			 */
-			Model(const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices);
+            explicit Model(const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices);
 			~Model();
 
 

@@ -13,7 +13,7 @@ namespace wde::renderEngine {
 	template<typename T>
 	class TypeInfo {
 		public:
-			TypeInfo() = delete;
+            explicit TypeInfo() = delete;
 
 			/**
 			 * Get the type ID of K which is a base of T.

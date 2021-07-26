@@ -11,7 +11,7 @@ namespace wde::renderEngine {
 			 * @param bindingIndex The index of the sub-pass
 			 * @param attachmentBindingIndices The IDs of the attachments in the render pass that the sub-pass can access to
 			 */
-			RenderSubpassType(uint32_t bindingIndex, std::vector<uint32_t> attachmentBindingIndices):
+             RenderSubpassType(uint32_t bindingIndex, std::vector<uint32_t> attachmentBindingIndices):
 					_bindingIndex(bindingIndex), _attachmentBindingIndices(attachmentBindingIndices) {}
 
 			// Getters and setters

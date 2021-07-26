@@ -12,7 +12,7 @@ namespace wde::renderEngine {
 	class WdeRenderEngine : NonCopyable {
 		public:
 			// Instance
-			WdeRenderEngine() {
+            explicit WdeRenderEngine() {
 				// Creates static instance
 				CoreInstance::get();
 			}

@@ -7,7 +7,7 @@ namespace wde {
 	class WaterDropEngine : NonCopyable {
 		public:
 			/** Creates the engine */
-			WaterDropEngine();
+            explicit WaterDropEngine();
 			/** Initialize the program */
 			WdeStatus initialize();
 			/** Runs the program */

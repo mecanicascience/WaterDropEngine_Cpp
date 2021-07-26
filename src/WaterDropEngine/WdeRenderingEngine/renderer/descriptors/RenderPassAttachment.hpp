@@ -20,7 +20,7 @@ namespace wde::renderEngine {
 			 * @param uniqueName The unique name of the object for all render passes
 			 * @param type The attachment type
 			 */
-			RenderPassAttachment(uint32_t bindingIndex, std::string uniqueName, Type type, const Color &clearColor = Color(0, 0, 0))
+            RenderPassAttachment(uint32_t bindingIndex, std::string uniqueName, Type type, const Color &clearColor = Color(0, 0, 0))
 				: _bindingIndex(bindingIndex), _uniqueName(std::move(uniqueName)), _type(type), _clearColor(clearColor) {}
 
 

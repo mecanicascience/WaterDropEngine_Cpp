@@ -21,7 +21,7 @@ namespace wde::renderEngine {
 			 * @param swapchainFormat
 			 * @param depthFormat
 			 */
-			RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat, VkFormat depthFormat);
+            explicit RenderPassVulkan(RenderPass &pass, VkFormat swapchainFormat, VkFormat depthFormat);
 			/**
 			 * Initialize the Vulkan render pass
 			 * @param swapchainFormat

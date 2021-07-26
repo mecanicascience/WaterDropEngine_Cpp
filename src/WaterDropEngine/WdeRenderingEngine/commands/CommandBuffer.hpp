@@ -14,7 +14,7 @@ namespace wde::renderEngine {
 			 * @param begin If true, the program will start recording the command buffer
 			 * @param bufferLevel The level of the command buffer (Primary or Secondary) - Default is primary
 			 */
-			CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
+            explicit CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
 			~CommandBuffer() = default;
 
 			void initialize(bool begin);

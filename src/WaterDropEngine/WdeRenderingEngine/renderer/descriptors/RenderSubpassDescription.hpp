@@ -6,7 +6,7 @@ namespace wde::renderEngine {
 	 */
 	class RenderSubpassDescription {
 		public:
-			RenderSubpassDescription(VkPipelineBindPoint bindPoint, std::vector<VkAttachmentReference> colorAttachments, const std::optional<uint32_t> &depthAttachment)
+            explicit RenderSubpassDescription(VkPipelineBindPoint bindPoint, std::vector<VkAttachmentReference> colorAttachments, const std::optional<uint32_t> &depthAttachment)
 					: _colorAttachments(std::move(colorAttachments)) {
 				_subpassDescription.pipelineBindPoint = bindPoint;
 				_subpassDescription.colorAttachmentCount = static_cast<uint32_t>(_colorAttachments.size());

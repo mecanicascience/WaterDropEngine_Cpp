@@ -11,7 +11,7 @@ namespace wde::renderEngine {
 	class CommandPool {
 		public:
 			// Core functions
-			CommandPool(const std::thread::id &threadID);
+            explicit CommandPool(const std::thread::id &threadID);
 			~CommandPool() = default;
 
 			void cleanUp();
