@@ -3,7 +3,7 @@
 namespace wde {
 	WaterDropEngine::WaterDropEngine() {
 		try {
-			WDE_PROFILE_BEGIN_SESSION("Initialization", "debug/profiler_init.json");
+			WDE_PROFILE_BEGIN_SESSION("Initialization", "logs/profiler_init.json");
 			Logger::forceLog("======== Initializing program ========", LoggerChannel::MAIN);
 
 			// Create WaterDropEngine instance
@@ -40,7 +40,7 @@ namespace wde {
 
 	WdeStatus WaterDropEngine::run() {
 		try {
-			WDE_PROFILE_BEGIN_SESSION("Running", "debug/profiler_run.json");
+			WDE_PROFILE_BEGIN_SESSION("Running", "logs/profiler_run.json");
 			// Starts instance
 			Logger::debug("======== Starting program ========", LoggerChannel::MAIN);
 			if (_instance->run() != WdeStatus::WDE_SUCCESS)
@@ -50,7 +50,7 @@ namespace wde {
 
 
 
-			WDE_PROFILE_BEGIN_SESSION("Cleaning", "debug/profiler_clean.json");
+			WDE_PROFILE_BEGIN_SESSION("Cleaning", "logs/profiler_cleanup.json");
 			// CleanUp instance
 			Logger::debug("======== Cleaning up ========", LoggerChannel::MAIN);
 			if (_instance->cleanUp() != WdeStatus::WDE_SUCCESS)

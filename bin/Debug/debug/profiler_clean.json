@@ -1,1 +1,0 @@
-{"otherData": {},"traceEvents":[{},{"cat":"function","dur":22636,"name":"void wde::renderEngine::CoreWindow::cleanUp()","ph":"X","pid":0,"tid":1,"ts":14323521757.200}]}
