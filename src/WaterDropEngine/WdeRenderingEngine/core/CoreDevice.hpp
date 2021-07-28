@@ -8,6 +8,7 @@
 #include "../renderer/passes/SwapChain.hpp"
 #include "../renderer/descriptors/RenderStage.hpp"
 #include "../renderer/passes/RenderPass.hpp"
+#include "../utils/FPSUtils.hpp"
 
 namespace wde::renderEngine {
 	/**
@@ -40,12 +41,8 @@ namespace wde::renderEngine {
 			/** @return true is the device supports every required instructions */
 			bool isDeviceSuitable() { return CoreDeviceHelper::isDeviceSuitable(_physicalDevice, _deviceExtensions); };
 
-			/**
-			 * Starts a new render pass
-			 * @param renderPass The corresponding render pass
-			 * @return false If the render pass is out of date
-			 */
-			bool startRenderPass(RenderPass &renderPass);
+			/** Starts a new render pass */
+			void startRenderPass(RenderPass &renderPass);
 			/** Ends the given render pass */
 			void endRenderPass(RenderPass &renderPass);
 

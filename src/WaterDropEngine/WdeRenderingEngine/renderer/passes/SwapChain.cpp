@@ -152,9 +152,12 @@ namespace wde::renderEngine {
 	// Helper
 	VkResult SwapChain::aquireNextImage(VkFence &inFlightFence, VkSemaphore &imageAvailableSemaphore) {
         WDE_PROFILE_FUNCTION();
+        auto* timer = new Instrumentation("wde::renderEngine::acquireNextImage::vkWaitForFences");
 		// Wait for the current frame being rendered at the current frame index
 		vkWaitForFences(CoreInstance::get().getSelectedDevice().getDevice(), 1, &inFlightFence, VK_TRUE, UINT64_MAX);
+		delete timer;
 
+        auto* timer2 = new Instrumentation("wde::renderEngine::acquireNextImage::vkAcquireNextImageKHR");
 		VkResult acquireResult = vkAcquireNextImageKHR(
 				CoreInstance::get().getSelectedDevice().getDevice(),
 				_swapChain,
@@ -162,6 +165,7 @@ namespace wde::renderEngine {
 				imageAvailableSemaphore, // signaled when presentation engine finished using image
 				VK_NULL_HANDLE,
 				&_activeImageIndex); // output index of swap chain image that became available (frame is at swapChainImages[imageIndex])
+        delete timer2;
 
 		if (acquireResult != VK_SUCCESS && acquireResult != VK_SUBOPTIMAL_KHR)
 			throw WdeException("Failed to acquire swap chain image.", LoggerChannel::RENDERING_ENGINE);

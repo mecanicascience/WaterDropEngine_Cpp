@@ -19,6 +19,7 @@ namespace wde::renderEngine {
 
 	void CoreDevice::draw() {
         WDE_PROFILE_FUNCTION();
+
 		// Recreate the swapChain if needed (like if a user resized the window)
 		if (_shouldRecreateSwapchain) {
 			CoreInstance::get().recreateSwapChain();
@@ -48,8 +49,7 @@ namespace wde::renderEngine {
 		for (auto &renderPass : instance.getRenderer()->getRenderPasses()) {
 			// Starts render pass
 			Logger::debug("= Starting render pass =", LoggerChannel::RENDERING_ENGINE);
-			if (!startRenderPass(*renderPass))
-				return;
+			startRenderPass(*renderPass);
 
 			// Render sub passes
 			auto &commandBuffer = instance.getCommandBuffers()[_swapchain.getActiveImageIndex()];
@@ -71,6 +71,10 @@ namespace wde::renderEngine {
 			endRenderPass(*renderPass);
 			stage.first++;
 		}
+
+		// Updating FPS
+		FPSUtils::update();
+		Logger::debug("Current average FPS : " + std::to_string(FPSUtils::getFPS()) + ".", LoggerChannel::RENDERING_ENGINE);
 	}
 
 	void CoreDevice::cleanUp() {
@@ -85,7 +89,7 @@ namespace wde::renderEngine {
 
 
 	// Helper functions
-	bool CoreDevice::startRenderPass(RenderPass &renderPass) {
+	void CoreDevice::startRenderPass(RenderPass &renderPass) {
         WDE_PROFILE_FUNCTION();
 		auto &commandBuffer = CoreInstance::get().getCommandBuffers()[_swapchain.getActiveImageIndex()];
 
@@ -124,8 +128,6 @@ namespace wde::renderEngine {
 		renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
 		renderPassBeginInfo.pClearValues = clearValues.data();
 		vkCmdBeginRenderPass(*commandBuffer, &renderPassBeginInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-		return true;
 	}
 
 	void CoreDevice::endRenderPass(RenderPass &renderPass) {
