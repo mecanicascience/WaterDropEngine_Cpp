@@ -22,6 +22,9 @@ namespace wde::renderEngine {
 		// Destroy index buffers
 		vkDestroyBuffer(device, _indexBuffer, nullptr);
 		vkFreeMemory(device, _indexBufferMemory, nullptr);
+
+		// Delete command buffer reference
+		_commandBuffer = nullptr;
 	}
 
 
@@ -67,8 +70,10 @@ namespace wde::renderEngine {
 	}
 
 
-	void Model::render(const CommandBuffer &commandBuffer) {
-        WDE_PROFILE_FUNCTION();
+	void Model::bind(CommandBuffer &commandBuffer) {
+		WDE_PROFILE_FUNCTION();
+		_commandBuffer = &commandBuffer;
+
 		// Bind our vertex into the commandBuffer with index of offsets[]
 		VkBuffer vertexBuffers[] = { _vertexBuffer };
 		VkDeviceSize offsets[] = { 0 };
@@ -76,8 +81,12 @@ namespace wde::renderEngine {
 
 		// Bind index buffers into the commandBuffer with index of offsets[]
 		vkCmdBindIndexBuffer(commandBuffer, _indexBuffer, 0, VK_INDEX_TYPE_UINT16); // VK_INDEX_TYPE_UINT16 or VK_INDEX_TYPE_UINT32
+	}
+
+	void Model::render() {
+        WDE_PROFILE_FUNCTION();
 
 		// Add the draw command to the command buffer
-		vkCmdDrawIndexed(commandBuffer, _indexCount, 1, 0, 0, 0);
+		vkCmdDrawIndexed(*_commandBuffer, _indexCount, 1, 0, 0, 0);
 	}
 }

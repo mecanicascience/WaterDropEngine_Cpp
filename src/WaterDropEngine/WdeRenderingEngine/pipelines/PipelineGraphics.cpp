@@ -2,11 +2,23 @@
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	PipelineGraphics::PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<Model::VertexInput> vertexInputs, Depth depthMode,
-		      VkPrimitiveTopology vertexTopology, VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation)
-			: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _depthMode(depthMode),
-			  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _normalOrientation(normalOrientation), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {
+	PipelineGraphics::~PipelineGraphics() {
         WDE_PROFILE_FUNCTION();
+		// Destroy shader modules
+		auto device = CoreInstance::get().getSelectedDevice().getDevice();
+		for (const auto &shaderModule : _shaderModules)
+			vkDestroyShaderModule(device, shaderModule, nullptr);
+
+		// Destroy pipeline
+		vkDestroyPipeline(device, _pipeline, nullptr);
+		vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
+
+		// Destroy command buffer reference
+		_commandBuffer = nullptr;
+	}
+
+	void PipelineGraphics::initialize() {
+		WDE_PROFILE_FUNCTION();
 
 		// Sorts the vertices
 		std::sort(_vertexInputs.begin(), _vertexInputs.end());
@@ -22,18 +34,9 @@ namespace wde::renderEngine {
 
 		// Create the pipeline
 		createPipeline();
-	}
 
-	PipelineGraphics::~PipelineGraphics() {
-        WDE_PROFILE_FUNCTION();
-		// Destroy shader modules
-		auto device = CoreInstance::get().getSelectedDevice().getDevice();
-		for (const auto &shaderModule : _shaderModules)
-			vkDestroyShaderModule(device, shaderModule, nullptr);
-
-		// Destroy pipeline
-		vkDestroyPipeline(device, _pipeline, nullptr);
-		vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
+		// Set pipeline initialized status
+		_initialized = true;
 	}
 
 
@@ -66,10 +69,10 @@ namespace wde::renderEngine {
         WDE_PROFILE_FUNCTION();
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
 		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+		pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(_pushConstantsValues.size());
+		pipelineLayoutCreateInfo.pPushConstantRanges = _pushConstantsValues.data();
 		pipelineLayoutCreateInfo.setLayoutCount = 0; // Optional
 		pipelineLayoutCreateInfo.pSetLayouts = nullptr; // Optional
-		pipelineLayoutCreateInfo.pushConstantRangeCount = 0; // Optional
-		pipelineLayoutCreateInfo.pPushConstantRanges = nullptr; // Optional
 
 		// Create layout
 		if (vkCreatePipelineLayout(CoreInstance::get().getSelectedDevice().getDevice(), &pipelineLayoutCreateInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)

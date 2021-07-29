@@ -3,6 +3,7 @@
 #include "../src/WaterDropEngine/WdeRenderingEngine/renderer/Subrenderer.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/structures/Model.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/structures/GameObject.hpp"
 
 namespace wde::renderEngine {
 	class CoreAppSubrenderer : public Subrenderer {
@@ -11,15 +12,15 @@ namespace wde::renderEngine {
 			explicit CoreAppSubrenderer(const RenderStage &stage);
 
 			/** Records commands on the given command buffer */
-			void render(const CommandBuffer &commandBuffer) override;
+			void render(CommandBuffer &commandBuffer) override;
 
-			// Set model
-			void setModel(std::unique_ptr<Model> &&model) { _model = std::move(model); }
+			// Add a game object to the list
+			void addGameObject(GameObject& gameObject) { _gameObjects.push_back(gameObject); }
 
 		private:
 			/** The rendering graphics pipeline */
 			PipelineGraphics _pipeline;
-			/** The element model */
-			std::unique_ptr<Model> _model;
+			/** The rendered game objects */
+			std::vector<GameObject> _gameObjects;
 	};
 }

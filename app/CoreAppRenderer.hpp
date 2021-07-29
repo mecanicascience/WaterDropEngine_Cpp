@@ -6,6 +6,7 @@
 #include "../src/WaterDropEngine/WdeRenderingEngine/renderer/passes/RenderPass.hpp"
 #include "../src/WaterDropEngine/WdeCommon/WdeMaths/Color.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/structures/Model.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/structures/GameObject.hpp"
 
 #include "CoreAppSubrenderer.hpp"
 

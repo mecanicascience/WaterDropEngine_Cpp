@@ -63,10 +63,13 @@ namespace wde::renderEngine {
 
 			// Core functions
 			/**
-			 * Renders the model to the provided command buffer
+			 * Binds the model to the provided command buffer
 			 * @param commandBuffer
 			 */
-			void render(const CommandBuffer &commandBuffer);
+			void bind(CommandBuffer &commandBuffer);
+
+			/** Renders the model to the provided command buffer */
+			void render();
 
 
 		private:
@@ -84,6 +87,9 @@ namespace wde::renderEngine {
 			VkBuffer _indexBuffer;
 			/** The memory used by the index buffer */
 			VkDeviceMemory _indexBufferMemory;
+
+			/** The last binded command buffer */
+			CommandBuffer *_commandBuffer = nullptr;
 
 
 			// Core functions

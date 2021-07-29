@@ -7,7 +7,7 @@ void CoreAppRenderer::initialize() {
             // Creates a depth image
             {0, "Depth attachment", RenderPassAttachment::Type::Depth},
             // Creates a reference to the swapchain images at the index of 1
-            {1, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, Color(0, 0, 0)}
+            {1, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, Color(0.01f, 0.01f, 0.01f)}
 	};
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
@@ -20,17 +20,28 @@ void CoreAppRenderer::initialize() {
 }
 
 void CoreAppRenderer::start() {
-	// Create a simple rectangle model
-	std::vector<Model::Vertex> vertices = {
-			{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-			{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-			{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-			{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-	};
-	std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
-	auto rectangleModel = std::make_unique<Model>(vertices, indices);
-
 	// Adds a sub render stage to renderer in the render pass 0, and the sub-pass 0
 	auto squareSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
-	squareSubrenderer->setModel(std::move(rectangleModel));
+
+
+	// Create corresponding rectangles
+	for (int i = 0; i < 10; i++) {
+		// Create a simple rectangle model
+		std::vector<Model::Vertex> vertices = {
+				{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
+				{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
+				{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
+				{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
+		};
+		std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
+		auto rectangleModel = std::make_shared<Model>(vertices, indices);
+
+		// Set rectangle initial push constants
+		auto rectangle = GameObject::createGameObject();
+		rectangle.model = rectangleModel;
+		rectangle.transform2D.translation.x = 0.2f;
+		rectangle.transform2D.scale.y = 1.0f;
+		rectangle.transform2D.rotation = 0.25f * 3.14125f;
+		squareSubrenderer->addGameObject(rectangle);
+	}
 }

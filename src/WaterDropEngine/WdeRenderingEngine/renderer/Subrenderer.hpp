@@ -21,7 +21,7 @@ namespace wde::renderEngine {
 			 * Renders the sub-renderer on the provided command buffer
 			 * @param commandBuffer
 			 */
-			virtual void render(const CommandBuffer &commandBuffer) = 0;
+			virtual void render(CommandBuffer &commandBuffer) = 0;
 
 
 			// Getters and setters
