@@ -46,6 +46,7 @@ namespace wde::renderEngine {
 		// Specify used device extensions (allow queues, renderer and optionally validation layers)
 		VkPhysicalDeviceFeatures deviceFeatures = {};
 		deviceFeatures.samplerAnisotropy = VK_TRUE;
+		deviceFeatures.fillModeNonSolid = VK_TRUE;
 
 		VkDeviceCreateInfo createInfo = {};
 		createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

@@ -5,11 +5,14 @@
 #include <glm/glm.hpp>
 #include <vector>
 #include <vulkan/vulkan_core.h>
+#include <glm/gtc/matrix_transform.hpp>
 
-#include "../commands/CommandBuffer.hpp"
-#include "../buffers/BufferUtils.hpp"
+#include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
+#include "../../WdeRenderingEngine/buffers/BufferUtils.hpp"
 
-namespace wde::renderEngine {
+using namespace wde::renderEngine;
+
+namespace wde::renderStructures {
 	class Model {
 		public:
 			/**
@@ -35,7 +38,7 @@ namespace wde::renderEngine {
 
 			// Structures
 			struct Vertex {
-				glm::vec2 position;
+				glm::vec3 position;
 				glm::vec3 color;
 
 				static VertexInput getDescriptions(uint32_t baseBinding = 0) {
@@ -43,7 +46,7 @@ namespace wde::renderEngine {
 							{baseBinding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX}
 					};
 					std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
-							{0, baseBinding, VK_FORMAT_R32G32_SFLOAT, offsetof(Vertex, position)}, // Vertex position values (at index 0)
+							{0, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)}, // Vertex position values (at index 0)
 							{1, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)}  // Vertex color values (at index 1)
 					};
 					return { bindingDescriptions, attributeDescriptions };
@@ -57,7 +60,7 @@ namespace wde::renderEngine {
 			 * @param vertices
 			 * @param indices
 			 */
-            explicit Model(const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices);
+            explicit Model(const std::vector<Vertex> vertices, const std::vector<uint16_t> indices);
 			~Model();
 
 

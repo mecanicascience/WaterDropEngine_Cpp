@@ -28,6 +28,7 @@ namespace wde::renderEngine {
 			uint32_t getActiveImageIndex() const { return _activeImageIndex; }
 			std::vector<VkImageView> &getImageViews() { return _swapChainImageViews; }
 			VkExtent2D& getExtent() { return _swapChainExtent; }
+			float getAspectRatio() const { return static_cast<float>(_swapChainExtent.width) / static_cast<float>(_swapChainExtent.height); }
 
 			// Helpers
 			/**

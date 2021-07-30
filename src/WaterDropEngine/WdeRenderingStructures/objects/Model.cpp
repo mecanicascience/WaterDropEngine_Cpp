@@ -1,8 +1,8 @@
 #include "Model.hpp"
-#include "../core/CoreInstance.hpp"
+#include "../../WdeRenderingEngine/core/CoreInstance.hpp"
 
-namespace wde::renderEngine {
-	Model::Model(const std::vector<Vertex> &vertices, const std::vector<uint16_t> &indices) {
+namespace wde::renderStructures {
+	Model::Model(const std::vector<Vertex> vertices, const std::vector<uint16_t> indices) {
         WDE_PROFILE_FUNCTION();
 		// Set the vertices
 		createVertexBuffers(vertices);

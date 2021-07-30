@@ -2,25 +2,29 @@
 
 #include "../src/WaterDropEngine/WdeRenderingEngine/renderer/Subrenderer.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/structures/Model.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/structures/GameObject.hpp"
+#include "../src/WaterDropEngine/WdeRenderingStructures/objects/Model.hpp"
+#include "../src/WaterDropEngine/WdeRenderingStructures/objects/GameObject.hpp"
+#include "../src/WaterDropEngine/WdeRenderingStructures/camera/Camera.hpp"
 
-namespace wde::renderEngine {
-	class CoreAppSubrenderer : public Subrenderer {
-		public:
-			/** Creates the renderer given the stage */
-			explicit CoreAppSubrenderer(const RenderStage &stage);
+using namespace wde::renderEngine;
+using namespace wde::renderStructures;
 
-			/** Records commands on the given command buffer */
-			void render(CommandBuffer &commandBuffer) override;
+class CoreAppSubrenderer : public Subrenderer {
+	public:
+		/** Creates the renderer given the stage */
+		explicit CoreAppSubrenderer(const RenderStage &stage);
 
-			// Add a game object to the list
-			void addGameObject(GameObject& gameObject) { _gameObjects.push_back(gameObject); }
+		/** Records commands on the given command buffer */
+		void render(CommandBuffer &commandBuffer) override;
 
-		private:
-			/** The rendering graphics pipeline */
-			PipelineGraphics _pipeline;
-			/** The rendered game objects */
-			std::vector<GameObject> _gameObjects;
-	};
-}
+		// Add a game object to the list
+		void addGameObject(GameObject& gameObject) { _gameObjects.push_back(gameObject); }
+
+	private:
+		/** The rendering graphics pipeline */
+		PipelineGraphics _pipeline;
+		/** The rendered game objects */
+		std::vector<GameObject> _gameObjects;
+
+		Camera _camera;
+};

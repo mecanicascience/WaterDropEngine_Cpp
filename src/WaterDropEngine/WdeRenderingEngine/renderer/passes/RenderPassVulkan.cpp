@@ -9,7 +9,7 @@ namespace wde::renderEngine {
 
 	void RenderPassVulkan::initialize(VkFormat swapchainFormat, VkFormat depthFormat) {
         WDE_PROFILE_FUNCTION();
-		// Creates the render passes attachments description structures
+		// Creates the render passes attachments description objects
 		std::vector<VkAttachmentDescription> attachmentDescriptions;
 
 		for (const auto &attachment : _pass.getAttachments()) {

@@ -21,27 +21,54 @@ void CoreAppRenderer::initialize() {
 
 void CoreAppRenderer::start() {
 	// Adds a sub render stage to renderer in the render pass 0, and the sub-pass 0
-	auto squareSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
+	auto cubeSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
 
+	// Create a simple cube model
+	std::vector<Model::Vertex> cubeVertices {
+			// left face (white)
+			{{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+			{{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+			{{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
 
-	// Create corresponding rectangles
-	for (int i = 0; i < 10; i++) {
-		// Create a simple rectangle model
-		std::vector<Model::Vertex> vertices = {
-				{{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},
-				{{0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}},
-				{{0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}},
-				{{-0.5f, 0.5f}, {1.0f, 1.0f, 1.0f}}
-		};
-		std::vector<uint16_t> indices = { 0, 1, 2, 2, 3, 0 };
-		auto rectangleModel = std::make_shared<Model>(vertices, indices);
+			// right face (yellow)
+			{{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+			{{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
 
-		// Set rectangle initial push constants
-		auto rectangle = GameObject::createGameObject();
-		rectangle.model = rectangleModel;
-		rectangle.transform2D.translation.x = 0.2f;
-		rectangle.transform2D.scale.y = 1.0f;
-		rectangle.transform2D.rotation = 0.25f * 3.14125f;
-		squareSubrenderer->addGameObject(rectangle);
-	}
+			// top face (orange, remember y axis points down)
+			{{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+			{{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+			{{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+
+			// bottom face (red)
+			{{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+			{{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+			{{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+
+			// nose face (blue)
+			{{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+			{{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+			{{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+
+			// tail face (green)
+			{{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+			{{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+			{{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+	};
+	std::vector<uint16_t> cubeIndices = { 0,  1,  2,  0,  3,  1,  4,  5,  6,  4,  7,  5,  8,  9,  10, 8,  11, 9,
+	                                     12, 13, 14, 12, 15, 13, 16, 17, 18, 16, 19, 17, 20, 21, 22, 20, 23, 21 };
+	auto cubeModel = std::make_shared<Model>(cubeVertices, cubeIndices);
+
+	// Set rectangle initial push constants
+	auto cube = GameObject::createGameObject();
+	cube.model = cubeModel;
+	cube.transform.translation = {0.0f, 0.0f, 2.5f};
+	cube.transform.scale = {0.5f, 0.5f, 0.5f};
+	cubeSubrenderer->addGameObject(cube);
 }
