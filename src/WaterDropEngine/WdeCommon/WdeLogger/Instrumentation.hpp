@@ -9,7 +9,7 @@
 #include <mutex>
 #include <sstream>
 
-#include "NonCopyable.hpp"
+#include "../WdeUtils/NonCopyable.hpp"
 
 
 // Creates logs into logs/ that can be viewed in chrome://tracing/
