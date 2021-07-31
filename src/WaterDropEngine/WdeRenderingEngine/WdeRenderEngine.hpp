@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../WdeCore/WdeModule.hpp"
 #include "../../wde.hpp"
 #include "core/CoreWindow.hpp"
 #include "core/CoreInstance.hpp"
@@ -9,31 +10,25 @@ namespace wde::renderEngine {
 	/**
 	 * The unique main render engine class.
 	 */
-	class WdeRenderEngine : NonCopyable {
+	class WdeRenderEngine : public WdeModule::Module<WdeRenderEngine> {
+		// Register module
+		inline static const int MODULE_REGISTERED = RegisterModule("renderEngine", Stage::RENDER);
+
 		public:
-			// Instance
-            explicit WdeRenderEngine() {
-				// Creates static instance
-				CoreInstance::get();
-			}
-
-
 			// Core functions
 			/** Creates a new renderer engine instance */
-			void initialize();
+			void initialize() override;
 			/** Called when a new tick on the gameLoop happen */
-			void tick();
+			void tick() override;
+			/** Cleans up the renderer engine instance */
+			void cleanUp() override;
+
 			/** Draws the next frame to the screen */
 			static void draw();
-			/** Cleans up the renderer engine instance */
-			void cleanUp();
 
 
-			// Helper functions
-			/** @return true if the application must stop */
-			bool shouldEnd();
-			/** Wait until every devices are done finishing their jobs */
-			void waitForDevicesReady();
+			// Getters and setters
+			static CoreInstance& get() { return CoreInstance::get(); }
 
 
 

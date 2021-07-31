@@ -7,7 +7,7 @@ WdeStatus CoreApp::initialize() {
 	WaterDropEngine engine {};
 
 	// Set renderer
-	renderEngine::CoreInstance::get().setRenderer(std::make_unique<CoreAppRenderer>());
+	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<CoreAppRenderer>());
 
 	// Initialize main engine
 	WdeStatus statusInit = engine.initialize();

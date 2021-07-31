@@ -2,6 +2,7 @@
 
 #include "CoreAppRenderer.hpp"
 #include "../src/WaterDropEngine/WaterDropEngine.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/WdeRenderEngine.hpp"
 
 using namespace wde;
 class CoreApp {

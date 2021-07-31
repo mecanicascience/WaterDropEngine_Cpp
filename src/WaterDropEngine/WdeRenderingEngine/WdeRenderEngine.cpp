@@ -36,17 +36,4 @@ namespace wde::renderEngine {
 		_window.cleanUp();
 		Logger::debug("== Cleaning up Done ==", LoggerChannel::RENDERING_ENGINE);
 	}
-
-
-
-
-	// Helper functions
-	bool WdeRenderEngine::shouldEnd() {
-		return _window.shouldClose();
-	}
-
-	void WdeRenderEngine::waitForDevicesReady() {
-        WDE_PROFILE_FUNCTION();
-		CoreInstance::get().waitForDevicesReady();
-	}
 }

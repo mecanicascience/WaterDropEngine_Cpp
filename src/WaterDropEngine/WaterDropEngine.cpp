@@ -11,8 +11,8 @@ namespace wde {
             std::vector<LoggerChannel> activatedChannels = { LoggerChannel::MAIN, LoggerChannel::RENDERING_ENGINE, LoggerChannel::COMMON };
             Logger::initialize("logs/", logLevel, activatedChannels);
 
-            Logger::debug("======== Initializing program ========", LoggerChannel::MAIN);
 
+            Logger::debug("======== Initializing program ========", LoggerChannel::MAIN);
             // Create WaterDropEngine instance
 			_instance = std::make_unique<WdeInstance>();
 		}
