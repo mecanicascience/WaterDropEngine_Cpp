@@ -34,9 +34,8 @@ namespace wde::renderEngine {
 			/** Setup the corresponding physical device */
 			static void setupPhysicalDevice(int deviceID, VkPhysicalDevice &physicalDevice);
 			/** Setup the logical device to interact with the physical device */
-			static void setupLogicalDeviceAndQueues(VkPhysicalDevice &physicalDevice, VkDevice &device, VkQueue &graphicsQueue, VkQueue &presentQueue, const std::vector<const char *> &deviceExtensions);
-			/** Setup the rendering engine command pool */
-			static void setupCommandPool(VkPhysicalDevice &physicalDevice, VkDevice &device, VkCommandPool &commandPool);
+			static void setupLogicalDeviceAndQueues(VkPhysicalDevice &physicalDevice, VkDevice &device, VkQueue &graphicsQueue, VkQueue &presentQueue,
+													const std::vector<const char *> &deviceExtensions, const std::vector<const char *> &validationLayers);
 
 
 			// Helper functions

@@ -67,7 +67,7 @@ namespace wde::renderEngine {
 				auto attachment = _pass.getAttachment(attachmentBinding);
 
 				if (!attachment) {
-					Logger::err("Failed to find a render pass attachment bound to an attachment binding.", LoggerChannel::RENDERING_ENGINE);
+					Logger::err("Failed to find the attachment of ID " + std::to_string(attachmentBinding) + ".", LoggerChannel::RENDERING_ENGINE);
 					continue;
 				}
 

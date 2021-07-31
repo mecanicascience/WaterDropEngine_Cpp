@@ -10,7 +10,7 @@ namespace wde::renderEngine {
 		Logger::debug("Binding physical device.", LoggerChannel::RENDERING_ENGINE);
 		CoreDeviceHelper::setupPhysicalDevice(_deviceID, _physicalDevice);
 		Logger::debug("Binding logical device and queues.", LoggerChannel::RENDERING_ENGINE);
-		CoreDeviceHelper::setupLogicalDeviceAndQueues(_physicalDevice, _device, _graphicsQueue, _presentQueue, _deviceExtensions);
+		CoreDeviceHelper::setupLogicalDeviceAndQueues(_physicalDevice, _device, _graphicsQueue, _presentQueue, _deviceExtensions, CoreInstance::get().getValidationLayers());
 
 		// Create swapchain
 		Logger::debug("= Initializing swapchain of device " + std::to_string(_deviceID) + " =", LoggerChannel::RENDERING_ENGINE);

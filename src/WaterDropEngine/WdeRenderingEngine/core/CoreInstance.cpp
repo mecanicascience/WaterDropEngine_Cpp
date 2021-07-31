@@ -2,6 +2,12 @@
 #include "CoreInstance.hpp"
 
 namespace wde::renderEngine {
+	/**
+	 * Initializing validation layers list
+	 */
+	const std::vector<const char *> CoreInstance::_validationLayers = { "VK_LAYER_KHRONOS_validation" };
+
+
 	CoreInstance& CoreInstance::get() {
 		static CoreInstance m_instance;
 		return m_instance;

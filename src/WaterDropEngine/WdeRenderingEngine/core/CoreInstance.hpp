@@ -178,10 +178,4 @@ namespace wde::renderEngine {
 			VkInstance instance,
 			VkDebugUtilsMessengerEXT debugMessenger,
 			const VkAllocationCallbacks *pAllocator);
-
-
-	/**
-	 * Initializing validation layers list
-	 */
-    const std::vector<const char *> CoreInstance::_validationLayers = { "VK_LAYER_KHRONOS_validation" };
 }

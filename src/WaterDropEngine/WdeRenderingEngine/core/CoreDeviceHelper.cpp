@@ -24,7 +24,7 @@ namespace wde::renderEngine {
 		}
 	}
 
-	void CoreDeviceHelper::setupLogicalDeviceAndQueues(VkPhysicalDevice &physicalDevice, VkDevice &device, VkQueue &graphicsQueue, VkQueue &presentQueue, const std::vector<const char *> &deviceExtensions) {
+	void CoreDeviceHelper::setupLogicalDeviceAndQueues(VkPhysicalDevice &physicalDevice, VkDevice &device, VkQueue &graphicsQueue, VkQueue &presentQueue, const std::vector<const char *> &deviceExtensions, const std::vector<const char *> &validationLayers) {
         WDE_PROFILE_FUNCTION();
 	    // Get allowed devices queues types
 		QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
@@ -60,8 +60,8 @@ namespace wde::renderEngine {
 
 		// Say to device we use validation layers
 		if (CoreInstance::get().enableValidationLayers()) {
-			createInfo.enabledLayerCount = static_cast<uint32_t>(CoreInstance::get().getValidationLayers().size());
-			createInfo.ppEnabledLayerNames = CoreInstance::get().getValidationLayers().data();
+			createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+			createInfo.ppEnabledLayerNames = validationLayers.data();
 		}
 		else {
 			createInfo.enabledLayerCount = 0;

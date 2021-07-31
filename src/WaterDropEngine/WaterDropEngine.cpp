@@ -17,7 +17,6 @@ namespace wde {
 			_instance = std::make_unique<WdeInstance>();
 		}
 		catch (const WdeException &e) {
-			Logger::err("", LoggerChannel::MAIN);
 			Logger::err(e.what(), e.getChannel());
 		}
 	}
@@ -33,9 +32,7 @@ namespace wde {
 			WDE_PROFILE_END_SESSION();
 		}
 		catch (const WdeException &e) {
-			Logger::err("", LoggerChannel::MAIN);
 			Logger::err(e.what(), e.getChannel());
-			return WdeStatus::WDE_ERROR;
 		}
 
 		return WdeStatus::WDE_SUCCESS;
@@ -65,9 +62,7 @@ namespace wde {
 			WDE_PROFILE_END_SESSION();
 		}
 		catch (const WdeException &e) {
-			Logger::err("", LoggerChannel::MAIN);
 			Logger::err(e.what(), e.getChannel());
-			return WdeStatus::WDE_ERROR;
 		}
 
 		return WdeStatus::WDE_SUCCESS;

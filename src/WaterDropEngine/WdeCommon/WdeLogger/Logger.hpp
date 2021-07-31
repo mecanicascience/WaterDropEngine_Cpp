@@ -8,6 +8,7 @@
 #include <fstream>
 #include <chrono>
 #include "../WdeUtils/Constants.hpp"
+#include "../WdeError/WdeStatus.hpp"
 
 namespace wde {
 	/** List of different LoggerChannels */
