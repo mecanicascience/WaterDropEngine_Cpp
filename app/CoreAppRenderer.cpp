@@ -11,7 +11,8 @@ void CoreAppRenderer::initialize() {
 	};
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
-			{0, { 0, 1, 2 }} // create a sub-pass that has the attachment number 0 previously declared
+			// Create a sub-pass that has the attachment number 0 previously declared
+			{0, { 0, 1 }}
 	};
 
 	// Creates the render pass 0

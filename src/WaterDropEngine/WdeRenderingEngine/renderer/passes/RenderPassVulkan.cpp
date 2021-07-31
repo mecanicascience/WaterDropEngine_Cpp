@@ -55,21 +55,19 @@ namespace wde::renderEngine {
 
 
 
-		// Create each sub-passes and attachments
+		// Create sub-passes informations
 		std::vector<std::unique_ptr<RenderSubpassDescription>> subpasses;
 		std::vector<VkSubpassDependency> dependencies;
 		for (const auto &subpassType : _pass.getSubpasses()) {
-			// Create Attachments
+			// == Sub-pass attachments references ==
 			std::vector<VkAttachmentReference> subpassColorAttachments;
 			std::optional<uint32_t> depthAttachment;
 
+			auto bindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS; // graphics or compute point
 			for (const auto &attachmentBinding : subpassType.getAttachmentBindingIndices()) {
 				auto attachment = _pass.getAttachment(attachmentBinding);
-
-				if (!attachment) {
+				if (!attachment)
 					Logger::err("Failed to find the attachment of ID " + std::to_string(attachmentBinding) + ".", LoggerChannel::RENDERING_ENGINE);
-					continue;
-				}
 
 				if (attachment->getType() == RenderPassAttachment::Type::Depth) {
 					depthAttachment = attachment->getBindingIndex();
@@ -77,44 +75,41 @@ namespace wde::renderEngine {
 				}
 
 				VkAttachmentReference attachmentReference = {};
-				attachmentReference.attachment = attachment->getBindingIndex(); // Refer to attachment at index X in array
+				attachmentReference.attachment = attachment->getBindingIndex(); // Shader can access attachment at specified index
 				attachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // Layout after sub-render pass to auto transition to
 				subpassColorAttachments.emplace_back(attachmentReference);
 			}
+			// Set sub-pass attachment description
+			subpasses.emplace_back(std::make_unique<RenderSubpassDescription>(bindPoint, subpassColorAttachments, depthAttachment));
 
-			// Sub-pass description
-			subpasses.emplace_back(std::make_unique<RenderSubpassDescription>(VK_PIPELINE_BIND_POINT_GRAPHICS, subpassColorAttachments, depthAttachment));
 
-			// Sub-pass dependencies
+
+			// == Sub-pass dependencies ==
 			VkSubpassDependency subpassDependency = {};
-			subpassDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			subpassDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			subpassDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-			subpassDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			// Sub-pass sources and destinations (src : previous sub-pass,  dst : current sub-pass)
+			if (subpassType.getBindingIndex() == 0) { // First sub-pass u0
+				subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+				subpassDependency.dstSubpass = subpassType.getBindingIndex();
+			}
+			else if (subpassType.getBindingIndex() <= _pass.getSubpasses().size() - 1) { // Sub-pass u : u0 < u < uN
+				subpassDependency.srcSubpass = subpassType.getBindingIndex() - 1;
+				subpassDependency.dstSubpass = subpassType.getBindingIndex();
+			}
+			else { // Last sub-pass uN
+				subpassDependency.srcSubpass = subpassType.getBindingIndex() - 1;
+				subpassDependency.dstSubpass = VK_SUBPASS_EXTERNAL;
+			}
+
+
+			// Sub-pass stage and resource access instructions
+			subpassDependency.srcStageMask = subpassType.getSrcStageMask();
+			subpassDependency.dstStageMask = subpassType.getDstStageMask();
+			subpassDependency.srcAccessMask = subpassType.getSrcAccessMask();
+			subpassDependency.dstAccessMask = subpassType.getDstAccessMask();
 			subpassDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
-			// Sub-passes
-			if (subpassType.getBindingIndex() == _pass.getSubpasses().size()) {
-				subpassDependency.dstSubpass = VK_SUBPASS_EXTERNAL; // Indices of dependency sub-passes (external input)
-				subpassDependency.dstStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-				subpassDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; // Wait for swap chain to read from image before accessing
-				subpassDependency.dstAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-			}
-			else
-				subpassDependency.dstSubpass = subpassType.getBindingIndex(); // Indices of dependent sub-passes
-
-			// Last sub-pass
-			if (subpassType.getBindingIndex() == 0) {
-				subpassDependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-				subpassDependency.srcStageMask = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT;
-				subpassDependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-				subpassDependency.srcAccessMask = VK_ACCESS_MEMORY_READ_BIT;
-				subpassDependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT
-												| VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-			}
-			else
-				subpassDependency.srcSubpass = subpassType.getBindingIndex() - 1;
-
+			// Add sub-pass dependencies
 			dependencies.emplace_back(subpassDependency);
 		}
 
