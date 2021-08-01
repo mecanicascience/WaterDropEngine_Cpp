@@ -15,7 +15,8 @@ namespace wde {
 	enum class LoggerChannel {
 		MAIN,
 		RENDERING_ENGINE,
-		COMMON
+		COMMON,
+		INPUT_MANAGER
 	};
 
 

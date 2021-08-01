@@ -32,8 +32,8 @@ namespace wde::renderEngine {
 			framebufferCreateInfo.renderPass = renderPassVulkan;
 			framebufferCreateInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 			framebufferCreateInfo.pAttachments = attachments.data();
-			framebufferCreateInfo.width = swapchain.getExtent().width; // TODO
-			framebufferCreateInfo.height = swapchain.getExtent().height; // TODO
+			framebufferCreateInfo.width = swapchain.getExtent().width;
+			framebufferCreateInfo.height = swapchain.getExtent().height;
 			framebufferCreateInfo.layers = 1;
 
 			if (vkCreateFramebuffer(CoreInstance::get().getSelectedDevice().getDevice(), &framebufferCreateInfo, nullptr, &_framebuffers[i]) != VK_SUCCESS)

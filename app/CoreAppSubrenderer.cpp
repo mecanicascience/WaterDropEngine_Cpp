@@ -18,23 +18,27 @@ CoreAppSubrenderer::CoreAppSubrenderer(const RenderStage &stage)
 	// Initialize pipeline
 	_pipeline.initialize();
 
-	// Set camera viewing direction
+	// Set camera initial viewing direction
 	// _camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
-	// _camera.setViewTarget(glm::vec3(-1.0f, -2.0f, 3.0f), glm::vec3(0.0f, 0.0f, 2.5f));
+	_camera.setViewTarget(glm::vec3(-1.0f, -2.0f, 3.0f), glm::vec3(0.0f, 0.0f, 2.5f));
+
+	// Create camera viewing object
+	_cameraViewerObject = GameObject::createGameObject();
 }
 
 void CoreAppSubrenderer::render(CommandBuffer &commandBuffer) {
-	// Update game objects
-	for (auto &obj : _gameObjects) {
-		obj.transform.rotation.y += 0.001f;
-		obj.transform.rotation.x += 0.0005f;
-	}
+	auto newTime = std::chrono::high_resolution_clock::now();
+	auto dt = std::chrono::duration<float, std::chrono::seconds::period>(newTime - _currentTime).count();
+	_currentTime = newTime;
 
 	// Update camera projection matrix
 	auto aspect = CoreInstance::get().getSelectedDevice().getSwapChain().getAspectRatio();
 	//_camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
 	_camera.setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
 
+	// Update camera position and rotation
+	_cameraController.moveInPlaneXZ(dt, _cameraViewerObject);
+	_camera.setViewYXZ(_cameraViewerObject.transform.translation, _cameraViewerObject.transform.rotation);
 
 	// Binds the graphics pipeline and model to the command buffer
 	_pipeline.bind(commandBuffer);

@@ -4,7 +4,7 @@ namespace wde::renderEngine {
 	// Core functions
 	void WdeRenderEngine::initialize() {
         WDE_PROFILE_FUNCTION();
-		Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
+        Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 		// Initialize the GLFW window
 		_window.initialize();
 		CoreInstance::get().setWindow(&_window);
@@ -31,7 +31,7 @@ namespace wde::renderEngine {
 
 	void WdeRenderEngine::cleanUp() {
         WDE_PROFILE_FUNCTION();
-		Logger::debug("== Cleaning up Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
+        Logger::debug("== Cleaning up Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 		CoreInstance::get().cleanUp();
 		_window.cleanUp();
 		Logger::debug("== Cleaning up Done ==", LoggerChannel::RENDERING_ENGINE);

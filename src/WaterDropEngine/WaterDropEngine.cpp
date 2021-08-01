@@ -8,7 +8,7 @@ namespace wde {
             // Initialize logger
             // Log level
             auto logLevel = Logger::LoggerLogLevel::DEBUG;
-            std::vector<LoggerChannel> activatedChannels = { LoggerChannel::MAIN, LoggerChannel::RENDERING_ENGINE, LoggerChannel::COMMON };
+            std::vector<LoggerChannel> activatedChannels = { LoggerChannel::MAIN, LoggerChannel::RENDERING_ENGINE, LoggerChannel::COMMON, LoggerChannel::INPUT_MANAGER };
             Logger::initialize("logs/", logLevel, activatedChannels);
 
 

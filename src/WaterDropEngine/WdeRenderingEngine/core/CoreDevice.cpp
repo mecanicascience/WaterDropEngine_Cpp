@@ -99,8 +99,8 @@ namespace wde::renderEngine {
 
 		// Rendering area
 		VkRect2D renderArea = {};
-		renderArea.offset = { 0, 0 }; // TODO
-		renderArea.extent = { _swapchain.getExtent().width, _swapchain.getExtent().height }; // TODO
+		renderArea.offset = { 0, 0 };
+		renderArea.extent = { _swapchain.getExtent().width, _swapchain.getExtent().height };
 
 		// Associated viewport
 		VkViewport viewport = {};

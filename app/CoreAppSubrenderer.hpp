@@ -5,6 +5,7 @@
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/Model.hpp"
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/GameObject.hpp"
 #include "../src/WaterDropEngine/WdeRenderingStructures/camera/Camera.hpp"
+#include "../src/WaterDropEngine/WdeInputEngine/InputMovementController.hpp"
 
 using namespace wde::renderEngine;
 using namespace wde::renderStructures;
@@ -27,4 +28,8 @@ class CoreAppSubrenderer : public Subrenderer {
 		std::vector<GameObject> _gameObjects;
 
 		Camera _camera;
+		GameObject _cameraViewerObject {};
+		InputMovementController _cameraController {};
+
+		std::chrono::time_point<std::chrono::system_clock> _currentTime = std::chrono::high_resolution_clock::now();
 };
