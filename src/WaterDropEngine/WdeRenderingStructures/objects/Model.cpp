@@ -2,14 +2,7 @@
 #include "../../WdeRenderingEngine/core/CoreInstance.hpp"
 
 namespace wde::renderStructures {
-	Model::Model(const std::vector<Vertex> vertices, const std::vector<uint32_t> indices) {
-        WDE_PROFILE_FUNCTION();
-		// Set the vertices
-		createVertexBuffers(vertices);
-
-		// Set the indices
-		createIndexBuffers(indices);
-	}
+	Model::Model() { }
 
 	Model::~Model() {
         WDE_PROFILE_FUNCTION();
@@ -28,7 +21,18 @@ namespace wde::renderStructures {
 	}
 
 
+
 	// Core functions
+	void Model::initialize() {
+		WDE_PROFILE_FUNCTION();
+		// Set the vertices
+		createVertexBuffers(getVertices());
+
+		// Set the indices
+		createIndexBuffers(getIndices());
+	}
+
+
 	void Model::createVertexBuffers(const std::vector<Vertex> &vertices) {
         WDE_PROFILE_FUNCTION();
 		auto &device = CoreInstance::get().getSelectedDevice().getDevice();

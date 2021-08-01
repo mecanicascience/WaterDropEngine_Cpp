@@ -19,20 +19,20 @@ namespace wde::renderStructures {
 			 * Generic class used to define sets of vertex inputs used in a shader
 			 */
 			class VertexInput {
-				public:
-                    VertexInput(std::vector<VkVertexInputBindingDescription> bindingDescriptions, std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
-							: _bindingDescriptions(std::move(bindingDescriptions)), _attributeDescriptions(std::move(attributeDescriptions)) { }
+			public:
+				VertexInput(std::vector<VkVertexInputBindingDescription> bindingDescriptions, std::vector<VkVertexInputAttributeDescription> attributeDescriptions)
+				: _bindingDescriptions(std::move(bindingDescriptions)), _attributeDescriptions(std::move(attributeDescriptions)) { }
 
-					const std::vector<VkVertexInputBindingDescription> &getBindingDescriptions() const { return _bindingDescriptions; }
-					const std::vector<VkVertexInputAttributeDescription> &getAttributeDescriptions() const { return _attributeDescriptions; }
+				const std::vector<VkVertexInputBindingDescription> &getBindingDescriptions() const { return _bindingDescriptions; }
+				const std::vector<VkVertexInputAttributeDescription> &getAttributeDescriptions() const { return _attributeDescriptions; }
 
-					bool operator<(const VertexInput &rhs) const {
-						return _bindingDescriptions.front().binding < rhs._bindingDescriptions.front().binding;
-					}
+				bool operator<(const VertexInput &rhs) const {
+					return _bindingDescriptions.front().binding < rhs._bindingDescriptions.front().binding;
+				}
 
-				private:
-					std::vector<VkVertexInputBindingDescription> _bindingDescriptions;
-					std::vector<VkVertexInputAttributeDescription> _attributeDescriptions;
+			private:
+				std::vector<VkVertexInputBindingDescription> _bindingDescriptions;
+				std::vector<VkVertexInputAttributeDescription> _attributeDescriptions;
 			};
 
 
@@ -57,17 +57,16 @@ namespace wde::renderStructures {
 			};
 
 
+
 			// Constructors
-			/**
-			 * Constructs a new model given the vertices and indices
-			 * @param vertices
-			 * @param indices
-			 */
-            explicit Model(const std::vector<Vertex> vertices, const std::vector<uint32_t> indices);
+			/** Constructs a new model given a mesh */
+			explicit Model();
 			~Model();
 
 
 			// Core functions
+			/** Initialize the model */
+			void initialize();
 			/**
 			 * Binds the model to the provided command buffer
 			 * @param commandBuffer
@@ -76,6 +75,11 @@ namespace wde::renderStructures {
 
 			/** Renders the model to the provided command buffer */
 			void render();
+
+
+		protected:
+			virtual std::vector<Vertex> getVertices() = 0;
+			virtual std::vector<uint32_t> getIndices() = 0;
 
 
 		private:

@@ -47,7 +47,7 @@ namespace wde::renderStructures {
 			TransformComponent transform {};
 
 			// Constructors
-			GameObject() = default; // Creates a dummy empty temporary game object
+			GameObject() : _objectID(-1) {}; // Creates a dummy empty temporary game object (do not use!)
 
 			static GameObject createGameObject() {
 				static id_t currentID = 0;
