@@ -13,8 +13,8 @@ namespace wde::renderEngine {
 		VkCommandBufferAllocateInfo allocInfo {};
 		allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
 		allocInfo.commandPool = CoreInstance::get().getCommandPool()->getCommandPool();
-		// Primary (can be submit to queue but cannot be called from other command commands) or
-		// Secondary (cannot be submit directly but can be called from primary command commands) command commands
+		// Primary (can be submitted to queue but cannot be called from other command commands) or
+		// Secondary (cannot be submitted directly but can be called from primary command commands) command buffer
 		allocInfo.level = _bufferLevel;
 		allocInfo.commandBufferCount = 1;
 
@@ -36,19 +36,18 @@ namespace wde::renderEngine {
 
 
 	// Command buffer functions
-	void CommandBuffer::begin() {
+	void CommandBuffer::begin(VkCommandBufferUsageFlags flags) {
         WDE_PROFILE_FUNCTION();
 		if (_running)
 			return;
 
 		VkCommandBufferBeginInfo beginInfo {};
 		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		beginInfo.flags = 0; // Optional
+		beginInfo.flags = flags;
 		beginInfo.pInheritanceInfo = nullptr; // Optional
 
-		if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS) {
+		if (vkBeginCommandBuffer(_commandBuffer, &beginInfo) != VK_SUCCESS)
 			throw WdeException("Failed to begin recording command buffer.", LoggerChannel::RENDERING_ENGINE);
-		}
 
 		_running = true;
 	}
@@ -58,9 +57,8 @@ namespace wde::renderEngine {
 		if (!_running)
 			return;
 
-		if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS) {
+		if (vkEndCommandBuffer(_commandBuffer) != VK_SUCCESS)
 			throw WdeException("Failed to record command buffer.", LoggerChannel::RENDERING_ENGINE);
-		}
 
 		_running = false;
 	}
@@ -94,9 +92,8 @@ namespace wde::renderEngine {
 			vkResetFences(CoreInstance::get().getSelectedDevice().getDevice(), 1, &fence);
 
 		// Test success and submit queue (triggers fence when frame end submitting to given queue)
-		if (vkQueueSubmit(getQueue(), 1, &submitInfo, fence) != VK_SUCCESS) {
+		if (vkQueueSubmit(getQueue(), 1, &submitInfo, fence) != VK_SUCCESS)
 			throw WdeException("Failed to submit draw command buffer.", LoggerChannel::RENDERING_ENGINE);
-		}
 	}
 
 
@@ -107,5 +104,9 @@ namespace wde::renderEngine {
 
 		// For now, we only have graphics and no compute queue
 		return device.getGraphicsQueue();
+	}
+
+	void CommandBuffer::waitForQueueIdle() {
+		vkQueueWaitIdle(getQueue());
 	}
 }

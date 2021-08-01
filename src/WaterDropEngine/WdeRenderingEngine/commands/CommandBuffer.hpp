@@ -22,12 +22,17 @@ namespace wde::renderEngine {
 
 
 			// Command buffer functions
-			/** Begins the recording state for this command buffer. */
-			void begin();
+			/**
+			 * Begins the recording state for this command buffer.
+			 * @param flags The optional buffer usage flags (default : none)
+			 */
+			void begin(VkCommandBufferUsageFlags flags = 0);
 			/** Ends the recording state for this command buffer. */
 			void end();
 			/** Submits the current command buffer to the specified queue */
-			void submit(VkFence fence, const VkSemaphore &waitSemaphore, const VkSemaphore &signalSemaphore);
+			void submit(VkFence fence = VK_NULL_HANDLE, const VkSemaphore &waitSemaphore = VK_NULL_HANDLE, const VkSemaphore &signalSemaphore = VK_NULL_HANDLE);
+			/** Wait for the queue to be idle */
+			void waitForQueueIdle();
 
 
 			// Getters and setters

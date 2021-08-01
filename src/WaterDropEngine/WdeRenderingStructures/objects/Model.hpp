@@ -16,7 +16,7 @@ namespace wde::renderStructures {
 	class Model {
 		public:
 			/**
-			 * Class used to define sets of vertex inputs used in a shader
+			 * Generic class used to define sets of vertex inputs used in a shader
 			 */
 			class VertexInput {
 				public:
@@ -37,6 +37,9 @@ namespace wde::renderStructures {
 
 
 			// Structures
+			/**
+			 * Represent a vertex. Data will be passed to the shaders.
+			 */
 			struct Vertex {
 				glm::vec3 position;
 				glm::vec3 color;
@@ -60,7 +63,7 @@ namespace wde::renderStructures {
 			 * @param vertices
 			 * @param indices
 			 */
-            explicit Model(const std::vector<Vertex> vertices, const std::vector<uint16_t> indices);
+            explicit Model(const std::vector<Vertex> vertices, const std::vector<uint32_t> indices);
 			~Model();
 
 
@@ -76,17 +79,20 @@ namespace wde::renderStructures {
 
 
 		private:
+			// Vertex and index count
 			/** The number of vertices in the model */
 			uint32_t _vertexCount;
 			/** The number of indices in the model */
 			uint32_t _indexCount;
 
+			// Vertex buffer
 			/** The vertex buffer containing vertex of the model */
 			VkBuffer _vertexBuffer;
 			/** The memory used by the vertex buffer */
 			VkDeviceMemory _vertexBufferMemory;
 
-			/** The index buffer containing indices of the model */
+			// Index buffer
+			/** The idex buffer containing indices of the model */
 			VkBuffer _indexBuffer;
 			/** The memory used by the index buffer */
 			VkDeviceMemory _indexBufferMemory;
@@ -97,6 +103,6 @@ namespace wde::renderStructures {
 
 			// Core functions
 			void createVertexBuffers(const std::vector<Vertex> &vertices);
-			void createIndexBuffers(const std::vector<uint16_t> &indices);
+			void createIndexBuffers(const std::vector<uint32_t> &indices);
 	};
 }

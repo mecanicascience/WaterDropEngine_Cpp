@@ -1,16 +1,18 @@
 #pragma once
 
+#include "../commands/CommandBuffer.hpp"
+
 namespace wde::renderEngine {
 	class BufferUtils {
 		public:
 			/**
-			 * @param physicalDevice
-			 * @param device
-			 * @param size
-			 * @param usage
-			 * @param properties
-			 * @param buffer
-			 * @param bufferMemory
+			 * @param physicalDevice A reference to the buffer physical device
+			 * @param device A reference to the buffer device
+			 * @param size Size of the buffer
+			 * @param usage Describes how the buffer will be used
+			 * @param properties The properties of the buffer
+			 * @param buffer A reference to the buffer
+			 * @param bufferMemory A reference to the buffer memory
 			 */
 			static void createBuffer(VkPhysicalDevice &physicalDevice, VkDevice &device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
                 WDE_PROFILE_FUNCTION();
@@ -39,6 +41,34 @@ namespace wde::renderEngine {
 
 				vkBindBufferMemory(device, buffer, bufferMemory, 0);
 			}
+
+			/**
+			 * Copy the content of a buffer to another
+			 * @param physicalDevice A reference to the buffer physical device
+			 * @param srcBuffer The buffer to copy from
+			 * @param dstBuffer The buffer to copy to
+			 * @param bufferSize Size of the buffers
+			 */
+			static void copyBuffer(VkPhysicalDevice &physicalDevice, VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize bufferSize) {
+				// Create a temporary command buffer
+				CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
+				commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+
+				// Copy buffer
+				VkBufferCopy copyRegion {};
+				copyRegion.srcOffset = 0;  // Optional
+				copyRegion.dstOffset = 0;  // Optional
+				copyRegion.size = bufferSize;
+				vkCmdCopyBuffer(commandBuffer, srcBuffer, dstBuffer, 1, &copyRegion);
+
+				// Stop and execute command buffer
+				commandBuffer.end();
+				commandBuffer.submit();
+
+				// Wait for command buffer queue to end operations
+				commandBuffer.waitForQueueIdle();
+			}
+
 
 
 			/**
