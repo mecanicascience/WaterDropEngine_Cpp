@@ -1,5 +1,4 @@
 #include "CoreAppRenderer.hpp"
-#include "../src/WaterDropEngine/WdeRenderingStructures/objects/models/CubeModel.hpp"
 
 void CoreAppRenderer::initialize() {
 	// == Creates the render pass 0 ==
@@ -26,9 +25,14 @@ void CoreAppRenderer::start() {
 	auto cubeSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
 
 	// Set rectangle initial push constants
-	auto cube = GameObject::createGameObject();
-	cube.model = std::make_shared<CubeModel>();
+	/*auto cube = GameObject::createGameObject();
+	cube.model = std::make_shared<ModelCube>();
 	cube.transform.translation = {0.0f, 0.0f, 2.5f};
 	cube.transform.scale = {0.5f, 0.5f, 0.5f};
-	cubeSubrenderer->addGameObject(cube);
+	cubeSubrenderer->addGameObject(cube);*/
+
+	auto testGO = GameObject::createGameObject();
+	testGO.model = std::make_shared<ModelLoader>("res/models/viking_room.obj");
+	testGO.transform.scale /= 0.5f;
+	cubeSubrenderer->addGameObject(testGO);
 }

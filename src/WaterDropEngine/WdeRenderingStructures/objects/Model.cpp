@@ -40,7 +40,7 @@ namespace wde::renderStructures {
 		// Assert that vertices count >= 3
 		_vertexCount = static_cast<uint32_t>(vertices.size());
 		if (_vertexCount < 3)
-			throw WdeException("Vertex count must be at least 3.", LoggerChannel::RENDERING_ENGINE);
+			throw WdeException("Vertex count must be at least 3.", LoggerChannel::RENDERING_STRUCTURES);
 
 
 		// Create the staging buffer on the CPU
@@ -79,7 +79,7 @@ namespace wde::renderStructures {
 		// Assert that indices count >= 3
 		_indexCount = static_cast<uint32_t>(indices.size());
 		if (_indexCount < 3)
-			throw WdeException("Index count must be at least 3.", LoggerChannel::RENDERING_ENGINE);
+			throw WdeException("Index count must be at least 3.", LoggerChannel::RENDERING_STRUCTURES);
 
 		// Create the staging buffer on the CPU
 		VkBuffer stagingBuffer;

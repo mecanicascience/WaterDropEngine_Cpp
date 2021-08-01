@@ -71,6 +71,8 @@ namespace wde {
 				return "MAIN";
 			case LoggerChannel::INPUT_MANAGER:
 				return "INPUT-MANAGER";
+			case LoggerChannel::RENDERING_STRUCTURES:
+				return "RENDERING-STRUCTURES";
 		}
 
 		// Channel not found

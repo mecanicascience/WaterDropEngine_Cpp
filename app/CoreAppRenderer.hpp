@@ -7,6 +7,8 @@
 #include "../src/WaterDropEngine/WdeCommon/WdeMaths/Color.hpp"
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/Model.hpp"
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/GameObject.hpp"
+#include "../src/WaterDropEngine/WdeRenderingStructures/objects/models/ModelCube.hpp"
+#include "../src/WaterDropEngine/WdeRenderingStructures/objects/models/ModelLoader.hpp"
 
 #include "CoreAppSubrenderer.hpp"
 

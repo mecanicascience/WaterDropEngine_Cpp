@@ -3,9 +3,9 @@
 #include "../Model.hpp"
 
 namespace wde::renderStructures {
-	class CubeModel : public Model {
+	class ModelCube : public Model {
 		public:
-			explicit CubeModel() : Model() {
+			explicit ModelCube() : Model() {
 				this->initialize();
 			};
 
