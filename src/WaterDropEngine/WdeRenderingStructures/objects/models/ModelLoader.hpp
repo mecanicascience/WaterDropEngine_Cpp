@@ -15,7 +15,10 @@ namespace wde::renderStructures {
 				std::string warn, err;
 
 				Logger::debug("Loading model from " + path + ".", LoggerChannel::RENDERING_STRUCTURES);
-				if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str()))
+				tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
+				if (!warn.empty())
+					Logger::warn("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::RENDERING_STRUCTURES);
+				if (!err.empty())
 					throw WdeException("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::RENDERING_STRUCTURES);
 
 				// Combine every face into a single model and delete vertices repetition
