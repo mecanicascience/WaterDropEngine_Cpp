@@ -19,7 +19,7 @@ namespace wde::renderStructures {
 					throw WdeException("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::RENDERING_STRUCTURES);
 
 				// Combine every face into a single model and delete vertices repetition
-				std::unordered_map<size_t, bool> hasVerticeHash {};
+				std::unordered_map<size_t, uint32_t> verticesIndexHash {};
 				std::hash<Vertex> hasher;
 
 				for (const auto& shape : shapes) {
@@ -36,13 +36,16 @@ namespace wde::renderStructures {
 
 						// Avoid vertices duplication
 						size_t hash = hasher(v);
-						if (!hasVerticeHash.contains(hash)) {
+						if (!verticesIndexHash.contains(hash)) { // New vertex
+							uint32_t indexID = _vertices.size();
 							_vertices.push_back(v);
-							hasVerticeHash[hash] = true;
-						}
 
-						// Add index
-						_indices.push_back(_indices.size());
+							verticesIndexHash[hash] = indexID;
+							_indices.push_back(indexID);
+						}
+						else { // Vertex already exists
+							_indices.push_back(verticesIndexHash.at(hash));
+						}
 					}
 				}
 
