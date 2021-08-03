@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <vector>
 
 #include "../../wde.hpp"
 #include "WdeModule.hpp"
@@ -24,6 +25,6 @@ namespace wde {
 
 		private:
 			/** The list of modules instances ordered by rendering order */
-			std::map<int, std::unique_ptr<WdeModule>> _modulesList {};
+			std::map<int, std::vector<std::unique_ptr<WdeModule>>> _modulesList {};
 	};
 }

@@ -29,13 +29,19 @@ namespace wde::renderStructures {
 					for (const auto& index : shape.mesh.indices) {
 						// Get vertex
 						Vertex v {
-							{ // position
+							{
 								attrib.vertices[3 * index.vertex_index + 0],
 								attrib.vertices[3 * index.vertex_index + 1],
 								attrib.vertices[3 * index.vertex_index + 2]
 							},
-							{1.0f, 1.0f, 1.0f} // color
+							{
+								attrib.normals[3 * index.normal_index + 0],
+								attrib.normals[3 * index.normal_index + 1],
+								attrib.normals[3 * index.normal_index + 2]
+							},
+							{0.898f, 0.149f, 1.0f}
 						};
+						v._color = v._normal;
 
 						// Avoid vertices duplication
 						size_t hash = hasher(v);

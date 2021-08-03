@@ -43,19 +43,37 @@ namespace wde::renderStructures {
 			 * Represent a vertex. Data will be passed to the shaders.
 			 */
 			struct Vertex {
-				glm::vec3 position;
-				glm::vec3 color;
+				public:
+					/**
+					 * Creates a new vertex
+					 * @param position
+					 * @param normal
+					 * @param color
+					 */
+					Vertex(glm::vec3 position, glm::vec3 normal, glm::vec3 color)
+						: _position(position), _normal(normal), _color(color) { }
 
-				static VertexInput getDescriptions(uint32_t baseBinding = 0) {
-					std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
-							{baseBinding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX}
-					};
-					std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
-							{0, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)}, // Vertex position values (at index 0)
-							{1, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)}  // Vertex color values (at index 1)
-					};
-					return { bindingDescriptions, attributeDescriptions };
-				}
+					static VertexInput getDescriptions(uint32_t baseBinding = 0) {
+						std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
+								{baseBinding, sizeof(Vertex), VK_VERTEX_INPUT_RATE_VERTEX}
+						};
+						std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
+								{0, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _position)}, // Vertex position values (index 0)
+								{1, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _normal)}, // Normals position values (index 1)
+								{2, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _color)}  // Vertex color values (index 2)
+						};
+						return { bindingDescriptions, attributeDescriptions };
+					}
+
+
+					// Getters and setters
+					const glm::vec3 getPosition() const { return _position; }
+					const glm::vec3 getColor() const { return _color; }
+
+					// Model values
+					glm::vec3 _position;
+					glm::vec3 _normal;
+					glm::vec3 _color;
 			};
 
 
@@ -119,8 +137,8 @@ namespace std {
 	 */
 	template<> struct hash<wde::renderStructures::Model::Vertex> {
 		size_t operator()(wde::renderStructures::Model::Vertex const& vertex) const {
-			return (hash<glm::vec3>()(vertex.position) ^
-			       (hash<glm::vec3>()(vertex.color) << 1)) >> 1;
+			return (hash<glm::vec3>()(vertex.getPosition()) ^
+			       (hash<glm::vec3>()(vertex.getColor()) << 1)) >> 1;
 		}
 	};
 }

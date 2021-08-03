@@ -32,7 +32,7 @@ void CoreAppRenderer::start() {
 	cubeSubrenderer->addGameObject(cube);*/
 
 	auto testGO = GameObject::createGameObject();
-	testGO.model = std::make_shared<ModelLoader>("res/models/viking_room.obj");
-	testGO.transform.scale /= 0.5f;
+	testGO.model = std::make_shared<ModelLoader>("res/models/monkey_smooth.obj");
+	testGO.transform.scale /= 5.0f;
 	cubeSubrenderer->addGameObject(testGO);
 }

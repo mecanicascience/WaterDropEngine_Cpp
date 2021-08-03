@@ -59,7 +59,10 @@ namespace wde::renderStructures {
 
 
 		private:
+			/** Projection of object coordinates to Vulkan coordinates */
 			glm::mat4 _projectionMatrix {1.0f};
+
+			/** Projection of camera position and rotation */
 			glm::mat4 _viewMatrix {1.0f};
 	};
 }

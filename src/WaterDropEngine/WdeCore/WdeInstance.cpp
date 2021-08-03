@@ -8,12 +8,17 @@ namespace wde {
         auto& modulesNameMap = WdeModule::getRegistry();
         for (auto& module : modulesNameMap) {
         	auto &&moduleInstance = module.second._createFun();
-        	_modulesList.emplace(module.second._moduleStageLevel, std::move(moduleInstance));
+        	if (!_modulesList.contains(module.second._moduleStageLevel)) // First module at level
+        		_modulesList.emplace(module.second._moduleStageLevel, std::vector<std::unique_ptr<WdeModule>>{});
+
+            _modulesList.at(module.second._moduleStageLevel).push_back(std::move(moduleInstance));
         }
 
 		// Initialize modules
-		for (auto& [id, module] : _modulesList)
-			module->initialize();
+		Logger::debug("Initializing modules.", LoggerChannel::MAIN);
+		for (auto& [id, modules] : _modulesList)
+			for (auto& module : modules)
+				module->initialize();
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;
@@ -29,8 +34,10 @@ namespace wde {
 			Logger::debug("====== Updating new frame. ======", LoggerChannel::MAIN);
 
 			// Tick for modules
-			for (auto& [id, module] : _modulesList)
-				module->tick();
+			Logger::debug("Ticking for modules.", LoggerChannel::MAIN);
+			for (auto& [id, modules] : _modulesList)
+				for (auto& module : modules)
+					module->tick();
 
 			Logger::debug("====== End of tick. ======\n\n", LoggerChannel::MAIN);
 		}
@@ -48,8 +55,10 @@ namespace wde {
 	    WDE_PROFILE_FUNCTION();
 
 		// Clean-up modules in reverse order
+		Logger::debug("Cleaning up modules.", LoggerChannel::MAIN);
 		for (auto iter = _modulesList.rbegin(); iter != _modulesList.rend(); ++iter)
-			iter->second->cleanUp();
+			for (auto& module : iter->second)
+				module->cleanUp();
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;

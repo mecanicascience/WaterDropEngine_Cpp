@@ -7,7 +7,7 @@ namespace wde::inputManager {
 	class InputManager : public WdeModule::Module<InputManager> {
 		public:
 			// Register module
-			inline static const int MODULE_REGISTERED = RegisterModule("inputEngine", Stage::PRE);
+			inline static const int MODULE_REGISTERED = RegisterModule("inputManager", Stage::NORMAL);
 
 			/** <"Key name", Corresponding key id> */
 			typedef std::map<std::string, int> KeyMapping;

@@ -3,7 +3,9 @@
 
 
 struct PushConstantData {
-	glm::mat4 transform {1.0f};
+	glm::mat4 transformWorldSpace {1.0f};
+	glm::mat4 transformCameraSpace {1.0f};
+	glm::mat4 transformProjSpace {1.0f};
 };
 
 
@@ -11,19 +13,19 @@ CoreAppSubrenderer::CoreAppSubrenderer(const RenderStage &stage)
 		: Subrenderer(stage),
 		  _pipeline(stage, {"res/shaders/simpleShader.vert.spv", "res/shaders/simpleShader.frag.spv"}, { Model::Vertex::getDescriptions() },
 					PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL,
-	                VK_CULL_MODE_NONE, VK_FRONT_FACE_CLOCKWISE) {
+	                VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
 	// Set pipeline push constants infos
 	_pipeline.addPushConstants(0, sizeof(PushConstantData));
 
 	// Initialize pipeline
 	_pipeline.initialize();
 
-	// Set camera initial viewing direction
-	// _camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
-	_camera.setViewTarget(glm::vec3(-1.0f, -2.0f, 3.0f), glm::vec3(0.0f, 0.0f, 2.5f));
-
 	// Create camera viewing object
 	_cameraViewerObject = GameObject::createGameObject();
+	_cameraViewerObject.transform.translation = {0.0f, 0.0f, 0.0f};
+	//_camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
+	_camera.setViewTarget(_cameraViewerObject.transform.translation, glm::vec3(0.0f, 0.0f, 0.0f));
+
 }
 
 void CoreAppSubrenderer::render(CommandBuffer &commandBuffer) {
@@ -44,11 +46,12 @@ void CoreAppSubrenderer::render(CommandBuffer &commandBuffer) {
 	_pipeline.bind(commandBuffer);
 
 	// Render game objects
-	auto projectionView = _camera.getProjection() * _camera.getView();
 	for (auto &obj : _gameObjects) {
 		// Setup push constants
 		PushConstantData push {};
-		push.transform = projectionView * obj.transform.mat4();
+		push.transformWorldSpace  = obj.transform.mat4();
+		push.transformCameraSpace = _camera.getView();
+		push.transformProjSpace   = _camera.getProjection();
 		_pipeline.setPushConstants(0, &push);
 
 		// Render game object

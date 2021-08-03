@@ -73,6 +73,8 @@ namespace wde {
 				return "INPUT-MANAGER";
 			case LoggerChannel::RENDERING_STRUCTURES:
 				return "RENDERING-STRUCTURES";
+			case LoggerChannel::GUI:
+				return "GUI";
 		}
 
 		// Channel not found
