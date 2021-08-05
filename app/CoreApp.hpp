@@ -1,8 +1,11 @@
 #pragma once
 
-#include "CoreAppRenderer.hpp"
 #include "../src/WaterDropEngine/WaterDropEngine.hpp"
 #include "../src/WaterDropEngine/WdeRenderingEngine/WdeRenderEngine.hpp"
+#include "../src/WaterDropEngine/WdeScene/WdeSceneManager.hpp"
+
+#include "render/CoreAppRenderer.hpp"
+#include "scene/CoreAppScene.hpp"
 
 using namespace wde;
 class CoreApp {

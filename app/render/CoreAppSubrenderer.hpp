@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../src/WaterDropEngine/WdeRenderingEngine/renderer/Subrenderer.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
-#include "../src/WaterDropEngine/WdeRenderingStructures/objects/Model.hpp"
-#include "../src/WaterDropEngine/WdeRenderingStructures/objects/GameObject.hpp"
-#include "../src/WaterDropEngine/WdeRenderingStructures/camera/Camera.hpp"
-#include "../src/WaterDropEngine/WdeInputEngine/InputMovementController.hpp"
+#include "../../src/WaterDropEngine/WdeRenderingEngine/renderer/Subrenderer.hpp"
+#include "../../src/WaterDropEngine/WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
+#include "../../src/WaterDropEngine/WdeScene/objects/Model.hpp"
+#include "../../src/WaterDropEngine/WdeScene/objects/GameObject.hpp"
+#include "../../src/WaterDropEngine/WdeScene/camera/Camera.hpp"
+#include "../../src/WaterDropEngine/WdeInputEngine/InputMovementController.hpp"
 
 using namespace wde::renderEngine;
 using namespace wde::renderStructures;

@@ -7,7 +7,7 @@
 #include "Pipeline.hpp"
 #include "../renderer/descriptors/RenderStage.hpp"
 #include "ShaderUtils.hpp"
-#include "../../WdeRenderingStructures/objects/Model.hpp"
+#include "../../WdeScene/objects/Model.hpp"
 #include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 
 namespace wde::renderEngine {

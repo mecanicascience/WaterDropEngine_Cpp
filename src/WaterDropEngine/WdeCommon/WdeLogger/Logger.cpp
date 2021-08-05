@@ -72,6 +72,8 @@ namespace wde {
 				return "RENDERING-STRUCTURES";
 			case LoggerChannel::GUI:
 				return "GUI";
+			case LoggerChannel::SCENE_MANAGER:
+				return "SCENE-MANAGER";
 		}
 
 		// Channel not found

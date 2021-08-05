@@ -18,7 +18,8 @@ namespace wde {
 		COMMON,
 		INPUT_MANAGER,
 		RENDERING_STRUCTURES,
-		GUI
+		GUI,
+		SCENE_MANAGER
 	};
 
 

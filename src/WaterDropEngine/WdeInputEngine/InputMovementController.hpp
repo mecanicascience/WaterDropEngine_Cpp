@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../WdeRenderingStructures/objects/GameObject.hpp"
+#include "../WdeScene/objects/GameObject.hpp"
 #include "InputManager.hpp"
 
 using namespace wde::renderStructures;

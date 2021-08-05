@@ -8,6 +8,8 @@ WdeStatus CoreApp::initialize() {
 
 	// Set renderer
 	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<CoreAppRenderer>());
+	// Set scene
+	scene::WdeSceneManager::get().setScene(std::make_unique<CoreAppScene>());
 
 	// Initialize main engine
 	WdeStatus statusInit = engine.initialize();

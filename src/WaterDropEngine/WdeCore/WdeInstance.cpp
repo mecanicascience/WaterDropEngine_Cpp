@@ -1,18 +1,22 @@
 #include "WdeInstance.hpp"
 
 namespace wde {
+	void WdeInstance::createModules() {
+		WDE_PROFILE_FUNCTION();
+
+		// Setup modules list
+		auto& modulesNameMap = WdeModule::getRegistry();
+		for (auto& module : modulesNameMap) {
+			auto &&moduleInstance = module.second._createFun();
+			if (!_modulesList.contains(module.second._moduleStageLevel)) // First module at level
+				_modulesList.emplace(module.second._moduleStageLevel, std::vector<std::unique_ptr<WdeModule>>{});
+
+			_modulesList.at(module.second._moduleStageLevel).push_back(std::move(moduleInstance));
+		}
+	}
+
 	WdeStatus WdeInstance::initialize() {
         WDE_PROFILE_FUNCTION();
-
-        // Setup modules list
-        auto& modulesNameMap = WdeModule::getRegistry();
-        for (auto& module : modulesNameMap) {
-        	auto &&moduleInstance = module.second._createFun();
-        	if (!_modulesList.contains(module.second._moduleStageLevel)) // First module at level
-        		_modulesList.emplace(module.second._moduleStageLevel, std::vector<std::unique_ptr<WdeModule>>{});
-
-            _modulesList.at(module.second._moduleStageLevel).push_back(std::move(moduleInstance));
-        }
 
 		// Initialize modules
 		Logger::debug("Initializing modules.", LoggerChannel::MAIN);

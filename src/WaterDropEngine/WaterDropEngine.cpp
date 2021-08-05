@@ -10,14 +10,18 @@ namespace wde {
             auto logLevel = Logger::LoggerLogLevel::DEBUG;
             std::vector<LoggerChannel> activatedChannels = {
             		LoggerChannel::MAIN, LoggerChannel::RENDERING_ENGINE, LoggerChannel::COMMON,
-            		LoggerChannel::INPUT_MANAGER, LoggerChannel::RENDERING_STRUCTURES, LoggerChannel::GUI
+            		LoggerChannel::INPUT_MANAGER, LoggerChannel::RENDERING_STRUCTURES, LoggerChannel::GUI,
+            		LoggerChannel::SCENE_MANAGER
             };
             Logger::initialize("logs/", logLevel, activatedChannels);
 
-
             Logger::debug("======== Initializing program ========", LoggerChannel::MAIN);
+
             // Create WaterDropEngine instance
 			_instance = std::make_unique<WdeInstance>();
+
+			// Setup WaterDropEngine modules
+			_instance->createModules();
 		}
 		catch (const WdeException &e) {
 			Logger::err(e.what(), e.getChannel());

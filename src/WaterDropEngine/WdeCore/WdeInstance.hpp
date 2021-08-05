@@ -13,6 +13,9 @@ namespace wde {
 	 */
 	class WdeInstance : NonCopyable {
 		public:
+			/** Creat the module instances */
+			void createModules();
+
 			/** Initialize the WdeInstance and all of its important different class components */
 			WdeStatus initialize();
 
