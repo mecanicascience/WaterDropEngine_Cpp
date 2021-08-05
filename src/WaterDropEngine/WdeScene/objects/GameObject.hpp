@@ -3,7 +3,7 @@
 #include "../../../wde.hpp"
 #include "Model.hpp"
 
-namespace wde::renderStructures {
+namespace wde::scene {
 	struct TransformComponent {
 		glm::vec3 translation {0.0f, 0.0f, 0.0f};
 		glm::vec3 scale {1.0f, 1.0f, 1.0f};
@@ -67,6 +67,11 @@ namespace wde::renderStructures {
 			void render(CommandBuffer &commandBuffer) {
 				model->bind(commandBuffer);
 				model->render();
+			}
+
+			/** Clean up game object */
+			void cleanUp() {
+				model->cleanUp();
 			}
 
 

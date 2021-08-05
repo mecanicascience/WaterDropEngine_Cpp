@@ -22,21 +22,8 @@ void CoreAppRenderer::initialize() {
 }
 
 void CoreAppRenderer::start() {
-	// == Render pass 0-0 ==
-	// Adds a sub render stage to renderer in the render pass 0, and the sub-pass 0
-	auto cubeSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
-
-	// Set rectangle initial push constants
-	/*auto cube = GameObject::createGameObject();
-	cube.model = std::make_shared<ModelCube>();
-	cube.transform.translation = {0.0f, 0.0f, 2.5f};
-	cube.transform.scale = {0.5f, 0.5f, 0.5f};
-	cubeSubrenderer->addGameObject(cube);*/
-
-	auto testGO = GameObject::createGameObject();
-	testGO.model = std::make_shared<ModelLoader>("res/models/monkey_smooth.obj");
-	testGO.transform.scale /= 5.0f;
-	cubeSubrenderer->addGameObject(testGO);
+	// Mesh sub-renderer
+	this->addSubrenderer<MeshSubrenderer>({0, 0});
 
 	// Gui sub-renderer
 	this->addSubrenderer<GUISubrenderer>({0, 0});

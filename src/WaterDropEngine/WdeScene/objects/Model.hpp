@@ -14,7 +14,7 @@
 
 using namespace wde::renderEngine;
 
-namespace wde::renderStructures {
+namespace wde::scene {
 	class Model {
 		public:
 			/**
@@ -80,21 +80,23 @@ namespace wde::renderStructures {
 
 			// Constructors
 			/** Constructs a new model given a mesh */
-			explicit Model();
-			~Model();
+			explicit Model() = default;
+			~Model() = default;
 
 
 			// Core functions
 			/** Initialize the model */
 			void initialize();
+
 			/**
 			 * Binds the model to the provided command buffer
 			 * @param commandBuffer
 			 */
 			void bind(CommandBuffer &commandBuffer);
-
 			/** Renders the model to the provided command buffer */
 			void render();
+			/** Clean up the model */
+			void cleanUp();
 
 
 		protected:
@@ -135,8 +137,8 @@ namespace std {
 	/**
 	 * Create a hash function for a vertex instance
 	 */
-	template<> struct hash<wde::renderStructures::Model::Vertex> {
-		size_t operator()(wde::renderStructures::Model::Vertex const& vertex) const {
+	template<> struct hash<wde::scene::Model::Vertex> {
+		size_t operator()(wde::scene::Model::Vertex const& vertex) const {
 			return (hash<glm::vec3>()(vertex.getPosition()) ^
 			       (hash<glm::vec3>()(vertex.getColor()) << 1)) >> 1;
 		}

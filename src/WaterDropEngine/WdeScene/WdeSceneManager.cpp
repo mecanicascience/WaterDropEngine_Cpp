@@ -5,7 +5,12 @@ namespace wde::scene {
 	void WdeSceneManager::initialize() {
 		WDE_PROFILE_FUNCTION();
 		Logger::debug("== Initializing Scene Manager ==", LoggerChannel::SCENE_MANAGER);
-		// Nothing to do here
+		Logger::debug("Initializing scene.", LoggerChannel::SCENE_MANAGER);
+		if (_scene == nullptr)
+			throw WdeException("Scene not set before initialization.", LoggerChannel::SCENE_MANAGER);
+		_scene->initialize();
+
+		_hasStarted = true;
 		Logger::debug("== Initialization done ==", LoggerChannel::SCENE_MANAGER);
 	}
 
@@ -14,10 +19,6 @@ namespace wde::scene {
 		Logger::debug("Updating scene.", LoggerChannel::SCENE_MANAGER);
 		if (_scene != nullptr)
 			_scene->update();
-
-		Logger::debug("Rendering scene.", LoggerChannel::SCENE_MANAGER);
-		if (_scene != nullptr)
-			_scene->render();
 	}
 
 	void WdeSceneManager::cleanUp() {
@@ -34,7 +35,8 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 		// Set scene
 		WdeSceneManager::get()._scene = std::move(scene);
-		// Initialize scene
-		WdeSceneManager::get()._scene->initialize();
+
+		if (WdeSceneManager::get()._hasStarted) // Initialize scene if the scene manager has already started
+			WdeSceneManager::get()._scene->initialize();
 	}
 }

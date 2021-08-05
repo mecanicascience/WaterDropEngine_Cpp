@@ -1,27 +1,7 @@
 #include "Model.hpp"
 #include "../../WdeRenderingEngine/core/CoreInstance.hpp"
 
-namespace wde::renderStructures {
-	Model::Model() { }
-
-	Model::~Model() {
-        WDE_PROFILE_FUNCTION();
-		auto &device = CoreInstance::get().getSelectedDevice().getDevice();
-
-		// Destroy vertex buffers
-		vkDestroyBuffer(device, _vertexBuffer, nullptr);
-		vkFreeMemory(device, _vertexBufferMemory, nullptr);
-
-		// Destroy index buffers
-		vkDestroyBuffer(device, _indexBuffer, nullptr);
-		vkFreeMemory(device, _indexBufferMemory, nullptr);
-
-		// Delete command buffer reference
-		_commandBuffer = nullptr;
-	}
-
-
-
+namespace wde::scene {
 	// Core functions
 	void Model::initialize() {
 		WDE_PROFILE_FUNCTION();
@@ -131,5 +111,21 @@ namespace wde::renderStructures {
 
 		// Add the draw command to the command buffer
 		vkCmdDrawIndexed(*_commandBuffer, _indexCount, 1, 0, 0, 0);
+	}
+
+	void Model::cleanUp() {
+		WDE_PROFILE_FUNCTION();
+		auto &device = CoreInstance::get().getSelectedDevice().getDevice();
+
+		// Destroy vertex buffers
+		vkDestroyBuffer(device, _vertexBuffer, nullptr);
+		vkFreeMemory(device, _vertexBufferMemory, nullptr);
+
+		// Destroy index buffers
+		vkDestroyBuffer(device, _indexBuffer, nullptr);
+		vkFreeMemory(device, _indexBufferMemory, nullptr);
+
+		// Delete command buffer reference
+		_commandBuffer = nullptr;
 	}
 }

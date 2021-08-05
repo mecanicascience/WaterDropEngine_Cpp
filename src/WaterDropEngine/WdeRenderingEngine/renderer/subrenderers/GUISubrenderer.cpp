@@ -1,6 +1,6 @@
 #include "GUISubrenderer.hpp"
 
-namespace wde::gui {
+namespace wde::renderEngine {
 	/**
 	 * On a ImGui initialization error is thrown
 	 * @param err
@@ -19,7 +19,7 @@ namespace wde::gui {
 		ImGui::CreateContext();
 
 		// Setup ImGui config
-		WdeGUI::get().setup();
+		gui::WdeGUI::get().setup();
 
 		// === Initialize ImGui for GLFW ===
 		Logger::debug("Configuring ImGUI with GLFW.", LoggerChannel::GUI);
@@ -108,7 +108,7 @@ namespace wde::gui {
 		ImGui::NewFrame();
 
 		// Renders GUI
-		WdeGUI::get().render();
+		gui::WdeGUI::get().render();
 
 		// Rendering
 		ImGui::Render();

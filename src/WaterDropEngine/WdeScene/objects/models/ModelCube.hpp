@@ -2,7 +2,7 @@
 
 #include "../Model.hpp"
 
-namespace wde::renderStructures {
+namespace wde::scene {
 	class ModelCube : public Model {
 		public:
 			explicit ModelCube() : Model() {

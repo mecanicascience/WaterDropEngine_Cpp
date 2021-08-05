@@ -2,7 +2,7 @@
 
 #include "../../../wde.hpp"
 
-namespace wde::renderStructures {
+namespace wde::scene {
 	class Camera {
 		public:
 			// Core functions

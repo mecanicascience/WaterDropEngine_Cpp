@@ -1,14 +1,13 @@
 #pragma once
 
-#include "../../../lib/imgui/backends/imgui_impl_vulkan.h"
-#include "../../../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../../../../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../../../../../lib/imgui/backends/imgui_impl_glfw.h"
 
-#include "../WdeRenderingEngine/WdeRenderEngine.hpp"
-#include "WdeGUI.hpp"
+#include "../../WdeRenderEngine.hpp"
+#include "../../../WdeGUI/WdeGUI.hpp"
 
-using namespace wde::renderEngine;
 
-namespace wde::gui {
+namespace wde::renderEngine {
 	class GUISubrenderer : public Subrenderer {
 		public:
 			/**

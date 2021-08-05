@@ -28,9 +28,11 @@ namespace wde::scene {
 			 * @param scene The new scene
 			 */
 			void setScene(std::unique_ptr<Scene> scene);
+			std::unique_ptr<Scene>& getActiveScene() { return _scene; }
 
 
 		private:
 			std::unique_ptr<Scene> _scene {};
+			bool _hasStarted = false;
 	};
 }

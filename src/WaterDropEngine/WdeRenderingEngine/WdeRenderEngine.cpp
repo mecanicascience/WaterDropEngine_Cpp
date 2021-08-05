@@ -3,6 +3,12 @@
 namespace wde::renderEngine {
 	// Core functions
 	void WdeRenderEngine::initialize() {
+		// Only one initialization possible
+		static bool initialized = false;
+		if (initialized)
+			return;
+		initialized = true;
+
         WDE_PROFILE_FUNCTION();
         Logger::debug("== Initializing Rendering Engine ==", LoggerChannel::RENDERING_ENGINE);
 		// Initialize the GLFW window

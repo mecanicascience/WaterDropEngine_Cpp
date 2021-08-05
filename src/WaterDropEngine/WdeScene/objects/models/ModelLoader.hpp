@@ -4,7 +4,7 @@
 #include <tiny_obj_loader.h>
 #include <unordered_map>
 
-namespace wde::renderStructures {
+namespace wde::scene {
 	class ModelLoader : public Model {
 		public:
 			explicit ModelLoader(const std::string& path) : Model() {
@@ -58,8 +58,8 @@ namespace wde::renderStructures {
 					}
 				}
 
-
 				// Initialize model
+				Logger::debug("Initializing model.", LoggerChannel::RENDERING_STRUCTURES);
 				this->initialize();
 			};
 

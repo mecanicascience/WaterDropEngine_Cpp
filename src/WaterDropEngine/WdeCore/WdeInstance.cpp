@@ -20,6 +20,12 @@ namespace wde {
 
 		// Initialize modules
 		Logger::debug("Initializing modules.", LoggerChannel::MAIN);
+		// Always initialize the render module first
+		int RENDER_MODULE_ID = WdeModule::Module<WdeInstance>::Stage::RENDER;
+		for (auto& module : _modulesList.at(RENDER_MODULE_ID))
+			module->initialize();
+
+		// Initialize other modules
 		for (auto& [id, modules] : _modulesList)
 			for (auto& module : modules)
 				module->initialize();
@@ -60,9 +66,17 @@ namespace wde {
 
 		// Clean-up modules in reverse order
 		Logger::debug("Cleaning up modules.", LoggerChannel::MAIN);
+
+		// Clean up modules but not render engine
+		int RENDER_MODULE_ID = WdeModule::Module<WdeInstance>::Stage::RENDER;
 		for (auto iter = _modulesList.rbegin(); iter != _modulesList.rend(); ++iter)
-			for (auto& module : iter->second)
-				module->cleanUp();
+			if (iter->first != RENDER_MODULE_ID)
+				for (auto& module : iter->second)
+					module->cleanUp();
+
+		// Clean up render engine
+		for (auto& module : _modulesList.at(RENDER_MODULE_ID))
+			module->cleanUp();
 
 		// Returns Success
 		return WdeStatus::WDE_SUCCESS;

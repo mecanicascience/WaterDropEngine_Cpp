@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-namespace wde::renderStructures {
+namespace wde::scene {
 	void Camera::setOrthographicProjection(float leftVal, float rightVal, float topVal, float bottomVal, float nearVal, float farVal) {
 		_projectionMatrix = glm::mat4{1.0f};
 		_projectionMatrix[0][0] = 2.0f / (rightVal - leftVal);

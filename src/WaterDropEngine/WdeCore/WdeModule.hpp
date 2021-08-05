@@ -44,7 +44,7 @@ namespace wde {
 						PRE    = 0,  // Before render stage
 						NORMAL = 1,  // Default render stage
 						POST   = 2,  // After default render stage
-						RENDER = 3,   // When rendering
+						RENDER = 3,   // Only for render engine
 						POST_RENDER = 4  // After rendering
 					};
 
