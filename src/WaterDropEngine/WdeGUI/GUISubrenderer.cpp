@@ -99,6 +99,7 @@ namespace wde::gui {
 
 		// Rendering
 		ImGui::Render();
+
 		ImDrawData* draw_data = ImGui::GetDrawData();
 		ImGui_ImplVulkan_RenderDrawData(draw_data, commandBuffer);
 	}
