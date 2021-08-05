@@ -39,6 +39,6 @@ namespace wde::renderEngine {
 			static constexpr int HEIGHT = 600;
 
 			// Class variables
-			CoreWindow _window {*this, WIDTH, HEIGHT, Constants::APPLICATION_NAME + " Window"};
+			CoreWindow _window {*this, WIDTH, HEIGHT, Constants::APPLICATION_NAME};
 	};
 }

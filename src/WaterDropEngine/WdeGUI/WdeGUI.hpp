@@ -28,5 +28,10 @@ namespace wde::gui {
 			void setup();
 			/** Renders the GUI to ImGUI (called by the GUISubrenderer) */
 			void render();
+
+
+		private:
+			/** Setup our custom color scheme */
+			static void setCustomColorScheme();
 	};
 }

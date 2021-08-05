@@ -119,15 +119,14 @@ namespace wde::renderEngine {
 				| VK_COLOR_COMPONENT_A_BIT;
 		// DISABLE BLENDING
 		_configInfo.blendAttachmentState.blendEnable = VK_FALSE; // Do not enable blend between different frames in framebuffer
-		/* ENABLE BLENDING
-			blendAttachmentState.blendEnable = VK_TRUE;
-			blendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-			blendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-			blendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
-			blendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-			blendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
-			blendAttachmentState.alphaBlendOp = VK_BLEND_OP_MAX;
-		*/
+		// ENABLE BLENDING
+		/*_configInfo.blendAttachmentState.blendEnable = VK_TRUE;
+		_configInfo.blendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		_configInfo.blendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		_configInfo.blendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+		_configInfo.blendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		_configInfo.blendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+		_configInfo.blendAttachmentState.alphaBlendOp = VK_BLEND_OP_MAX;*/
 
 		// Used blend factors
 		_configInfo.colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

@@ -12,6 +12,7 @@ namespace wde::gui {
 	}
 
 	GUISubrenderer::GUISubrenderer(const RenderStage &stage) : Subrenderer(stage) {
+		WDE_PROFILE_FUNCTION();
 		Logger::debug("== Initializing GUI ==", LoggerChannel::GUI);
 		// === Create ImGui context ===
 		IMGUI_CHECKVERSION();
@@ -85,18 +86,23 @@ namespace wde::gui {
 	}
 
 	GUISubrenderer::~GUISubrenderer() {
+		WDE_PROFILE_FUNCTION();
+		Logger::debug("Cleaning up Gui sub-renderer.", LoggerChannel::GUI);
 		// Destroy command pool
 		vkDestroyDescriptorPool(WdeRenderEngine::get().getSelectedDevice().getDevice(), _descriptorPool, nullptr);
 
 		// Destroy ImGUI
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
 
 
 	// Render frame
 	void GUISubrenderer::render(CommandBuffer &commandBuffer) {
+		WDE_PROFILE_FUNCTION();
 		// Start the ImGui frame
+		Logger::debug("Rendering UI new frame.", LoggerChannel::GUI);
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
@@ -108,5 +114,11 @@ namespace wde::gui {
 		ImGui::Render();
 		ImDrawData* draw_data = ImGui::GetDrawData();
 		ImGui_ImplVulkan_RenderDrawData(draw_data, commandBuffer);
+
+		// Update windows size (currently broken for Vulkan in ImGui)
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 	}
 }
