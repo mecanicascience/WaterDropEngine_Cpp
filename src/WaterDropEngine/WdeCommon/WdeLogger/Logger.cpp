@@ -31,10 +31,7 @@ namespace wde {
 	}
 
 	void Logger::err(const std::string &message, LoggerChannel channel) {
-		if (!checkValidInput(channel, LoggerLogLevel::ERR))
-			return;
-
-		// Print error
+		// Always print errors
 		outputError(getFormatedMessage(message, " ERROR ", channel));
 		throw std::runtime_error("See above logs.");
 	}

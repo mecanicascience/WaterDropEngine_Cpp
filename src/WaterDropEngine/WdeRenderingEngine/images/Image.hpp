@@ -26,7 +26,10 @@ namespace wde::renderEngine {
              * @param baseArrayLayer
              * @param layer
              */
-            explicit Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format, VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel, uint32_t baseArrayLayer, uint32_t layerCount);
+            explicit Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format,
+						   VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage,
+						   VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel,
+						   uint32_t baseArrayLayer, uint32_t layerCount);
             ~Image();
 
             // Getters and setters

@@ -5,8 +5,22 @@
 namespace wde::renderEngine {
 	Framebuffers::Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil) {
         WDE_PROFILE_FUNCTION();
-	    // No image attachment to create with depth and swapchain attachments
-		// ...
+	    // Create image attachments
+	    for (const auto &attachment : renderPass.getAttachments()) {
+	    	switch (attachment.getType()) {
+			    case RenderPassAttachment::Type::Swapchain:
+			    	_imageAttachments.emplace_back(nullptr);
+				    break;
+
+			    case RenderPassAttachment::Type::Depth:
+			    	_imageAttachments.emplace_back(nullptr);
+				    break;
+
+			    case RenderPassAttachment::Type::Image:
+			    	_imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.getFormat(), swapchain.getExtent()));
+				    break;
+		    }
+	    }
 
 		// Creating one frame buffer for each image in the swapchain
 		_framebuffers.resize(swapchain.getImageCount());
@@ -22,6 +36,10 @@ namespace wde::renderEngine {
 
 					case RenderPassAttachment::Type::Depth:
                         attachments.emplace_back(depthStencil.getView());
+						break;
+
+					case RenderPassAttachment::Type::Image:
+						attachments.emplace_back((_imageAttachments[attachment.getBindingIndex()].get())->getView());
 						break;
 				}
 			}

@@ -47,6 +47,11 @@ namespace wde::renderEngine {
                     attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
                     attachmentDescription.format = depthFormat;
 					break;
+
+				case RenderPassAttachment::Type::Image:
+					attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL; // Create a colored image
+					attachmentDescription.format = attachment.getFormat();
+					break;
 			}
 
 			// Pushes attachment

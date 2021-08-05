@@ -70,7 +70,10 @@ namespace wde::renderEngine {
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
 		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 		pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(_pushConstantsValues.size());
-		pipelineLayoutCreateInfo.pPushConstantRanges = _pushConstantsValues.data();
+		if (!_pushConstantsValues.empty())
+			pipelineLayoutCreateInfo.pPushConstantRanges = _pushConstantsValues.data();
+		else
+			pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
 		pipelineLayoutCreateInfo.setLayoutCount = 0; // Optional
 		pipelineLayoutCreateInfo.pSetLayouts = nullptr; // Optional
 
@@ -230,10 +233,18 @@ namespace wde::renderEngine {
 
 		// Set vertex inputs
 		_configInfo.vertexInputStateCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-		_configInfo.vertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
-		_configInfo.vertexInputStateCreateInfo.pVertexBindingDescriptions = bindingDescriptions.data();
-		_configInfo.vertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-		_configInfo.vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		if (_vertexInputs.empty()) { // Assume hard coded shader positions
+			_configInfo.vertexInputStateCreateInfo.vertexBindingDescriptionCount = 0;
+			_configInfo.vertexInputStateCreateInfo.pVertexBindingDescriptions = nullptr;
+			_configInfo.vertexInputStateCreateInfo.vertexAttributeDescriptionCount = 0;
+			_configInfo.vertexInputStateCreateInfo.pVertexAttributeDescriptions = nullptr;
+		}
+		else { // Assume positions coded in buffer
+			_configInfo.vertexInputStateCreateInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+			_configInfo.vertexInputStateCreateInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+			_configInfo.vertexInputStateCreateInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+			_configInfo.vertexInputStateCreateInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		}
 
 
 		// Binds the pipeline infos in the pipeline create struct

@@ -5,6 +5,7 @@
 #include "../renderer/descriptors/RenderPassAttachment.hpp"
 #include "../renderer/passes/RenderPassVulkan.hpp"
 #include "../images/ImageDepth.hpp"
+#include "../images/Image2D.hpp"
 
 namespace wde::renderEngine {
 	class RenderPass;
@@ -29,5 +30,6 @@ namespace wde::renderEngine {
 
 		private:
 			std::vector<VkFramebuffer> _framebuffers;
+			std::vector<std::unique_ptr<Image2D>> _imageAttachments;
 	};
 }

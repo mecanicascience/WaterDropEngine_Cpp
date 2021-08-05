@@ -4,23 +4,25 @@ void CoreAppRenderer::initialize() {
 	// == Creates the render pass 0 ==
 	// List of all attachments for the render pass
 	std::vector<RenderPassAttachment> renderPassAttachments0 = {
-            // Creates a depth image
+            // Depth image
             {0, "Depth attachment", RenderPassAttachment::Type::Depth},
-            // Creates a reference to the swapchain images at the index of 1
-            {1, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, Color(0.01f, 0.01f, 0.01f)}
+            // Filter image
+            {1, "Filter image", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM},
+            // Render to swapchain
+            {2, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, VK_FORMAT_UNDEFINED, Color(0.01f, 0.01f, 0.01f)}
 	};
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
-			// Create a sub-pass that has the attachment number 0 previously declared
-			{0, { 0, 1 }}
+			// Apply small filter
+			{0, { 0, 2 }}
 	};
 
 	// Creates the render pass 0
 	this->addRenderPass(std::make_unique<RenderPass>(renderPassAttachments0, renderPassSubpasses0));
-	// ===============================
 }
 
 void CoreAppRenderer::start() {
+	// == Render pass 0-0 ==
 	// Adds a sub render stage to renderer in the render pass 0, and the sub-pass 0
 	auto cubeSubrenderer = this->addSubrenderer<CoreAppSubrenderer>({0, 0});
 
@@ -35,4 +37,7 @@ void CoreAppRenderer::start() {
 	testGO.model = std::make_shared<ModelLoader>("res/models/monkey_smooth.obj");
 	testGO.transform.scale /= 5.0f;
 	cubeSubrenderer->addGameObject(testGO);
+
+	// Gui sub-renderer
+	this->addSubrenderer<GUISubrenderer>({0, 0});
 }

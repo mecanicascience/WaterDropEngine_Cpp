@@ -62,6 +62,8 @@ namespace wde::renderEngine {
 			std::vector<RenderPassAttachment> _attachments;
 			/** Sub-passes of the render pass */
 			std::vector<RenderSubpassType> _subpasses;
+			/** Number of time each image attachment is used */
+			std::vector<uint32_t> _subpassAttachmentCount;
 
 
 			/** Clear values of the different attachments */

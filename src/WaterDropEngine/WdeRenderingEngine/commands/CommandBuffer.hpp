@@ -29,7 +29,12 @@ namespace wde::renderEngine {
 			void begin(VkCommandBufferUsageFlags flags = 0);
 			/** Ends the recording state for this command buffer. */
 			void end();
-			/** Submits the current command buffer to the specified queue */
+			/**
+			 * Submits the current command buffer to the specified queue
+			 * @param fence
+			 * @param waitSemaphore
+			 * @param signalSemaphore
+			 */
 			void submit(VkFence fence = VK_NULL_HANDLE, const VkSemaphore &waitSemaphore = VK_NULL_HANDLE, const VkSemaphore &signalSemaphore = VK_NULL_HANDLE);
 			/** Wait for the queue to be idle */
 			void waitForQueueIdle();

@@ -44,7 +44,8 @@ namespace wde {
 						PRE    = 0,  // Before render stage
 						NORMAL = 1,  // Default render stage
 						POST   = 2,  // After default render stage
-						RENDER = 3   // When rendering
+						RENDER = 3,   // When rendering
+						POST_RENDER = 4  // After rendering
 					};
 
 					static T &get() { return *_moduleInstance; }

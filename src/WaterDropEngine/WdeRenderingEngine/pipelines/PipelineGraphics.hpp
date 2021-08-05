@@ -33,7 +33,7 @@ namespace wde::renderEngine {
 			 * @param cullingMode The pipeline culling mode (default VK_CULL_MODE_BACK_BIT (culling enabled for faces backing their faces), VK_CULL_MODE_NONE, VK_CULL_MODE_FRONT_BIT)
 			 * @param normalOrientation How the normals will be computed from the indices order (default VK_FRONT_FACE_COUNTER_CLOCKWISE)
 			 */
-            explicit PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<renderStructures::Model::VertexInput> vertexInputs, Depth depthMode,
+			explicit PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages = {}, std::vector<renderStructures::Model::VertexInput> vertexInputs = {}, Depth depthMode = PipelineGraphics::Depth::ReadWrite,
 			                 VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                 VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_COUNTER_CLOCKWISE)
 					: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _depthMode(depthMode),

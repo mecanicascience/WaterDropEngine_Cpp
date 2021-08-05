@@ -11,7 +11,7 @@ namespace wde::renderEngine {
 		public:
 			/** Type of the attachment (currently, only swapchain attachments supported) */
 			enum class Type {
-				Swapchain, Depth
+				Swapchain, Depth, Image
 			};
 
 			/**
@@ -20,14 +20,15 @@ namespace wde::renderEngine {
 			 * @param uniqueName The unique name of the object for all render passes
 			 * @param type The attachment type
 			 */
-            RenderPassAttachment(uint32_t bindingIndex, std::string uniqueName, Type type, const Color &clearColor = Color(0, 0, 0))
-				: _bindingIndex(bindingIndex), _uniqueName(std::move(uniqueName)), _type(type), _clearColor(clearColor) {}
+			RenderPassAttachment(uint32_t bindingIndex, std::string uniqueName, Type type, VkFormat format = VK_FORMAT_R8G8B8A8_UNORM, const Color &clearColor = Color(0, 0, 0))
+				: _bindingIndex(bindingIndex), _uniqueName(std::move(uniqueName)), _type(type), _format(format), _clearColor(clearColor) {}
 
 
 			// Getters and setters
 			uint32_t getBindingIndex() const { return _bindingIndex; }
 			const std::string& getUniqueName() const { return _uniqueName; }
 			Type getType() const { return _type; }
+			const VkFormat getFormat() const { return _format; };
 			const Color getClearColor() const { return _clearColor; }
 
 
@@ -35,6 +36,7 @@ namespace wde::renderEngine {
 			uint32_t _bindingIndex {};
 			std::string _uniqueName {};
 			Type _type;
+			VkFormat _format;
 			Color _clearColor;
 	};
 }

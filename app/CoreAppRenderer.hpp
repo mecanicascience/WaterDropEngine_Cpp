@@ -9,12 +9,14 @@
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/GameObject.hpp"
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/models/ModelCube.hpp"
 #include "../src/WaterDropEngine/WdeRenderingStructures/objects/models/ModelLoader.hpp"
+#include "../src/WaterDropEngine/WdeGUI/GUISubrenderer.hpp"
 
 #include "CoreAppSubrenderer.hpp"
 
 using namespace wde;
 using namespace wde::renderEngine;
 using namespace wde::renderStructures;
+using namespace wde::gui;
 
 class CoreAppRenderer : public Renderer {
 	public:

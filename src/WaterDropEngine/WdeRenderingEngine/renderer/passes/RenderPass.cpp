@@ -3,7 +3,7 @@
 
 namespace wde::renderEngine {
 	RenderPass::RenderPass(std::vector<RenderPassAttachment> attachments, std::vector<RenderSubpassType> subpasses)
-			: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)) {
+	: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)), _subpassAttachmentCount(_subpasses.size()) {
         WDE_PROFILE_FUNCTION();
 		// Stores attachments based on their types
 		for (const auto &attachment : _attachments) {
@@ -19,6 +19,21 @@ namespace wde::renderEngine {
 				case RenderPassAttachment::Type::Depth:
 					clearValue.depthStencil = {1.0f, 0};
 					_depthAttachment = attachment;
+					break;
+
+				case RenderPassAttachment::Type::Image:
+					clearValue.color = {{attachment.getClearColor()._r, attachment.getClearColor()._g, attachment.getClearColor()._b, attachment.getClearColor()._a}};
+
+					// Create images at each subpasses
+					for (const auto &subpass : _subpasses) {
+						if ( // If the subpass contains an image attachment, create the appropriate image
+							auto subpassBindingIndices = subpass.getAttachmentBindingIndices();
+							std::find(subpassBindingIndices.begin(), subpassBindingIndices.end(), attachment.getBindingIndex()) != subpassBindingIndices.end()
+						) {
+							// Number of time the attachment is used
+							_subpassAttachmentCount[subpass.getBindingIndex()]++;
+						}
+					}
 					break;
 			}
 
