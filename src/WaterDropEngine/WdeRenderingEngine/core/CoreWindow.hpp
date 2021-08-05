@@ -36,6 +36,8 @@ namespace wde::renderEngine {
 
 			// Getters and setters
 			GLFWwindow* getWindow() { return _window; }
+			const int getWidth() const { return _width; }
+			const int getHeight() const { return _height; }
 
 
 

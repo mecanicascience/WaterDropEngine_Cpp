@@ -15,11 +15,18 @@ namespace wde::gui {
 		inline static const int MODULE_REGISTERED = RegisterModule("gui", Stage::POST_RENDER);
 
 		public:
+			// Core module functions
 			/** Initialize the module */
 			void initialize() override;
 			/** On engine ticks */
 			void tick() override;
 			/** Clean up the module */
 			void cleanUp() override;
+
+			// Core functions
+			/** Setups the GUI (called by the GUISubrenderer) */
+			void setup();
+			/** Renders the GUI to ImGUI (called by the GUISubrenderer) */
+			void render();
 	};
 }

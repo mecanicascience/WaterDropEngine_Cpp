@@ -17,14 +17,8 @@ namespace wde::gui {
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-
-		// Dark mode
-		ImGui::StyleColorsDark();
-
+		// Setup ImGui config
+		WdeGUI::get().setup();
 
 		// === Initialize ImGui for GLFW ===
 		Logger::debug("Configuring ImGUI with GLFW.", LoggerChannel::GUI);
@@ -85,23 +79,9 @@ namespace wde::gui {
 		commandBuffer.end();
 		commandBuffer.submit();
 		renderInstance.waitForDevicesReady();
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+
 		Logger::debug("== Initialization Done ==", LoggerChannel::GUI);
-	}
-
-	void GUISubrenderer::render(CommandBuffer &commandBuffer) {
-		// Start the ImGui frame
-		ImGui_ImplVulkan_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-		// For now, show default window
-		ImGui::ShowDemoWindow();
-
-		// Rendering
-		ImGui::Render();
-
-		ImDrawData* draw_data = ImGui::GetDrawData();
-		ImGui_ImplVulkan_RenderDrawData(draw_data, commandBuffer);
 	}
 
 	GUISubrenderer::~GUISubrenderer() {
@@ -111,5 +91,22 @@ namespace wde::gui {
 		// Destroy ImGUI
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
+	}
+
+
+	// Render frame
+	void GUISubrenderer::render(CommandBuffer &commandBuffer) {
+		// Start the ImGui frame
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		// Renders GUI
+		WdeGUI::get().render();
+
+		// Rendering
+		ImGui::Render();
+		ImDrawData* draw_data = ImGui::GetDrawData();
+		ImGui_ImplVulkan_RenderDrawData(draw_data, commandBuffer);
 	}
 }

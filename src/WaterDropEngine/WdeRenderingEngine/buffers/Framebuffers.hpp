@@ -15,12 +15,13 @@ namespace wde::renderEngine {
 			// Constructors
 			/**
 			 * Create a new frame buffer manager given the parameter
+			 * @param extent A reference to the frame buffer extent
 			 * @param renderPass The corresponding render pass object
 			 * @param renderPassVulkan The frame buffers corresponding Vulkan render passes
 			 * @param swapchain The frame buffers associated swapchain
 			 * @param depthStencil The associated depth stencil
 			 */
-			explicit Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil);
+			explicit Framebuffers(const VkExtent2D &extent, RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil);
 			void cleanUp();
 
 

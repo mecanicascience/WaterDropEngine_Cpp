@@ -2,9 +2,13 @@
 #include "../../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	RenderPass::RenderPass(std::vector<RenderPassAttachment> attachments, std::vector<RenderSubpassType> subpasses)
-	: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)), _subpassAttachmentCount(_subpasses.size()) {
+	RenderPass::RenderPass(std::vector<RenderPassAttachment> attachments, std::vector<RenderSubpassType> subpasses, RenderArea renderArea)
+		: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)), _subpassAttachmentCount(_subpasses.size()), _renderArea(renderArea) {
         WDE_PROFILE_FUNCTION();
+        // If render area has a width and height of 0, it will be bound to the dimensions of the swapchain
+        if (renderArea.getExtent().width == 0 && renderArea.getExtent().height == 0)
+        	_useSwapchainExtent = true;
+
 		// Stores attachments based on their types
 		for (const auto &attachment : _attachments) {
 			VkClearValue clearValue = {};
@@ -45,12 +49,14 @@ namespace wde::renderEngine {
 
 	void RenderPass::initialize(SwapChain &swapchain) {
         WDE_PROFILE_FUNCTION();
-		VkExtent2D swapchainExtent = swapchain.getExtent();
 		VkFormat swapchainFormat = swapchain.getImageFormat();
+
+		if (_useSwapchainExtent) // Map render area to swapchain area
+			_renderArea.setExtent(swapchain.getExtent().width, swapchain.getExtent().height);
 
 		// Create depth stencil
 		if (_depthAttachment)
-			_depthStencil = std::make_unique<ImageDepth>(swapchainExtent);
+			_depthStencil = std::make_unique<ImageDepth>(_renderArea.getExtent());
         VkFormat depthFormat = _depthStencil ? _depthStencil->getFormat() : VK_FORMAT_UNDEFINED;
 
 		// Creates associated render pass
@@ -61,11 +67,19 @@ namespace wde::renderEngine {
 
 
 		// Create associated frame buffers
-		_framebuffers = std::make_unique<Framebuffers>(*this, *_renderPass, swapchain, *_depthStencil );
+		_framebuffers = std::make_unique<Framebuffers>(_renderArea.getExtent(), *this, *_renderPass, swapchain, *_depthStencil );
 	}
 
 	void RenderPass::update() {
         WDE_PROFILE_FUNCTION();
+
+        if (_useSwapchainExtent) {
+        	// Map render area to swapchain area
+        	_renderArea.setExtent(
+                CoreInstance::get().getSelectedDevice().getSwapChain().getExtent().width,
+                CoreInstance::get().getSelectedDevice().getSwapChain().getExtent().height
+            );
+        }
 	}
 
 	void RenderPass::cleanUp() {

@@ -3,7 +3,7 @@
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	Framebuffers::Framebuffers(RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil) {
+	Framebuffers::Framebuffers(const VkExtent2D &extent, RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil) {
         WDE_PROFILE_FUNCTION();
 	    // Create image attachments
 	    for (const auto &attachment : renderPass.getAttachments()) {
@@ -17,7 +17,7 @@ namespace wde::renderEngine {
 				    break;
 
 			    case RenderPassAttachment::Type::Image:
-			    	_imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.getFormat(), swapchain.getExtent()));
+			    	_imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.getFormat(), extent));
 				    break;
 		    }
 	    }
@@ -50,8 +50,8 @@ namespace wde::renderEngine {
 			framebufferCreateInfo.renderPass = renderPassVulkan;
 			framebufferCreateInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 			framebufferCreateInfo.pAttachments = attachments.data();
-			framebufferCreateInfo.width = swapchain.getExtent().width;
-			framebufferCreateInfo.height = swapchain.getExtent().height;
+			framebufferCreateInfo.width = extent.width;
+			framebufferCreateInfo.height = extent.height;
 			framebufferCreateInfo.layers = 1;
 
 			if (vkCreateFramebuffer(CoreInstance::get().getSelectedDevice().getDevice(), &framebufferCreateInfo, nullptr, &_framebuffers[i]) != VK_SUCCESS)
