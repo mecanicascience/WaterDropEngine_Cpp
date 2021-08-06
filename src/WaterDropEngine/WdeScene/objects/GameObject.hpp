@@ -2,6 +2,7 @@
 
 #include "../../../wde.hpp"
 #include "Model.hpp"
+#include "../modules/Module.hpp"
 
 namespace wde::scene {
 	struct TransformComponent {
@@ -49,10 +50,20 @@ namespace wde::scene {
 			// Constructors
 			GameObject() : _objectID(-1) {}; // Creates a dummy empty temporary game object (do not use!)
 
+			// Core creation objects
 			static GameObject createGameObject() {
 				static id_t currentID = 0;
 				return GameObject(currentID++);
 			}
+
+			template<typename T>
+			void addModule() {
+				_moduleList.push_back(new T());
+
+				// Initialize module
+				_moduleList[_moduleList.size() - 1]->initialize();
+			}
+
 
 
 			// Getters and setters
@@ -61,22 +72,47 @@ namespace wde::scene {
 
 			// Core functions
 			/**
+			 * Update the game object
+			 * @param deltaTime Time since last update (in seconds)
+			 */
+			void update(float deltaTime) {
+				// Update modules
+				for (auto& module : _moduleList)
+					module->update(deltaTime);
+			}
+
+			/**
 			 * Draws the game object to the screen
 			 * @param commandBuffer
 			 */
 			void render(CommandBuffer &commandBuffer) {
+				// Render modules
+				for (auto& module : _moduleList)
+					module->render(commandBuffer);
+
+				// Render models
 				model->bind(commandBuffer);
 				model->render();
 			}
 
 			/** Clean up game object */
 			void cleanUp() {
+				// Clean up modules
+				for(auto& module : _moduleList) {
+					module->cleanUp();
+					delete module;
+					module = nullptr;
+				}
+				_moduleList.clear();
+
+				// Clean up model
 				model->cleanUp();
 			}
 
 
 		private:
 			id_t _objectID;
+			std::vector<Module*> _moduleList;
 
 			/**
 			 * Creates a new game object

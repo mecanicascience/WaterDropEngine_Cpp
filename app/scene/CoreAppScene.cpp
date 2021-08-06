@@ -11,11 +11,12 @@ void CoreAppScene::initialize() {
 	auto testGO = GameObject::createGameObject();
 	testGO.model = std::make_shared<ModelLoader>("res/models/monkey_smooth.obj");
 	testGO.transform.scale /= 5.0f;
+	testGO.addModule<DummyModule>();
 	addGameObject(testGO);
 }
 
 void CoreAppScene::update() {
-	auto newTime = std::chrono::high_resolution_clock::now();
-	auto dt = std::chrono::duration<float, std::chrono::seconds::period>(newTime - _currentTime).count();
-	_currentTime = newTime;
+	// Updates scene
+	Scene::update();
+	// float dt = getDeltaTime();
 }

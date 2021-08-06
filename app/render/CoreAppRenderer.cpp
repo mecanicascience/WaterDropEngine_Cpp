@@ -13,7 +13,7 @@ void CoreAppRenderer::initialize() {
 	};
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
-			// Apply small filter
+			// Only use one subpass
 			{0, { 0, 2 }}
 	};
 
