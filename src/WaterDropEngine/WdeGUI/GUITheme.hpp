@@ -57,6 +57,7 @@ namespace wde::gui {
 
 				// Background color
 				colors[ImGuiCol_WindowBg] = colorMinor;
+				colors[ImGuiCol_ChildBg] = colorMinor;
 
 				// Window headers
 				colors[ImGuiCol_TitleBg] = colorMajor;

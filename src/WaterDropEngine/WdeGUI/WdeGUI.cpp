@@ -75,6 +75,8 @@ namespace wde::gui {
 		ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode; // No background
 		ImGuiID dockspaceId = ImGui::GetID(DOCKSPACE_ROOT_ID.c_str());
 		ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags);
+
+		// End dockspace
 		ImGui::End();
 
 		// Render GUI elements in Scene
@@ -95,12 +97,11 @@ namespace wde::gui {
 		ImGui::DockBuilderRemoveNode(dockspaceID);
 		ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
 		ImGui::DockBuilderSetNodeSize(dockspaceID, viewport->Size);
+		ImGuiID dockparentID = dockspaceID; // Master node ID
 
 		// Create windows
-		ImGuiID dockparentID = dockspaceID; // Master node ID
 		scene::WdeSceneManager::get().setupGUI(dockparentID); // Update scene
 		_logger.setupGUI(dockparentID); // Logger
-
 
 		// End building
 		ImGui::DockBuilderFinish(dockspaceID);
