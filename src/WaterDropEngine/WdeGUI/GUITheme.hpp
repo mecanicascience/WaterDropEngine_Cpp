@@ -48,24 +48,34 @@ namespace wde::gui {
 			 */
 			static void setCustomStyle() {
 				ImGuiStyle& style = ImGui::GetStyle();
-				style.PopupRounding = 3;
 
-				style.WindowPadding = ImVec2(4, 4);
-				style.FramePadding  = ImVec2(6, 4);
-				style.ItemSpacing   = ImVec2(6, 2);
+				// Setup window style
+				style.WindowBorderSize = 0;
+				style.WindowRounding = 0;
+				style.WindowMenuButtonPosition = ImGuiDir_None; // Disable menu popup
+				style.WindowTitleAlign = ImVec2(0.05, 0.5);
+				style.WindowPadding = ImVec2(8, 8);
 
-				style.ScrollbarSize = 18;
+				// Setup frame style
+				style.FrameRounding = 0;
+				style.FrameBorderSize = 0;
+				style.FramePadding  = ImVec2(10, 4);
 
-				style.WindowBorderSize = 1;
-				style.ChildBorderSize  = 1;
-				style.PopupBorderSize  = 1;
-				style.FrameBorderSize  = 0;
+				// Setup popup style
+				style.PopupBorderSize = 0;
+				style.PopupRounding = 0;
 
-				style.WindowRounding    = 3;
-				style.ChildRounding     = 3;
-				style.FrameRounding     = 3;
-				style.ScrollbarRounding = 2;
-				style.GrabRounding      = 3;
+				// Setup child style
+				style.ChildBorderSize = 0;
+				style.ChildRounding = 0;
+
+				// Setup scrollbar style
+				style.ScrollbarSize = 14;
+				style.ScrollbarRounding = 0;
+
+				// Setup items style
+				style.ItemSpacing = ImVec2(10, 4);
+				style.ItemInnerSpacing = ImVec2(6, 4);
 			}
 	};
 }

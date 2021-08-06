@@ -152,8 +152,23 @@ namespace wde {
 			 * @return The name of the channel
 			 */
 			static std::string getNameOf(LoggerChannel channel);
-
 			static const std::unordered_map<LoggerChannel, ImColor>& getChannelColors() { return _channelsColors; }
+			static std::vector<LoggerChannel>& getActivatedChannels() { return _activatedChannels; }
+
+			static int getLogLevel() {
+				if      (_logLevel == LoggerLogLevel::ERR)   return 0;
+				else if (_logLevel == LoggerLogLevel::WARN)  return 1;
+				else if (_logLevel == LoggerLogLevel::INFO)  return 2;
+				else if (_logLevel == LoggerLogLevel::DEBUG) return 3;
+				return -1; // Error
+			}
+			static void setLogLevel(int logLevel) {
+				if      (logLevel == 0) _logLevel = LoggerLogLevel::ERR;
+				else if (logLevel == 1) _logLevel = LoggerLogLevel::WARN;
+				else if (logLevel == 2) _logLevel = LoggerLogLevel::INFO;
+				else if (logLevel == 3) _logLevel = LoggerLogLevel::DEBUG;
+			}
+			static void clearMessagesCache() { _logLines.clear(); }
 
 
 		private:
