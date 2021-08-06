@@ -10,7 +10,6 @@ namespace wde::scene {
 	class GameObject {
 		public:
 			using id_t = unsigned int;
-			std::shared_ptr<Model> model {};
 
 			// Constructors
 			GameObject() : _objectID(-1) {}; // Creates a dummy empty temporary game object (do not use!)
@@ -25,12 +24,13 @@ namespace wde::scene {
 
 
 			// Modules handling
-			template<typename T>
-			void addModule() {
-				_moduleList.push_back(new T());
+			template<typename T, typename ... Args>
+			T& addModule(Args ...args) {
+				_moduleList.push_back(new T(args...));
 
 				// Initialize module
 				_moduleList[_moduleList.size() - 1]->initialize();
+				return *dynamic_cast<T*>(_moduleList[_moduleList.size() - 1]);
 			}
 
 			template<typename T>
@@ -66,10 +66,6 @@ namespace wde::scene {
 				// Render modules
 				for (auto& module : _moduleList)
 					module->render(commandBuffer);
-
-				// Render models
-				model->bind(commandBuffer);
-				model->render();
 			}
 
 			/** Clean up game object */
@@ -81,9 +77,6 @@ namespace wde::scene {
 					module = nullptr;
 				}
 				_moduleList.clear();
-
-				// Clean up model
-				model->cleanUp();
 			}
 
 
@@ -100,7 +93,7 @@ namespace wde::scene {
 				for(auto& module : _moduleList) {
 					// Add small space between modules
 					if (count != 0)
-						ImGui::Dummy(ImVec2(0.0f, 8.0f));
+						ImGui::Dummy(ImVec2(0.0f, 12.0f));
 					count++;
 
 					// Render module

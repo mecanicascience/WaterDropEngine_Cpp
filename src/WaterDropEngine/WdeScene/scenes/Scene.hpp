@@ -14,6 +14,7 @@ namespace wde::scene {
 
 			/** Updates the scene (this should be called from the derived children class) */
 			virtual void update() {
+				WDE_PROFILE_FUNCTION();
 				// Updates delta time
 				auto newTime = std::chrono::high_resolution_clock::now();
 				_deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - _currentTime).count();
@@ -26,6 +27,7 @@ namespace wde::scene {
 
 			/** Cleaning up scene */
 			virtual void cleanUp() final {
+				WDE_PROFILE_FUNCTION();
 				// Clean up game objects
 				for (auto& go : _gameObjects)
 					go.cleanUp();
@@ -40,6 +42,7 @@ namespace wde::scene {
 			 * @param parentID The ImGUI id of the parent anchor component
 			 */
 			virtual void setupGUI(ImGuiID &parentID) {
+				WDE_PROFILE_FUNCTION();
 				// Create a game objects list tab
 				ImGuiID dockIDLeft = ImGui::DockBuilderSplitNode(parentID, ImGuiDir_Left, 0.19f, nullptr, &parentID);
 				ImGui::DockBuilderDockWindow("Scene Components", dockIDLeft);
@@ -51,6 +54,7 @@ namespace wde::scene {
 
 			/** Render the GUI elements (called by the GUI manager) */
 			virtual void renderGUI() {
+				WDE_PROFILE_FUNCTION();
 				// Setup scene components list
 				ImGui::Begin("Scene Components");
 				ImGui::BeginChild("Scene Components Children");

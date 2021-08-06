@@ -30,6 +30,7 @@ namespace wde::renderEngine {
 	// Core functions
 	void MeshSubrenderer::render(CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
+		Logger::debug("Rendering scene.", LoggerChannel::RENDERING_ENGINE);
 
 		auto newTime = std::chrono::high_resolution_clock::now();
 		auto dt = std::chrono::duration<float, std::chrono::seconds::period>(newTime - _currentTime).count();
@@ -49,7 +50,7 @@ namespace wde::renderEngine {
 
 		// Renders game objects in scene
 		if(scene::WdeSceneManager::get().getActiveScene() != nullptr) {
-			Logger::debug("Rendering meshes.", LoggerChannel::RENDERING_ENGINE);
+			Logger::debug("Rendering game objects.", LoggerChannel::RENDERING_ENGINE);
 			scene::Scene& scene = *scene::WdeSceneManager::get().getActiveScene();
 			for (auto& go : scene.getGameObjects()) {
 				// Setup push constants

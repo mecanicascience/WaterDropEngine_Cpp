@@ -33,11 +33,13 @@ namespace wde::scene {
 
 	// GUI functions
 	void WdeSceneManager::setupGUI(ImGuiID &parentID) {
+		Logger::debug("Setting up scene GUI.", LoggerChannel::SCENE);
 		if (_scene != nullptr)
 			_scene->setupGUI(parentID);
 	}
 
 	void WdeSceneManager::renderGUI() {
+		Logger::debug("Starting scene GUI rendering.", LoggerChannel::SCENE);
 		if (_scene != nullptr)
 			_scene->renderGUI();
 	}

@@ -98,10 +98,9 @@ namespace wde::scene {
 			/** Clean up the model */
 			void cleanUp();
 
-
-		protected:
 			virtual std::vector<Vertex> getVertices() = 0;
 			virtual std::vector<uint32_t> getIndices() = 0;
+
 
 
 		private:
