@@ -183,14 +183,7 @@ namespace wde {
             static std::vector<LogMessage> _logLines;
 
             // Channel colors
-            inline static const std::unordered_map<LoggerChannel, ImColor> _channelsColors {
-            	{LoggerChannel::MAIN, IM_COL32(255, 255, 255, 255)},
-            	{LoggerChannel::RENDERING_ENGINE, IM_COL32(116, 226, 255, 255)},
-            	{LoggerChannel::COMMON, IM_COL32(255, 196, 116, 255)},
-            	{LoggerChannel::INPUT_MANAGER, IM_COL32(145, 116, 255, 255)},
-            	{LoggerChannel::GUI, IM_COL32(249, 133, 161, 255)},
-            	{LoggerChannel::SCENE, IM_COL32(150, 249, 133, 255)},
-            };
+            static std::unordered_map<LoggerChannel, ImColor> _channelsColors;
 
 
 			// Helper functions

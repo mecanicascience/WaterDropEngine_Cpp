@@ -45,11 +45,11 @@ namespace wde::gui {
 					auto containsChannelPosition = std::find(activatedChannels.begin(), activatedChannels.end(), channel);
 					if (containsChannelPosition != activatedChannels.end()) { // channel enabled
 						ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4) color);
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(10, 10, 10, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorBlackMinor);
 					}
 					else { // channel disabled
-						ImGui::PushStyleColor(ImGuiCol_Button, IM_COL32(120, 120, 120, 255));
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+						ImGui::PushStyleColor(ImGuiCol_Button, GUITheme::colorGrayMinor);
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorWhiteMajor);
 					}
 					ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4) ImColor(color.Value.x * 0.8f, color.Value.y * 0.8f, color.Value.z * 0.8f, color.Value.w));
 					ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4) color);
@@ -91,8 +91,12 @@ namespace wde::gui {
 
 
 				// Display logs
+				ImGui::PushStyleColor(ImGuiCol_ChildBg, GUITheme::colorMinorLight);
+				ImGui::BeginChild("logger_children");
+				ImGui::PopStyleColor(1);
 				std::vector<LogMessage>& messages = Logger::getLogLines();
 				if (messages.empty()) {
+					ImGui::EndChild();
 					ImGui::End();
 					return;
 				}
@@ -100,7 +104,7 @@ namespace wde::gui {
 					// Displays time
 					std::string formattedTime(30, '\0');
 					std::strftime(&formattedTime[0], formattedTime.size(), "[%H:%M:%S]", std::localtime(&message.getTime()));
-					ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(180, 180, 180, 180));
+					ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorGrayMajor);
 					ImGui::Text(formattedTime.c_str());
 					ImGui::PopStyleColor();
 					ImGui::SameLine();
@@ -108,19 +112,19 @@ namespace wde::gui {
 					// Displays message type
 					std::string messageTypeName;
 					if (message.getType() == "info") {
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorWhiteMajor);
 						messageTypeName = "INFO";
 					}
 					else if (message.getType() == "error") {
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 80, 72, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorRedMajor);
 						messageTypeName = "ERROR";
 					}
 					else if (message.getType() == "warning") {
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 181, 72, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorOrangeMajor);
 						messageTypeName = "WARNING";
 					}
 					else { // debug
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(210, 210, 210, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorGrayMajor);
 						messageTypeName = "DEBUG";
 					}
 					ImGui::Text(("[" + messageTypeName + "]").c_str());
@@ -128,7 +132,7 @@ namespace wde::gui {
 					ImGui::SameLine();
 
 					// Displays WDE widget
-					ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(136, 230, 255, 180));
+					ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorWdeMajor);
 					ImGui::Text("[WDE]");
 					ImGui::PopStyleColor();
 					ImGui::SameLine();
@@ -142,18 +146,19 @@ namespace wde::gui {
 
 					// Set message color depending on the type of the message
 					if (message.getType() == "info")
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 255, 255, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorWhiteMajor);
 					else if (message.getType() == "error")
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(255, 80, 72, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorRedMajor);
 					else if (message.getType() == "warning")
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(200, 181, 72, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorOrangeMajor);
 					else // debug
-						ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(210, 210, 210, 255));
+						ImGui::PushStyleColor(ImGuiCol_Text, GUITheme::colorGrayMajor);
 
 					// Displays message
 					ImGui::Text(message.getMessage().c_str());
 					ImGui::PopStyleColor();
 				}
+				ImGui::EndChild();
 				ImGui::End();
 			}
 	};

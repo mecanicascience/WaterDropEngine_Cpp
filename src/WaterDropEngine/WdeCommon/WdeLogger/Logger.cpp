@@ -1,4 +1,5 @@
 #include "Logger.hpp"
+#include "../../WdeGUI/GUITheme.hpp"
 
 namespace wde {
     // Log file not initialized by default
@@ -6,11 +7,20 @@ namespace wde {
     std::ofstream Logger::_logFile;
 
 	// Initialize Log Level values
-	Logger::LoggerLogLevel Logger::_logLevel = Logger::LoggerLogLevel::DEBUG;
+	Logger::LoggerLogLevel Logger::_logLevel = Logger::LoggerLogLevel::ERR;
 	std::vector<LoggerChannel> Logger::_activatedChannels = { LoggerChannel::MAIN };
 
 	// Initialize log messages list
 	std::vector<LogMessage> Logger::_logLines {};
+
+	std::unordered_map<LoggerChannel, ImColor> Logger::_channelsColors = {
+		{LoggerChannel::MAIN, gui::GUITheme::colorWhiteMinor},
+		{LoggerChannel::RENDERING_ENGINE, gui::GUITheme::colorBlueMinor},
+		{LoggerChannel::COMMON, gui::GUITheme::colorOrangeMinor},
+		{LoggerChannel::INPUT_MANAGER, gui::GUITheme::colorPurpleMinor},
+		{LoggerChannel::GUI, gui::GUITheme::colorRedMinor},
+		{LoggerChannel::SCENE, gui::GUITheme::colorGreenMinor}
+	};
 
 
 
