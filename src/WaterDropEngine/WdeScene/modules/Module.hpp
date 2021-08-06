@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "../../../wde.hpp"
 
 namespace wde::scene {
@@ -13,7 +15,7 @@ namespace wde::scene {
 			 * Creates a new Module type
 			 * @param moduleName The name of the module
 			 */
-			explicit Module(const std::string& moduleName) : _moduleName(std::move(moduleName)) {}
+			explicit Module(std::string moduleName) : _moduleName(std::move(moduleName)) {}
 			virtual ~Module() = default;
 
 
