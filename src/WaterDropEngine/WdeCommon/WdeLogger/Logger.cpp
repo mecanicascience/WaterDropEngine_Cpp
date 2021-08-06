@@ -9,30 +9,65 @@ namespace wde {
 	Logger::LoggerLogLevel Logger::_logLevel = Logger::LoggerLogLevel::DEBUG;
 	std::vector<LoggerChannel> Logger::_activatedChannels = { LoggerChannel::MAIN };
 
+	// Initialize log messages list
+	std::vector<LogMessage> Logger::_logLines {};
+
 
 
 	// Main functions
 	void Logger::debug(const std::string &message, LoggerChannel channel) {
 		if (!checkValidInput(channel, LoggerLogLevel::DEBUG))
 			return;
+
+		// Outputs message
 		outputMessage(getFormatedMessage(message, " DEBUG ", channel));
+
+		// Add line to the log line list
+		_logLines.emplace_back(message, "debug", channel);
+
+		// If more line than threshold, clear first lines
+		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+			_logLines.erase(_logLines.begin());
 	}
 
 	void Logger::info(const std::string &message, LoggerChannel channel) {
 		if (!checkValidInput(channel, LoggerLogLevel::INFO))
 			return;
 		outputMessage(getFormatedMessage(message, " INFO  ", channel));
+
+		// Add line to the log line list
+		_logLines.emplace_back(message, "info", channel);
+
+		// If more line than threshold, clear first lines
+		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+			_logLines.erase(_logLines.begin());
 	}
 
 	void Logger::warn(const std::string &message, LoggerChannel channel) {
 		if (!checkValidInput(channel, LoggerLogLevel::WARN))
 			return;
 		outputMessage(getFormatedMessage(message, "WARNING", channel));
+
+		// Add line to the log line list
+		_logLines.emplace_back(message, "warning", channel);
+
+		// If more line than threshold, clear first lines
+		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+			_logLines.erase(_logLines.begin());
 	}
 
 	void Logger::err(const std::string &message, LoggerChannel channel) {
 		// Always print errors
 		outputError(getFormatedMessage(message, " ERROR ", channel));
+
+		// Add line to the log line list
+		_logLines.emplace_back(message, "error", channel);
+
+		// If more line than threshold, clear first lines
+		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+			_logLines.erase(_logLines.begin());
+
+		// Throw error
 		throw std::runtime_error("See above logs.");
 	}
 
@@ -68,12 +103,10 @@ namespace wde {
 				return "MAIN";
 			case LoggerChannel::INPUT_MANAGER:
 				return "INPUT-MANAGER";
-			case LoggerChannel::RENDERING_STRUCTURES:
-				return "RENDERING-STRUCTURES";
 			case LoggerChannel::GUI:
 				return "GUI";
-			case LoggerChannel::SCENE_MANAGER:
-				return "SCENE-MANAGER";
+			case LoggerChannel::SCENE:
+				return "SCENE";
 		}
 
 		// Channel not found

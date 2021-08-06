@@ -8,6 +8,7 @@
 #include "../WdeRenderingEngine/WdeRenderEngine.hpp"
 #include "../WdeScene/WdeSceneManager.hpp"
 #include "GUITheme.hpp"
+#include "GUILogger.hpp"
 
 namespace wde::gui {
 	class WdeGUI : public WdeModule::Module<WdeGUI> {
@@ -33,11 +34,17 @@ namespace wde::gui {
 			void reset() { _shouldResetElements = true; }
 
 
+			// Getters and setters
+			GUILogger& getLogger() { return _logger; }
 
 		private:
+			// Core parameters
 			/** Main root dockspace ID */
 			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace Window";
 			/** True if the GUI should be reset during next render frame */
 			bool _shouldResetElements = false;
+
+			// Log class
+			GUILogger _logger {};
 	};
 }

@@ -15,8 +15,8 @@ namespace wde::gui {
 		Logger::debug("Setting up gui fonts.", LoggerChannel::GUI);
 		// io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Bold.ttf", 18.0f);
 		// io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Regular.ttf", 18.0f);*/
-		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 15.0f);
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 15.0f);
+		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 17.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 17.0f);
 
 		// Dark mode
 		Logger::debug("Setting up gui color scheme.", LoggerChannel::GUI);
@@ -74,6 +74,7 @@ namespace wde::gui {
 		// Render GUI elements in Scene
 		Logger::debug("Rendering GUI elements.", LoggerChannel::GUI);
 		scene::WdeSceneManager::get().renderGUI();
+		_logger.renderGUI();
 	}
 
 
@@ -91,7 +92,9 @@ namespace wde::gui {
 
 		// Create windows
 		ImGuiID dockparentID = dockspaceID; // Master node ID
-		scene::WdeSceneManager::get().setupGUI(dockparentID);
+		scene::WdeSceneManager::get().setupGUI(dockparentID); // Update scene
+		_logger.setupGUI(dockparentID);
+
 
 		// End building
 		ImGui::DockBuilderFinish(dockspaceID);

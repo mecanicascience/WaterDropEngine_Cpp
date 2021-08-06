@@ -11,4 +11,6 @@ namespace wde::Constants {
 													APPLICATION_VERSION_RAW[1], APPLICATION_VERSION_RAW[2]);
 	extern const std::string APPLICATION_VERSION_FORMATTED = "v" + std::to_string(APPLICATION_VERSION_RAW[0]) +  "."
 			+ std::to_string(APPLICATION_VERSION_RAW[1]) + "." + std::to_string(APPLICATION_VERSION_RAW[2]);
+
+	extern const int GUI_CONSOLE_MAX_LINES = 500;
 }

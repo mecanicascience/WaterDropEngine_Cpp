@@ -7,6 +7,8 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
+#include "../../../lib/imgui/imgui.h"
+
 #include "../WdeUtils/Constants.hpp"
 #include "../WdeError/WdeStatus.hpp"
 
@@ -17,11 +19,28 @@ namespace wde {
 		RENDERING_ENGINE,
 		COMMON,
 		INPUT_MANAGER,
-		RENDERING_STRUCTURES,
 		GUI,
-		SCENE_MANAGER
+		SCENE
 	};
 
+
+	class LogMessage {
+		public:
+			LogMessage(std::string message, std::string type, LoggerChannel channel)
+				: _message(std::move(message)), _type(std::move(type)), _channel(channel), _time(std::chrono::system_clock::to_time_t(std::chrono::system_clock::now())) {}
+
+			// Getters
+			std::string& getMessage() { return _message; }
+			std::string& getType() { return _type; }
+			LoggerChannel& getChannel() { return _channel; }
+			std::time_t& getTime() { return _time; }
+
+		private:
+			std::string _message;
+			std::string _type;
+			LoggerChannel _channel;
+			std::time_t _time;
+	};
 
 	class Logger {
 		public:
@@ -125,6 +144,18 @@ namespace wde {
 
 
 
+			// Getters
+			static std::vector<LogMessage>& getLogLines() { return _logLines; }
+
+			/**
+			 * @param channel
+			 * @return The name of the channel
+			 */
+			static std::string getNameOf(LoggerChannel channel);
+
+			static const std::unordered_map<LoggerChannel, ImColor>& getChannelColors() { return _channelsColors; }
+
+
 		private:
 	        // Core parameters
 			/** List of activated channels */
@@ -132,6 +163,19 @@ namespace wde {
 			static std::vector<LoggerChannel> _activatedChannels;
             static std::ofstream _logFile;
             static bool _logFileInitialized;
+
+            // Core variables
+            static std::vector<LogMessage> _logLines;
+
+            // Channel colors
+            inline static const std::unordered_map<LoggerChannel, ImColor> _channelsColors {
+            	{LoggerChannel::MAIN, IM_COL32(255, 255, 255, 255)},
+            	{LoggerChannel::RENDERING_ENGINE, IM_COL32(116, 226, 255, 255)},
+            	{LoggerChannel::COMMON, IM_COL32(255, 196, 116, 255)},
+            	{LoggerChannel::INPUT_MANAGER, IM_COL32(145, 116, 255, 255)},
+            	{LoggerChannel::GUI, IM_COL32(249, 133, 161, 255)},
+            	{LoggerChannel::SCENE, IM_COL32(150, 249, 133, 255)},
+            };
 
 
 			// Helper functions
@@ -150,12 +194,6 @@ namespace wde {
 			 * @return The formatted string
 			 */
 			static std::string getFormatedMessage(const std::string &message, const std::string &type, LoggerChannel channel);
-
-			/**
-			 * @param channel
-			 * @return The name of the channel
-			 */
-			static std::string getNameOf(LoggerChannel channel);
 
 
             // Log output functions

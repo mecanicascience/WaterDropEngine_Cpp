@@ -15,7 +15,7 @@ namespace wde::scene {
 
 	void Camera::setPerspectiveProjection(float fovY, float aspect, float nearVal, float farVal) {
 		if (glm::abs(aspect - std::numeric_limits<float>::epsilon()) <= 0.0f)
-			throw WdeException("The camera aspect ratio is too small.", LoggerChannel::RENDERING_STRUCTURES);
+			throw WdeException("The camera aspect ratio is too small.", LoggerChannel::SCENE);
 		const float tanHalfFovy = std::tan(fovY / 2.0f);
 		_projectionMatrix = glm::mat4{0.0f};
 		_projectionMatrix[0][0] = 1.0f / (aspect * tanHalfFovy);

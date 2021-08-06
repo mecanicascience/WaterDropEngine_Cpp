@@ -5,29 +5,29 @@ namespace wde::scene {
 	// Core functions
 	void WdeSceneManager::initialize() {
 		WDE_PROFILE_FUNCTION();
-		Logger::debug("== Initializing Scene Manager ==", LoggerChannel::SCENE_MANAGER);
-		Logger::debug("Initializing selected scene.", LoggerChannel::SCENE_MANAGER);
+		Logger::debug("== Initializing Scene Manager ==", LoggerChannel::SCENE);
+		Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
 		if (_scene == nullptr)
-			throw WdeException("Scene not set before initialization.", LoggerChannel::SCENE_MANAGER);
+			throw WdeException("Scene not set before initialization.", LoggerChannel::SCENE);
 		_scene->initialize();
 
 		_hasStarted = true;
-		Logger::debug("== Initialization done ==", LoggerChannel::SCENE_MANAGER);
+		Logger::debug("== Initialization done ==", LoggerChannel::SCENE);
 	}
 
 	void WdeSceneManager::tick() {
 		WDE_PROFILE_FUNCTION();
-		Logger::debug("Updating scene game objects.", LoggerChannel::SCENE_MANAGER);
+		Logger::debug("Updating scene game objects.", LoggerChannel::SCENE);
 		if (_scene != nullptr)
 			_scene->update();
 	}
 
 	void WdeSceneManager::cleanUp() {
 		WDE_PROFILE_FUNCTION();
-		Logger::debug("== Cleaning up Scene ==", LoggerChannel::SCENE_MANAGER);
+		Logger::debug("== Cleaning up Scene ==", LoggerChannel::SCENE);
 		if (_scene != nullptr)
 			_scene->cleanUp();
-		Logger::debug("== Cleaning up done ==", LoggerChannel::SCENE_MANAGER);
+		Logger::debug("== Cleaning up done ==", LoggerChannel::SCENE);
 	}
 
 

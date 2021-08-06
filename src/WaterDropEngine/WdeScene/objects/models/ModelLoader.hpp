@@ -14,12 +14,12 @@ namespace wde::scene {
 				std::vector<tinyobj::material_t> materials;
 				std::string warn, err;
 
-				Logger::debug("Loading model from " + path + ".", LoggerChannel::RENDERING_STRUCTURES);
+				Logger::debug("Loading model from " + path + ".", LoggerChannel::SCENE);
 				tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
 				if (!warn.empty())
-					Logger::warn("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::RENDERING_STRUCTURES);
+					Logger::warn("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::SCENE);
 				if (!err.empty())
-					throw WdeException("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::RENDERING_STRUCTURES);
+					throw WdeException("Failed to load model. " + std::string(warn) + std::string(err), LoggerChannel::SCENE);
 
 				// Combine every face into a single model and delete vertices repetition
 				std::unordered_map<size_t, uint32_t> verticesIndexHash {};
@@ -59,7 +59,7 @@ namespace wde::scene {
 				}
 
 				// Initialize model
-				Logger::debug("Initializing model.", LoggerChannel::RENDERING_STRUCTURES);
+				Logger::debug("Initializing model.", LoggerChannel::SCENE);
 				this->initialize();
 			};
 
