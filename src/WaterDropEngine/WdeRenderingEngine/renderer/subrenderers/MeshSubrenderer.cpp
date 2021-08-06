@@ -21,7 +21,7 @@ namespace wde::renderEngine {
 			_pipeline.initialize();
 
 			// Create camera viewing object
-			_cameraViewerObject = scene::GameObject::createGameObject();
+			_cameraViewerObject = scene::GameObject::createGameObject("Camera");
 			_cameraViewerObject.transform.translation = {0.0f, 0.0f, 0.0f};
 			//_camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
 			_camera.setViewTarget(_cameraViewerObject.transform.translation, glm::vec3(0.0f, 0.0f, 0.0f));

@@ -8,7 +8,7 @@ void CoreAppScene::initialize() {
 	cube.transform.scale = {0.5f, 0.5f, 0.5f};
 	cubeSubrenderer->addGameObject(cube);*/
 
-	auto testGO = GameObject::createGameObject();
+	auto testGO = GameObject::createGameObject("Monkey Object");
 	testGO.model = std::make_shared<ModelLoader>("res/models/monkey_smooth.obj");
 	testGO.transform.scale /= 5.0f;
 	testGO.addModule<DummyModule>();

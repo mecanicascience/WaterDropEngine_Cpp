@@ -32,6 +32,30 @@ namespace wde::scene {
 				_gameObjects.clear();
 			}
 
+
+			// GUI functions
+			/**
+			 * Setup the GUI (can be called multiple times - called by the GUI manager) given the ID of the parent gui.
+			 * This function should be called by the children scene
+			 * @param parentID The ImGUI id of the parent anchor component
+			 */
+			virtual void setupGUI(ImGuiID &parentID) {
+				// Create a game objects list tab
+				ImGuiID dockIDLeft = ImGui::DockBuilderSplitNode(parentID, ImGuiDir_Left, 0.20f, nullptr, &parentID);
+				ImGui::DockBuilderDockWindow("Scene Components", dockIDLeft);
+			};
+
+			/** Render the GUI elements (called by the GUI manager) */
+			virtual void renderGUI() {
+				// Setup scene components list
+				ImGui::Begin("Scene Components");
+				for (auto& go : _gameObjects)
+					ImGui::Text(go.getName().c_str());
+				ImGui::End();
+			};
+
+
+
 			// Getters and setters
 			void addGameObject(GameObject& gameObject) { _gameObjects.push_back(gameObject); };
 			std::vector<GameObject>& getGameObjects() { return _gameObjects; }

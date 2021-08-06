@@ -102,7 +102,7 @@ namespace wde::renderEngine {
 	void GUISubrenderer::render(CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
 		// Start the ImGui frame
-		Logger::debug("Rendering UI new frame.", LoggerChannel::GUI);
+		Logger::debug("Rendering GUI new frame.", LoggerChannel::GUI);
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();

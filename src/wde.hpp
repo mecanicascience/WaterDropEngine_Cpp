@@ -8,6 +8,12 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+// ImGUI includes
+#include "../lib/imgui/imgui.h"
+#include "../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../lib/imgui/imgui_internal.h"
+
 // Includes utils objects
 #include "WaterDropEngine/WdeCommon/WdeError/WdeStatus.hpp"
 #include "WaterDropEngine/WdeCommon/WdeLogger/Logger.hpp"

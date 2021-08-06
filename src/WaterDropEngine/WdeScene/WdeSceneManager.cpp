@@ -1,4 +1,5 @@
 #include "WdeSceneManager.hpp"
+#include "../WdeGUI/WdeGUI.hpp"
 
 namespace wde::scene {
 	// Core functions
@@ -30,13 +31,34 @@ namespace wde::scene {
 	}
 
 
+	// GUI functions
+	void WdeSceneManager::setupGUI(ImGuiID &parentID) {
+		if (_scene != nullptr)
+			_scene->setupGUI(parentID);
+	}
+
+	void WdeSceneManager::renderGUI() {
+		if (_scene != nullptr)
+			_scene->renderGUI();
+	}
+
+
+
 	// Setters and getters
 	void WdeSceneManager::setScene(std::unique_ptr<Scene> scene) {
 		WDE_PROFILE_FUNCTION();
-		// Set scene
+		// Delete last scene
+		if (WdeSceneManager::get()._scene != nullptr)
+			WdeSceneManager::get()._scene->cleanUp();
+
+		// Set new scene
 		WdeSceneManager::get()._scene = std::move(scene);
 
-		if (WdeSceneManager::get()._hasStarted) // Initialize scene if the scene manager has already started
+		// Initialize scene if the scene manager has already started
+		if (WdeSceneManager::get()._hasStarted)
 			WdeSceneManager::get()._scene->initialize();
+
+		// Say that GUI scene should be reset on next render frame
+		gui::WdeGUI::get().reset();
 	}
 }

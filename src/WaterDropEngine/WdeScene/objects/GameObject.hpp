@@ -51,9 +51,9 @@ namespace wde::scene {
 			GameObject() : _objectID(-1) {}; // Creates a dummy empty temporary game object (do not use!)
 
 			// Core creation objects
-			static GameObject createGameObject() {
+			static GameObject createGameObject(std::string name) {
 				static id_t currentID = 0;
-				return GameObject(currentID++);
+				return GameObject(currentID++, name);
 			}
 
 			template<typename T>
@@ -63,11 +63,6 @@ namespace wde::scene {
 				// Initialize module
 				_moduleList[_moduleList.size() - 1]->initialize();
 			}
-
-
-
-			// Getters and setters
-			id_t getID() const { return _objectID; }
 
 
 			// Core functions
@@ -110,15 +105,26 @@ namespace wde::scene {
 			}
 
 
+			// Getters and setters
+			id_t getID() const { return _objectID; }
+			std::string& getName() { return _objectName; }
+
+
+
+
 		private:
+			// GameObject values
 			id_t _objectID;
+			std::string _objectName;
+
+			// List of game object modules
 			std::vector<Module*> _moduleList;
 
 			/**
 			 * Creates a new game object
 			 * @param objectID
 			 */
-			explicit GameObject(id_t objectID) : _objectID(objectID) {}
+			explicit GameObject(id_t objectID, std::string &objectName) : _objectID(objectID), _objectName(objectName) {}
 	};
 }
 

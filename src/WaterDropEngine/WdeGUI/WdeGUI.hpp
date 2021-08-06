@@ -1,13 +1,13 @@
 #pragma once
 
 #include <vulkan/vulkan_core.h>
+
+#include "../../wde.hpp"
 #include "../WdeCore/WdeModule.hpp"
 #include "../WdeCommon/WdeLogger/Logger.hpp"
 #include "../WdeRenderingEngine/WdeRenderEngine.hpp"
-
-#include "../../../lib/imgui/imgui.h"
-#include "../../../lib/imgui/backends/imgui_impl_glfw.h"
-#include "../../../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../WdeScene/WdeSceneManager.hpp"
+#include "GUITheme.hpp"
 
 namespace wde::gui {
 	class WdeGUI : public WdeModule::Module<WdeGUI> {
@@ -16,22 +16,28 @@ namespace wde::gui {
 
 		public:
 			// Core module functions
-			/** Initialize the module */
-			void initialize() override;
-			/** On engine ticks */
-			void tick() override;
-			/** Clean up the module */
-			void cleanUp() override;
+			void initialize() override {};
+			void tick()       override {};
+			void cleanUp()    override {};
+
 
 			// Core functions
-			/** Setups the GUI (called by the GUISubrenderer) */
+			/** Setup the GUI (called by the GUISubrenderer) */
 			void setup();
+			/** Create the GUI components */
+			void createElements();
 			/** Renders the GUI to ImGUI (called by the GUISubrenderer) */
 			void render();
 
+			/** Resets the GUI */
+			void reset() { _shouldResetElements = true; }
+
+
 
 		private:
-			/** Setup our custom color scheme */
-			static void setCustomColorScheme();
+			/** Main root dockspace ID */
+			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace Window";
+			/** True if the GUI should be reset during next render frame */
+			bool _shouldResetElements = false;
 	};
 }

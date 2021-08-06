@@ -22,6 +22,13 @@ namespace wde::scene {
 			void cleanUp() override;
 
 
+			// GUI functions
+			/** Setup the GUI (can be called multiple times - called by the GUI manager) given the ID of the parent gui */
+			void setupGUI(ImGuiID &parentID);
+			/** Render the GUI elements (called by the GUI manager) */
+			void renderGUI();
+
+
 			// Getters and setters
 			/**
 			 * Sets the current scene to a new scene
