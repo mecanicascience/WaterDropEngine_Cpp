@@ -13,10 +13,10 @@ namespace wde::gui {
 
 		// Setup fonts (using Raleway)
 		Logger::debug("Setting up gui fonts.", LoggerChannel::GUI);
-		// io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Bold.ttf", 18.0f);
-		// io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Regular.ttf", 18.0f);*/
-		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 17.0f);
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 17.0f);
+		/*io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Bold.ttf", 15.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Regular.ttf", 15.0f);*/
+		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 15.0f);
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 15.0f);
 
 		// Dark mode
 		Logger::debug("Setting up gui color scheme.", LoggerChannel::GUI);
@@ -44,7 +44,8 @@ namespace wde::gui {
 				| ImGuiWindowFlags_NoBringToFrontOnFocus    // Disable focus grayish color
 				| ImGuiWindowFlags_NoNavFocus               // Cannot focus window (auto-focused)
 				| ImGuiWindowFlags_NoDocking                // Main Window cannot be docked
-				| ImGuiWindowFlags_NoBackground;            // Disables window background
+				| ImGuiWindowFlags_NoBackground             // Disables window background
+				| ImGuiWindowFlags_MenuBar;                 // Enable menu bar
 
 		// Set main viewport as fullscreen
 		ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -64,6 +65,11 @@ namespace wde::gui {
 			createElements();
 			_shouldResetElements = false;
 		}
+
+		// Setup GUI bar every frame
+		ImGui::BeginMenuBar();
+		_guiBar.renderGUI();
+		ImGui::EndMenuBar();
 
 		// Set dockspace main flags
 		ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode; // No background
@@ -93,7 +99,7 @@ namespace wde::gui {
 		// Create windows
 		ImGuiID dockparentID = dockspaceID; // Master node ID
 		scene::WdeSceneManager::get().setupGUI(dockparentID); // Update scene
-		_logger.setupGUI(dockparentID);
+		_logger.setupGUI(dockparentID); // Logger
 
 
 		// End building

@@ -7,8 +7,11 @@
 #include "../WdeCommon/WdeLogger/Logger.hpp"
 #include "../WdeRenderingEngine/WdeRenderEngine.hpp"
 #include "../WdeScene/WdeSceneManager.hpp"
+
 #include "GUITheme.hpp"
 #include "GUILogger.hpp"
+#include "GUIBar.hpp"
+
 
 namespace wde::gui {
 	class WdeGUI : public WdeModule::Module<WdeGUI> {
@@ -44,7 +47,8 @@ namespace wde::gui {
 			/** True if the GUI should be reset during next render frame */
 			bool _shouldResetElements = false;
 
-			// Log class
+			// Gui classes
+			GUIBar _guiBar {};
 			GUILogger _logger {};
 	};
 }

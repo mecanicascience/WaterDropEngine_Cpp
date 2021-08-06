@@ -44,6 +44,6 @@ namespace wde::renderEngine {
 
 
 	bool CoreWindow::shouldClose() {
-		return glfwWindowShouldClose(_window);
+		return _shouldClose || glfwWindowShouldClose(_window);
 	}
 }

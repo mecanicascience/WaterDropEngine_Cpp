@@ -44,6 +44,8 @@ namespace wde::renderEngine {
 			// Helper functions
 			/** @return true if the window should close, false instead */
 			bool shouldClose();
+			/** Closes the window and ends the program */
+			void closeWindow() { _shouldClose = true; }
 
 
 
@@ -61,6 +63,8 @@ namespace wde::renderEngine {
 
 			/** The displayed GLFW window */
 			GLFWwindow *_window = nullptr;
+			/** True if the window should close */
+			bool _shouldClose = false;
 
 
 			// Helper functions
