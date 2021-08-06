@@ -10,13 +10,12 @@ namespace wde::gui {
 			const inline static ImVec4 colorMajorLight {0.12f, 0.12f, 0.12f, 1.0f};
 			const inline static ImVec4 colorMinor {0.17f, 0.17f, 0.17f, 1.0f}; // Background content color
 			const inline static ImVec4 colorMinorLight {0.25f, 0.25f, 0.25f, 1.0f};
+			const inline static ImVec4 colorMinorLightLight {0.35f, 0.35f, 0.35f, 1.0f};
 
 
 			// Main Wde colors
 			const inline static ImVec4 colorWdeMajor {0.69f, 0.92f, 0.99f, 1.0f};
 			const inline static ImVec4 colorWdeMinor {0.83f, 0.92f, 0.96f, 1.0f};
-			const inline static ImVec4 colorWdeDarkMajor {0.46f, 0.58f, 0.89f, 1.0f};
-			const inline static ImVec4 colorWdeDarkMinor {0.33f, 0.42f, 0.68f, 1.0f};
 
 
 			// Black and white colors
@@ -85,9 +84,9 @@ namespace wde::gui {
 				colors[ImGuiCol_FrameBgActive] = colorMinorLight;
 
 				// Headers (window children titles and select color)
-				colors[ImGuiCol_Header] = colorWdeDarkMinor;
-				colors[ImGuiCol_HeaderHovered] = colorWdeDarkMajor;
-				colors[ImGuiCol_HeaderActive] = colorWdeDarkMajor;
+				colors[ImGuiCol_Header] = colorMinorLight;
+				colors[ImGuiCol_HeaderHovered] = colorMinorLightLight;
+				colors[ImGuiCol_HeaderActive] = colorMinorLightLight;
 			}
 
 
@@ -128,6 +127,7 @@ namespace wde::gui {
 				// Setup items style
 				style.ItemSpacing = ImVec2(10, 4);
 				style.ItemInnerSpacing = ImVec2(6, 4);
+				style.SelectableTextAlign = ImVec2(0.02f, 0);
 			}
 	};
 }

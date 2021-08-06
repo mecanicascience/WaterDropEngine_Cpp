@@ -105,6 +105,31 @@ namespace wde::scene {
 			}
 
 
+			// Gui functions
+			void renderGUI() {
+				// Render module top
+				ImGui::Text(_objectName.c_str());
+				ImGui::Dummy(ImVec2(0.0f, 3.0f));
+				ImGui::Separator();
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+				// Render Modules GUI
+				int count = 0;
+				for(auto& module : _moduleList) {
+					// Add small space between modules
+					if (count != 0)
+						ImGui::Dummy(ImVec2(0.0f, 8.0f));
+					count++;
+
+					// Render module
+					if (ImGui::CollapsingHeader(module->getModuleName().c_str())) {
+						// Render header content
+						module->renderGUI();
+					}
+				}
+			}
+
+
 			// Getters and setters
 			id_t getID() const { return _objectID; }
 			std::string& getName() { return _objectName; }
