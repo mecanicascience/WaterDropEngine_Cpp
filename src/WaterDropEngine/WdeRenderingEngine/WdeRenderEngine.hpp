@@ -34,9 +34,9 @@ namespace wde::renderEngine {
 
 		private:
 			/** Fixed initial Window width */
-			static constexpr int WIDTH = 800;
+			static constexpr int WIDTH = Constants::WINDOW_INITIAL_WIDTH;
 			/** Fixed initial Window height */
-			static constexpr int HEIGHT = 600;
+			static constexpr int HEIGHT = Constants::WINDOW_INITIAL_HEIGHT;
 
 			// Class variables
 			CoreWindow _window {*this, WIDTH, HEIGHT, Constants::APPLICATION_NAME};
