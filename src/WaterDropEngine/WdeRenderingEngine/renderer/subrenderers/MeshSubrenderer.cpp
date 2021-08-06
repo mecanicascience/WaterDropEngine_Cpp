@@ -22,9 +22,9 @@ namespace wde::renderEngine {
 
 			// Create camera viewing object
 			_cameraViewerObject = scene::GameObject::createGameObject("Camera");
-			_cameraViewerObject.transform.translation = {0.0f, 0.0f, 0.0f};
+			_cameraViewerObject.getModule<TransformModule>().position = {0.0f, 0.0f, 0.0f};
 			//_camera.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
-			_camera.setViewTarget(_cameraViewerObject.transform.translation, glm::vec3(0.0f, 0.0f, 0.0f));
+			_camera.setViewTarget(_cameraViewerObject.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f));
 		}
 
 	// Core functions
@@ -42,7 +42,7 @@ namespace wde::renderEngine {
 
 		// Update camera position and rotation
 		_cameraController.moveInPlaneXZ(dt, _cameraViewerObject);
-		_camera.setViewYXZ(_cameraViewerObject.transform.translation, _cameraViewerObject.transform.rotation);
+		_camera.setViewYXZ(_cameraViewerObject.getModule<TransformModule>().position, _cameraViewerObject.getModule<TransformModule>().rotation);
 
 		// Binds the graphics pipeline and model to the command buffer
 		_pipeline.bind(commandBuffer);
@@ -54,7 +54,7 @@ namespace wde::renderEngine {
 			for (auto& go : scene.getGameObjects()) {
 				// Setup push constants
 				PushConstantData push {};
-				push.transformWorldSpace  = go.transform.mat4();
+				push.transformWorldSpace  = go.getModule<TransformModule>().getTransform();
 				push.transformCameraSpace = _camera.getView();
 				push.transformProjSpace   = _camera.getProjection();
 				_pipeline.setPushConstants(0, &push);

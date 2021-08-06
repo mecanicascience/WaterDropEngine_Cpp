@@ -12,17 +12,18 @@ namespace wde::inputManager {
 		if (InputManager::get().isKeyDown("lookRight")) rotation.y += 1.0f;
 		if (InputManager::get().isKeyDown("lookLeft"))  rotation.y -= 1.0f;
 
+		auto& transformModule = gameObject.getModule<TransformModule>();
 		if (glm::dot(rotation, rotation) > glm::epsilon<float>()) { // If rotation not negligible
-			gameObject.transform.rotation += _lookSpeed * dt * glm::normalize(rotation);
+			transformModule.rotation += _lookSpeed * dt * glm::normalize(rotation);
 		}
 
 		// Mod rotations by 2 pi
-		gameObject.transform.rotation.x = glm::mod(gameObject.transform.rotation.x, glm::two_pi<float>());
-		gameObject.transform.rotation.y = glm::mod(gameObject.transform.rotation.y, glm::two_pi<float>());
+		transformModule.rotation.x = glm::mod(transformModule.rotation.x, glm::two_pi<float>());
+		transformModule.rotation.y = glm::mod(transformModule.rotation.y, glm::two_pi<float>());
 
 		// Compute gameObject local axis vectors
-		const float sYaw = std::sin(gameObject.transform.rotation.y);
-		const float cYaw = std::cos(gameObject.transform.rotation.y);
+		const float sYaw = std::sin(transformModule.rotation.y);
+		const float cYaw = std::cos(transformModule.rotation.y);
 		const glm::vec3 forwardDirection {sYaw, 0.0f,  cYaw};
 		const glm::vec3 rightDirection   {cYaw, 0.0f, -sYaw}; // Right = Forward + Pi/2, in XZ plane
 		const glm::vec3 upDirection {0.0f, -1.0f, 0.0f};
@@ -36,8 +37,7 @@ namespace wde::inputManager {
 		if (InputManager::get().isKeyDown("moveUp"))       moveDirection += upDirection;
 		if (InputManager::get().isKeyDown("moveDown"))     moveDirection -= upDirection;
 
-		if (glm::dot(moveDirection, moveDirection) > glm::epsilon<float>()) { // If rotation not negligible
-			gameObject.transform.translation += _moveSpeed * dt * glm::normalize(moveDirection);
-		}
+		if (glm::dot(moveDirection, moveDirection) > glm::epsilon<float>()) // If rotation not negligible
+			transformModule.position += _moveSpeed * dt * glm::normalize(moveDirection);
 	}
 }
