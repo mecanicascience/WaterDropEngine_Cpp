@@ -3,6 +3,7 @@
 #include "../../../wde.hpp"
 #include "Model.hpp"
 #include "../modules/Module.hpp"
+#include "../modules/TransformModule.hpp"
 
 namespace wde::scene {
 	struct TransformComponent {
@@ -53,7 +54,9 @@ namespace wde::scene {
 			// Core creation objects
 			static GameObject createGameObject(std::string name) {
 				static id_t currentID = 0;
-				return GameObject(currentID++, name);
+				auto go = GameObject(currentID++, name);
+				go.addModule<TransformModule>(); // Add transform component
+				return go;
 			}
 
 			template<typename T>

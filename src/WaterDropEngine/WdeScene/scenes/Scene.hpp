@@ -41,7 +41,7 @@ namespace wde::scene {
 			 */
 			virtual void setupGUI(ImGuiID &parentID) {
 				// Create a game objects list tab
-				ImGuiID dockIDLeft = ImGui::DockBuilderSplitNode(parentID, ImGuiDir_Left, 0.16f, nullptr, &parentID);
+				ImGuiID dockIDLeft = ImGui::DockBuilderSplitNode(parentID, ImGuiDir_Left, 0.19f, nullptr, &parentID);
 				ImGui::DockBuilderDockWindow("Scene Components", dockIDLeft);
 
 				// Create a properties list
