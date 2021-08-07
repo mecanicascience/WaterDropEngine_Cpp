@@ -5,6 +5,8 @@
 #include "../../src/WaterDropEngine/WdeScene/objects/models/ModelCube.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/TransformModule.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/ModelModule.hpp"
+#include "../../src/WaterDropEngine/WdeScene/modules/CameraModule.hpp"
+#include "../../src/WaterDropEngine/WdeScene/modules/TransformControllerModule.hpp"
 
 using namespace wde::scene;
 
@@ -13,4 +15,8 @@ class CoreAppScene : public Scene {
 		// Core functions
 		void initialize() override;
 		void update() override;
+
+	private:
+		/** The scene camera */
+		GameObject _camera;
 };

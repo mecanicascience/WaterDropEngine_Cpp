@@ -9,7 +9,7 @@ namespace wde::scene {
 			 * Add a mesh to a game object
 			 * @param model
 			 */
-			explicit ModelModule(std::shared_ptr<Model> model) :  _model(std::move(model)), Module("Model") { }
+			explicit ModelModule(GameObject &gameObject, std::shared_ptr<Model> model) :  _model(std::move(model)), Module(gameObject, "Model") { }
 
 
 			void render(CommandBuffer& commandBuffer) override {

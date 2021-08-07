@@ -4,7 +4,6 @@
 #include "Model.hpp"
 #include "../modules/Module.hpp"
 #include "../modules/TransformModule.hpp"
-#include "../modules/EmptyModule.hpp"
 
 namespace wde::scene {
 	class GameObject {
@@ -26,7 +25,7 @@ namespace wde::scene {
 			// Modules handling
 			template<typename T, typename ... Args>
 			T& addModule(Args ...args) {
-				_moduleList.push_back(new T(args...));
+				_moduleList.push_back(new T(*this, args...));
 
 				// Initialize module
 				_moduleList[_moduleList.size() - 1]->initialize();
@@ -42,9 +41,19 @@ namespace wde::scene {
 
 				// Not found
 				Logger::warn("Trying to get an undefined module.", LoggerChannel::SCENE);
-				auto emptyModule = new T {};
-				return *emptyModule;
+				// Try to add this module with no parameters
+				return addModule<T>();
 			}
+
+			template<typename T>
+			bool hasModule() {
+				for (Module* module : _moduleList)
+					if (dynamic_cast<T*>(module) != nullptr)
+						return true;
+				return false; // Not found
+			}
+
+
 
 
 			// Core functions

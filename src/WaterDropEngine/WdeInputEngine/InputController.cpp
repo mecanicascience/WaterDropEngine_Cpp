@@ -1,9 +1,9 @@
-#include "InputMovementController.hpp"
+#include "InputController.hpp"
 
 #include <cmath>
 
 namespace wde::inputManager {
-	void InputMovementController::moveInPlaneXZ(float dt, GameObject &gameObject) {
+	void InputController::moveInPlaneXZ(float dt, GameObject &gameObject, float moveSpeed, float lookSpeed) {
 		// Update game objects rotation
 		glm::vec3 rotation {0.0f};
 
@@ -14,7 +14,7 @@ namespace wde::inputManager {
 
 		auto& transformModule = gameObject.getModule<TransformModule>();
 		if (glm::dot(rotation, rotation) > glm::epsilon<float>()) { // If rotation not negligible
-			transformModule.rotation += _lookSpeed * dt * glm::normalize(rotation);
+			transformModule.rotation += lookSpeed * dt * glm::normalize(rotation);
 		}
 
 		// Mod rotations by 2 pi
@@ -38,6 +38,6 @@ namespace wde::inputManager {
 		if (InputManager::get().isKeyDown("moveDown"))     moveDirection -= upDirection;
 
 		if (glm::dot(moveDirection, moveDirection) > glm::epsilon<float>()) // If rotation not negligible
-			transformModule.position += _moveSpeed * dt * glm::normalize(moveDirection);
+			transformModule.position += moveSpeed * dt * glm::normalize(moveDirection);
 	}
 }

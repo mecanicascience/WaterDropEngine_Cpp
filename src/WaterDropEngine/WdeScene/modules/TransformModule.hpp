@@ -2,7 +2,6 @@
 
 #include "Module.hpp"
 #include "../../WdeGUI/GUITheme.hpp"
-
 #include "../../WdeGUI/GUIRenderer.hpp"
 
 namespace wde::scene {
@@ -18,7 +17,7 @@ namespace wde::scene {
 
 
 			// Constructors
-			explicit TransformModule() : Module("Transform") {}
+			explicit TransformModule(GameObject &gameObject) : Module(gameObject, "Transform") {}
 
 			// Core functions
 			void renderGUI() override {

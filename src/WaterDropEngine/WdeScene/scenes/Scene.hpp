@@ -4,6 +4,7 @@
 
 #include "../../../wde.hpp"
 #include "../objects/GameObject.hpp"
+#include "../modules/CameraModule.hpp"
 
 namespace wde::scene {
 	class Scene : NonCopyable {
@@ -20,9 +21,15 @@ namespace wde::scene {
 				_deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(newTime - _currentTime).count();
 				_currentTime = newTime;
 
-				// Updates game objects
-				for (auto& go : _gameObjects)
-					go.update(_deltaTime);
+				// Updates game objects and updates optional camera ID if there is no camera
+				for (int i = 0; i < _gameObjects.size(); i++) {
+					_gameObjects[i].update(_deltaTime);
+
+					if (_sceneCameraID == -1 && _gameObjects[i].hasModule<CameraModule>()) { // No camera but go has a camera component
+						Logger::debug("Selecting main camera as game object named \"" + _gameObjects[i].getName() + "\".", LoggerChannel::SCENE);
+						_sceneCameraID = i;
+					}
+				}
 			}
 
 			/** Cleaning up scene */
@@ -83,6 +90,8 @@ namespace wde::scene {
 			// Getters and setters
 			void addGameObject(GameObject& gameObject) { _gameObjects.push_back(gameObject); };
 			std::vector<GameObject>& getGameObjects() { return _gameObjects; }
+			bool hasCamera() { return _sceneCameraID != -1; }
+			GameObject& getCamera() { return _gameObjects[_sceneCameraID]; }
 
 
 		protected:
@@ -95,6 +104,8 @@ namespace wde::scene {
 			std::vector<GameObject> _gameObjects {};
 			/** The id of the selected game object */
 			int _selectedGameObjectID = 0;
+			/** The optional id of the scene camera */
+			int _sceneCameraID = -1;
 
 			/** Stores the current time to compute delta time */
 			std::chrono::time_point<std::chrono::system_clock> _currentTime = std::chrono::high_resolution_clock::now();

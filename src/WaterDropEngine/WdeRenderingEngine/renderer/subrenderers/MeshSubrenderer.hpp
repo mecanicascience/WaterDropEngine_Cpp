@@ -3,12 +3,10 @@
 #include "../Subrenderer.hpp"
 #include "../../../WdeScene/WdeSceneManager.hpp"
 #include "../../pipelines/PipelineGraphics.hpp"
-#include "../../../WdeScene/camera/Camera.hpp"
-#include "../../../WdeInputEngine/InputMovementController.hpp"
 
 namespace wde::renderEngine {
 	/**
-	 * The main mesh renderer, that handles objects and camera
+	 * The main mesh renderer, that renders scene objects
 	 */
 	class MeshSubrenderer : public Subrenderer {
 		public:
@@ -27,15 +25,9 @@ namespace wde::renderEngine {
 			/** Renders the meshes to the command buffer */
 			void render(CommandBuffer &commandBuffer) override;
 
+
 		private:
 			// TODO Temp pipeline
 			PipelineGraphics _pipeline;
-
-			// TODO temp camera objects
-			scene::Camera _camera;
-			scene::GameObject _cameraViewerObject {};
-			inputManager::InputMovementController _cameraController {};
-
-			std::chrono::time_point<std::chrono::system_clock> _currentTime = std::chrono::high_resolution_clock::now();
 	};
 }
