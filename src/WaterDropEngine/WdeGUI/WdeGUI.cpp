@@ -14,8 +14,10 @@ namespace wde::gui {
 		// Setup fonts (using Raleway)
 		Logger::debug("Setting up gui fonts.", LoggerChannel::GUI);
 		/*io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Bold.ttf", 15.0f);
+		 * io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-SemiBold.ttf", 15.0f);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Regular.ttf", 15.0f);*/
 		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 16.0f);
+		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-SemiBold.ttf", 16.0f);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 16.0f);
 
 		// Dark mode

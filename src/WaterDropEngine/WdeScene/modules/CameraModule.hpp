@@ -11,18 +11,117 @@ namespace wde::scene {
 		public:
 			explicit CameraModule(GameObject &gameObject) : Module(gameObject, "Camera") {}
 
-
 			// Core functions
-			void update(float deltaTime) override {
-				// Set camera projection
+			void initialize() override {
+				// Setup initial projection type
 				auto aspect = CoreInstance::get().getSelectedDevice().getSwapChain().getAspectRatio();
-				// setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
-				setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
+				if (_projectionType == 0)
+					setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
+				else
+					setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+			}
 
-				// Update camera view based on it's transform
-				// cameraModule.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
-				// cameraModule.setViewTarget(camera.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f)); // Look at center
+
+			void update(float deltaTime) override {
+				// Update camera object based on it's game object transform associated position and rotation
 				setViewYXZ(_gameObject.getModule<TransformModule>().position, _gameObject.getModule<TransformModule>().rotation);
+
+
+				// Update projection type
+				auto aspect = CoreInstance::get().getSelectedDevice().getSwapChain().getAspectRatio();
+				static int lastProjectionType = _projectionType;
+				if (lastProjectionType != _projectionType) {
+					lastProjectionType = _projectionType;
+					if (_projectionType == 0)
+						setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
+					else
+						setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+				}
+
+				// Orthographic
+				static glm::vec3 bottomCornerLast = _bottomCorner;
+				if (_bottomCorner != bottomCornerLast) {
+					bottomCornerLast = _bottomCorner;
+					if (_projectionType == 0)
+						setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
+				}
+
+				static glm::vec3 topCornerLast = _topCorner;
+				if (_topCorner != topCornerLast) {
+					topCornerLast = _topCorner;
+					if (_projectionType == 0)
+						setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
+				}
+
+
+				// Perspective
+				static float fovLast = _fov;
+				if (_fov != fovLast) {
+					fovLast = _fov;
+					if (_projectionType == 1)
+						setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+				}
+
+				static float nearPlaneLast = _nearPlane;
+				if (_nearPlane != nearPlaneLast) {
+					nearPlaneLast = _nearPlane;
+					if (_projectionType == 1)
+						setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+				}
+
+				static float farPlaneLast = _farPlane;
+				if (_farPlane != farPlaneLast) {
+					farPlaneLast = _farPlane;
+					if (_projectionType == 1)
+						setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+				}
+
+
+				// == Update camera view direction ==
+				// setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
+				// setViewTarget(camera.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f)); // Look at center
+			}
+
+
+			void renderGUI() override {
+				// == Projection type GUI ==
+				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+				ImGui::Text("  Projection configuration");
+				ImGui::Dummy(ImVec2(0.0f, 1.0f));
+				ImGui::PopFont();
+				ImGui::Separator();
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
+				ImGui::Columns(2);
+				ImGui::SetColumnWidth(0, 140.0f);
+
+				// Selected projection
+				ImGui::Text("Selected projection");
+
+				ImGui::NextColumn();
+				ImGui::PushID("projection_type_combo");
+				ImGui::Combo("", &_projectionType, "Orthographic\0Perspective\0");
+				ImGui::PopID();
+				ImGui::Columns(1);
+
+				// Orthographic configuration
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
+				if (ImGui::TreeNode("Orthographic")) {
+					ImGui::Dummy(ImVec2(0.0f, 0.12f));
+					gui::GUIRenderer::createVec3Button("Bottom", _bottomCorner, -1.0f);
+					gui::GUIRenderer::createVec3Button("Top", _topCorner, 1.0f);
+					ImGui::TreePop();
+				}
+
+				// Perspective configuration
+				ImGui::Dummy(ImVec2(0.0f, 5.0f));
+				if (ImGui::TreeNode("Perspective")) {
+					ImGui::Dummy(ImVec2(0.0f, 0.12f));
+					gui::GUIRenderer::addFloatDragger("FOV", _fov, glm::radians(60.0f));
+					gui::GUIRenderer::addFloatDragger("Near Plane", _nearPlane, 0.1f);
+					gui::GUIRenderer::addFloatDragger("Far Plane", _farPlane, 10.0f);
+					ImGui::TreePop();
+				}
 			}
 
 
@@ -37,6 +136,11 @@ namespace wde::scene {
 			 * @param farVal Second bound z value
 			 */
 			void setOrthographicProjection(float leftVal, float rightVal, float topVal, float bottomVal, float nearVal, float farVal) {
+				// Update class values
+				auto aspect = CoreInstance::get().getSelectedDevice().getSwapChain().getAspectRatio();
+				_bottomCorner = {leftVal / aspect, topVal, nearVal};
+				_topCorner = {rightVal / aspect, bottomVal, farVal};
+
 				_projectionMatrix = glm::mat4{1.0f};
 				_projectionMatrix[0][0] = 2.0f / (rightVal - leftVal);
 				_projectionMatrix[1][1] = 2.0f / (bottomVal - topVal);
@@ -56,6 +160,12 @@ namespace wde::scene {
 			void setPerspectiveProjection(float fovY, float aspect, float nearVal, float farVal) {
 				if (glm::abs(aspect - std::numeric_limits<float>::epsilon()) <= 0.0f)
 					throw WdeException("The camera aspect ratio is too small.", LoggerChannel::SCENE);
+
+				// Update class values
+				_nearPlane = nearVal;
+				_farPlane = farVal;
+				_fov = fovY;
+
 				const float tanHalfFovy = std::tan(fovY / 2.0f);
 				_projectionMatrix = glm::mat4{0.0f};
 				_projectionMatrix[0][0] = 1.0f / (aspect * tanHalfFovy);
@@ -144,6 +254,20 @@ namespace wde::scene {
 
 			/** Projection of camera position and rotation */
 			glm::mat4 _viewMatrix {1.0f};
+
+
+			// Core configuration
+			// Type of projection used
+			int _projectionType = 1; // 0 : Orthographic - 1 : Perspective
+
+			// Orthographic
+			glm::vec3 _bottomCorner {-1, -1, -1};
+			glm::vec3 _topCorner {1, 1, 1};
+
+			// Perspective
+			float _fov = glm::radians(60.0f);
+			float _nearPlane = 0.1f;
+			float _farPlane = 10.0f;
 	};
 }
 

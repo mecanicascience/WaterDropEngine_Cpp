@@ -22,7 +22,8 @@ namespace wde::scene {
 				_currentTime = newTime;
 
 				// Updates game objects and updates optional camera ID if there is no camera
-				for (int i = 0; i < _gameObjects.size(); i++) {					_gameObjects[i]->update(_deltaTime);
+				for (int i = 0; i < _gameObjects.size(); i++) {
+					_gameObjects[i]->update(_deltaTime);
 
 					if (_sceneCameraID == -1 && _gameObjects[i]->hasModule<CameraModule>()) { // No camera but go has a camera component
 						Logger::debug("Selecting main camera as game object named \"" + _gameObjects[i]->getName() + "\".", LoggerChannel::SCENE);
@@ -73,6 +74,8 @@ namespace wde::scene {
 				static int selected = -1;
 				int objID = 0;
 				for (auto& go : _gameObjects) {
+					ImGui::Dummy(ImVec2(0.2f, 0.0f));
+					ImGui::SameLine();
 					if (ImGui::Selectable(go->getName().c_str(), selected == objID))
 						selected = objID;
 					objID++;

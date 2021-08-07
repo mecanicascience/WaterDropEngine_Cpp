@@ -94,7 +94,9 @@ namespace wde::scene {
 			// Gui functions
 			void renderGUI() {
 				// Render module top
+				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
 				ImGui::Text(_objectName.c_str());
+				ImGui::PopFont();
 				ImGui::Dummy(ImVec2(0.0f, 3.0f));
 				ImGui::Separator();
 				ImGui::Dummy(ImVec2(0.0f, 5.0f));
@@ -104,14 +106,21 @@ namespace wde::scene {
 				for(auto& module : _moduleList) {
 					// Add small space between modules
 					if (count != 0)
-						ImGui::Dummy(ImVec2(0.0f, 12.0f));
+						ImGui::Dummy(ImVec2(0.0f, 18.0f));
 					count++;
 
 					// Render module
+					ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+					ImGui::Dummy(ImVec2(6.0f, 0.0f));
+					ImGui::SameLine();
 					if (ImGui::CollapsingHeader(module->getModuleName().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+						ImGui::Dummy(ImVec2(0.0f, 1.0f));
+						ImGui::PopFont();
 						// Render header content
 						module->renderGUI();
 					}
+					else
+						ImGui::PopFont();
 				}
 			}
 
