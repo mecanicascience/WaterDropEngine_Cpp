@@ -60,7 +60,7 @@ namespace wde::scene {
 
 				// Initialize model
 				Logger::debug("Initializing model.", LoggerChannel::SCENE);
-				this->initialize();
+				this->initialize(false); // Assume that model normals are correct
 			};
 
 

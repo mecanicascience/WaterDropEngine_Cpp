@@ -3,13 +3,20 @@
 
 namespace wde::scene {
 	// Core functions
-	void Model::initialize() {
+	void Model::initialize(bool recalculateNormals) {
 		WDE_PROFILE_FUNCTION();
+		auto vertices = getVertices();
+		auto indices  = getIndices();
+
+		// Recalculate normals if needed
+		if (recalculateNormals)
+			recalculateModelNormals(vertices, indices);
+
 		// Set the vertices
-		createVertexBuffers(getVertices());
+		createVertexBuffers(vertices);
 
 		// Set the indices
-		createIndexBuffers(getIndices());
+		createIndexBuffers(indices);
 	}
 
 
@@ -92,7 +99,7 @@ namespace wde::scene {
 
 
 
-
+	// Core rendering functions
 	void Model::bind(CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
 		_commandBuffer = &commandBuffer;
@@ -127,5 +134,13 @@ namespace wde::scene {
 
 		// Delete command buffer reference
 		_commandBuffer = nullptr;
+	}
+
+
+	// Helper functions
+	void Model::recalculateModelNormals(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices) {
+		WDE_PROFILE_FUNCTION();
+
+
 	}
 }

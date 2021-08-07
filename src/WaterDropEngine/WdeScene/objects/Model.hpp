@@ -85,8 +85,11 @@ namespace wde::scene {
 
 
 			// Core functions
-			/** Initialize the model */
-			void initialize();
+			/**
+			 * Initialize the model
+			 * @param recalculateNormals True will recalculate every model normals
+			 */
+			void initialize(bool recalculateNormals = false);
 
 			/**
 			 * Binds the model to the provided command buffer
@@ -129,6 +132,10 @@ namespace wde::scene {
 			// Core functions
 			void createVertexBuffers(const std::vector<Vertex> &vertices);
 			void createIndexBuffers(const std::vector<uint32_t> &indices);
+
+			// Helper functions
+			/** Compute the normals of each vertex */
+			static void recalculateModelNormals(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices);
 	};
 }
 

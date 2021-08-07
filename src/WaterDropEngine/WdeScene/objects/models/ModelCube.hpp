@@ -6,11 +6,8 @@ namespace wde::scene {
 	class ModelCube : public Model {
 		public:
 			explicit ModelCube() : Model() {
-				// Recalculate model normals
-				// this->recalculateNormals();
-
 				// Initialize model
-				this->initialize();
+				this->initialize(true);
 			};
 
 
