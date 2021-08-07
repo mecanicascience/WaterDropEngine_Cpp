@@ -24,10 +24,5 @@ namespace wde::renderEngine {
 			// Core functions
 			/** Renders the meshes to the command buffer */
 			void render(CommandBuffer &commandBuffer) override;
-
-
-		private:
-			// TODO Temp pipeline
-			PipelineGraphics _pipeline;
 	};
 }

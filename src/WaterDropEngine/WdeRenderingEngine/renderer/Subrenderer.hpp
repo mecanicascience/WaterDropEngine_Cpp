@@ -30,9 +30,9 @@ namespace wde::renderEngine {
 
 
 
-		private:
+		protected:
 			/** The render stage of this sub-renderer */
-			const RenderStage& _stage;
+			RenderStage _stage;
 
 			/** The render stage enabled status (activated by default) */
 			bool _enabled = true;

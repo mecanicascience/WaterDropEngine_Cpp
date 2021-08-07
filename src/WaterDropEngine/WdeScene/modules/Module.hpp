@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "../../../wde.hpp"
+#include "../../WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"
 
 namespace wde::scene {
 	class GameObject;
@@ -30,10 +31,12 @@ namespace wde::scene {
 			 */
 			virtual void update(float deltaTime) {};
 			/**
-			 * Performs render operations given the command buffer
+			 * Performs render operations given the command buffer during a render stage
 			 * @param commandBuffer The command buffer to submit render operations to
+			 * @param stage The rendering stage
+			 * @param camera The scene camera
 			 */
-			virtual void render(CommandBuffer& commandBuffer) {};
+			virtual void render(CommandBuffer& commandBuffer, RenderStage stage, GameObject& camera) {};
 			/** Render the module GUI */
 			virtual void renderGUI() {};
 			/** Cleaning up the module */
