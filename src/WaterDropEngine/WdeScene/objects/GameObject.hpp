@@ -117,7 +117,7 @@ namespace wde::scene {
 			// Getters and setters
 			id_t getID() const { return _objectID; }
 			std::string& getName() { return _objectName; }
-
+			std::vector<Module*>& getModules() { return _moduleList; }
 
 
 

@@ -23,21 +23,26 @@ namespace wde::scene {
 
 				// Updates game objects and updates optional camera ID if there is no camera
 				for (int i = 0; i < _gameObjects.size(); i++) {
-					_gameObjects[i].update(_deltaTime);
+					_gameObjects[i]->update(_deltaTime);
 
-					if (_sceneCameraID == -1 && _gameObjects[i].hasModule<CameraModule>()) { // No camera but go has a camera component
-						Logger::debug("Selecting main camera as game object named \"" + _gameObjects[i].getName() + "\".", LoggerChannel::SCENE);
+					if (_sceneCameraID == -1 && _gameObjects[i]->hasModule<CameraModule>()) { // No camera but go has a camera component
+						Logger::debug("Selecting main camera as game object named \"" + _gameObjects[i]->getName() + "\".", LoggerChannel::SCENE);
 						_sceneCameraID = i;
 					}
 				}
+
+				if (_sceneCameraID == -1)
+					Logger::warn("Camera not found. Consider adding a camera to your scene.", LoggerChannel::SCENE);
 			}
 
 			/** Cleaning up scene */
 			virtual void cleanUp() final {
 				WDE_PROFILE_FUNCTION();
 				// Clean up game objects
-				for (auto& go : _gameObjects)
-					go.cleanUp();
+				for (auto& go : _gameObjects) {
+					go->cleanUp();
+					go.reset();
+				}
 				_gameObjects.clear();
 			}
 
@@ -69,7 +74,7 @@ namespace wde::scene {
 				static int selected = -1;
 				int objID = 0;
 				for (auto& go : _gameObjects) {
-					if (ImGui::Selectable(go.getName().c_str(), selected == objID))
+					if (ImGui::Selectable(go->getName().c_str(), selected == objID))
 						selected = objID;
 					objID++;
 				}
@@ -81,17 +86,20 @@ namespace wde::scene {
 				ImGui::Begin("Properties");
 				ImGui::Dummy(ImVec2(0.0f, 0.15f));
 				if (_selectedGameObjectID != -1)
-					_gameObjects.at(_selectedGameObjectID).renderGUI();
+					_gameObjects.at(_selectedGameObjectID)->renderGUI();
 				ImGui::End();
 			};
 
 
 
 			// Getters and setters
-			void addGameObject(GameObject& gameObject) { _gameObjects.push_back(gameObject); };
-			std::vector<GameObject>& getGameObjects() { return _gameObjects; }
+			GameObject& createGameObject(const std::string& objectName) {
+				_gameObjects.push_back(std::make_unique<GameObject>(GameObject::createGameObject(objectName)));
+				return *_gameObjects[_gameObjects.size() - 1];
+			}
+			std::vector<std::unique_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			bool hasCamera() { return _sceneCameraID != -1; }
-			GameObject& getCamera() { return _gameObjects[_sceneCameraID]; }
+			GameObject& getCamera() { return *_gameObjects[_sceneCameraID]; }
 
 
 		protected:
@@ -101,7 +109,7 @@ namespace wde::scene {
 
 		private:
 			/** The list of the scene game objects */
-			std::vector<GameObject> _gameObjects {};
+			std::vector<std::unique_ptr<GameObject>> _gameObjects {};
 			/** The id of the selected game object */
 			int _selectedGameObjectID = 0;
 			/** The optional id of the scene camera */

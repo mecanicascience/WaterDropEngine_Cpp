@@ -40,14 +40,14 @@ namespace wde::renderEngine {
 
 				// Setup push constants
 				PushConstantData push {};
-				push.transformWorldSpace  = go.getModule<scene::TransformModule>().getTransform();
+				push.transformWorldSpace  = go->getModule<scene::TransformModule>().getTransform();
 				push.transformCameraSpace = cameraModule.getView();
 				push.transformProjSpace   = cameraModule.getProjection();
 				// Todo remove pipeline
 				_pipeline.setPushConstants(0, &push);
 
 				// Render game object
-				go.render(commandBuffer);
+				go->render(commandBuffer);
 			}
 		}
 	}
