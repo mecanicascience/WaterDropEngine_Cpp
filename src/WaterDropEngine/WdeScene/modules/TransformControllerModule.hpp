@@ -14,14 +14,18 @@ namespace wde::scene {
 			// Core functions
 			void update(float deltaTime) override {
 				// Move in plane XZ given the keyboard inputs
-				_inputController.moveInPlaneXZ(deltaTime, _gameObject, _moveSpeed, _lookSpeed);
+				InputController::moveInPlaneXZ(deltaTime, _gameObject, _moveSpeed, _lookSpeed);
+			}
+
+			void renderGUI() override {
+				// Move speed
+				gui::GUIRenderer::addFloatDragger("Move speed", _moveSpeed, 1.3f);
+				// Look speed
+				gui::GUIRenderer::addFloatDragger("Look speed", _lookSpeed, 1.5f);
 			}
 
 
 		private:
-			// Input manager
-			InputController _inputController {};
-
 			// Movement speed
 			float _moveSpeed {1.3f};
 			float _lookSpeed {1.5f};

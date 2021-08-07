@@ -106,7 +106,7 @@ namespace wde::scene {
 					count++;
 
 					// Render module
-					if (ImGui::CollapsingHeader(module->getModuleName().c_str())) {
+					if (ImGui::CollapsingHeader(module->getModuleName().c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
 						// Render header content
 						module->renderGUI();
 					}
