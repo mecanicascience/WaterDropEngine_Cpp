@@ -1,13 +1,13 @@
 #version 450
 
-// Input values from the vertex shader
+// Shader Input
 layout(location = 0) in vec3 inFragColor;
 
-// Output to the swapchain value
+// Pipeline Output
 layout(location = 0) out vec4 outColor;
 
 
-// Run for every fragment (line between two vertex, after rasterisation)
+// For every fragment
 void main() {
-    outColor = vec4(inFragColor, 1.0); // r, g, b, a
+    outColor = vec4(inFragColor, 1.0);
 }

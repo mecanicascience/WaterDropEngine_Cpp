@@ -7,7 +7,8 @@
 #include "../../src/WaterDropEngine/WdeScene/modules/ModelModule.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/CameraModule.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/TransformControllerModule.hpp"
-#include "../../src/WaterDropEngine/WdeScene/materials/BasicMaterial.hpp"
+#include "../../src/WaterDropEngine/WdeScene/materials/ColorMaterial.hpp"
+#include "../../src/WaterDropEngine/WdeScene/materials/ColorMaterialOutline.hpp"
 
 using namespace wde::scene;
 

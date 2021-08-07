@@ -30,10 +30,14 @@ namespace wde::scene {
 			 * @param polygonMode The pipeline polygon drawing mode
 			 */
 			Material(std::string  materialName, RenderStage stage, const std::string& vertexShader, const std::string& fragmentShader, VkPolygonMode polygonMode)
-			:   _materialName(std::move(materialName)), _stage(stage), _vertexShader(vertexShader), _fragmentShader(fragmentShader), _polygonMode(polygonMode),
-				_pipeline(stage, {vertexShader, fragmentShader}, { scene::Model::Vertex::getDescriptions() },
-						  PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
-						  VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
+				: _materialName(std::move(materialName)),
+				  _stage(stage),
+				  _vertexShaderName(vertexShader), _fragmentShaderName(fragmentShader),
+				  _polygonMode(polygonMode),
+				  _pipeline(stage, {"res/shaders/" + vertexShader + ".spv", "res/shaders/" + fragmentShader + ".spv"},
+							{ scene::Model::Vertex::getDescriptions() },
+							PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
+							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
 				WDE_PROFILE_FUNCTION();
 				// Setup push constants and initialize pipeline
 				_pipeline.addPushConstants(0, sizeof(PushConstantData));
@@ -64,8 +68,9 @@ namespace wde::scene {
 
 			// Getters and setters
 			RenderStage getStage() { return _stage; }
-			std::string& getVertexShader() { return _vertexShader; }
-			std::string& getFragmentShader() { return _fragmentShader; }
+			std::string& getMaterialName() { return _materialName; }
+			std::string& getVertexShader() { return _vertexShaderName; }
+			std::string& getFragmentShader() { return _fragmentShaderName; }
 			VkPolygonMode getPolygonMode() { return _polygonMode; }
 
 
@@ -79,8 +84,8 @@ namespace wde::scene {
 
 
 			// Pipeline parameters
-			std::string _vertexShader;
-			std::string _fragmentShader;
+			std::string _vertexShaderName;
+			std::string _fragmentShaderName;
 			VkPolygonMode _polygonMode;
 	};
 }
