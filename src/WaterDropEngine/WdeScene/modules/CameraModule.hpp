@@ -149,7 +149,7 @@ namespace wde::scene {
 
 			/**
 			 * Camera will use a perspective projection
-			 * @param fovY Vertical field of view
+			 * @param fovY Vertical field of view (in degrees)
 			 * @param aspect The width/height ratio of the near plane
 			 * @param nearVal The near plane distance
 			 * @param farVal The far plane distance
@@ -163,7 +163,7 @@ namespace wde::scene {
 				_farPlane = farVal;
 				_fov = fovY;
 
-				const float tanHalfFovy = std::tan(fovY / 2.0f);
+				const float tanHalfFovy = std::tan(glm::radians(fovY) / 2.0f);
 				_projectionMatrix = glm::mat4{0.0f};
 				_projectionMatrix[0][0] = 1.0f / (aspect * tanHalfFovy);
 				_projectionMatrix[1][1] = 1.0f / (tanHalfFovy);
@@ -262,7 +262,7 @@ namespace wde::scene {
 			glm::vec3 _topCorner {1, 1, 1};
 
 			// Perspective
-			float _fov = glm::radians(60.0f);
+			float _fov = 60.0f;
 			float _nearPlane = 0.1f;
 			float _farPlane = 10.0f;
 	};
