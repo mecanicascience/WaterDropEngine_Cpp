@@ -67,8 +67,10 @@ namespace wde::scene {
 
 
 					// Getters and setters
-					const glm::vec3 getPosition() const { return _position; }
-					const glm::vec3 getColor() const { return _color; }
+					const glm::vec3& getPosition() const { return _position; }
+					const glm::vec3& getColor() const { return _color; }
+					const glm::vec3& getNormal() const { return _normal; }
+					void setNormal(glm::vec3 normal) { _normal = normal; }
 
 					// Model values
 					glm::vec3 _position;

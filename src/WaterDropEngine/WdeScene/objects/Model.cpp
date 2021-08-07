@@ -9,6 +9,7 @@ namespace wde::scene {
 		auto indices  = getIndices();
 
 		// Recalculate normals if needed
+		Logger::debug("Initializing model with " + std::to_string(vertices.size()) + " vertices and " + std::to_string(indices.size()) + " indices.", LoggerChannel::SCENE);
 		if (recalculateNormals)
 			recalculateModelNormals(vertices, indices);
 
@@ -140,7 +141,34 @@ namespace wde::scene {
 	// Helper functions
 	void Model::recalculateModelNormals(std::vector<Vertex> &vertices, std::vector<uint32_t> &indices) {
 		WDE_PROFILE_FUNCTION();
+		Logger::debug("Recalculating model normals.", LoggerChannel::SCENE);
 
+		// Reset vertices normals
+		for (auto& vertex : vertices)
+			vertex.setNormal(glm::vec3 {0.0f, 0.0f, 0.0f});
 
+		// For each triangle, add the triangle normal to the binding vertices
+		for (int i = 0; i < indices.size(); i += 3) {
+			// Triangle A,B,C
+			Vertex& a = vertices[indices[i + 0]];
+			Vertex& b = vertices[indices[i + 1]];
+			Vertex& c = vertices[indices[i + 2]];
+
+			// Vectors
+			glm::vec3 ab = b.getPosition() - a.getPosition();
+			glm::vec3 ac = c.getPosition() - a.getPosition();
+
+			// Calculate normal as AB x AC (assuming anti-clockwise normal orientation)
+			glm::vec3 n = glm::cross(ab, ac);
+
+			// Add normal
+			a.setNormal(a.getNormal() + n);
+			b.setNormal(b.getNormal() + n);
+			c.setNormal(c.getNormal() + n);
+		}
+
+		// Normalize each vertex
+		for (auto& vertex : vertices)
+			vertex.setNormal(glm::normalize(vertex.getNormal()));
 	}
 }
