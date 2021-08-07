@@ -25,6 +25,8 @@ namespace wde::scene {
 			void update(float deltaTime) override {
 				// Update camera object based on it's game object transform associated position and rotation
 				setViewYXZ(_gameObject.getModule<TransformModule>().position, _gameObject.getModule<TransformModule>().rotation);
+				// setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
+				// setViewTarget(camera.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f)); // Look at center
 
 
 				// Update projection type
@@ -75,11 +77,6 @@ namespace wde::scene {
 					if (_projectionType == 1)
 						setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
 				}
-
-
-				// == Update camera view direction ==
-				// setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
-				// setViewTarget(camera.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f)); // Look at center
 			}
 
 

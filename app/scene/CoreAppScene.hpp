@@ -7,6 +7,7 @@
 #include "../../src/WaterDropEngine/WdeScene/modules/ModelModule.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/CameraModule.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/TransformControllerModule.hpp"
+#include "../../src/WaterDropEngine/WdeScene/materials/BasicMaterial.hpp"
 
 using namespace wde::scene;
 
