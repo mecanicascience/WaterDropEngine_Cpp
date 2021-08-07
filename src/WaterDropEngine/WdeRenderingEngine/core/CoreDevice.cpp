@@ -102,12 +102,12 @@ namespace wde::renderEngine {
 		renderArea.offset = { renderPass.getRenderArea().getOffset().x, renderPass.getRenderArea().getOffset().y };
 		renderArea.extent = { renderPass.getRenderArea().getExtent().width, renderPass.getRenderArea().getExtent().height };
 
-		// Associated viewport
+		// Associated viewport (flips image around the horizontal axis)
 		VkViewport viewport = {};
 		viewport.x = 0.0f;
-		viewport.y = 0.0f;
-		viewport.width = static_cast<float>(renderArea.extent.width);
-		viewport.height = static_cast<float>(renderArea.extent.height);
+		viewport.y = static_cast<float>(renderArea.extent.height);
+		viewport.width  =  static_cast<float>(renderArea.extent.width);
+		viewport.height = -static_cast<float>(renderArea.extent.height);
 		viewport.minDepth = 0.0f;
 		viewport.maxDepth = 1.0f;
 		vkCmdSetViewport(*commandBuffer, 0, 1, &viewport);

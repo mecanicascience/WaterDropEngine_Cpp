@@ -22,5 +22,6 @@ void main() {
                 * inPush.transformCameraSpace // Camera space position
                 * inPush.transformWorldSpace  // World space position
                 * vec4(inPosition, 1.0f);     // Object space position
+
     outFragColor = inColor;
 }

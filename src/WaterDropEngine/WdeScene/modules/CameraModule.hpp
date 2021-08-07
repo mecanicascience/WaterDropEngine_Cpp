@@ -139,9 +139,9 @@ namespace wde::scene {
 				_topCorner = {rightVal / aspect, bottomVal, farVal};
 
 				_projectionMatrix = glm::mat4{1.0f};
-				_projectionMatrix[0][0] = 2.0f / (rightVal - leftVal);
-				_projectionMatrix[1][1] = 2.0f / (bottomVal - topVal);
-				_projectionMatrix[2][2] = 1.0f / (farVal - nearVal);
+				_projectionMatrix[0][0] =  2.0f / (rightVal - leftVal);
+				_projectionMatrix[1][1] =  2.0f / (bottomVal - topVal);
+				_projectionMatrix[2][2] =  1.0f / (farVal - nearVal);
 				_projectionMatrix[3][0] = -(rightVal + leftVal) / (rightVal - leftVal);
 				_projectionMatrix[3][1] = -(bottomVal + topVal) / (bottomVal - topVal);
 				_projectionMatrix[3][2] = -nearVal / (farVal - nearVal);
@@ -165,10 +165,10 @@ namespace wde::scene {
 
 				const float tanHalfFovy = std::tan(glm::radians(fovY) / 2.0f);
 				_projectionMatrix = glm::mat4{0.0f};
-				_projectionMatrix[0][0] = 1.0f / (aspect * tanHalfFovy);
-				_projectionMatrix[1][1] = 1.0f / (tanHalfFovy);
-				_projectionMatrix[2][2] = farVal / (farVal - nearVal);
-				_projectionMatrix[2][3] = 1.0f;
+				_projectionMatrix[0][0] =  1.0f / (aspect * tanHalfFovy);
+				_projectionMatrix[1][1] =  1.0f / (tanHalfFovy);
+				_projectionMatrix[2][2] =  farVal / (farVal - nearVal);
+				_projectionMatrix[2][3] =  1.0f;
 				_projectionMatrix[3][2] = -(farVal * nearVal) / (farVal - nearVal);
 			}
 

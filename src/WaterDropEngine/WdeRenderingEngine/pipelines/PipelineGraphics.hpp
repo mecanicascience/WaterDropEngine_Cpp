@@ -37,7 +37,9 @@ namespace wde::renderEngine {
 			                 VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                 VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_COUNTER_CLOCKWISE)
 					: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _depthMode(depthMode),
-					  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _normalOrientation(normalOrientation), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {}
+					  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode),
+					  _normalOrientation(normalOrientation == VK_FRONT_FACE_CLOCKWISE ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE), // invert vertex orientation
+					  _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {}
 
 			/* More description:
 			 * == Usual topology values ==

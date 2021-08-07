@@ -7,8 +7,8 @@ namespace wde::inputManager {
 		// Update game objects rotation
 		glm::vec3 rotation {0.0f};
 
-		if (InputManager::get().isKeyDown("lookUp"))    rotation.x += 1.0f;
-		if (InputManager::get().isKeyDown("lookDown"))  rotation.x -= 1.0f;
+		if (InputManager::get().isKeyDown("lookUp"))    rotation.x -= 1.0f;
+		if (InputManager::get().isKeyDown("lookDown"))  rotation.x += 1.0f;
 		if (InputManager::get().isKeyDown("lookRight")) rotation.y += 1.0f;
 		if (InputManager::get().isKeyDown("lookLeft"))  rotation.y -= 1.0f;
 
@@ -26,7 +26,7 @@ namespace wde::inputManager {
 		const float cYaw = std::cos(transformModule.rotation.y);
 		const glm::vec3 forwardDirection {sYaw, 0.0f,  cYaw};
 		const glm::vec3 rightDirection   {cYaw, 0.0f, -sYaw}; // Right = Forward + Pi/2, in XZ plane
-		const glm::vec3 upDirection {0.0f, -1.0f, 0.0f};
+		const glm::vec3 upDirection {0.0f,  1.0f, 0.0f};
 
 		// Move in requested direction
 		glm::vec3 moveDirection {0.0f};

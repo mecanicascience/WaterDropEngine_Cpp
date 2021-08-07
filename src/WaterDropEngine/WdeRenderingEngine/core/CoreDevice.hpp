@@ -59,8 +59,8 @@ namespace wde::renderEngine {
 			// WDE values
 			/** The ID of the device */
 			int _deviceID = 0;
-			/** Enabled device extensions (VK_KHR_SWAPCHAIN_EXTENSION_NAME = can GPU displays images) */
-			const std::vector<const char *> _deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME };
+			/** Enabled device extensions (VK_KHR_SWAPCHAIN_EXTENSION_NAME = can GPU displays images, VK_KHR_MAINTENANCE1_EXTENSION_NAME = can flip image when presented to viewport) */
+			const std::vector<const char *> _deviceExtensions = { VK_KHR_SWAPCHAIN_EXTENSION_NAME, VK_KHR_MAINTENANCE1_EXTENSION_NAME };
 
 
 			// Device Vulkan values
