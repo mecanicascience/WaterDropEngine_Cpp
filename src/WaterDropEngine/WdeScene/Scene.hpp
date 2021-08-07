@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "../../../wde.hpp"
-#include "../objects/GameObject.hpp"
-#include "../modules/CameraModule.hpp"
+#include "../../wde.hpp"
+#include "objects/GameObject.hpp"
+#include "modules/CameraModule.hpp"
 
 namespace wde::scene {
 	class Scene : NonCopyable {
@@ -22,8 +22,7 @@ namespace wde::scene {
 				_currentTime = newTime;
 
 				// Updates game objects and updates optional camera ID if there is no camera
-				for (int i = 0; i < _gameObjects.size(); i++) {
-					_gameObjects[i]->update(_deltaTime);
+				for (int i = 0; i < _gameObjects.size(); i++) {					_gameObjects[i]->update(_deltaTime);
 
 					if (_sceneCameraID == -1 && _gameObjects[i]->hasModule<CameraModule>()) { // No camera but go has a camera component
 						Logger::debug("Selecting main camera as game object named \"" + _gameObjects[i]->getName() + "\".", LoggerChannel::SCENE);

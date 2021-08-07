@@ -2,7 +2,7 @@
 
 #include "../WdeCore/WdeModule.hpp"
 #include "../../wde.hpp"
-#include "scenes/Scene.hpp"
+#include "Scene.hpp"
 
 #include <memory>
 #include <utility>

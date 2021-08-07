@@ -4,10 +4,7 @@ void CoreAppScene::initialize() {
 	// Add Camera
 	auto& camera = createGameObject("Camera");
 	camera.addModule<TransformControllerModule>();
-	auto& cameraModule = camera.addModule<CameraModule>();
-	cameraModule.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
-	cameraModule.setViewTarget(camera.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f));
-
+	camera.addModule<CameraModule>();
 
 	// Cube
 	auto& cube = createGameObject("Cube");
@@ -25,7 +22,4 @@ void CoreAppScene::initialize() {
 void CoreAppScene::update() {
 	// Updates scene
 	Scene::update();
-
-	// Updates camera
-	// _camera.update(getDeltaTime());
 }

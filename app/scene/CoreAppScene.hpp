@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../src/WaterDropEngine/WdeScene/scenes/Scene.hpp"
+#include "../../src/WaterDropEngine/WdeScene/Scene.hpp"
 #include "../../src/WaterDropEngine/WdeScene/objects/models/ModelLoader.hpp"
 #include "../../src/WaterDropEngine/WdeScene/objects/models/ModelCube.hpp"
 #include "../../src/WaterDropEngine/WdeScene/modules/TransformModule.hpp"
@@ -15,8 +15,4 @@ class CoreAppScene : public Scene {
 		// Core functions
 		void initialize() override;
 		void update() override;
-
-	private:
-		/** The scene camera */
-		GameObject _camera;
 };

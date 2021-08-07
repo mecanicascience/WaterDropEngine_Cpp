@@ -20,6 +20,8 @@ namespace wde::scene {
 				setPerspectiveProjection(glm::radians(50.0f), aspect, 0.1f, 10.0f);
 
 				// Update camera view based on it's transform
+				// cameraModule.setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right
+				// cameraModule.setViewTarget(camera.getModule<TransformModule>().position, glm::vec3(0.0f, 0.0f, 0.0f)); // Look at center
 				setViewYXZ(_gameObject.getModule<TransformModule>().position, _gameObject.getModule<TransformModule>().rotation);
 			}
 
