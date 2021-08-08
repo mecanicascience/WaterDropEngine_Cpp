@@ -17,6 +17,7 @@ namespace wde::scene {
 			glm::mat4 transformWorldSpace {1.0f};
 			glm::mat4 transformCameraSpace {1.0f};
 			glm::mat4 transformProjSpace {1.0f};
+			glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
 
 		public:
@@ -63,6 +64,7 @@ namespace wde::scene {
 				push.transformWorldSpace  = gameObject.getModule<TransformModule>().getTransform();
 				push.transformCameraSpace = cameraModule.getView();
 				push.transformProjSpace   = cameraModule.getProjection();
+				push.ambientLightVector   = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
 				_pipeline.setPushConstants(0, &push);
 			}
 

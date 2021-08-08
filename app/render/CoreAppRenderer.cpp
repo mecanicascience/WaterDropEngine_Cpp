@@ -25,6 +25,9 @@ void CoreAppRenderer::start() {
 	// Mesh sub-renderer
 	this->addSubrenderer<MeshSubrenderer>({0, 0});
 
+	// Gizmo sub-renderer
+	this->addSubrenderer<GizmoSubrenderer>({0, 0});
+
 	// Gui sub-renderer
 	this->addSubrenderer<GUISubrenderer>({0, 0});
 }

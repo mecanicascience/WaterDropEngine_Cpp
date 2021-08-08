@@ -114,7 +114,7 @@ namespace wde::scene {
 				ImGui::Dummy(ImVec2(0.0f, 5.0f));
 				if (ImGui::TreeNode("Perspective")) {
 					ImGui::Dummy(ImVec2(0.0f, 0.12f));
-					gui::GUIRenderer::addFloatDragger("FOV", _fov, glm::radians(60.0f));
+					gui::GUIRenderer::addFloatDragger("FOV", _fov, 60.0f);
 					gui::GUIRenderer::addFloatDragger("Near Plane", _nearPlane, 0.1f);
 					gui::GUIRenderer::addFloatDragger("Far Plane", _farPlane, 10.0f);
 					ImGui::TreePop();

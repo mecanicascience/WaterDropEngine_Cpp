@@ -11,6 +11,7 @@
 #include "../../src/WaterDropEngine/WdeScene/objects/models/ModelLoader.hpp"
 #include "../../src/WaterDropEngine/WdeRenderingEngine/renderer/subrenderers/GUISubrenderer.hpp"
 #include "../../src/WaterDropEngine/WdeRenderingEngine/renderer/subrenderers/MeshSubrenderer.hpp"
+#include "../../src/WaterDropEngine/WdeRenderingEngine/renderer/subrenderers/GizmoSubrenderer.hpp"
 
 using namespace wde;
 using namespace wde::renderEngine;
