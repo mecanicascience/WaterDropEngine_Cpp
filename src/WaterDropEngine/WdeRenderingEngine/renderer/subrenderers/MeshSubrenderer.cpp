@@ -7,7 +7,7 @@ namespace wde::renderEngine {
 	// Core functions
 	void MeshSubrenderer::render(CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
-		Logger::debug("Rendering scene game objects at stage" + std::to_string(_stage.first)
+		Logger::debug("Rendering scene game objects at stage " + std::to_string(_stage.first)
 						+ "-" + std::to_string(_stage.second) + ".", LoggerChannel::RENDERING_ENGINE);
 
 		// Renders game objects in scene if the scene has a camera
