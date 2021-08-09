@@ -7,6 +7,7 @@
 #include "../../WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"
 #include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
 #include "../objects/GameObject.hpp"
+#include "../modules/CameraModule.hpp"
 
 namespace wde::scene {
 	class Material {
@@ -48,16 +49,21 @@ namespace wde::scene {
 
 			// Core functions
 			/**
-			 * Binds the material to the gameObject and to the command buffer
-			 * @param gameObject
+			 * Binds the material pipeline to the command buffer
 			 * @param commandBuffer
-			 * @param camera
 			 */
-			void bind(GameObject& gameObject, CommandBuffer& commandBuffer, GameObject& camera) {
+			void bind(CommandBuffer& commandBuffer) {
 				WDE_PROFILE_FUNCTION();
 				// Bind pipeline
 				_pipeline.bind(commandBuffer);
+			}
 
+			/**
+			 * Push constants to the material pipeline
+			 * @param gameObject
+			 * @param camera
+			 */
+			void pushConstants(GameObject& gameObject, GameObject& camera) {
 				// Set push constants
 				auto& cameraModule = camera.getModule<scene::CameraModule>();
 				PushConstantData push {};
@@ -67,6 +73,7 @@ namespace wde::scene {
 				push.ambientLightVector   = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
 				_pipeline.setPushConstants(0, &push);
 			}
+
 
 			// Getters and setters
 			RenderStage getStage() { return _stage; }

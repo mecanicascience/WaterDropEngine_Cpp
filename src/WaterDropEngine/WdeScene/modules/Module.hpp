@@ -4,6 +4,9 @@
 
 #include "../../../wde.hpp"
 #include "../../WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"
+#include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
+
+using namespace wde::renderEngine;
 
 namespace wde::scene {
 	class GameObject;
@@ -34,9 +37,8 @@ namespace wde::scene {
 			 * Performs render operations given the command buffer during a render stage
 			 * @param commandBuffer The command buffer to submit render operations to
 			 * @param stage The rendering stage
-			 * @param camera The scene camera
 			 */
-			virtual void render(CommandBuffer& commandBuffer, RenderStage stage, GameObject& camera) {};
+			virtual void render(CommandBuffer& commandBuffer, RenderStage stage) {};
 			/** Render the module GUI */
 			virtual void renderGUI() {};
 			/** Cleaning up the module */

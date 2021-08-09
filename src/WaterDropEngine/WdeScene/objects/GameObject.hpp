@@ -71,12 +71,11 @@ namespace wde::scene {
 			 * Draws the game object to the screen at a given render stage
 			 * @param commandBuffer
 			 * @param renderStage
-			 * @param camera
 			 */
-			void render(CommandBuffer &commandBuffer, RenderStage stage, GameObject& camera) {
+			void render(CommandBuffer &commandBuffer, RenderStage stage) {
 				// Render modules
 				for (auto& module : _moduleList)
-					module->render(commandBuffer, stage, camera);
+					module->render(commandBuffer, stage);
 			}
 
 			/** Clean up game object */

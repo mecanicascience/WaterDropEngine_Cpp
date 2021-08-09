@@ -35,6 +35,12 @@ namespace wde::scene {
 					Logger::warn("Camera not found. Consider adding a camera to your scene.", LoggerChannel::SCENE);
 			}
 
+			/** Renders scene game objects */
+			virtual void render(CommandBuffer& commandBuffer, RenderStage stage) final {
+				for (auto& go : _gameObjects)
+					go->render(commandBuffer, stage);
+			}
+
 			/** Cleaning up scene */
 			virtual void cleanUp() final {
 				WDE_PROFILE_FUNCTION();
