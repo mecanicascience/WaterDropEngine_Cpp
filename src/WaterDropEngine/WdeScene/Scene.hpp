@@ -5,6 +5,7 @@
 #include "../../wde.hpp"
 #include "objects/GameObject.hpp"
 #include "modules/CameraModule.hpp"
+#include "gizmos/Gizmo.hpp"
 
 namespace wde::scene {
 	class Scene : NonCopyable {
@@ -37,8 +38,16 @@ namespace wde::scene {
 
 			/** Renders scene game objects */
 			virtual void render(CommandBuffer& commandBuffer, RenderStage stage) final {
+				WDE_PROFILE_FUNCTION();
 				for (auto& go : _gameObjects)
 					go->render(commandBuffer, stage);
+			}
+
+			/** Render scene game objects Gizmo */
+			virtual void renderGizmo(Gizmo &gizmo) final {
+				WDE_PROFILE_FUNCTION();
+				for (auto& go : _gameObjects)
+					go->renderGizmo(gizmo);
 			}
 
 			/** Cleaning up scene */

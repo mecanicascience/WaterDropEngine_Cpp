@@ -4,6 +4,7 @@
 #include "Model.hpp"
 #include "../modules/Module.hpp"
 #include "../modules/TransformModule.hpp"
+#include "../gizmos/Gizmo.hpp"
 
 namespace wde::scene {
 	class GameObject {
@@ -76,6 +77,16 @@ namespace wde::scene {
 				// Render modules
 				for (auto& module : _moduleList)
 					module->render(commandBuffer, stage);
+			}
+
+			/**
+			 * Render Game object gizmo
+			 * @param gizmo The gizmo instance
+			 */
+			void renderGizmo(Gizmo &gizmo) {
+				// Render modules gizmo
+				for (auto& module : _moduleList)
+					module->renderGizmo(gizmo);
 			}
 
 			/** Clean up game object */

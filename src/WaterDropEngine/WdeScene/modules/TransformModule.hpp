@@ -20,11 +20,19 @@ namespace wde::scene {
 			explicit TransformModule(GameObject &gameObject) : Module(gameObject, "Transform") {}
 
 			// Core functions
+			void renderGizmo(Gizmo& gizmo) override {
+				// Add a temporary line
+				gizmo.drawLine({0, 0, 0}, position);
+			}
+
 			void renderGUI() override {
 				gui::GUIRenderer::createVec3Button("Position", position);
 				gui::GUIRenderer::createVec3Button("Rotation", rotation);
 				gui::GUIRenderer::createVec3Button("Scale", scale, 1.0f);
 			}
+
+
+
 
 			// Getters and setters
 			/** Return the corresponding transform matrix : Translation * Ry * Rx * Rz * scale */

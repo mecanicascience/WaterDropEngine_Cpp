@@ -3,6 +3,10 @@
 #include "../Subrenderer.hpp"
 #include "../../../WdeScene/WdeSceneManager.hpp"
 #include "../../pipelines/PipelineGraphics.hpp"
+#include "../../../WdeScene/gizmos/Gizmo.hpp"
+#include "../../../WdeScene/gizmos/GizmoRenderer.hpp"
+
+using namespace wde::scene;
 
 namespace wde::renderEngine {
 	/**
@@ -24,5 +28,8 @@ namespace wde::renderEngine {
 			// Core functions
 			/** Renders the gizmo meshes to the command buffer */
 			void render(CommandBuffer &commandBuffer) override;
+
+		private:
+			GizmoRenderer _gizmoRenderer;
 	};
 }

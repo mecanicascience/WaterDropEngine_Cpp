@@ -21,6 +21,23 @@ namespace wde::scene {
 			glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
 
+		/**
+		 * Matrix that describes camera projection matrices
+		 */
+		struct GPUCameraData {
+			glm::mat4 transformWorldSpace {1.0f};
+			glm::mat4 transformCameraSpace {1.0f};
+			glm::mat4 transformProjSpace {1.0f};
+		};
+
+		struct FrameData {
+			// Buffer that holds a single GPUCameraData to use when rendering
+			AllocatedBuffer cameraBuffer;
+
+			// Frame data descriptor
+			VkDescriptorSet globalDescriptor;
+		};
+
 		public:
 			// Constructors
 			/**
