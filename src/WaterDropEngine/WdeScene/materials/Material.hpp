@@ -15,12 +15,9 @@
 namespace wde::scene {
 	class Material {
 		/**
-		 * Matrix used in the shaders to perform projection onto the culling Vulkan space
+		 * Material simple constant push data
 		 */
 		struct PushConstantData {
-			alignas(16) glm::mat4 transformWorldSpace {1.0f};
-			alignas(16) glm::mat4 transformCameraSpace {1.0f};
-			alignas(16) glm::mat4 transformProjSpace {1.0f};
 			alignas(16) glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
 
@@ -93,10 +90,7 @@ namespace wde::scene {
 				// Set push constants
 				auto& cameraModule = camera.getModule<scene::CameraModule>();
 				PushConstantData push {};
-				push.transformWorldSpace  = gameObject.getModule<TransformModule>().getTransform();
-				push.transformCameraSpace = cameraModule.getView();
-				push.transformProjSpace   = cameraModule.getProjection();
-				push.ambientLightVector   = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
+				push.ambientLightVector = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
 				_pipeline.setPushConstants(0, &push);
 			}
 

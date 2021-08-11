@@ -1,11 +1,16 @@
 #version 450
 
-// Input values from the sub-render pass
-layout(push_constant) uniform Push {
-    mat4 transformWorldSpace;
+// Scene set values
+layout(set = 0, binding = 0) uniform SceneBuffer {
     mat4 transformCameraSpace;
     mat4 transformProjSpace;
-} inPush;
+} inSceneData;
+
+// Game object set values
+layout(set = 1, binding = 0) uniform GameObjectBuffer {
+    mat4 transformWorldSpace;
+} inGameObjectData;
+
 
 // Input values from the pipeline
 layout(location = 0) in vec3 inPosition;
@@ -18,10 +23,10 @@ layout(location = 0) out vec3 outFragColor;
 
 // Executed once for each vertex
 void main() {
-    gl_Position = inPush.transformProjSpace   // Vulkan frustum position
-                * inPush.transformCameraSpace // Camera space position
-                * inPush.transformWorldSpace  // World space position
-                * vec4(inPosition, 1.0f);     // Object space position
+    gl_Position = inSceneData.transformProjSpace        // To Vulkan frustum position
+                * inSceneData.transformCameraSpace      // To Camera space position
+                * inGameObjectData.transformWorldSpace  // To World space position
+                * vec4(inPosition, 1.0f);               // Object local space position
 
     outFragColor = inColor;
 }

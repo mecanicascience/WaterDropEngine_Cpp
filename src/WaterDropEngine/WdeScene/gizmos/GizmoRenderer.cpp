@@ -13,8 +13,7 @@ namespace wde::scene {
 		Logger::debug("Initializing Gizmo renderer.", LoggerChannel::SCENE);
 
 		// Initialize pipelines
-		_pipelineSeparatedLines.addPushConstants(0, sizeof(PushConstantData));
-		_pipelineSeparatedLines.initialize();
+		//_pipelineSeparatedLines.initialize();
 	}
 
 
@@ -23,14 +22,13 @@ namespace wde::scene {
 		Logger::debug("Sending Gizmo objects to the GPU and rendering them.", LoggerChannel::SCENE);
 
 		// Render lines
-		_pipelineSeparatedLines.bind(commandBuffer);
+		/*_pipelineSeparatedLines.bind(commandBuffer);
 		auto& cameraModule = WdeSceneManager::get().getActiveScene()->getCamera().getModule<scene::CameraModule>();
 		PushConstantData push {};
 		push.transformWorldSpace  = getTransform({0, 0, 0});
 		push.transformCameraSpace = cameraModule.getView();
 		push.transformProjSpace   = cameraModule.getProjection();
-		_pipelineSeparatedLines.setPushConstants(0, &push);
-
+		_pipelineSeparatedLines.setPushConstants(0, &push);*/
 	}
 
 

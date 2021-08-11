@@ -55,11 +55,16 @@ namespace wde::renderEngine {
 			/** Bind the descriptor to the pipeline */
 			void bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint) {
 				WDE_PROFILE_FUNCTION();
+
 				// Update every descriptor sets
-				for (auto& [bindingIndex, set] : _descriptorSets) {
-					vkCmdBindDescriptorSets(commandBuffer, bindPoint, layout, 0,
-											1, &set.getSet(), 0, nullptr);
-				}
+				std::vector<VkDescriptorSet> vulkanDescriptorSets {};
+				for (int i = 0; i < _descriptorSets.size(); i++) // Must be set in binding index incrementing order
+					vulkanDescriptorSets.push_back(getSet(i).getSet());
+
+				// Binds the descriptors to the pipeline
+				vkCmdBindDescriptorSets(commandBuffer, bindPoint, layout, 0,
+										static_cast<uint32_t>(vulkanDescriptorSets.size()),
+										vulkanDescriptorSets.data(), 0, nullptr);
 			}
 
 

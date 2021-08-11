@@ -6,16 +6,6 @@
 
 namespace wde::scene {
 	/**
-		 * Matrix used in the shaders to perform projection onto the culling Vulkan space
-		 */
-	struct PushConstantData {
-		glm::mat4 transformWorldSpace {1.0f};
-		glm::mat4 transformCameraSpace {1.0f};
-		glm::mat4 transformProjSpace {1.0f};
-	};
-
-
-	/**
 	 * Class that will render every objects in the gizmo instance
 	 */
 	class GizmoRenderer {

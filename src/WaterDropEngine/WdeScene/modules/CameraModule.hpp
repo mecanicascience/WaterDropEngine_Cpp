@@ -13,9 +13,8 @@ namespace wde::scene {
 			 * Matrix that describes camera projection matrices
 			 */
 			struct GPUCameraData {
-				alignas(16) glm::mat4 transformWorldSpace {1.0f};
 				alignas(16) glm::mat4 transformCameraSpace {1.0f};
-				alignas(16) glm::mat4 transformProjSpace {1.0f};
+				alignas(16) glm::mat4 transformProjSpace   {1.0f};
 			};
 
 
@@ -130,6 +129,15 @@ namespace wde::scene {
 					ImGui::TreePop();
 				}
 			}
+
+			GPUCameraData getCameraData() const {
+				GPUCameraData data {};
+				data.transformCameraSpace = getView();
+				data.transformProjSpace   = getProjection();
+				return data;
+			}
+
+
 
 
 			// Camera core functions

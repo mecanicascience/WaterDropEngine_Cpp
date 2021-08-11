@@ -54,14 +54,10 @@ namespace wde::scene {
 				WDE_PROFILE_FUNCTION();
 
 				// Create scene camera buffer
-				CameraModule::GPUCameraData camData {};
-				auto& cameraModule = getCamera().getModule<scene::CameraModule>();
-				camData.transformCameraSpace = cameraModule.getView();
-				camData.transformProjSpace   = cameraModule.getProjection();
+				CameraModule::GPUCameraData camData = getCamera().getModule<scene::CameraModule>().getCameraData();
 
 				for (auto& go : _gameObjects) {
 					// Update game object scene set
-					camData.transformWorldSpace = go->getModule<TransformModule>().getTransform();
 					go->getDescriptor()->getSet(0).updateBuffer(0, &camData);
 
 					// Render game object
