@@ -13,6 +13,19 @@ namespace wde::scene {
 			// Core functions
 			/** Initialize scene */
 			virtual void initialize() = 0;
+			/** Initialize scene game objects */
+			virtual void initializeGameObjects() final {
+				WDE_PROFILE_FUNCTION();
+				for (auto& go : _gameObjects) {
+					// Add game object scene descriptor set (binding 0)
+					go->getDescriptor()->addSet(0, {
+						{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(CameraModule::GPUCameraData)} // Camera buffer
+					});
+
+					// Initialize game objects
+					go->initialize();
+				}
+			}
 
 			/** Updates the scene (this should be called from the derived children class) */
 			virtual void update() {
@@ -39,8 +52,21 @@ namespace wde::scene {
 			/** Renders scene game objects */
 			virtual void render(CommandBuffer& commandBuffer, RenderStage stage) final {
 				WDE_PROFILE_FUNCTION();
-				for (auto& go : _gameObjects)
+
+				// Create scene camera buffer
+				CameraModule::GPUCameraData camData {};
+				auto& cameraModule = getCamera().getModule<scene::CameraModule>();
+				camData.transformCameraSpace = cameraModule.getView();
+				camData.transformProjSpace   = cameraModule.getProjection();
+
+				for (auto& go : _gameObjects) {
+					// Update game object scene set
+					camData.transformWorldSpace = go->getModule<TransformModule>().getTransform();
+					go->getDescriptor()->getSet(0).updateBuffer(0, &camData);
+
+					// Render game object
 					go->render(commandBuffer, stage);
+				}
 			}
 
 			/** Render scene game objects Gizmo */

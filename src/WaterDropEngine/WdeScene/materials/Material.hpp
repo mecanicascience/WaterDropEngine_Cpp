@@ -24,17 +24,6 @@ namespace wde::scene {
 			alignas(16) glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
 
-		/**
-		 * Matrix that describes camera projection matrices
-		 */
-		struct GPUCameraData {
-			alignas(16) glm::mat4 transformWorldSpace {1.0f};
-			alignas(16) glm::mat4 transformCameraSpace {1.0f};
-			alignas(16) glm::mat4 transformProjSpace {1.0f};
-		};
-
-		std::shared_ptr<Descriptor> _descriptor {};
-
 		public:
 			// Constructors
 			/**
@@ -45,7 +34,7 @@ namespace wde::scene {
 			 * @param fragmentShader The link to the pipeline fragment shader
 			 * @param polygonMode The pipeline polygon drawing mode
 			 */
-			Material(std::string  materialName, RenderStage stage, const std::string& vertexShader, const std::string& fragmentShader, VkPolygonMode polygonMode)
+			Material(std::string materialName, RenderStage stage, const std::string& vertexShader, const std::string& fragmentShader, VkPolygonMode polygonMode)
 				: _materialName(std::move(materialName)),
 				  _stage(stage),
 				  _vertexShaderName(vertexShader), _fragmentShaderName(fragmentShader),
@@ -53,25 +42,34 @@ namespace wde::scene {
 				  _pipeline(stage, {"res/shaders/" + vertexShader + ".spv", "res/shaders/" + fragmentShader + ".spv"},
 							{ scene::Model::Vertex::getDescriptions() },
 							PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
-							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
+							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {}
+
+
+			// Core functions
+			/** Initialize the material descriptor and pipeline */
+			void initialize(std::shared_ptr<Descriptor>& descriptor) {
 				WDE_PROFILE_FUNCTION();
 
 				// Setup descriptor
-				_descriptor = std::make_shared<Descriptor>(10);
-				_descriptor->addSet(0, {
-					{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(GPUCameraData)}
-				});
+				if (descriptor != nullptr) {
+					// Set descriptor
+					_descriptor = descriptor;
 
-				// Setup push constants and descriptor
+					// Add material set (binding 2)
+					// ...
+
+					// Reference descriptor to pipeline
+					_pipeline.setDescriptor(_descriptor);
+				}
+
+
+				// Setup push constants
 				_pipeline.addPushConstants(0, sizeof(PushConstantData));
-				_pipeline.setDescriptor(_descriptor);
 
 				// Initialize pipeline
 				_pipeline.initialize();
 			}
 
-
-			// Core functions
 			/**
 			 * Binds the material pipeline to the command buffer
 			 * @param commandBuffer
@@ -82,7 +80,8 @@ namespace wde::scene {
 				_pipeline.bind(commandBuffer);
 
 				// Bind the descriptor to the pipeline
-				_pipeline.bind(_descriptor);
+				if (_descriptor != nullptr)
+					_pipeline.bind(_descriptor);
 			}
 
 			/**
@@ -107,13 +106,8 @@ namespace wde::scene {
 			 * @param camera
 			 */
 			void pushDescriptors(GameObject& gameObject, GameObject& camera) {
-				// Push camera values
-				auto& cameraModule = camera.getModule<scene::CameraModule>();
-				GPUCameraData camData {};
-				camData.transformWorldSpace  = gameObject.getModule<TransformModule>().getTransform();
-				camData.transformCameraSpace = cameraModule.getView();
-				camData.transformProjSpace   = cameraModule.getProjection();
-				_descriptor->getSet(0).updateBuffer(0, &camData);
+				// Update material descriptor buffers
+				// ...
 			}
 
 
@@ -132,6 +126,9 @@ namespace wde::scene {
 			PipelineGraphics _pipeline;
 			/** The stage in which the material will be rendered to */
 			RenderStage _stage;
+
+			/** The associated game object descriptor (material is set binding 3) */
+			std::shared_ptr<Descriptor> _descriptor {};
 
 
 			// Pipeline parameters

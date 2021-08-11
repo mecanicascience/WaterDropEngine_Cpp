@@ -9,6 +9,16 @@ namespace wde::scene {
 	 */
 	class CameraModule : public Module {
 		public:
+			/**
+			 * Matrix that describes camera projection matrices
+			 */
+			struct GPUCameraData {
+				alignas(16) glm::mat4 transformWorldSpace {1.0f};
+				alignas(16) glm::mat4 transformCameraSpace {1.0f};
+				alignas(16) glm::mat4 transformProjSpace {1.0f};
+			};
+
+
 			explicit CameraModule(GameObject &gameObject) : Module(gameObject, "Camera") {}
 
 			// Core functions

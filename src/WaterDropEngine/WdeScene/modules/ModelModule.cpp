@@ -2,6 +2,11 @@
 #include "../WdeSceneManager.hpp"
 
 namespace wde::scene {
+	void ModelModule::initialize() {
+		// Initialize material
+		_material->initialize(_gameObject.getDescriptor());
+	}
+
 	void ModelModule::render(CommandBuffer& commandBuffer, RenderStage stage) {
 		WDE_PROFILE_FUNCTION();
 		if (stage != _material->getStage()) // Not in the right rendering stage

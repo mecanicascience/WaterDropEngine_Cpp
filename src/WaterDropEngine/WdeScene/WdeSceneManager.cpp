@@ -6,11 +6,18 @@ namespace wde::scene {
 	void WdeSceneManager::initialize() {
 		WDE_PROFILE_FUNCTION();
 		Logger::debug("== Initializing Scene Manager ==", LoggerChannel::SCENE);
-		Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
 		if (_scene == nullptr)
 			throw WdeException("Scene not set before initialization.", LoggerChannel::SCENE);
+
+		// Initialize scene
+		Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
 		_scene->initialize();
 
+		// Initialize scene game objects
+		Logger::debug("Initializing selected scene game objects.", LoggerChannel::SCENE);
+		_scene->initializeGameObjects();
+
+		// Start manager
 		_hasStarted = true;
 		Logger::debug("== Initialization done ==", LoggerChannel::SCENE);
 	}
@@ -58,7 +65,7 @@ namespace wde::scene {
 
 		// Initialize scene if the scene manager has already started
 		if (WdeSceneManager::get()._hasStarted)
-			WdeSceneManager::get()._scene->initialize();
+			WdeSceneManager::get().initialize();
 
 		// Say that GUI scene should be reset on next render frame
 		gui::WdeGUI::get().reset();

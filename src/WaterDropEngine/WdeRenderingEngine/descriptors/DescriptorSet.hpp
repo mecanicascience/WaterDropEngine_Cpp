@@ -96,7 +96,6 @@ namespace wde::renderEngine {
 				setLayoutInfo.pNext = nullptr;
 				setLayoutInfo.flags = 0;
 				setLayoutInfo.bindingCount = static_cast<uint32_t>(_bindingsLayouts.size());
-				std::cout << static_cast<uint32_t>(_bindingsLayouts.size()) << std::endl;
 				setLayoutInfo.pBindings = _bindingsLayouts.data();
 				if (vkCreateDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), &setLayoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
 					throw WdeException("Failed to create a description set layout.", LoggerChannel::RENDERING_ENGINE);
@@ -110,7 +109,7 @@ namespace wde::renderEngine {
 			void initialize() {
 				// Create buffers
 				for (auto& binding : _bindingsData)
-					addBuffer(static_cast<uint32_t>(binding._bindingIndex), binding._elementSize);
+					addBuffer((int) binding._bindingIndex, binding._elementSize);
 			}
 
 			/**
@@ -119,6 +118,9 @@ namespace wde::renderEngine {
 			 * @param newData The buffer new data
 			 */
 			void updateBuffer(int bindingIndex, const void* newData) {
+				if (_bindingsBuffers[bindingIndex].bufferMemory == nullptr) // If no buffer memory (ex camera object), return
+					return;
+
 				void* data;
 				vkMapMemory(CoreInstance::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex].bufferMemory,
 							0, _bindingsBuffers[bindingIndex].bufferSize, 0, &data);
