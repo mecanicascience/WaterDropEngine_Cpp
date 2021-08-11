@@ -2,16 +2,18 @@
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-    Image::Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format, VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel, uint32_t baseArrayLayer, uint32_t layerCount)
+    Image::Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format, VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel, uint32_t baseArrayLayer, uint32_t layerCount, bool initialize)
         : _type(type), _viewType(viewType), _arrayLayers(arrayLayers), _format(format), _extent(extent), _mipLevels(mipLevels), _tiling(tiling), _usage(usage), _memoryProperties(memoryProperties), _imageAspect(imageAspect), _baseMipLevel(baseMipLevel), _baseArrayLayer(baseArrayLayer), _layerCount(layerCount) {
         if (format == VK_FORMAT_UNDEFINED)
             throw WdeException("The specified image format is undefined.", LoggerChannel::RENDERING_ENGINE);
 
-        Logger::debug("Creating a Vulkan image.", LoggerChannel::RENDERING_ENGINE);
-        createImage();
+        if (initialize) {
+        	Logger::debug("Creating a Vulkan image.", LoggerChannel::RENDERING_ENGINE);
+        	createImage();
 
-        Logger::debug("Creating a Vulkan image view.", LoggerChannel::RENDERING_ENGINE);
-        createImageView();
+        	Logger::debug("Creating a Vulkan image view.", LoggerChannel::RENDERING_ENGINE);
+        	createImageView();
+        }
     }
 
     Image::~Image() {

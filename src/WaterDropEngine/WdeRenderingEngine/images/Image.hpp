@@ -25,16 +25,24 @@ namespace wde::renderEngine {
              * @param baseMipLevel
              * @param baseArrayLayer
              * @param layer
+             * @param initialize (default true)
              */
             explicit Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format,
 						   VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage,
 						   VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel,
-						   uint32_t baseArrayLayer, uint32_t layerCount);
+						   uint32_t baseArrayLayer, uint32_t layerCount, bool initialize = true);
             ~Image();
+
+
+            // Core functions
+            void createImage();
+            void createImageView();
 
             // Getters and setters
             VkFormat getFormat() { return _format; }
             VkImageView getView() { return _view; }
+            VkImage& getImage() { return _image; }
+
 
 
         protected:
@@ -68,10 +76,5 @@ namespace wde::renderEngine {
             uint32_t _baseMipLevel;
             uint32_t _baseArrayLayer;
             uint32_t _layerCount;
-
-
-            // Core functions
-            void createImage();
-            void createImageView();
     };
 }

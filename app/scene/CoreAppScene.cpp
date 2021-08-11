@@ -1,4 +1,6 @@
 #include "CoreAppScene.hpp"
+#include "../../src/WaterDropEngine/WdeRenderingEngine/images/Texture2D.hpp"
+
 
 void CoreAppScene::initialize() {
 	// Add Camera
@@ -17,6 +19,15 @@ void CoreAppScene::initialize() {
 	auto& testGO = createGameObject("Monkey Object");
 	testGO.addModule<ModelModule>(std::make_shared<ModelLoader>("res/models/monkey_smooth.obj"), std::make_shared<ColorMaterial>(RenderStage {0, 0}));
 	testGO.getModule<TransformModule>().scale /= 5.0f;
+
+	// Cube 2
+	auto& cube2 = createGameObject("Cube2");
+	cube2.addModule<ModelModule>(std::make_shared<ModelCube>(), std::make_shared<ColorMaterial>(RenderStage {0, 0}));
+	auto& cubeTransform2 = cube2.getModule<TransformModule>();
+	cubeTransform2.position = {0.0f, 2.0f, -2.5f};
+	cubeTransform2.scale /= 2.0f;
+
+	Texture2D testTexture {"res/textures/test-texture.jpg"};
 }
 
 void CoreAppScene::update() {
