@@ -2,6 +2,8 @@
 
 #include "../../../wde.hpp"
 #include "../commands/CommandBuffer.hpp"
+#include "../descriptors/DescriptorSet.hpp"
+#include "../descriptors/Descriptor.hpp"
 
 namespace wde::renderEngine {
 	/**
@@ -33,6 +35,21 @@ namespace wde::renderEngine {
 			}
 
 			/**
+			 * Binds the descriptor to the pipeline and to the command buffer (must be called after the bind command)
+			 * @param descriptor
+			 */
+			void bind(std::shared_ptr<Descriptor>& descriptor) {
+				WDE_PROFILE_FUNCTION();
+				if (!_commandBuffer)
+					throw WdeException("Pipeline descriptor was bind before being bind to the command buffer.", LoggerChannel::RENDERING_ENGINE);
+
+				descriptor->bind(*_commandBuffer, getLayout(), getPipelineBindPoint());
+			}
+
+
+
+			// Push constants
+			/**
 			 * Add push constants to the pipeline
 			 * @param bindingIndex The corresponding push constants binding index
 			 * @param constantsSize The size of the push constant data
@@ -63,25 +80,43 @@ namespace wde::renderEngine {
 				vkCmdPushConstants(*_commandBuffer, _pipelineLayout, data.stageFlags, data.offset, data.size, pushData);
 			}
 
+			/**
+			 * Set the pipeline optional descriptor
+			 * @param descriptor An instance of a descriptor
+			 */
+			void setDescriptor(std::shared_ptr<Descriptor> &descriptor) {
+				if (_initialized)
+					throw WdeException("Tying to set a pipeline descriptor after it's creation.", LoggerChannel::RENDERING_ENGINE);
+
+				_descriptor = descriptor;
+			}
+
+
+
+
 
 			// Getters and setters
 			virtual const VkPipeline &getPipeline() const = 0;
 			virtual const VkPipelineBindPoint &getPipelineBindPoint() const = 0;
+			VkPipelineLayout const &getLayout() const { return _pipelineLayout; }
 
 
 		protected:
 			// Pipeline parameters
 			/** true if the pipeline was initialized */
 			bool _initialized = false;
+			/** The corresponding pipeline layout */
+			VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
+			/** The last binded command buffer */
+			CommandBuffer *_commandBuffer = nullptr;
 
+			// Push constants
 			/** The list of all push constants config */
 			std::vector<VkPushConstantRange> _pushConstantsValues;
 			/** Corresponding binding indices */
 			std::unordered_map<int, int> _pushConstantsBoundingIndices;
 
-			/** The corresponding pipeline layout */
-			VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
-			/** The last binded command buffer */
-			CommandBuffer *_commandBuffer = nullptr;
+			// Descriptors
+			std::shared_ptr<Descriptor> _descriptor {nullptr};
 	};
 }

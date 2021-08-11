@@ -3,6 +3,9 @@
 #include <utility>
 
 #include "../../../wde.hpp"
+#include "../../WdeRenderingEngine/descriptors/DescriptorSet.hpp"
+#include "../../WdeRenderingEngine/descriptors/Descriptor.hpp"
+#include "../../WdeRenderingEngine/descriptors/DescriptorPool.hpp"
 #include "../../WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
 #include "../../WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"
 #include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
@@ -15,28 +18,22 @@ namespace wde::scene {
 		 * Matrix used in the shaders to perform projection onto the culling Vulkan space
 		 */
 		struct PushConstantData {
-			glm::mat4 transformWorldSpace {1.0f};
-			glm::mat4 transformCameraSpace {1.0f};
-			glm::mat4 transformProjSpace {1.0f};
-			glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
+			alignas(16) glm::mat4 transformWorldSpace {1.0f};
+			alignas(16) glm::mat4 transformCameraSpace {1.0f};
+			alignas(16) glm::mat4 transformProjSpace {1.0f};
+			alignas(16) glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
 
 		/**
 		 * Matrix that describes camera projection matrices
 		 */
 		struct GPUCameraData {
-			glm::mat4 transformWorldSpace {1.0f};
-			glm::mat4 transformCameraSpace {1.0f};
-			glm::mat4 transformProjSpace {1.0f};
+			alignas(16) glm::mat4 transformWorldSpace {1.0f};
+			alignas(16) glm::mat4 transformCameraSpace {1.0f};
+			alignas(16) glm::mat4 transformProjSpace {1.0f};
 		};
 
-		struct FrameData {
-			// Buffer that holds a single GPUCameraData to use when rendering
-			AllocatedBuffer cameraBuffer;
-
-			// Frame data descriptor
-			VkDescriptorSet globalDescriptor;
-		};
+		std::shared_ptr<Descriptor> _descriptor {};
 
 		public:
 			// Constructors
@@ -58,8 +55,18 @@ namespace wde::scene {
 							PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
 							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
 				WDE_PROFILE_FUNCTION();
-				// Setup push constants and initialize pipeline
+
+				// Setup descriptor
+				_descriptor = std::make_shared<Descriptor>(10);
+				_descriptor->addSet(0, {
+					{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(GPUCameraData)}
+				});
+
+				// Setup push constants and descriptor
 				_pipeline.addPushConstants(0, sizeof(PushConstantData));
+				_pipeline.setDescriptor(_descriptor);
+
+				// Initialize pipeline
 				_pipeline.initialize();
 			}
 
@@ -73,6 +80,9 @@ namespace wde::scene {
 				WDE_PROFILE_FUNCTION();
 				// Bind pipeline
 				_pipeline.bind(commandBuffer);
+
+				// Bind the descriptor to the pipeline
+				_pipeline.bind(_descriptor);
 			}
 
 			/**
@@ -89,6 +99,21 @@ namespace wde::scene {
 				push.transformProjSpace   = cameraModule.getProjection();
 				push.ambientLightVector   = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
 				_pipeline.setPushConstants(0, &push);
+			}
+
+			/**
+			 * Push descriptors buffers to the material pipeline
+			 * @param gameObject
+			 * @param camera
+			 */
+			void pushDescriptors(GameObject& gameObject, GameObject& camera) {
+				// Push camera values
+				auto& cameraModule = camera.getModule<scene::CameraModule>();
+				GPUCameraData camData {};
+				camData.transformWorldSpace  = gameObject.getModule<TransformModule>().getTransform();
+				camData.transformCameraSpace = cameraModule.getView();
+				camData.transformProjSpace   = cameraModule.getProjection();
+				_descriptor->getSet(0).updateBuffer(0, &camData);
 			}
 
 

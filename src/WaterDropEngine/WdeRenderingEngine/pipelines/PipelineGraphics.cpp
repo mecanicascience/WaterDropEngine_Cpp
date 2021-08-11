@@ -37,6 +37,10 @@ namespace wde::renderEngine {
 
 		// Set pipeline initialized status
 		_initialized = true;
+
+		// Initialize pipeline descriptor
+		if (_descriptor != nullptr)
+			_descriptor->initialize();
 	}
 
 
@@ -69,13 +73,27 @@ namespace wde::renderEngine {
         WDE_PROFILE_FUNCTION();
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
 		pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
+
+		// Push constants
 		pipelineLayoutCreateInfo.pushConstantRangeCount = static_cast<uint32_t>(_pushConstantsValues.size());
 		if (!_pushConstantsValues.empty())
 			pipelineLayoutCreateInfo.pPushConstantRanges = _pushConstantsValues.data();
 		else
 			pipelineLayoutCreateInfo.pPushConstantRanges = nullptr;
-		pipelineLayoutCreateInfo.setLayoutCount = 0; // Optional
-		pipelineLayoutCreateInfo.pSetLayouts = nullptr; // Optional
+
+
+		// Descriptor sets
+		if (_descriptor == nullptr) {
+			pipelineLayoutCreateInfo.setLayoutCount = 0;
+			pipelineLayoutCreateInfo.pSetLayouts = nullptr;
+		}
+		else {
+			std::vector<VkDescriptorSetLayout> layouts = _descriptor->createLayouts();
+			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
+			pipelineLayoutCreateInfo.pSetLayouts = layouts.data();
+		}
+
 
 		// Create layout
 		if (vkCreatePipelineLayout(CoreInstance::get().getSelectedDevice().getDevice(), &pipelineLayoutCreateInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)

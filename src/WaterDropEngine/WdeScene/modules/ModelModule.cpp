@@ -10,6 +10,7 @@ namespace wde::scene {
 		// Bind material to the game object and push camera constants to it
 		_material->bind(commandBuffer);
 		_material->pushConstants(_gameObject, WdeSceneManager::get().getActiveScene()->getCamera());
+		_material->pushDescriptors(_gameObject, WdeSceneManager::get().getActiveScene()->getCamera());
 
 		// Render model
 		_model->bind(commandBuffer);

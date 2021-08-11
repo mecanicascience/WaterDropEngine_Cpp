@@ -1,5 +1,12 @@
 #version 450
 
+// Input values from the pipeline descriptors
+layout(set = 0, binding = 0) uniform CameraBuffer {
+    mat4 transformWorldSpace;
+    mat4 transformCameraSpace;
+    mat4 transformProjSpace;
+} inCameraData;
+
 // Input values from the sub-render pass
 layout(push_constant) uniform Push {
     mat4 transformWorldSpace;
@@ -19,10 +26,14 @@ layout(location = 0) out vec3 outFragColor;
 
 // Executed once for each vertex
 void main() {
-    gl_Position = inPush.transformProjSpace   // Vulkan frustum position
+    /*gl_Position = inPush.transformProjSpace   // Vulkan frustum position
                 * inPush.transformCameraSpace // Camera space position
                 * inPush.transformWorldSpace  // World space position
-                * vec4(inPosition, 1.0f);     // Object space position
+                * vec4(inPosition, 1.0f);     // Object space position*/
+    gl_Position = inCameraData.transformProjSpace   // Vulkan frustum position
+                * inCameraData.transformCameraSpace // Camera space position
+                * inCameraData.transformWorldSpace  // World space position
+                * vec4(inPosition, 1.0f);           // Object space position
 
     float shadowAmount = (dot(inPush.ambientLightVector, inNormal) + 1.0f) / 2.0f;
     outFragColor = inColor * shadowAmount;
