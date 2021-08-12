@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../../wde.hpp"
+#include "Material.hpp"
 
 namespace wde::scene {
 	class ColorMaterial : public Material {

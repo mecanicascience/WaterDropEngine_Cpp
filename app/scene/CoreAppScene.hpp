@@ -1,15 +1,6 @@
 #pragma once
 
-#include "../../src/WaterDropEngine/WdeScene/Scene.hpp"
-#include "../../src/WaterDropEngine/WdeScene/objects/models/ModelLoader.hpp"
-#include "../../src/WaterDropEngine/WdeScene/objects/models/ModelCube.hpp"
-#include "../../src/WaterDropEngine/WdeScene/modules/TransformModule.hpp"
-#include "../../src/WaterDropEngine/WdeScene/modules/ModelModule.hpp"
-#include "../../src/WaterDropEngine/WdeScene/modules/CameraModule.hpp"
-#include "../../src/WaterDropEngine/WdeScene/modules/TransformControllerModule.hpp"
-#include "../../src/WaterDropEngine/WdeScene/materials/ColorMaterial.hpp"
-#include "../../src/WaterDropEngine/WdeScene/materials/ColorMaterialOutline.hpp"
-#include "../../src/WaterDropEngine/WdeScene/materials/TextureMaterial.hpp"
+#include <WaterDropEngine/includes.hpp>
 
 using namespace wde::scene;
 

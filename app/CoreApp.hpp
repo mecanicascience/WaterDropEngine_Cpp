@@ -1,8 +1,6 @@
 #pragma once
 
-#include "../src/WaterDropEngine/WaterDropEngine.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/WdeRenderEngine.hpp"
-#include "../src/WaterDropEngine/WdeScene/WdeSceneManager.hpp"
+#include <WaterDropEngine/includes.hpp>
 
 #include "render/CoreAppRenderer.hpp"
 #include "scene/CoreAppScene.hpp"
