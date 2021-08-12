@@ -16,8 +16,8 @@ void CoreAppScene::initialize() {
 	cubeTransform.position = {0.0f, 0.0f, 2.5f};
 	cubeTransform.scale /= 2.0f;
 
-	// Test game object
-	auto& testGO = createGameObject("Monkey Object");
+	// Viking room test game object
+	auto& testGO = createGameObject("Viking Room");
 	testGO.addModule<ModelModule>(std::make_shared<ModelLoader>("viking_room.obj"),
 	                              std::make_shared<TextureMaterial>(RenderStage {0, 0}, "viking_room.png"));
 	testGO.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
