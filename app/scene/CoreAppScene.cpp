@@ -11,7 +11,7 @@ void CoreAppScene::initialize() {
 
 	// Cube
 	auto& cube = createGameObject("Cube");
-	cube.addModule<ModelModule>(std::make_shared<ModelCube>(), std::make_shared<TextureMaterial>(RenderStage {0, 0}));
+	cube.addModule<ModelModule>(std::make_shared<ModelCube>(), std::make_shared<TextureMaterial>(RenderStage {0, 0}, "test-texture.jpg"));
 	auto& cubeTransform = cube.getModule<TransformModule>();
 	cubeTransform.position = {0.0f, 0.0f, 2.5f};
 	cubeTransform.scale /= 2.0f;

@@ -22,8 +22,6 @@ namespace wde::scene {
 			alignas(16) glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
 
-		std::unique_ptr<Texture2D> _testTexture;
-
 		public:
 			// Constructors
 			/**
@@ -42,10 +40,7 @@ namespace wde::scene {
 				  _pipeline(stage, {"res/shaders/" + vertexShader + ".spv", "res/shaders/" + fragmentShader + ".spv"},
 							{ scene::Model::Vertex::getDescriptions() },
 							PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
-							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
-				// Create test texture
-				_testTexture = std::make_unique<Texture2D>("res/textures/test-texture.jpg");
-			}
+							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {}
 
 
 			// Core functions
@@ -58,10 +53,8 @@ namespace wde::scene {
 					// Set descriptor
 					_descriptor = descriptor;
 
-					// Add material set (binding 2)
-					_descriptor->addSet(2, {
-						{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _testTexture->getView(), _testTexture->getSampler()}
-					});
+					// Setup the material descriptor
+					setupDescriptor(descriptor);
 
 					// Reference descriptor to pipeline
 					_pipeline.setDescriptor(_descriptor);
@@ -89,28 +82,26 @@ namespace wde::scene {
 					_pipeline.bind(_descriptor);
 			}
 
-			/**
-			 * Push constants to the material pipeline
-			 * @param gameObject
-			 * @param camera
-			 */
-			void pushConstants(GameObject& gameObject, GameObject& camera) {
+
+			// Push constants
+			/** Push constants to the material pipeline */
+			void pushConstants() {
 				// Set push constants
-				auto& cameraModule = camera.getModule<scene::CameraModule>();
 				PushConstantData push {};
 				push.ambientLightVector = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
 				_pipeline.setPushConstants(0, &push);
 			}
 
+
+			// Descriptors
 			/**
-			 * Push descriptors buffers to the material pipeline
-			 * @param gameObject
-			 * @param camera
+			 * Setup the material descriptor
+			 * @param descriptor
 			 */
-			void pushDescriptors(GameObject& gameObject, GameObject& camera) {
-				// Update material descriptor buffers
-				// ...
-			}
+			virtual void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) {}
+
+			/** Update the descriptor buffers */
+			virtual void pushDescriptors() {}
 
 
 			// Getters and setters
