@@ -83,8 +83,10 @@ namespace wde::gui {
 
 		// Render GUI elements in Scene
 		Logger::debug("Rendering GUI elements.", LoggerChannel::GUI);
-		scene::WdeSceneManager::get().renderGUI();
-		_logger.renderGUI();
+		if (_guiBar.displayGUI()) {
+			scene::WdeSceneManager::get().renderGUI();
+			_logger.renderGUI();
+		}
 	}
 
 

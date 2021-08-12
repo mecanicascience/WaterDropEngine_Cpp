@@ -18,7 +18,26 @@ namespace wde::gui {
 					// End of menu
 					ImGui::EndMenu();
 				}
+
+
+				// GUI file menu
+				if (ImGui::BeginMenu("GUI")) {
+					// Switch gui open and close
+					ImGui::Checkbox("Display GUI elements", &_displayGUI);
+
+					// End of menu
+					ImGui::EndMenu();
+				}
 			}
+
+
+			// Getters and setters
+			bool displayGUI() { return _displayGUI; }
+
+
+		private:
+			/** Display GUI by default */
+			bool _displayGUI = true;
 	};
 }
 
