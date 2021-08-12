@@ -13,6 +13,7 @@ namespace wde::renderEngine {
 	 */
 	class Texture2D {
 		public:
+			// Constructors
 			/**
 			 * Creates a new texture given a file path
 			 * @param filepath Absolute project file path to the texture
@@ -21,6 +22,10 @@ namespace wde::renderEngine {
 			explicit Texture2D(std::string filepath, VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB);
 			/** Texture desctructor */
 			~Texture2D();
+
+			// Getters and setters
+			VkImageView& getView() { return _textureImage->getView(); }
+			VkSampler& getSampler() { return _textureSampler; }
 
 
 		private:
@@ -43,6 +48,7 @@ namespace wde::renderEngine {
 			 * VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE take the nearest color, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER return a solid color outside)
 			 */
 			void createTextureSample(VkFilter sampler = VK_FILTER_LINEAR, VkSamplerAddressMode adressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
+
 
 
 			// Helper functions

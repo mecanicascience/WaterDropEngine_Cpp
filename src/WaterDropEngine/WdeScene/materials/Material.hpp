@@ -11,6 +11,7 @@
 #include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
 #include "../objects/GameObject.hpp"
 #include "../modules/CameraModule.hpp"
+#include "../../WdeRenderingEngine/images/Texture2D.hpp"
 
 namespace wde::scene {
 	class Material {
@@ -20,6 +21,8 @@ namespace wde::scene {
 		struct PushConstantData {
 			alignas(16) glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
 		};
+
+		std::unique_ptr<Texture2D> _testTexture;
 
 		public:
 			// Constructors
@@ -39,7 +42,10 @@ namespace wde::scene {
 				  _pipeline(stage, {"res/shaders/" + vertexShader + ".spv", "res/shaders/" + fragmentShader + ".spv"},
 							{ scene::Model::Vertex::getDescriptions() },
 							PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
-							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {}
+							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {
+				// Create test texture
+				_testTexture = std::make_unique<Texture2D>("res/textures/test-texture.jpg");
+			}
 
 
 			// Core functions
@@ -53,7 +59,11 @@ namespace wde::scene {
 					_descriptor = descriptor;
 
 					// Add material set (binding 2)
-					// ...
+					_descriptor->addSet(2, {
+						//{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(PushConstantData)},
+						//{1, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(PushConstantData)}
+						{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _testTexture->getView(), _testTexture->getSampler()}
+					});
 
 					// Reference descriptor to pipeline
 					_pipeline.setDescriptor(_descriptor);

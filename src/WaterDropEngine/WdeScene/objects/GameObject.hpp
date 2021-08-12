@@ -186,7 +186,9 @@ namespace wde::scene {
 			 * @param objectID
 			 */
 			explicit GameObject(id_t objectID, std::string &objectName)
-				: _objectID(objectID), _objectName(objectName), _descriptor(std::make_shared<Descriptor>(10)) {}
+				: _objectID(objectID),
+				  _objectName(objectName),
+				  _descriptor(std::make_shared<Descriptor>(10, 10, 10, 10)) {}
 	};
 }
 

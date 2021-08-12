@@ -22,11 +22,12 @@ layout(push_constant) uniform Push {
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec3 inColor;
+layout(location = 3) in vec2 inTexCoord;
 
 
 // Output values to the fragment shader
 layout(location = 0) out vec3 outFragColor;
-
+layout(location = 1) out vec2 outTexCoord;
 
 
 // Executed once for each vertex
@@ -38,4 +39,5 @@ void main() {
 
     float shadowAmount = (dot(inPush.ambientLightVector, inNormal) + 1.0f) / 2.0f;
     outFragColor = inColor * shadowAmount;
+    outTexCoord  = inTexCoord;
 }

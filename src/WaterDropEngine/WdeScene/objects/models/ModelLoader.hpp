@@ -39,9 +39,14 @@ namespace wde::scene {
 								attrib.normals[3 * index.normal_index + 1],
 								attrib.normals[3 * index.normal_index + 2]
 							},
-							{0.898f, 0.149f, 1.0f}
+							{0.898f, 0.149f, 1.0f},
+							{
+								attrib.texcoords[2 * index.texcoord_index + 0],
+								attrib.texcoords[2 * index.texcoord_index + 1]
+							}
 						};
 						v._color = v._normal;
+						v._uv.y = 1 - v._uv.y; // Invert uvs (work as inverted in Vulkan)
 
 						// Avoid vertices duplication
 						size_t hash = hasher(v);

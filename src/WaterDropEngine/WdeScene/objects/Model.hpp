@@ -49,9 +49,10 @@ namespace wde::scene {
 					 * @param position
 					 * @param normal
 					 * @param color
+					 * @param uv
 					 */
-					Vertex(glm::vec3 position, glm::vec3 normal, glm::vec3 color)
-						: _position(position), _normal(normal), _color(color) { }
+					Vertex(glm::vec3 position, glm::vec3 normal, glm::vec3 color, glm::vec2 uv)
+						: _position(position), _normal(normal), _color(color), _uv(uv) { }
 
 					static VertexInput getDescriptions(uint32_t baseBinding = 0) {
 						std::vector<VkVertexInputBindingDescription> bindingDescriptions = {
@@ -60,7 +61,8 @@ namespace wde::scene {
 						std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
 								{0, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _position)}, // Vertex position values (index 0)
 								{1, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _normal)}, // Normals position values (index 1)
-								{2, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _color)}  // Vertex color values (index 2)
+								{2, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, _color)},  // Vertex color values (index 2)
+								{3, baseBinding, VK_FORMAT_R32G32_SFLOAT   , offsetof(Vertex, _uv)}     // UV texture coords (index 3)
 						};
 						return { bindingDescriptions, attributeDescriptions };
 					}
@@ -70,12 +72,14 @@ namespace wde::scene {
 					const glm::vec3& getPosition() const { return _position; }
 					const glm::vec3& getColor() const { return _color; }
 					const glm::vec3& getNormal() const { return _normal; }
+					const glm::vec2& getUV() const { return _uv; }
 					void setNormal(glm::vec3 normal) { _normal = normal; }
 
 					// Model values
 					glm::vec3 _position;
 					glm::vec3 _normal;
 					glm::vec3 _color;
+					glm::vec2 _uv;
 			};
 
 
@@ -147,8 +151,9 @@ namespace std {
 	 */
 	template<> struct hash<wde::scene::Model::Vertex> {
 		size_t operator()(wde::scene::Model::Vertex const& vertex) const {
-			return (hash<glm::vec3>()(vertex.getPosition()) ^
-			       (hash<glm::vec3>()(vertex.getColor()) << 1)) >> 1;
+			return ((hash<glm::vec3>()(vertex.getPosition()) ^
+			       (hash<glm::vec3>()(vertex.getColor()) << 1)) >> 1) ^
+			       (hash<glm::vec2>()(vertex.getUV()) << 1);
 		}
 	};
 }

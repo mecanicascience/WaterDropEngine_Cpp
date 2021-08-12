@@ -13,20 +13,39 @@ namespace wde::renderEngine {
 		uint32_t _bindingIndex;
 		uint32_t _descriptorCount;
 		VkDescriptorType _descriptorType;
-		int _elementSize;
 		VkShaderStageFlags _shaderStageFlags;
 
+		// Buffer
+		int _elementSize = 0;
+
+		// Image sampler
+		VkImageView _imageView {};
+		VkSampler _imageSampler {};
+
 		/**
-		 * Describes a binding data set
+		 * Describes a binding data for a uniform buffer
 		 * @param bindingIndex The index in the descriptor of the binding
 		 * @param descriptorCount The number of descriptor in the binding
 		 * @param descriptorType Type of the descriptor binding
-		 * @param elementSize Size of the element
+		 * @param elementSize Size of the element (default 0)
 		 * @param shaderStageFlags In which shaders the descriptor binding will be available (default, vertex and fragment shaders)
 		 */
 		DescriptorSetBindingData(uint32_t bindingIndex, uint32_t descriptorCount, VkDescriptorType descriptorType,
 								 int elementSize, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
 			 : _bindingIndex(bindingIndex), _descriptorCount(descriptorCount), _descriptorType(descriptorType), _elementSize(elementSize), _shaderStageFlags(shaderStageFlags) {}
+
+		/**
+		 * Describes a binding data for an image sampler
+		 * @param bindingIndex The index in the descriptor of the binding
+		 * @param descriptorType Type of the descriptor binding
+		 * @param imageView The image view
+		 * @param imageSampler The image sampler
+		 * @param shaderStageFlags In which shaders the descriptor binding will be available (default, vertex and fragment shaders)
+		 */
+		DescriptorSetBindingData(uint32_t bindingIndex, VkDescriptorType descriptorType,
+							  VkImageView& imageView, VkSampler& imageSampler,
+							  VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
+			  : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _imageView(imageView), _imageSampler(imageSampler), _shaderStageFlags(shaderStageFlags) {}
 	};
 
 	/**
@@ -62,7 +81,7 @@ namespace wde::renderEngine {
 				}
 
 				// Destroy set layout
-				vkDestroyDescriptorSetLayout(CoreInstance::get().getSelectedDevice().getDevice(), _descriptorSetLayout, nullptr);
+				_descriptorSetLayout = nullptr;
 			}
 
 
@@ -89,7 +108,7 @@ namespace wde::renderEngine {
 			/**
 			 * Create the descriptor set layout
 			 */
-			void createLayout() {
+			void createLayout(VkDescriptorSetLayout& descriptorSetLayout) {
 				// Create descriptor layout
 				VkDescriptorSetLayoutCreateInfo setLayoutInfo = {};
 				setLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -97,8 +116,11 @@ namespace wde::renderEngine {
 				setLayoutInfo.flags = 0;
 				setLayoutInfo.bindingCount = static_cast<uint32_t>(_bindingsLayouts.size());
 				setLayoutInfo.pBindings = _bindingsLayouts.data();
-				if (vkCreateDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), &setLayoutInfo, nullptr, &_descriptorSetLayout) != VK_SUCCESS)
+
+				if (vkCreateDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), &setLayoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
 					throw WdeException("Failed to create a description set layout.", LoggerChannel::RENDERING_ENGINE);
+
+				_descriptorSetLayout = &descriptorSetLayout;
 			}
 
 
@@ -107,9 +129,21 @@ namespace wde::renderEngine {
 			 * Initialize the descriptor (setup the buffers)
 			 */
 			void initialize() {
-				// Create buffers
-				for (auto& binding : _bindingsData)
-					addBuffer((int) binding._bindingIndex, binding._elementSize);
+				WDE_PROFILE_FUNCTION();
+				// Create bindings
+				for (auto& binding : _bindingsData) {
+					// Uniform buffers
+					if (binding._descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
+						addBuffer((int) binding._bindingIndex, binding._elementSize);
+
+					// Image sampler
+					else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
+						addImageSampler((int) binding._bindingIndex, binding._imageView, binding._imageSampler);
+
+					// Not implemented
+					else
+						throw WdeException("Trying to create a descriptor binding type that has not currently been implemented.", LoggerChannel::RENDERING_ENGINE);
+				}
 			}
 
 			/**
@@ -120,6 +154,7 @@ namespace wde::renderEngine {
 			void updateBuffer(int bindingIndex, const void* newData) {
 				if (_bindingsBuffers[bindingIndex].bufferMemory == nullptr) // If no buffer memory (ex camera object), return
 					return;
+				WDE_PROFILE_FUNCTION();
 
 				void* data;
 				vkMapMemory(CoreInstance::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex].bufferMemory,
@@ -131,7 +166,6 @@ namespace wde::renderEngine {
 
 
 			// Getters and setters
-			VkDescriptorSetLayout& getLayout() { return _descriptorSetLayout; }
 			VkDescriptorSet& getSet() { return _descriptorSet; }
 
 
@@ -146,12 +180,13 @@ namespace wde::renderEngine {
 			std::unordered_map<int, DescriptorSetBindingBuffer> _bindingsBuffers {};
 
 			// Vulkan parameters
-			VkDescriptorSetLayout _descriptorSetLayout {};
+			VkDescriptorSetLayout* _descriptorSetLayout {};
 			VkDescriptorSet _descriptorSet {};
 
 
 			// Core functions
 			void addBuffer(int bindingIndex, int bufferSize) {
+				WDE_PROFILE_FUNCTION();
 				// Create buffer struct
 				_bindingsBuffers[bindingIndex] = DescriptorSetBindingBuffer {};
 				_bindingsBuffers[bindingIndex].bindingIndex = bindingIndex;
@@ -164,10 +199,10 @@ namespace wde::renderEngine {
 										  _bindingsBuffers[bindingIndex].buffer, _bindingsBuffers[bindingIndex].bufferMemory);
 
 				// Vulkan binding buffer
-				VkDescriptorBufferInfo binfo;
-				binfo.buffer = _bindingsBuffers[bindingIndex].buffer;
-				binfo.offset = 0;
-				binfo.range = bufferSize;
+				VkDescriptorBufferInfo bufferInfo {};
+				bufferInfo.buffer = _bindingsBuffers[bindingIndex].buffer;
+				bufferInfo.offset = 0;
+				bufferInfo.range = bufferSize;
 
 				// Write buffers into the set
 				VkWriteDescriptorSet setWrite = {};
@@ -176,16 +211,41 @@ namespace wde::renderEngine {
 				setWrite.dstBinding = bindingIndex;
 				setWrite.dstArrayElement = 0; // if we write array, starting array index (default : 0)
 				setWrite.dstSet = _descriptorSet;
-				// Update 1 descriptor at a time
-				setWrite.descriptorCount = 1;
+				setWrite.descriptorCount = 1; // Update 1 descriptor at a time
 				setWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-				setWrite.pBufferInfo = &binfo;
-				setWrite.pImageInfo = nullptr; // Optional
-				setWrite.pTexelBufferView = nullptr; // Optional
+				setWrite.pBufferInfo = &bufferInfo;
+				setWrite.pImageInfo = nullptr;
+				setWrite.pTexelBufferView = nullptr;
 
 				// Update sets
 				vkUpdateDescriptorSets(CoreInstance::get().getSelectedDevice().getDevice(), 1, &setWrite, 0, nullptr);
 			}
+
+			void addImageSampler(int bindingIndex, VkImageView& imageView, VkSampler& imageSampler) {
+				WDE_PROFILE_FUNCTION();
+				// Create image info
+				VkDescriptorImageInfo imageInfo {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = imageView;
+				imageInfo.sampler = imageSampler;
+
+				// Write buffers into the set
+				VkWriteDescriptorSet setWrite = {};
+				setWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				setWrite.pNext = nullptr;
+				setWrite.dstBinding = bindingIndex;
+				setWrite.dstArrayElement = 0; // if we write array, starting array index (default : 0)
+				setWrite.dstSet = _descriptorSet;
+				setWrite.descriptorCount = 1; // Update 1 descriptor at a time
+				setWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				setWrite.pBufferInfo = nullptr;
+				setWrite.pImageInfo = &imageInfo;
+				setWrite.pTexelBufferView = nullptr;
+
+				// Update sets
+				vkUpdateDescriptorSets(CoreInstance::get().getSelectedDevice().getDevice(), 1, &setWrite, 0, nullptr);
+			}
+
 	};
 }
 

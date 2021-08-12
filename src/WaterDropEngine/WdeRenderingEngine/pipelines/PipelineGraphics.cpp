@@ -84,14 +84,16 @@ namespace wde::renderEngine {
 
 
 		// Descriptor sets
+		pipelineLayoutCreateInfo.setLayoutCount = 0;
+		pipelineLayoutCreateInfo.pSetLayouts = nullptr;
 		if (_descriptor == nullptr) {
 			pipelineLayoutCreateInfo.setLayoutCount = 0;
 			pipelineLayoutCreateInfo.pSetLayouts = nullptr;
 		}
 		else {
-			std::vector<VkDescriptorSetLayout> layouts = _descriptor->createLayouts();
-			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(layouts.size());
-			pipelineLayoutCreateInfo.pSetLayouts = layouts.data();
+			_descriptor->createLayouts();
+			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(_descriptor->getLayouts().size());
+			pipelineLayoutCreateInfo.pSetLayouts = _descriptor->getLayouts().data();
 		}
 
 

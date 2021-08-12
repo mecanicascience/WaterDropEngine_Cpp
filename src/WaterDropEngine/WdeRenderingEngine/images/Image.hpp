@@ -39,8 +39,8 @@ namespace wde::renderEngine {
             void createImageView();
 
             // Getters and setters
-            VkFormat getFormat() { return _format; }
-            VkImageView getView() { return _view; }
+            VkFormat& getFormat() { return _format; }
+            VkImageView& getView() { return _view; }
             VkImage& getImage() { return _image; }
 
 
