@@ -7,7 +7,13 @@
 namespace wde::scene {
 	class ModelLoader : public Model {
 		public:
-			explicit ModelLoader(const std::string& path) : Model() {
+			/**
+			 * Loads a new model
+			 * @param relativePath The relative path of the object (final path will be "res/models/your_path"
+			 */
+			explicit ModelLoader(const std::string& relativePath) : Model() {
+				std::string path = "res/models/" + relativePath;
+
 				// Load model
 				tinyobj::attrib_t attrib;
 				std::vector<tinyobj::shape_t> shapes;
@@ -39,14 +45,14 @@ namespace wde::scene {
 								attrib.normals[3 * index.normal_index + 1],
 								attrib.normals[3 * index.normal_index + 2]
 							},
-							{0.898f, 0.149f, 1.0f},
+							{0.898f, 0.149f, 1.0f}, // Undefined texture (pink color)
 							{
 								attrib.texcoords[2 * index.texcoord_index + 0],
 								attrib.texcoords[2 * index.texcoord_index + 1]
 							}
 						};
-						v._color = v._normal;
-						v._uv.y = 1 - v._uv.y; // Invert uvs (work as inverted in Vulkan)
+						// v._color = v._normal; // Use normals as color
+						v._uv.y = 1.0f - v._uv.y; // Invert uvs (work as inverted in Vulkan)
 
 						// Avoid vertices duplication
 						size_t hash = hasher(v);
