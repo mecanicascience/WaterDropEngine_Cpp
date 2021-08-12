@@ -3,6 +3,11 @@ for /r %%f in (*) do (
     If "%%~xf"==".vert" set TRUE=1
     If "%%~xf"==".frag" set TRUE=1
     If defined TRUE (
-        "C:\Program Files\Vulkan\1.2.176.1\Bin32\glslc.exe" "%%~nf%%~xf" -o  "%%~nf%%~xf.spv"
+        "C:\Program Files\Vulkan\1.2.176.1\Bin32\glslc.exe" "%%f" -o  "%%f.spv"
     )
 )
+
+robocopy "%~dp0/.." "%~dp0/../../bin/Debug/res" /E
+robocopy "%~dp0/.." "%~dp0/../../bin/Release/res" /E
+
+exit /b 0

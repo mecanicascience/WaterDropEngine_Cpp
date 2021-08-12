@@ -26,8 +26,7 @@ layout(location = 3) in vec2 inTexCoord;
 
 
 // Output values to the fragment shader
-layout(location = 0) out vec3 outFragColor;
-layout(location = 1) out vec2 outTexCoord;
+layout(location = 0) out vec2 outTexCoord;
 
 
 // Executed once for each vertex
@@ -37,7 +36,5 @@ void main() {
                 * inGameObjectData.transformWorldSpace  // To World space position
                 * vec4(inPosition, 1.0f);               // Object local space position
 
-    float shadowAmount = (dot(inPush.ambientLightVector, inNormal) + 1.0f) / 2.0f;
-    outFragColor = inColor * shadowAmount;
     outTexCoord  = inTexCoord;
 }

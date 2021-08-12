@@ -32,9 +32,9 @@ namespace wde::scene {
 			 * @param stage The stage in which the material can render
 			 * @param vertexShader The link to the pipeline vertex shader
 			 * @param fragmentShader The link to the pipeline fragment shader
-			 * @param polygonMode The pipeline polygon drawing mode
+			 * @param polygonMode The pipeline polygon drawing mode (default VK_POLYGON_MODE_FILL)
 			 */
-			Material(std::string materialName, RenderStage stage, const std::string& vertexShader, const std::string& fragmentShader, VkPolygonMode polygonMode)
+			Material(std::string materialName, RenderStage stage, const std::string& vertexShader, const std::string& fragmentShader, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL)
 				: _materialName(std::move(materialName)),
 				  _stage(stage),
 				  _vertexShaderName(vertexShader), _fragmentShaderName(fragmentShader),
@@ -60,8 +60,6 @@ namespace wde::scene {
 
 					// Add material set (binding 2)
 					_descriptor->addSet(2, {
-						//{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(PushConstantData)},
-						//{1, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(PushConstantData)}
 						{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _testTexture->getView(), _testTexture->getSampler()}
 					});
 

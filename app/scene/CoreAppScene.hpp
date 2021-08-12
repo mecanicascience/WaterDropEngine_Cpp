@@ -9,6 +9,7 @@
 #include "../../src/WaterDropEngine/WdeScene/modules/TransformControllerModule.hpp"
 #include "../../src/WaterDropEngine/WdeScene/materials/ColorMaterial.hpp"
 #include "../../src/WaterDropEngine/WdeScene/materials/ColorMaterialOutline.hpp"
+#include "../../src/WaterDropEngine/WdeScene/materials/TextureMaterial.hpp"
 
 using namespace wde::scene;
 
