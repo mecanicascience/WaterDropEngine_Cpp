@@ -5,9 +5,10 @@ namespace wde::scene {
 	GizmoRenderer::GizmoRenderer(RenderStage stage)
 		: _pipelineSeparatedLines(
 				stage, {"res/shaders/gizmo/gizmoShader.vert.spv", "res/shaders/gizmo/gizmoShader.frag.spv"},
-			{ scene::Model::Vertex::getDescriptions() },
-			PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE,
-			VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE
+				{ scene::Model::Vertex::getDescriptions() },
+				PipelineGraphics::Mode::Polygon, PipelineGraphics::Depth::ReadWrite,
+				VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE,
+				VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE
 			) {
 		WDE_PROFILE_FUNCTION();
 		Logger::debug("Initializing Gizmo renderer.", LoggerChannel::SCENE);

@@ -32,6 +32,11 @@ namespace wde::renderEngine {
 		// Create the pipeline attributes
 		createPipelineAttributes();
 
+		// Create MRT pipeline
+		if (_pipelineMode == Mode::MRT) // MRT
+			createPipelineMRT();
+		// Else normal mode (polygon mode)
+
 		// Create the pipeline
 		createPipeline();
 
@@ -148,12 +153,22 @@ namespace wde::renderEngine {
 		_configInfo.blendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
 		_configInfo.blendAttachmentState.alphaBlendOp = VK_BLEND_OP_MAX;*/
 
-		// Used blend factors
+		// Set pipeline color render target
+		_blendAttachmentStates[0].blendEnable = VK_TRUE;
+		_blendAttachmentStates[0].srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		_blendAttachmentStates[0].dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+		_blendAttachmentStates[0].colorBlendOp = VK_BLEND_OP_ADD;
+		_blendAttachmentStates[0].srcAlphaBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+		_blendAttachmentStates[0].dstAlphaBlendFactor = VK_BLEND_FACTOR_DST_ALPHA;
+		_blendAttachmentStates[0].alphaBlendOp = VK_BLEND_OP_MAX;
+		_blendAttachmentStates[0].colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+		// Set pipeline color render target
 		_configInfo.colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		_configInfo.colorBlendState.logicOpEnable = VK_FALSE;
 		_configInfo.colorBlendState.logicOp = VK_LOGIC_OP_COPY; // Optional
-		_configInfo.colorBlendState.attachmentCount = 1;
-		_configInfo.colorBlendState.pAttachments = &_configInfo.blendAttachmentState;
+		_configInfo.colorBlendState.attachmentCount = static_cast<uint32_t>(_blendAttachmentStates.size());
+		_configInfo.colorBlendState.pAttachments = _blendAttachmentStates.data();
 		_configInfo.colorBlendState.blendConstants[0] = 0.0f; // Optional
 		_configInfo.colorBlendState.blendConstants[1] = 0.0f; // Optional
 		_configInfo.colorBlendState.blendConstants[2] = 0.0f; // Optional
@@ -228,6 +243,28 @@ namespace wde::renderEngine {
 		_configInfo.dynamicState.flags = 0;
 	}
 
+	void PipelineGraphics::createPipelineMRT() {
+		// Blend attachment states
+		auto attachmentCount = CoreInstance::get().getRenderer()->getRenderPass(_renderStage.first)->getAttachmentCount(_renderStage.second);
+		std::vector<VkPipelineColorBlendAttachmentState> blendAttachmentStates;
+		blendAttachmentStates.reserve(attachmentCount);
+
+		for (uint32_t i = 0; i < attachmentCount; i++) {
+			VkPipelineColorBlendAttachmentState blendAttachmentState = {};
+			blendAttachmentState.blendEnable = VK_TRUE;
+			blendAttachmentState.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
+			blendAttachmentState.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			blendAttachmentState.colorBlendOp = VK_BLEND_OP_ADD;
+			blendAttachmentState.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE;
+			blendAttachmentState.dstAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
+			blendAttachmentState.alphaBlendOp = VK_BLEND_OP_ADD;
+			blendAttachmentState.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+			blendAttachmentStates.emplace_back(blendAttachmentState);
+		}
+
+		_configInfo.colorBlendState.attachmentCount = static_cast<uint32_t>(blendAttachmentStates.size());
+		_configInfo.colorBlendState.pAttachments = blendAttachmentStates.data();
+	}
 
 	void PipelineGraphics::createPipeline() {
         WDE_PROFILE_FUNCTION();

@@ -68,6 +68,7 @@ namespace wde::renderEngine {
 		init_info.MinImageCount = 2;
 		init_info.ImageCount = renderInstance.getSelectedDevice().getSwapChain().getImageCount();
 		init_info.CheckVkResultFn = OnGuiConfigError;
+		init_info.Subpass = stage.second;
 
 		// == Create ImGui render pass ==
 		ImGui_ImplVulkan_Init(&init_info, *renderInstance.getRenderer()->getRenderPass(stage.first)->getRenderPass());

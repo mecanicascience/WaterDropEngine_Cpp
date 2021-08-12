@@ -13,6 +13,10 @@
 namespace wde::renderEngine {
 	class PipelineGraphics : public Pipeline {
 		public:
+			enum class Mode {
+				Polygon, MRT
+			};
+
             enum class Depth {
                 None = 0,
                 Read = 1,
@@ -27,16 +31,19 @@ namespace wde::renderEngine {
 			 * @param renderStage The associated pipeline rendering stage
 			 * @param shaderStages Paths of the pipeline shaders
 			 * @param vertexInputs The models vertices
+			 * @param pipelineMode The mode this pipeline will run in (Polygon (default) or MRT = Multiple render target)
 			 * @param depthMode The depth mode
 			 * @param vertexTopology The pipeline graphics topology (VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST by default, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, ...)
 			 * @param polygonDrawMode How the vertices will be bounded from the indices (VK_POLYGON_MODE_FILL by default, VK_POLYGON_MODE_LINE, VK_POLYGON_MODE_POINT)
 			 * @param cullingMode The pipeline culling mode (default VK_CULL_MODE_BACK_BIT (culling enabled for faces backing their faces), VK_CULL_MODE_NONE, VK_CULL_MODE_FRONT_BIT)
 			 * @param normalOrientation How the normals will be computed from the indices order (default VK_FRONT_FACE_COUNTER_CLOCKWISE)
 			 */
-			explicit PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<scene::Model::VertexInput> vertexInputs = {}, Depth depthMode = PipelineGraphics::Depth::ReadWrite,
+			explicit PipelineGraphics(RenderStage renderStage, std::vector<std::string> shaderStages, std::vector<scene::Model::VertexInput> vertexInputs = {},
+							 Mode pipelineMode = Mode::Polygon, Depth depthMode = PipelineGraphics::Depth::ReadWrite,
 			                 VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                 VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_COUNTER_CLOCKWISE)
-					: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _depthMode(depthMode),
+					: _renderStage(std::move(renderStage)), _shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)),
+					  _pipelineMode(pipelineMode), _depthMode(depthMode),
 					  _polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode),
 					  _normalOrientation(normalOrientation == VK_FRONT_FACE_CLOCKWISE ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE), // invert vertex orientation
 					  _pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {}
@@ -72,6 +79,8 @@ namespace wde::renderEngine {
 			void createPipelineLayout();
 			/** Create the pipeline attributes */
 			void createPipelineAttributes();
+			/** Create the optional access blend resources */
+			void createPipelineMRT();
 			/** Create the Vulkan pipeline */
 			void createPipeline();
 
@@ -82,6 +91,7 @@ namespace wde::renderEngine {
 			RenderStage _renderStage;
 			std::vector<std::string> _shaderStages;
 			std::vector<scene::Model::VertexInput> _vertexInputs;
+			Mode _pipelineMode;
 			Depth _depthMode;
 			VkPrimitiveTopology _vertexTopology;
 			VkPolygonMode _polygonDrawMode;
@@ -112,6 +122,7 @@ namespace wde::renderEngine {
 				VkPipelineTessellationStateCreateInfo tessellationState {};
 				std::vector<VkDynamicState> dynamicStateEnables;
 			};
+			std::array<VkPipelineColorBlendAttachmentState, 1> _blendAttachmentStates;
 			PipelineConfigInfo _configInfo {};
 	};
 }

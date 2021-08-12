@@ -39,7 +39,8 @@ namespace wde::scene {
 				  _polygonMode(polygonMode),
 				  _pipeline(stage, {"res/shaders/" + vertexShader + ".spv", "res/shaders/" + fragmentShader + ".spv"},
 							{ scene::Model::Vertex::getDescriptions() },
-							PipelineGraphics::Depth::ReadWrite, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
+							PipelineGraphics::Mode::Polygon, PipelineGraphics::Depth::ReadWrite,
+							VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, polygonMode,
 							VK_CULL_MODE_BACK_BIT, VK_FRONT_FACE_COUNTER_CLOCKWISE) {}
 
 

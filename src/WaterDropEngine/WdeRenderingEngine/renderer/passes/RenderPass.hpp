@@ -76,6 +76,7 @@ namespace wde::renderEngine {
 			const std::vector<VkClearValue> &getClearValues() const { return _clearValues; }
 			std::optional<RenderPassAttachment> getAttachment(const std::string &name) const;
 			std::optional<RenderPassAttachment> getAttachment(uint32_t binding) const;
+			uint32_t getAttachmentCount(uint32_t subpass) const { return _subpassAttachmentCount[subpass]; }
 			const RenderPassVulkan *getRenderPass() const { return _renderPass.get(); }
 			bool hasSwapchain() const { return _swapchainAttachment.has_value(); }
 			VkFramebuffer& getActiveFramebuffer(uint32_t activeSwapchainImage);
@@ -93,6 +94,8 @@ namespace wde::renderEngine {
             std::optional<RenderPassAttachment> _depthAttachment;
             /** The optional depth image */
             std::unique_ptr<ImageDepth> _depthStencil;
+
+            /** The corresponding color attachments */
 
 
 			// Constructor data

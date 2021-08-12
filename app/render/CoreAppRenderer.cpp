@@ -1,4 +1,5 @@
 #include "CoreAppRenderer.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/renderer/subrenderers/SimpleFilterSubrenderer.hpp"
 
 void CoreAppRenderer::initialize() {
 	// == Creates the render pass 0 ==
@@ -21,12 +22,16 @@ void CoreAppRenderer::initialize() {
 	this->addRenderPass(std::make_unique<RenderPass>(renderPassAttachments0, renderPassSubpasses0));
 }
 
+
 void CoreAppRenderer::start() {
 	// Mesh sub-renderer
 	this->addSubrenderer<MeshSubrenderer>({0, 0});
 
 	// Gizmo sub-renderer
-	this->addSubrenderer<GizmoSubrenderer>({0, 0});
+	//this->addSubrenderer<GizmoSubrenderer>({0, 0});
+
+	// Sub pass 0.1
+	this->addSubrenderer<SimpleFilterSubrenderer>({0, 0});
 
 	// Gui sub-renderer
 	this->addSubrenderer<GUISubrenderer>({0, 0});

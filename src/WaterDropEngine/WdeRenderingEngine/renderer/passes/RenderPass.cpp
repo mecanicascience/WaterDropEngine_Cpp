@@ -18,6 +18,8 @@ namespace wde::renderEngine {
 				case RenderPassAttachment::Type::Swapchain:
 					clearValue.color = {{attachment.getClearColor()._r, attachment.getClearColor()._g, attachment.getClearColor()._b, attachment.getClearColor()._a}};
 					_swapchainAttachment = attachment;
+					for (const auto &subpass : _subpasses)
+						_subpassAttachmentCount[subpass.getBindingIndex()]++;
 					break;
 
 				case RenderPassAttachment::Type::Depth:
@@ -34,7 +36,7 @@ namespace wde::renderEngine {
 							auto subpassBindingIndices = subpass.getAttachmentBindingIndices();
 							std::find(subpassBindingIndices.begin(), subpassBindingIndices.end(), attachment.getBindingIndex()) != subpassBindingIndices.end()
 						) {
-							// Number of time the attachment is used
+							// Add an attachment to the subpass
 							_subpassAttachmentCount[subpass.getBindingIndex()]++;
 						}
 					}
