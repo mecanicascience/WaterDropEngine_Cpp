@@ -1,3 +1,4 @@
+cd "../shaders/"
 for /r %%f in (*) do (
     set "TRUE="
     If "%%~xf"==".vert" set TRUE=1
@@ -6,8 +7,6 @@ for /r %%f in (*) do (
         "C:\Program Files\Vulkan\1.2.176.1\Bin32\glslc.exe" "%%f" -o  "%%f.spv"
     )
 )
-
-robocopy "%~dp0/.." "%~dp0/../../bin/Debug/res" /E
-robocopy "%~dp0/.." "%~dp0/../../bin/Release/res" /E
+cd "../manager/"
 
 exit /b 0
