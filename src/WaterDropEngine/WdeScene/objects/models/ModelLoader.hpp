@@ -31,41 +31,55 @@ namespace wde::scene {
 				std::unordered_map<size_t, uint32_t> verticesIndexHash {};
 				std::hash<Vertex> hasher;
 
+				// Loop over shapes
 				for (const auto& shape : shapes) {
-					for (const auto& index : shape.mesh.indices) {
-						// Get vertex
-						Vertex v {
-							{
-								attrib.vertices[3 * index.vertex_index + 0],
-								attrib.vertices[3 * index.vertex_index + 1],
-								attrib.vertices[3 * index.vertex_index + 2]
-							},
-							{
-								attrib.normals[3 * index.normal_index + 0],
-								attrib.normals[3 * index.normal_index + 1],
-								attrib.normals[3 * index.normal_index + 2]
-							},
-							{0.898f, 0.149f, 1.0f}, // Undefined texture (pink color)
-							{
-								attrib.texcoords[2 * index.texcoord_index + 0],
-								attrib.texcoords[2 * index.texcoord_index + 1]
+					size_t faceTriangleOffset = 0; // Offset of the current triangle in the shape
+
+					// Loop over faces in the shape
+					for (size_t faceIndex = 0; faceIndex < shape.mesh.num_face_vertices.size(); faceIndex++) {
+						int faceSize = 3; // Load triangles (3 vertices)
+
+						// Loop over vertices in the face
+						for (size_t vertexID = 0; vertexID < faceSize; vertexID++) {
+							// Access to vertex
+							tinyobj::index_t index = shape.mesh.indices[faceTriangleOffset + vertexID];
+
+							// Get vertex
+							Vertex v {
+								{
+									attrib.vertices[3 * index.vertex_index + 0],
+									attrib.vertices[3 * index.vertex_index + 1],
+									attrib.vertices[3 * index.vertex_index + 2]
+								},
+								{
+									attrib.normals[3 * index.normal_index + 0],
+									attrib.normals[3 * index.normal_index + 1],
+									attrib.normals[3 * index.normal_index + 2]
+								},
+									{0.898f, 0.149f, 1.0f}, // Undefined texture (pink color)
+								{
+									attrib.texcoords[2 * index.texcoord_index + 0],
+									attrib.texcoords[2 * index.texcoord_index + 1]
+								}
+							};
+							// v._color = v._normal; // Use normals as color
+							v._uv.y = 1.0f - v._uv.y; // Invert uvs (work as inverted in Vulkan)
+
+							// Avoid vertices duplication
+							size_t hash = hasher(v);
+							if (!verticesIndexHash.contains(hash)) { // New vertex
+								uint32_t indexID = _vertices.size();
+								_vertices.push_back(v); // push vertices
+
+								verticesIndexHash[hash] = indexID;
+								_indices.push_back(indexID); // push indices
 							}
-						};
-						// v._color = v._normal; // Use normals as color
-						v._uv.y = 1.0f - v._uv.y; // Invert uvs (work as inverted in Vulkan)
-
-						// Avoid vertices duplication
-						size_t hash = hasher(v);
-						if (!verticesIndexHash.contains(hash)) { // New vertex
-							uint32_t indexID = _vertices.size();
-							_vertices.push_back(v);
-
-							verticesIndexHash[hash] = indexID;
-							_indices.push_back(indexID);
+							else { // Vertex already exists
+								_indices.push_back(verticesIndexHash.at(hash));
+							}
 						}
-						else { // Vertex already exists
-							_indices.push_back(verticesIndexHash.at(hash));
-						}
+
+						faceTriangleOffset += faceSize;
 					}
 				}
 

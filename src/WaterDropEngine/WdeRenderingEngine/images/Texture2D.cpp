@@ -3,7 +3,7 @@
 
 namespace wde::renderEngine {
 	// Constructor
-	Texture2D::Texture2D(std::string filepath, VkFormat textureFormat)
+	Texture2D::Texture2D(std::string filepath, VkFormat textureFormat, VkFilter textureFilter, VkSamplerAddressMode textureAdressMode)
 			: _filepath(std::move(filepath)), _textureFormat(textureFormat) {
 		// Create the texture image
 		createTextureImage();
@@ -12,7 +12,7 @@ namespace wde::renderEngine {
 		_textureImage->createImageView();
 
 		// Create the texture sampler
-		createTextureSample();
+		createTextureSampler(textureFilter, textureAdressMode);
 	}
 
 	Texture2D::~Texture2D() {
@@ -63,7 +63,7 @@ namespace wde::renderEngine {
 		vkFreeMemory(device.getDevice(), stagingBufferMemory, nullptr);
 	}
 
-	void Texture2D::createTextureSample(VkFilter sampler, VkSamplerAddressMode adressMode) {
+	void Texture2D::createTextureSampler(VkFilter sampler, VkSamplerAddressMode adressMode) {
 		// Create samples
 		VkSamplerCreateInfo samplerInfo {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;

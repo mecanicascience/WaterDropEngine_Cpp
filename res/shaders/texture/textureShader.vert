@@ -36,5 +36,5 @@ void main() {
                 * inGameObjectData.transformWorldSpace  // To World space position
                 * vec4(inPosition, 1.0f);               // Object local space position
 
-    outTexCoord  = inTexCoord;
+    outTexCoord = inTexCoord;
 }

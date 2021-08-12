@@ -17,11 +17,19 @@ void CoreAppScene::initialize() {
 	cubeTransform.scale /= 2.0f;
 
 	// Viking room test game object
-	auto& testGO = createGameObject("Viking Room");
+	/*auto& testGO = createGameObject("Viking Room");
 	testGO.addModule<ModelModule>(std::make_shared<ModelLoader>("viking_room.obj"),
 	                              std::make_shared<TextureMaterial>(RenderStage {0, 0}, "viking_room.png"));
 	testGO.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
-	testGO.getModule<TransformModule>().scale /= 3.0f;
+	testGO.getModule<TransformModule>().scale /= 3.0f;*/
+
+
+	// Minecraft sceen test game object
+	auto& mcScene = createGameObject("Minecraft Scene");
+	mcScene.addModule<ModelModule>(std::make_shared<ModelLoader>("lost_empire.obj"),
+								   std::make_shared<TextureMaterial>(RenderStage {0, 0}, "lost_empire.png", VK_FILTER_NEAREST));
+	//mcScene.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
+	//mcScene.getModule<TransformModule>().scale /= 3.0f;
 }
 
 void CoreAppScene::update() {
