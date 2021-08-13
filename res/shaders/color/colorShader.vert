@@ -38,4 +38,8 @@ void main() {
 
     float shadowAmount = (dot(inPush.ambientLightVector, inNormal) + 1.0f) / 2.0f;
     outFragColor = inColor * shadowAmount;
+
+    // Depth
+    // float z = 1.0 - (gl_Position.z / gl_Position.w);
+    // outFragColor = vec3(z, z, z);
 }

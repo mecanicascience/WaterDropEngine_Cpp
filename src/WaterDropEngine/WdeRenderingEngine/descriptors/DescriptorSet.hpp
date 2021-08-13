@@ -46,6 +46,18 @@ namespace wde::renderEngine {
 							  VkImageView& imageView, VkSampler& imageSampler,
 							  VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
 			  : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _imageView(imageView), _imageSampler(imageSampler), _shaderStageFlags(shaderStageFlags) {}
+
+		/**
+		 * Describes a binding data for an attachment input
+		 * @param bindingIndex The index in the descriptor of the binding
+		 * @param descriptorType Type of the descriptor binding
+		 * @param imageView The image view
+		 * @param shaderStageFlags In which shaders the descriptor binding will be available (default fragment shaders)
+		 */
+		DescriptorSetBindingData(uint32_t bindingIndex, VkDescriptorType descriptorType,
+								 VkImageView& imageView, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT)
+			   : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _imageView(imageView), _shaderStageFlags(shaderStageFlags) {}
+
 	};
 
 	/**
@@ -139,6 +151,10 @@ namespace wde::renderEngine {
 					// Image sampler
 					else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
 						addImageSampler((int) binding._bindingIndex, binding._imageView, binding._imageSampler);
+
+					// Input attachment
+					else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT)
+						addInputAttachment((int) binding._bindingIndex, binding._imageView);
 
 					// Not implemented
 					else
@@ -238,6 +254,32 @@ namespace wde::renderEngine {
 				setWrite.dstSet = _descriptorSet;
 				setWrite.descriptorCount = 1; // Update 1 descriptor at a time
 				setWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				setWrite.pBufferInfo = nullptr;
+				setWrite.pImageInfo = &imageInfo;
+				setWrite.pTexelBufferView = nullptr;
+
+				// Update sets
+				vkUpdateDescriptorSets(CoreInstance::get().getSelectedDevice().getDevice(), 1, &setWrite, 0, nullptr);
+			}
+
+
+			void addInputAttachment(int bindingIndex, VkImageView& imageView) {
+				WDE_PROFILE_FUNCTION();
+				// Create image info
+				VkDescriptorImageInfo imageInfo {};
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = imageView;
+				imageInfo.sampler = VK_NULL_HANDLE;
+
+				// Write buffers into the set
+				VkWriteDescriptorSet setWrite = {};
+				setWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				setWrite.pNext = nullptr;
+				setWrite.dstBinding = bindingIndex;
+				setWrite.dstArrayElement = 0; // if we write array, starting array index (default : 0)
+				setWrite.dstSet = _descriptorSet;
+				setWrite.descriptorCount = 1; // Update 1 descriptor at a time
+				setWrite.descriptorType = VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT;
 				setWrite.pBufferInfo = nullptr;
 				setWrite.pImageInfo = &imageInfo;
 				setWrite.pTexelBufferView = nullptr;

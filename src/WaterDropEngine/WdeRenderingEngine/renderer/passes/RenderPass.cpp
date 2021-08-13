@@ -32,7 +32,7 @@ namespace wde::renderEngine {
 
 					// Create images at each subpasses
 					for (const auto &subpass : _subpasses) {
-						if ( // If the subpass contains an image attachment, create the appropriate image
+						if ( // If the subpass contains the actual loop image attachment, create the appropriate image
 							auto subpassBindingIndices = subpass.getAttachmentBindingIndices();
 							std::find(subpassBindingIndices.begin(), subpassBindingIndices.end(), attachment.getBindingIndex()) != subpassBindingIndices.end()
 						) {
@@ -41,6 +41,12 @@ namespace wde::renderEngine {
 						}
 					}
 					break;
+			}
+
+			for (const auto &subpass : _subpasses) {
+				auto subpassBindingInputIndices = subpass.getInputAttachmentBindingIndices();
+				for (auto& index : subpassBindingInputIndices)
+					_bindingInputAttachments.push_back(index);
 			}
 
 			// Add clear value to the stack
@@ -67,9 +73,8 @@ namespace wde::renderEngine {
 		else
 			_renderPass->initialize(swapchainFormat, depthFormat);
 
-
 		// Create associated frame buffers
-		_framebuffers = std::make_unique<Framebuffers>(_renderArea.getExtent(), *this, *_renderPass, swapchain, *_depthStencil );
+		_framebuffers = std::make_unique<Framebuffers>(_renderArea.getExtent(), *this, *_renderPass, swapchain, *_depthStencil, _bindingInputAttachments);
 	}
 
 	void RenderPass::update() {

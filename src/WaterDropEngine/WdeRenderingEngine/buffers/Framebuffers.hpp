@@ -21,12 +21,14 @@ namespace wde::renderEngine {
 			 * @param swapchain The frame buffers associated swapchain
 			 * @param depthStencil The associated depth stencil
 			 */
-			explicit Framebuffers(const VkExtent2D &extent, RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil);
+			explicit Framebuffers(const VkExtent2D &extent, RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil, const std::vector<int>& bindingInputAttachments);
 			void cleanUp();
 
 
 			// Getters and setters
 			std::vector<VkFramebuffer>& getFramebuffers() { return _framebuffers; }
+			std::unique_ptr<Image2D>& getImageAttachment(int bindingIndex) { return _imageAttachments[bindingIndex]; }
+			std::vector<std::unique_ptr<Image2D>>& getImageAttachments() { return _imageAttachments; }
 
 
 		private:

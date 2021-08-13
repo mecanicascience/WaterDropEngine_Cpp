@@ -28,6 +28,16 @@ namespace wde::renderEngine {
 				return static_cast<T *>(_subrenders[typeID].get());
 			}
 
+			/** Initialize renderers */
+			void initializeRenderers() {
+				WDE_PROFILE_FUNCTION();
+
+				// Initialize sub-renderers
+				for (const auto &[renderID, subrenderer] : _subrenders)
+					if (subrenderer->isEnabled())
+						subrenderer->initialize();
+			}
+
 			/**
 			 * Renders a given stage
 			 * @param stage The renderer chain to renderer

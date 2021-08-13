@@ -58,7 +58,7 @@ namespace wde::scene {
 					setupDescriptor(descriptor);
 
 					// Reference descriptor to pipeline
-					_pipeline.setDescriptor(_descriptor);
+					_pipeline.addDescriptor(_descriptor);
 				}
 
 
@@ -113,7 +113,7 @@ namespace wde::scene {
 			VkPolygonMode getPolygonMode() { return _polygonMode; }
 
 
-		private:
+		protected:
 			/** Unique name of the material type */
 			std::string _materialName;
 			/** The corresponding material graphics render pipeline */

@@ -14,8 +14,10 @@ void CoreAppRenderer::initialize() {
 	};
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
-			// Only use one subpass
-			{0, { 0, 2 }}
+			{0, { 0, 1 }},
+			{1, { 2 }, { 1 }},
+			//{1, { 2 }, { 0 }},
+			{2, { 2 }}
 	};
 
 	// Creates the render pass 0
@@ -31,8 +33,8 @@ void CoreAppRenderer::start() {
 	//this->addSubrenderer<GizmoSubrenderer>({0, 0});
 
 	// Sub pass 0.1
-	this->addSubrenderer<SimpleFilterSubrenderer>({0, 0});
+	this->addSubrenderer<SimpleFilterSubrenderer>({0, 1});
 
 	// Gui sub-renderer
-	this->addSubrenderer<GUISubrenderer>({0, 0});
+	this->addSubrenderer<GUISubrenderer>({0, 2});
 }

@@ -42,7 +42,6 @@ namespace wde::renderEngine {
 					attachmentDescription.format = swapchainFormat;
 					break;
 
-
 				case RenderPassAttachment::Type::Depth:
                     attachmentDescription.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
                     attachmentDescription.format = depthFormat;
@@ -84,8 +83,20 @@ namespace wde::renderEngine {
 				attachmentReference.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;  // Layout after sub-render pass to auto transition to
 				subpassColorAttachments.emplace_back(attachmentReference);
 			}
+
+			// Sub pass input description
+			std::vector<VkAttachmentReference> inputAttachments {};
+			for (const auto &attachmentBinding : subpassType.getInputAttachmentBindingIndices()) {
+				auto attachment = _pass.getAttachment(attachmentBinding);
+
+				VkAttachmentReference attachmentReference = {};
+				attachmentReference.attachment = attachment->getBindingIndex(); // Shader can access attachment at specified index
+				attachmentReference.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;  // Layout after sub-render pass to auto transition to
+				inputAttachments.emplace_back(attachmentReference);
+			}
+
 			// Set sub-pass attachment description
-			subpasses.emplace_back(std::make_unique<RenderSubpassDescription>(bindPoint, subpassColorAttachments, depthAttachment));
+			subpasses.emplace_back(std::make_unique<RenderSubpassDescription>(bindPoint, subpassColorAttachments, depthAttachment, inputAttachments));
 
 
 

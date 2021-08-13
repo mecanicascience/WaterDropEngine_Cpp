@@ -80,7 +80,9 @@ namespace wde::renderEngine {
 			const RenderPassVulkan *getRenderPass() const { return _renderPass.get(); }
 			bool hasSwapchain() const { return _swapchainAttachment.has_value(); }
 			VkFramebuffer& getActiveFramebuffer(uint32_t activeSwapchainImage);
+			Framebuffers& getFrameBuffers() { return *_framebuffers; }
 			RenderArea& getRenderArea() { return _renderArea; }
+			ImageDepth& getDepthStencil() { return *_depthStencil; }
 
 
 		private:
@@ -95,8 +97,6 @@ namespace wde::renderEngine {
             /** The optional depth image */
             std::unique_ptr<ImageDepth> _depthStencil;
 
-            /** The corresponding color attachments */
-
 
 			// Constructor data
 			/** Render pass attachments */
@@ -105,6 +105,8 @@ namespace wde::renderEngine {
 			std::vector<RenderSubpassType> _subpasses;
 			/** Number of time each image attachment is used */
 			std::vector<uint32_t> _subpassAttachmentCount;
+			/** The attachments that are used in subpass as inputs */
+			std::vector<int> _bindingInputAttachments {};
 
 			/** Use swapchain extent as render area if render area has a width and height of 0 */
 			bool _useSwapchainExtent = false;

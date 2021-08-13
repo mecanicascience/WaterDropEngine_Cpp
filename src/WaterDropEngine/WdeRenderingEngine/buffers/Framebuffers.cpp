@@ -3,7 +3,7 @@
 #include "../core/CoreInstance.hpp"
 
 namespace wde::renderEngine {
-	Framebuffers::Framebuffers(const VkExtent2D &extent, RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil) {
+	Framebuffers::Framebuffers(const VkExtent2D &extent, RenderPass &renderPass, RenderPassVulkan &renderPassVulkan, SwapChain &swapchain, ImageDepth &depthStencil, const std::vector<int>& bindingInputAttachments) {
         WDE_PROFILE_FUNCTION();
 	    // Create image attachments
 	    for (const auto &attachment : renderPass.getAttachments()) {
@@ -17,7 +17,12 @@ namespace wde::renderEngine {
 				    break;
 
 			    case RenderPassAttachment::Type::Image:
-			    	_imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.getFormat(), extent));
+			    	int usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+			    	if (std::find(bindingInputAttachments.begin(), bindingInputAttachments.end(), attachment.getBindingIndex()) != bindingInputAttachments.end())
+			    		usage |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;  // Used as an input in a subpass
+
+		            // Create attachment
+		            _imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.getFormat(), extent, usage));
 				    break;
 		    }
 	    }

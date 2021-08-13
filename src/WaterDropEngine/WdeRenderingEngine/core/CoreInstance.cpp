@@ -55,6 +55,10 @@ namespace wde::renderEngine {
 		// Starts renderer
 		Logger::debug("Starting renderer.", LoggerChannel::RENDERING_ENGINE);
 		_renderer->start();
+
+		// Initialize sub-renderers
+		Logger::debug("Initializing sub-renderer managers.", LoggerChannel::RENDERING_ENGINE);
+		_renderer->getSubRenderersManager().initializeRenderers();
 	}
 
 	void CoreInstance::cleanUp() {

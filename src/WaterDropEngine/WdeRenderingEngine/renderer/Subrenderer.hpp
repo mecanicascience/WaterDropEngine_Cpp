@@ -17,6 +17,8 @@ namespace wde::renderEngine {
             explicit Subrenderer(const RenderStage &stage) : _stage(stage) {}
 			virtual ~Subrenderer() = default;
 
+            /** Initialize the sub-renderer */
+            virtual void initialize() {};
 			/**
 			 * Renders the sub-renderer on the provided command buffer
 			 * @param commandBuffer

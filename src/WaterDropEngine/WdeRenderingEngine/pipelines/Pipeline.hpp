@@ -38,7 +38,7 @@ namespace wde::renderEngine {
 			 * Binds the descriptor to the pipeline and to the command buffer (must be called after the bind command)
 			 * @param descriptor
 			 */
-			void bind(std::shared_ptr<Descriptor>& descriptor) {
+			void bind(std::shared_ptr<Descriptor>& descriptor...) {
 				WDE_PROFILE_FUNCTION();
 				if (!_commandBuffer)
 					throw WdeException("Pipeline descriptor was bind before being bind to the command buffer.", LoggerChannel::RENDERING_ENGINE);
@@ -84,11 +84,11 @@ namespace wde::renderEngine {
 			 * Set the pipeline optional descriptor
 			 * @param descriptor An instance of a descriptor
 			 */
-			void setDescriptor(std::shared_ptr<Descriptor> &descriptor) {
+			void addDescriptor(std::shared_ptr<Descriptor> &descriptor) {
 				if (_initialized)
 					throw WdeException("Tying to set a pipeline descriptor after it's creation.", LoggerChannel::RENDERING_ENGINE);
 
-				_descriptor = descriptor;
+				_descriptors.push_back(descriptor);
 			}
 
 
@@ -117,6 +117,6 @@ namespace wde::renderEngine {
 			std::unordered_map<int, int> _pushConstantsBoundingIndices;
 
 			// Descriptors
-			std::shared_ptr<Descriptor> _descriptor {nullptr};
+			std::vector<std::shared_ptr<Descriptor>> _descriptors {};
 	};
 }

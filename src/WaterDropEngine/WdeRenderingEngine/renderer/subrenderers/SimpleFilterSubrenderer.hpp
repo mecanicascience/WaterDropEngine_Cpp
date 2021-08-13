@@ -6,24 +6,31 @@
 
 namespace wde::renderEngine {
 	/**
-	 * The main mesh renderer, that renders scene objects
+	 * A simple image filter
 	 */
 	class SimpleFilterSubrenderer : public Subrenderer {
-	public:
-		// Constructors
-		/**
-		 * Create the mesh sub-renderer at the given stage
-		 * @param stage
-		 */
-		explicit SimpleFilterSubrenderer(const RenderStage &stage);
+		public:
+			// Constructors
+			/**
+			 * Create the filter at the given stage
+			 * @param stage
+			 */
+			explicit SimpleFilterSubrenderer(const RenderStage &stage);
 
-		/** Clean up mesh sub-renderer */
-		~SimpleFilterSubrenderer() override = default;
+			/** Clean up sub-renderer */
+			~SimpleFilterSubrenderer() override = default;
 
 
-		// Core functions
-		/** Renders the meshes to the command buffer */
-		void render(CommandBuffer &commandBuffer) override;
+			// Core functions
+			/** Initialize the sub-renderer pipeline and descriptor */
+			void initialize() override;
+			/** Renders the filter */
+			void render(CommandBuffer &commandBuffer) override;
+
+
+		private:
+			PipelineGraphics _pipeline;
+			std::shared_ptr<Descriptor> _descriptor;
 	};
 }
 
