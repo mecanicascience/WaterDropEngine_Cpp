@@ -5,6 +5,14 @@
 
 namespace wde::scene {
 	class TextureMaterial : public Material {
+		/**
+		 * Material constant push data
+		 */
+		struct PushConstantLightsData {
+			glm::vec3 ambientLightVector;
+			float ambientValue;
+		};
+
 		public:
 			/**
 			 * Create a new texture material
@@ -20,12 +28,30 @@ namespace wde::scene {
 				_materialTexture = std::make_unique<Texture2D>("res/textures/" + relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, textureFilter, textureAdressMode);
 			}
 
-			// Set the descriptor
+			void initialize(std::shared_ptr<Descriptor>& descriptor) override {
+				// Setup push constants
+				_pipeline.addPushConstants(0, sizeof(PushConstantLightsData));
+
+				// Setup material
+				Material::initialize(descriptor);
+			}
+
+
+
 			void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) override {
 				// Add material set (binding 2)
 				descriptor->addSet(2, {
 					{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _materialTexture->getView(), _materialTexture->getSampler()}
 				});
+			}
+
+
+			void pushConstants() override {
+				// Set push constants
+				PushConstantLightsData push {};
+				push.ambientLightVector = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
+				push.ambientValue = 0.2f;
+				_pipeline.setPushConstants(0, &push);
 			}
 
 

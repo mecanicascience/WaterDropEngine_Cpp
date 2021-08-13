@@ -9,12 +9,14 @@ layout(set = 0, binding = 0) uniform SceneBuffer {
 // Game object set values
 layout(set = 1, binding = 0) uniform GameObjectBuffer {
     mat4 transformWorldSpace;
+    mat4 normalMatrix;
 } inGameObjectData;
 
 
 // Input values from the pipeline
 layout(push_constant) uniform Push {
     vec3 ambientLightVector;
+    float ambientValue;
 } inPush;
 
 
@@ -27,6 +29,7 @@ layout(location = 3) in vec2 inTexCoord;
 
 // Output values to the fragment shader
 layout(location = 0) out vec2 outTexCoord;
+layout(location = 1) out float outLightIntensity;
 
 
 // Executed once for each vertex
@@ -37,4 +40,9 @@ void main() {
                 * vec4(inPosition, 1.0f);               // Object local space position
 
     outTexCoord = inTexCoord;
+
+    // Using ambiant color values
+    vec3 normalWorldSpace = normalize(mat3(inGameObjectData.normalMatrix) * inNormal);
+    float lightIntensity = max(dot(normalWorldSpace, inPush.ambientLightVector), 0);
+    outLightIntensity = inPush.ambientValue + lightIntensity;
 }

@@ -11,6 +11,7 @@ namespace wde::scene {
 	class GameObject {
 		struct GPUGameObjectData {
 			alignas(16) glm::mat4 transformWorldSpace {1.0f};
+			alignas(16) glm::mat4 normalMatrix {1.0f};
 		};
 
 
@@ -97,6 +98,7 @@ namespace wde::scene {
 				// Update game object descriptor buffer
 				GPUGameObjectData goData {};
 				goData.transformWorldSpace = getModule<TransformModule>().getTransform();
+				goData.normalMatrix = (glm::mat4) getModule<TransformModule>().getNormalMatrix();
 				_descriptor->getSet(1).updateBuffer(0, &goData);
 
 				// Render modules

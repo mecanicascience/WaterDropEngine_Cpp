@@ -33,11 +33,11 @@ void CoreAppScene::initialize() {
 	smoothVaseTransform.rotation = {glm::pi<float>(), 0.0f, 0.0f};
 
 	// Viking room test game object
-	/*auto& testGO = createGameObject("Viking Room");
+	auto& testGO = createGameObject("Viking Room");
 	testGO.addModule<ModelModule>(std::make_shared<ModelLoader>("viking_room.obj"),
 	                              std::make_shared<TextureMaterial>(RenderStage {0, 0}, "viking_room.png"));
 	testGO.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
-	testGO.getModule<TransformModule>().scale /= 3.0f;*/
+	testGO.getModule<TransformModule>().scale /= 3.0f;
 
 
 	// Minecraft sceen test game object

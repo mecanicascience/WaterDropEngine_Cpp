@@ -2,13 +2,14 @@
 
 // Scene set values
 layout(set = 0, binding = 0) uniform SceneBuffer {
-    mat4 transformCameraSpace;
-    mat4 transformProjSpace;
+    mat4 transformCameraSpace;  // Matrix from world space to camera space
+    mat4 transformProjSpace;    // Matrix from camera space to projection frustum space
 } inSceneData;
 
 // Game object set values
 layout(set = 1, binding = 0) uniform GameObjectBuffer {
-    mat4 transformWorldSpace;
+    mat4 transformWorldSpace;   // To world space GO position
+    mat4 normalMatrix;          // Corresponds to transpose(inverse(transformWorldSpace))
 } inGameObjectData;
 
 
@@ -39,7 +40,7 @@ void main() {
                 * positionWorldSpace;               // Object world space position
 
     // Compute normal world space position
-    vec3 normalWorldSpace = normalize(mat3(inGameObjectData.transformWorldSpace) * inNormal);
+    vec3 normalWorldSpace = normalize(mat3(inGameObjectData.normalMatrix) * inNormal);
 
     // Compute real direct lightning color
     float lightIntensity = max(dot(normalWorldSpace, inPush.ambientLightVector), 0);

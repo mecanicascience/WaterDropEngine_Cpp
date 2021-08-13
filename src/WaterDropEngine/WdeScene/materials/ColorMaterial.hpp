@@ -6,7 +6,7 @@
 namespace wde::scene {
 	class ColorMaterial : public Material {
 		/**
-		 * Material simple constant push data
+		 * Material constant push data
 		 */
 		struct PushConstantLightsData {
 			glm::vec3 ambientLightVector;
