@@ -10,5 +10,4 @@ class CoreAppScene : public Scene {
 
 		// Core functions
 		void initialize() override;
-		void update() override;
 };

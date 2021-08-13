@@ -21,7 +21,7 @@ namespace wde::gui {
 		public:
 			// Core module functions
 			void initialize() override {};
-			void tick()       override {};
+			void tick()       override { update(); };
 			void cleanUp()    override {};
 
 
@@ -30,6 +30,8 @@ namespace wde::gui {
 			void setup();
 			/** Create the GUI components */
 			void createElements();
+			/** Update the GUI menu global elements */
+			void update();
 			/** Renders the GUI to ImGUI (called by the GUISubrenderer) */
 			void render();
 
@@ -39,6 +41,7 @@ namespace wde::gui {
 
 			// Getters and setters
 			GUILogger& getLogger() { return _logger; }
+			bool shouldResetElements() { return _shouldResetElements; }
 
 		private:
 			// Core parameters

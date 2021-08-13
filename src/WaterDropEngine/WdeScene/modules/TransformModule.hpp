@@ -42,6 +42,13 @@ namespace wde::scene {
 				});
 			}
 
+			/** Deserialize the module */
+			void deserialize(json data) override {
+				position = SceneSerializerUtils::toVec3(data["position"]);
+				rotation = SceneSerializerUtils::toVec3(data["rotation"]);
+				scale    = SceneSerializerUtils::toVec3(data["scale"]);
+			}
+
 
 
 

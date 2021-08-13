@@ -15,7 +15,7 @@ namespace wde::renderEngine {
 			 * @param bufferLevel The level of the command buffer (Primary or Secondary) - Default is primary
 			 */
             explicit CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-			~CommandBuffer() = default;
+            ~CommandBuffer() = default;
 
 			void initialize(bool begin);
 			void cleanUp();

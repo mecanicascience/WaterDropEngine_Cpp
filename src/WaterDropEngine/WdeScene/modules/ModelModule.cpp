@@ -1,4 +1,5 @@
 #include "ModelModule.hpp"
+#include "../objects/GameObject.hpp"
 
 namespace wde::scene {
 	void ModelModule::initialize() {
@@ -56,5 +57,11 @@ namespace wde::scene {
 			{"model", _model->serialize()},
 			{"material", _material->serialize()}
 		});
+	}
+
+	void ModelModule::deserialize(json data) {
+		// Deserialize associated model and materials if they have one
+		_model->deserialize(data["model"]);
+		_material->deserialize(data["material"]);
 	}
 }

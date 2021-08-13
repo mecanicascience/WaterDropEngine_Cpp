@@ -2,6 +2,7 @@
 
 #include "../../../wde.hpp"
 #include "Material.hpp"
+#include "../../WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
 
 namespace wde::scene {
 	class ColorMaterial : public Material {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../wde.hpp"
+#include "GUITheme.hpp"
 
 namespace wde::gui {
 	class GUIRenderer {

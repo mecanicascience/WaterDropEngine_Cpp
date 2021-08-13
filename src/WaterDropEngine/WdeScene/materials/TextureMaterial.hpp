@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../WdeGUI/GUIRenderer.hpp"
 #include "../../../wde.hpp"
 #include "Material.hpp"
 
@@ -76,6 +77,11 @@ namespace wde::scene {
 						{"ambientLevel", _ambientLevel}
 					}}
 				});
+			}
+
+			void deserialize(json data) override {
+				_lightDirection = SceneSerializerUtils::toVec3(data["data"]["lightDirection"]);
+				_ambientLevel   = float(data["data"]["ambientLevel"]);
 			}
 
 

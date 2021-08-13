@@ -107,8 +107,31 @@ namespace wde::scene {
 				WDE_PROFILE_FUNCTION();
 				Logger::info("Loading scene " + _sceneName + ".", LoggerChannel::SCENE);
 
-				std::cout << sceneContent << std::endl;
-				// TODO
+				// Create game objects
+				auto& gameObjectList = sceneContent["gameObjects"];
+
+				// Sort by ID
+				std::unordered_map<int, json> gameObjectIDs {};
+				int maxID = 0;
+				for (auto& go : gameObjectList) {
+					int ID = int(go["id"]);
+					if (ID > maxID)
+						maxID = ID;
+					gameObjectIDs[ID] = go;
+				}
+
+				// Create game objects and deserialize them
+				bool firstObject = true;
+				for (int i = 0; i < maxID + 1; i++) {
+					if (gameObjectIDs.contains(i)) {
+						createGameObject(gameObjectIDs[i]["name"], firstObject);
+						_gameObjects[_gameObjects.size() - 1]->deserialize(gameObjectIDs[i]["modules"]);
+						firstObject = false;
+					}
+				}
+
+				// Initialize game objects
+				initializeGameObjects();
 			}
 
 
@@ -160,8 +183,14 @@ namespace wde::scene {
 
 
 			// Getters and setters
-			GameObject& createGameObject(const std::string& objectName) {
-				_gameObjects.push_back(std::make_unique<GameObject>(GameObject::createGameObject(objectName)));
+			/**
+			 * Create a new game object and add it to the scene
+			 * @param name The identifier name of the game object
+			 * @param resetCount True if the game object IDs needs to be reset (default : false)
+			 * @return The created game object
+			 */
+			GameObject& createGameObject(const std::string& objectName, bool resetCount = false) {
+				_gameObjects.push_back(std::make_unique<GameObject>(GameObject::createGameObject(objectName, resetCount)));
 				return *_gameObjects[_gameObjects.size() - 1];
 			}
 			std::vector<std::unique_ptr<GameObject>>& getGameObjects() { return _gameObjects; }

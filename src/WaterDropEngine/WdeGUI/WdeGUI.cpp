@@ -33,6 +33,13 @@ namespace wde::gui {
 		}
 	}
 
+	void WdeGUI::update() {
+		WDE_PROFILE_FUNCTION();
+
+		// Update gui bar
+		_guiBar.updateGUI();
+	}
+
 	void WdeGUI::render() {
 		WDE_PROFILE_FUNCTION();
 

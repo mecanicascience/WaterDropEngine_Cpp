@@ -24,6 +24,7 @@ namespace wde::scene {
 
 			// Serializers
 			json serialize() override;
+			void deserialize(json data) override;
 
 
 		private:

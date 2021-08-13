@@ -19,9 +19,8 @@ namespace wde::renderEngine {
 		allocInfo.commandBufferCount = 1;
 
 		// Allocate
-		if (vkAllocateCommandBuffers(CoreInstance::get().getSelectedDevice().getDevice(), &allocInfo, &_commandBuffer) != VK_SUCCESS) {
+		if (vkAllocateCommandBuffers(CoreInstance::get().getSelectedDevice().getDevice(), &allocInfo, &_commandBuffer) != VK_SUCCESS)
 			throw WdeException("Failed to allocate command commands.", LoggerChannel::RENDERING_ENGINE);
-		}
 
 		// Begin recording
 		if (begin)

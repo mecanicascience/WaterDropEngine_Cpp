@@ -8,9 +8,8 @@ void CoreAppScene::initialize() {
 
 
 	// Room
-	auto& room = createGameObject("Room");
-	room.addModule<ModelModule>(std::make_shared<ModelLoader>("sponza.obj"), std::make_shared<ColorMaterial>(RenderStage {0, 0}));
-
+	/*auto& room = createGameObject("Room");
+	room.addModule<ModelModule>(std::make_shared<ModelLoader>("sponza.obj"), std::make_shared<ColorMaterial>(RenderStage {0, 0}));*/
 
 	// Materials
 	// ColorMaterial - ColorMaterialOutline - TextureMaterial
@@ -46,13 +45,8 @@ void CoreAppScene::initialize() {
 	testGO.getModule<TransformModule>().scale /= 3.0f;*/
 
 
-	// Minecraft sceen test game object
-	/*auto& mcScene = createGameObject("Minecraft Scene");
+	// Minecraft scene test game object
+	auto& mcScene = createGameObject("Minecraft Scene");
 	mcScene.addModule<ModelModule>(std::make_shared<ModelLoader>("lost_empire.obj"),
-								   std::make_shared<TextureMaterial>(RenderStage {0, 0}, "lost_empire.png", VK_FILTER_NEAREST));*/
-}
-
-void CoreAppScene::update() {
-	// Updates scene
-	Scene::update();
+								   std::make_shared<TextureMaterial>(RenderStage {0, 0}, "lost_empire.png", VK_FILTER_NEAREST));
 }

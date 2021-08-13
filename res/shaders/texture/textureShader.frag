@@ -14,5 +14,6 @@ layout(location = 0) out vec4 outColor;
 
 // Ran for every fragment (line between two vertex, after rasterisation)
 void main() {
-    outColor = vec4(texture(inTexture, inTexCoord).xyz * inLightIntensity, 1.0f);
+    vec4 textureColor = texture(inTexture, inTexCoord);
+    outColor = vec4(textureColor.xyz * inLightIntensity, textureColor.w);
 }

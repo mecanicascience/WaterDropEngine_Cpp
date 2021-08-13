@@ -2,8 +2,16 @@
 
 #include "../../../wde.hpp"
 #include "Model.hpp"
+#include "../objects/models/ModelCube.hpp"
+#include "../objects/models/ModelLoader.hpp"
+#include "../materials/ColorMaterial.hpp"
+#include "../materials/ColorMaterialOutline.hpp"
+#include "../materials/TextureMaterial.hpp"
 #include "../modules/Module.hpp"
 #include "../modules/TransformModule.hpp"
+#include "../modules/CameraModule.hpp"
+#include "../modules/ModelModule.hpp"
+#include "../modules/TransformControllerModule.hpp"
 #include "../gizmos/Gizmo.hpp"
 #include "../../WdeRenderingEngine/descriptors/Descriptor.hpp"
 
@@ -22,8 +30,16 @@ namespace wde::scene {
 			GameObject() : _objectID(-1) {}; // Creates a dummy empty temporary game object (do not use!)
 
 			// Core creation objects
-			static GameObject createGameObject(std::string name) {
+			/**
+			 * Create a new game object
+			 * @param name The identifier name of the game object
+			 * @param resetCount True if the game object IDs needs to be reset (default : false)
+			 * @return The created game object
+			 */
+			static GameObject createGameObject(std::string name, bool resetCount = false) {
 				static id_t currentID = 0;
+				if (resetCount)
+					currentID = 0;
 				auto go = GameObject(currentID++, name);
 				go.addModule<TransformModule>(); // Add transform component
 				return go;
@@ -117,6 +133,20 @@ namespace wde::scene {
 					module->renderGizmo(gizmo);
 			}
 
+			/** Clean up game object */
+			void cleanUp() {
+				WDE_PROFILE_FUNCTION();
+				// Clean up modules
+				for(auto& module : _moduleList) {
+					module->cleanUp();
+					delete module;
+					module = nullptr;
+				}
+				_moduleList.clear();
+			}
+
+
+			// Serialization
 			/** Serialize the game object */
 			json serialize() {
 				json serializedGO;
@@ -136,17 +166,61 @@ namespace wde::scene {
 				return serializedGO;
 			}
 
-			/** Clean up game object */
-			void cleanUp() {
-				WDE_PROFILE_FUNCTION();
-				// Clean up modules
-				for(auto& module : _moduleList) {
-					module->cleanUp();
-					delete module;
-					module = nullptr;
-				}
-				_moduleList.clear();
+
+			static bool nameEquals(std::string s1, std::string s2) {
+				return s1 == ("\"" + s2 + "\"");
 			}
+			/** Deserialize the game object */
+			void deserialize(json moduleList) {
+				// Create modules
+				for (auto& module : moduleList) {
+					std::string name = to_string(module["name"]);
+
+					// Set modules
+					if (nameEquals(name, "Camera"))
+						addModule<CameraModule>();
+
+					else if (nameEquals(name, "Model")) {
+						// Model
+						std::shared_ptr<Model> model;
+						std::string modelType = to_string(module["data"]["model"]["type"]);
+						if (nameEquals(modelType, "Cube"))
+							model = std::make_shared<ModelCube>();
+						else if (nameEquals(modelType, "external"))
+							model = std::make_shared<ModelLoader>(module["data"]["model"]["relativePath"]);
+						else
+							throw WdeException("Failed to serialize model of type " + to_string(module["data"]["model"]["type"]) + ".", LoggerChannel::SCENE);
+
+						// Material
+						std::shared_ptr<Material> material;
+						std::string materialType = to_string(module["data"]["material"]["type"]);
+						RenderStage stage {int(module["data"]["material"]["stage"]["first"]), int(module["data"]["material"]["stage"]["second"])};
+						if (nameEquals(materialType, "Color Material"))
+							material = std::make_shared<ColorMaterial>(stage);
+						else if (nameEquals(materialType, "Color Material Outlined"))
+							material = std::make_shared<ColorMaterialOutline>(stage);
+						else if (nameEquals(materialType, "Texture Material"))
+							material = std::make_shared<TextureMaterial>(stage, module["data"]["material"]["texturePath"], module["data"]["material"]["textureFilter"],
+																		 module["data"]["material"]["textureAdressMode"]);
+						else
+							throw WdeException("Failed to serialize material of type " + to_string(module["data"]["material"]["type"]) + ".", LoggerChannel::SCENE);
+
+						// Module
+						addModule<ModelModule>(model, material);
+					}
+
+					else if (nameEquals(name, "Transform Controller"))
+						addModule<TransformControllerModule>();
+
+					else if (nameEquals(name, "Transform")) {} // Already added when creating object
+
+					else // Module not found
+						throw WdeException("Failed to deserialize a module named " + name + " that isn't referenced in the deserialize method.", LoggerChannel::SCENE);
+
+					_moduleList[_moduleList.size() - 1]->deserialize(module["data"]);
+				}
+			}
+
 
 
 			// Gui functions

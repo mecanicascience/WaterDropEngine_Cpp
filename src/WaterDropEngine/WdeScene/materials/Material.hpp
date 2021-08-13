@@ -9,7 +9,6 @@
 #include "../../WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
 #include "../../WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"
 #include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
-#include "../objects/GameObject.hpp"
 #include "../modules/CameraModule.hpp"
 #include "../../WdeRenderingEngine/images/Texture2D.hpp"
 
@@ -90,6 +89,7 @@ namespace wde::scene {
 
 			// Serializers
 			virtual json serialize() = 0;
+			virtual void deserialize(json data) {};
 
 
 			// Descriptors and push constants

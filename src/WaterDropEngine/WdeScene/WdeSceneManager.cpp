@@ -77,6 +77,7 @@ namespace wde::scene {
 	void WdeSceneManager::deserializeScene(const json& sceneJSONContent) {
 		// Set scene
 		setScene(std::make_unique<LoadedScene>(sceneJSONContent));
+		initialize();
 
 		// Deserialize scene
 		_scene->deserialize(sceneJSONContent);
@@ -92,14 +93,11 @@ namespace wde::scene {
 			Logger::debug("Cleaning up last scene", LoggerChannel::SCENE);
 			WdeRenderEngine::get().waitForDevicesReady();
 			WdeSceneManager::get()._scene->cleanUp();
+			WdeSceneManager::get()._scene.reset();
 		}
 
 		// Set new scene
 		WdeSceneManager::get()._scene = std::move(scene);
-
-		// Initialize scene if the scene manager has already started
-		if (WdeSceneManager::get()._hasStarted)
-			WdeSceneManager::get().initialize();
 
 		// Say that GUI scene should be reset on next render frame
 		gui::WdeGUI::get().reset();

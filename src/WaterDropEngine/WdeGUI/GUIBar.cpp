@@ -2,6 +2,20 @@
 #include "../WdeScene/WdeSceneManager.hpp"
 
 namespace wde::gui {
+	void GUIBar::updateGUI() {
+		if (_shouldLoadScene) {
+			// Open load scene dialog
+			std::vector<char> fileContent = WdeFileUtils::readFileDialog("json");
+			if (!fileContent.empty()) {
+				std::string strContent (fileContent.begin(), fileContent.end());
+				auto sceneJSON = json::parse(strContent);
+				scene::WdeSceneManager::get().deserializeScene(sceneJSON);
+			}
+
+			_shouldLoadScene = false;
+		}
+	}
+
 	void GUIBar::renderGUI() {
 		// Main file menu
 		if (ImGui::BeginMenu("File")) {
@@ -20,14 +34,8 @@ namespace wde::gui {
 				scene::WdeSceneManager::get().serializeScene();
 
 			// Load scene
-			if (ImGui::Button("Load scene")) {
-				std::vector<char> fileContent = WdeFileUtils::readFileDialog("json");
-				if (!fileContent.empty()) {
-					std::string strContent (fileContent.begin(), fileContent.end());
-					auto sceneJSON = json::parse(strContent);
-					scene::WdeSceneManager::get().deserializeScene(sceneJSON);
-				}
-			}
+			if (ImGui::Button("Load scene"))
+				_shouldLoadScene = true;
 
 			// End of menu
 			ImGui::EndMenu();

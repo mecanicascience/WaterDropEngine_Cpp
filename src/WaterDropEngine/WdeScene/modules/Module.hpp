@@ -47,11 +47,15 @@ namespace wde::scene {
 			virtual void renderGizmo(Gizmo &gizmo) {}
 			/** Render the module GUI */
 			virtual void renderGUI() {};
-			/** Serialize the module */
-			virtual json serialize() { return json(""); };
 			/** Cleaning up the module */
 			virtual void cleanUp() {}
 
+
+			// Serialize
+			/** Serialize the module */
+			virtual json serialize() { return json(""); };
+			/** Deserialize the game object */
+			virtual void deserialize(json data) {}
 
 			/** Serialize the module */
 			json serializeModule() {
