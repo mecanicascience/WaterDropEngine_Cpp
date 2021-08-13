@@ -3,7 +3,8 @@
 
 namespace wde::renderEngine {
 	RenderPass::RenderPass(std::vector<RenderPassAttachment> attachments, std::vector<RenderSubpassType> subpasses, RenderArea renderArea)
-		: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)), _subpassAttachmentCount(_subpasses.size()), _renderArea(renderArea) {
+		: _attachments(std::move(attachments)), _subpasses(std::move(subpasses)), _subpassAttachmentCount(_subpasses.size()),
+	      _subpassAttachmentColorCount(_subpasses.size()), _renderArea(renderArea) {
         WDE_PROFILE_FUNCTION();
         // If render area has a width and height of 0, it will be bound to the dimensions of the swapchain
         if (renderArea.getExtent().width == 0 && renderArea.getExtent().height == 0)
@@ -18,8 +19,16 @@ namespace wde::renderEngine {
 				case RenderPassAttachment::Type::Swapchain:
 					clearValue.color = {{attachment.getClearColor()._r, attachment.getClearColor()._g, attachment.getClearColor()._b, attachment.getClearColor()._a}};
 					_swapchainAttachment = attachment;
-					for (const auto &subpass : _subpasses)
+					for (const auto &subpass : _subpasses) {
 						_subpassAttachmentCount[subpass.getBindingIndex()]++;
+
+						if ( // If the subpass contains the actual swapchain binding
+							auto subpassBindingIndices = subpass.getAttachmentBindingIndices();
+							std::find(subpassBindingIndices.begin(), subpassBindingIndices.end(), attachment.getBindingIndex()) != subpassBindingIndices.end()
+						) {
+							_subpassAttachmentColorCount[subpass.getBindingIndex()]++;
+						}
+					}
 					break;
 
 				case RenderPassAttachment::Type::Depth:
@@ -36,6 +45,14 @@ namespace wde::renderEngine {
 							auto subpassBindingIndices = subpass.getAttachmentBindingIndices();
 							std::find(subpassBindingIndices.begin(), subpassBindingIndices.end(), attachment.getBindingIndex()) != subpassBindingIndices.end()
 						) {
+							if ( // Add a color attachment if it's not an input index
+								auto subpassInputBindingIndices = subpass.getInputAttachmentBindingIndices();
+								std::find(subpassInputBindingIndices.begin(), subpassInputBindingIndices.end(), attachment.getBindingIndex()) != subpassInputBindingIndices.end()
+							) { }
+							else {
+								_subpassAttachmentColorCount[subpass.getBindingIndex()]++;
+							}
+
 							// Add an attachment to the subpass
 							_subpassAttachmentCount[subpass.getBindingIndex()]++;
 						}

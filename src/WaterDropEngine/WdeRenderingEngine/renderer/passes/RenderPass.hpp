@@ -77,6 +77,7 @@ namespace wde::renderEngine {
 			std::optional<RenderPassAttachment> getAttachment(const std::string &name) const;
 			std::optional<RenderPassAttachment> getAttachment(uint32_t binding) const;
 			uint32_t getAttachmentCount(uint32_t subpass) const { return _subpassAttachmentCount[subpass]; }
+			uint32_t getAttachmentColorCount(uint32_t subpass) const { return _subpassAttachmentColorCount[subpass]; }
 			const RenderPassVulkan *getRenderPass() const { return _renderPass.get(); }
 			bool hasSwapchain() const { return _swapchainAttachment.has_value(); }
 			VkFramebuffer& getActiveFramebuffer(uint32_t activeSwapchainImage);
@@ -103,8 +104,10 @@ namespace wde::renderEngine {
 			std::vector<RenderPassAttachment> _attachments;
 			/** Sub-passes of the render pass */
 			std::vector<RenderSubpassType> _subpasses;
-			/** Number of time each image attachment is used */
+			/** Number of attachments in the subpass */
 			std::vector<uint32_t> _subpassAttachmentCount;
+			/** Number of color attachments in the subpass */
+			std::vector<uint32_t> _subpassAttachmentColorCount;
 			/** The attachments that are used in subpass as inputs */
 			std::vector<int> _bindingInputAttachments {};
 

@@ -253,7 +253,7 @@ namespace wde::renderEngine {
 
 	void PipelineGraphics::createPipelineMRT() {
 		// Blend attachment states
-		auto attachmentCount = CoreInstance::get().getRenderer()->getRenderPass(_renderStage.first)->getAttachmentCount(_renderStage.second);
+		auto attachmentCount = CoreInstance::get().getRenderer()->getRenderPass(_renderStage.first)->getAttachmentColorCount(_renderStage.second);
 		std::vector<VkPipelineColorBlendAttachmentState> blendAttachmentStates;
 		blendAttachmentStates.reserve(attachmentCount);
 
