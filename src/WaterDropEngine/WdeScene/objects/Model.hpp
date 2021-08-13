@@ -151,9 +151,10 @@ namespace std {
 	 */
 	template<> struct hash<wde::scene::Model::Vertex> {
 		size_t operator()(wde::scene::Model::Vertex const& vertex) const {
-			return ((hash<glm::vec3>()(vertex.getPosition()) ^
-			       (hash<glm::vec3>()(vertex.getColor()) << 1)) >> 1) ^
-			       (hash<glm::vec2>()(vertex.getUV()) << 1);
+			return    (((hash<glm::vec3>()(vertex.getPosition())
+			        ^ (hash<glm::vec3>()(vertex.getColor()) << 1) >> 1)
+			        ^ (hash<glm::vec2>()(vertex.getUV()) << 1)) >> 1)
+			        ^ (hash<glm::vec3>()(vertex.getNormal()) << 1);
 		}
 	};
 }
