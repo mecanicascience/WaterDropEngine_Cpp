@@ -63,6 +63,9 @@ namespace wde::renderEngine {
 
 	void CoreInstance::cleanUp() {
         WDE_PROFILE_FUNCTION();
+        // Clean up descriptor references
+        _descriptors.clear();
+
 		// Cleanup renderer
 		_renderer->cleanUp();
 		_renderer = nullptr;
@@ -144,8 +147,9 @@ namespace wde::renderEngine {
 			pass->initialize(getSelectedDevice().getSwapChain());
 
 		// Recreate descriptors specific image views
-		/*for (auto descriptor : _descriptors)
-			descriptor->recreate();*/
+		for (Descriptor* descriptor : _descriptors)
+			if (descriptor != nullptr)
+				descriptor->recreate();
 	}
 
 

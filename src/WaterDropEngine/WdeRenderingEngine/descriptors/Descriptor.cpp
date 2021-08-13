@@ -15,6 +15,7 @@ namespace wde::renderEngine {
 		_pool = std::make_unique<DescriptorPool>(poolSizes);
 
 		// Reference this descriptor to the render instance
+		WdeRenderEngine::get().addDescriptor(this);
 	}
 
 	Descriptor::~Descriptor() {
@@ -44,6 +45,15 @@ namespace wde::renderEngine {
 			// Initialize descriptor
 			descriptor->initialize();
 		}
+	}
+
+	void Descriptor::recreate() {
+		WDE_PROFILE_FUNCTION();
+
+		// Recreate sets
+		Logger::debug("Recreating a descriptor.", LoggerChannel::RENDERING_ENGINE);
+		for (auto& set : _descriptorSets)
+			set.second->recreate();
 	}
 
 	void Descriptor::bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint) {

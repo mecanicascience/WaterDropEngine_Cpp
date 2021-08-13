@@ -26,9 +26,6 @@ namespace wde::renderEngine {
 
 
 	// Core functions
-	/**
-	 * Create the new binding layouts given the class data parameters
-	 */
 	void DescriptorSet::createBindingLayouts() {
 		// Create binding layouts
 		for (auto& bindingData : _bindingsData) {
@@ -43,9 +40,6 @@ namespace wde::renderEngine {
 		}
 	}
 
-	/**
-	 * Create the descriptor set layout
-	 */
 	void DescriptorSet::createLayout(VkDescriptorSetLayout& descriptorSetLayout) {
 		// Create descriptor layout
 		VkDescriptorSetLayoutCreateInfo setLayoutInfo = {};
@@ -63,9 +57,6 @@ namespace wde::renderEngine {
 
 
 
-	/**
-	 * Initialize the descriptor (setup the buffers)
-	 */
 	void DescriptorSet::initialize() {
 		WDE_PROFILE_FUNCTION();
 		// Create bindings
@@ -80,7 +71,7 @@ namespace wde::renderEngine {
 
 			// Input attachment
 			else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT)
-				addInputAttachment((int) binding._bindingIndex, binding._imageView);
+				addInputAttachment((int) binding._bindingIndex, binding._renderPassIndex, binding._attachmentBindingIndex);
 
 			// Not implemented
 			else
@@ -88,11 +79,10 @@ namespace wde::renderEngine {
 		}
 	}
 
-	/**
-	 * Update the buffer at the given binding index
-	 * @param bindingIndex Buffer index
-	 * @param newData The buffer new data
-	 */
+	void DescriptorSet::recreate() {
+		// TODO
+	}
+
 	void DescriptorSet::updateBuffer(int bindingIndex, const void* newData) {
 		if (_bindingsBuffers[bindingIndex].bufferMemory == nullptr) // If no buffer memory (ex camera object), return
 			return;
@@ -104,6 +94,8 @@ namespace wde::renderEngine {
 		memcpy(data, newData, _bindingsBuffers[bindingIndex].bufferSize);
 		vkUnmapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex].bufferMemory);
 	}
+
+
 
 
 	// Core functions
@@ -169,8 +161,12 @@ namespace wde::renderEngine {
 	}
 
 
-	void DescriptorSet::addInputAttachment(int bindingIndex, VkImageView& imageView) {
+	void DescriptorSet::addInputAttachment(int bindingIndex, uint32_t renderPassIndex, uint32_t attachmentBindingIndex) {
 		WDE_PROFILE_FUNCTION();
+
+		// Get corresponding image view
+		VkImageView& imageView = WdeRenderEngine::get().getRenderer()->getRenderPass(renderPassIndex)->getFrameBuffers().getImageAttachment(attachmentBindingIndex)->getView();
+
 		// Create image info
 		VkDescriptorImageInfo imageInfo {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;

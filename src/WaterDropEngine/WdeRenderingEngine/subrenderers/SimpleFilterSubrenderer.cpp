@@ -13,14 +13,12 @@ namespace wde::renderEngine {
 	// Core functions
 	void SimpleFilterSubrenderer::initialize() {
 		// Initialize descriptor
-		auto& frameBuffers = WdeRenderEngine::get().getRenderer()->getRenderPass(_stage.first)->getFrameBuffers();
-
 		_descriptor = std::make_shared<Descriptor>();
 		_descriptor->addSet(0, {
-			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, frameBuffers.getImageAttachment(1)->getView()}
+			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, _stage.first}
 		});
 		/*_descriptor->addSet(0, {
-			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, frameBuffers.getImageAttachment(0)->getView()}
+			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 0}
 		});*/
 
 		// Setup pipeline

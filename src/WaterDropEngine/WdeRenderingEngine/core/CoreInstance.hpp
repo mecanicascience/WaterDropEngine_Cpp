@@ -48,6 +48,9 @@ namespace wde::renderEngine {
 			std::size_t& getCurrentFrame() { return _currentFrame; }
 			const int getMaxFramesInFlight() { return _currentFramesInFlightCount; }
 			CoreWindow& getCoreWindow() { return *_window; }
+			void addDescriptor(Descriptor* descriptor) {
+				_descriptors.push_back(descriptor);
+			}
 
 			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
 			std::shared_ptr<CommandPool>& getCommandPool(const std::thread::id &threadID = std::this_thread::get_id()) {
@@ -81,7 +84,7 @@ namespace wde::renderEngine {
 			/** The given renderer */
 			std::unique_ptr<Renderer> _renderer;
 			/** The rendering descriptor list */
-			std::vector<std::shared_ptr<Descriptor>> _descriptors {};
+			std::vector<Descriptor*> _descriptors {};
 
 			// Vulkan values
 			/** A reference to the Vulkan instance */

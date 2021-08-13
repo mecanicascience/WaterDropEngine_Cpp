@@ -28,6 +28,9 @@ namespace wde::renderEngine {
 			/** Initialize the descriptor */
 			void initialize();
 
+			/** Recreate the descriptor elements (called when the window size changes) */
+			void recreate();
+
 			/** Bind the descriptor to the pipeline */
 			void bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint);
 

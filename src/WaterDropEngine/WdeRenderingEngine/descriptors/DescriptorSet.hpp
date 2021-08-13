@@ -21,6 +21,10 @@ namespace wde::renderEngine {
 		VkImageView _imageView {};
 		VkSampler _imageSampler {};
 
+		// Attachment binding
+		uint32_t _attachmentBindingIndex = -1;
+		uint32_t _renderPassIndex = -1;
+
 		/**
 		 * Describes a binding data for a uniform buffer
 		 * @param bindingIndex The index in the descriptor of the binding
@@ -50,13 +54,13 @@ namespace wde::renderEngine {
 		 * Describes a binding data for an attachment input
 		 * @param bindingIndex The index in the descriptor of the binding
 		 * @param descriptorType Type of the descriptor binding
-		 * @param imageView The image view
+		 * @param attachmentBindingIndex The index of the attachment that should be referenced
 		 * @param shaderStageFlags In which shaders the descriptor binding will be available (default fragment shaders)
 		 */
 		DescriptorSetBindingData(uint32_t bindingIndex, VkDescriptorType descriptorType,
-								 VkImageView& imageView, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT)
-			   : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _imageView(imageView), _shaderStageFlags(shaderStageFlags) {}
-
+								 uint32_t attachmentBindingIndex, uint32_t renderPassIndex, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT)
+			 : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _attachmentBindingIndex(attachmentBindingIndex),
+			   _renderPassIndex(renderPassIndex), _shaderStageFlags(shaderStageFlags) {}
 	};
 
 	/**
@@ -83,22 +87,19 @@ namespace wde::renderEngine {
 
 
 			// Core functions
-			/**
-			 * Create the new binding layouts given the class data parameters
-			 */
+			/** Create the new binding layouts given the class data parameters */
 			void createBindingLayouts();
 
-			/**
-			 * Create the descriptor set layout
-			 */
+			/** Create the descriptor set layout */
 			void createLayout(VkDescriptorSetLayout& descriptorSetLayout);
 
 
 
-			/**
-			 * Initialize the descriptor (setup the buffers)
-			 */
+			/** Initialize the descriptor (setup the buffers) */
 			void initialize();
+
+			/** Recreate the descriptor set (called when the window is resized) */
+			void recreate();
 
 			/**
 			 * Update the buffer at the given binding index
@@ -129,11 +130,14 @@ namespace wde::renderEngine {
 
 
 			// Core functions
+			/** Add a new buffer as a binding */
 			void addBuffer(int bindingIndex, int bufferSize);
 
+			/** Add a new image sampler as a binding */
 			void addImageSampler(int bindingIndex, VkImageView& imageView, VkSampler& imageSampler);
 
-			void addInputAttachment(int bindingIndex, VkImageView& imageView);
+			/** Add a new input attachment as a binding */
+			void addInputAttachment(int bindingIndex, uint32_t renderPassIndex, uint32_t attachmentBindingIndex);
 
 	};
 }
