@@ -26,6 +26,6 @@ namespace wde::renderEngine {
 
 
 		private:
-			VkDescriptorPool _descriptorPool;
+			std::shared_ptr<DescriptorPool> _imGUIdescriptorPool;
 	};
 }

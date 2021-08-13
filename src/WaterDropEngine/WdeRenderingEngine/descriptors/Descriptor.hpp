@@ -13,19 +13,21 @@ namespace wde::renderEngine {
 			// Constructor
 			/**
 			 * Create a new descriptor
-			 * @param maxUniformBufferCount The maximum number of uniform buffers in the descriptor (default 10)
-			 * @param maxUniformBufferDynamicCount The maximum number of uniform dynamic buffers in the descriptor (default 10)
-			 * @param maxStorageBufferCount The maximum number of storage buffers in the descriptor (default 10)
-			 * @param maxCombinedImageSamplerCount The maximum number of image sampler buffers in the descriptor (default 10)
+			 * @param maxUniformBufferCount The maximum number of uniform buffers in the descriptor (default 1000)
+			 * @param maxUniformBufferDynamicCount The maximum number of uniform dynamic buffers in the descriptor (default 1000)
+			 * @param maxStorageBufferCount The maximum number of storage buffers in the descriptor (default 1000)
+			 * @param maxCombinedImageSamplerCount The maximum number of image sampler buffers in the descriptor (default 1000)
+			 * @param maxInputAttachmentCount The maximum number of input attachments in the descriptor (default 1000)
 			 */
-			explicit Descriptor(int maxUniformBufferCount = 10, int maxUniformBufferDynamicCount = 10, int maxStorageBufferCount = 10, int maxCombinedImageSamplerCount = 10) {
+			explicit Descriptor(int maxUniformBufferCount = 1000, int maxUniformBufferDynamicCount = 1000, int maxStorageBufferCount = 1000, int maxCombinedImageSamplerCount = 1000, int maxInputAttachmentCount = 1000) {
 				WDE_PROFILE_FUNCTION();
 				Logger::debug("Creating a new descriptor.", LoggerChannel::RENDERING_ENGINE);
 				std::vector<VkDescriptorPoolSize> poolSizes = {
 					{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, static_cast<uint32_t>(maxUniformBufferCount)},
 					{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, static_cast<uint32_t>(maxUniformBufferDynamicCount) },
 					{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, static_cast<uint32_t>(maxStorageBufferCount) },
-					{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, static_cast<uint32_t>(maxCombinedImageSamplerCount) }
+					{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, static_cast<uint32_t>(maxCombinedImageSamplerCount) },
+					{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, static_cast<uint32_t>(maxInputAttachmentCount) }
 				};
 				_pool = std::make_unique<DescriptorPool>(poolSizes);
 			}

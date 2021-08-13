@@ -38,29 +38,23 @@ namespace wde::renderEngine {
 		initInfo.Queue = renderInstance.getSelectedDevice().getGraphicsQueue();
 
 		// Create descriptor pool for ImGui
-		VkDescriptorPoolSize poolSizes[] = { // TODO implement a render descriptor pool creation option
-				{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, 1000 },
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, 1000 },
-				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, 1000 },
-				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, 1000 },
-				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
+		uint32_t poolMaxElements = 1000;
+		std::vector<VkDescriptorPoolSize> poolSizes = {
+				{ VK_DESCRIPTOR_TYPE_SAMPLER,  poolMaxElements},
+				{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, poolMaxElements }
 		};
-
-		VkDescriptorPoolCreateInfo poolInfo = {};
-		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-		poolInfo.maxSets = 1000 * IM_ARRAYSIZE(poolSizes);
-		poolInfo.poolSizeCount = (uint32_t)IM_ARRAYSIZE(poolSizes);
-		poolInfo.pPoolSizes = poolSizes;
-		if(vkCreateDescriptorPool(renderInstance.getSelectedDevice().getDevice(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
-			throw WdeException("Failed to create a descriptor pool for the ImGUI.", LoggerChannel::GUI);
-		initInfo.DescriptorPool = _descriptorPool;
+		_imGUIdescriptorPool = std::make_shared<DescriptorPool>(poolSizes, poolMaxElements * 11, false);
+		_imGUIdescriptorPool->createPool(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
+		initInfo.DescriptorPool = _imGUIdescriptorPool->getPool();
 
 		// Continue parameters configuration
 		initInfo.PipelineCache = VK_NULL_HANDLE;
@@ -89,8 +83,6 @@ namespace wde::renderEngine {
 	GUISubrenderer::~GUISubrenderer() {
 		WDE_PROFILE_FUNCTION();
 		Logger::debug("Cleaning up Gui sub-renderer.", LoggerChannel::GUI);
-		// Destroy command pool
-		vkDestroyDescriptorPool(WdeRenderEngine::get().getSelectedDevice().getDevice(), _descriptorPool, nullptr);
 
 		// Destroy ImGUI
 		ImGui_ImplVulkan_Shutdown();
