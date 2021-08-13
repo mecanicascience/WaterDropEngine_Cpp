@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../Subrenderer.hpp"
-#include "../../../WdeScene/WdeSceneManager.hpp"
-#include "../../pipelines/PipelineGraphics.hpp"
+#include "../renderer/Subrenderer.hpp"
+#include "../../WdeScene/WdeSceneManager.hpp"
+#include "../pipelines/PipelineGraphics.hpp"
 
 namespace wde::renderEngine {
 	/**

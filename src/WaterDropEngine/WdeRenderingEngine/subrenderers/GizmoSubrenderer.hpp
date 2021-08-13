@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Subrenderer.hpp"
-#include "../../../WdeScene/WdeSceneManager.hpp"
-#include "../../pipelines/PipelineGraphics.hpp"
-#include "../../../WdeScene/gizmos/Gizmo.hpp"
-#include "../../../WdeScene/gizmos/GizmoRenderer.hpp"
+#include "../renderer/Subrenderer.hpp"
+#include "../../WdeScene/WdeSceneManager.hpp"
+#include "../pipelines/PipelineGraphics.hpp"
+#include "../../WdeScene/gizmos/Gizmo.hpp"
+#include "../../WdeScene/gizmos/GizmoRenderer.hpp"
 
 using namespace wde::scene;
 

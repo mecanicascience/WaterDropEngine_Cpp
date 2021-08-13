@@ -1,5 +1,5 @@
 #include "CoreAppRenderer.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/renderer/subrenderers/SimpleFilterSubrenderer.hpp"
+#include "../src/WaterDropEngine/WdeRenderingEngine/subrenderers/SimpleFilterSubrenderer.hpp"
 
 void CoreAppRenderer::initialize() {
 	// == Creates the render pass 0 ==

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../../../../../lib/imgui/backends/imgui_impl_vulkan.h"
-#include "../../../../../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../../../../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../../../../lib/imgui/backends/imgui_impl_glfw.h"
 
-#include "../../WdeRenderEngine.hpp"
-#include "../../../WdeGUI/WdeGUI.hpp"
+#include "../WdeRenderEngine.hpp"
+#include "../../WdeGUI/WdeGUI.hpp"
 
 
 namespace wde::renderEngine {
