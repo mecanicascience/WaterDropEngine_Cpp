@@ -6,6 +6,12 @@ void CoreAppScene::initialize() {
 	camera.addModule<TransformControllerModule>();
 	camera.addModule<CameraModule>();
 
+
+	// Room
+	auto& room = createGameObject("Room");
+	room.addModule<ModelModule>(std::make_shared<ModelLoader>("sponza.obj"), std::make_shared<ColorMaterial>(RenderStage {0, 0}));
+
+
 	// Materials
 	// ColorMaterial - ColorMaterialOutline - TextureMaterial
 
@@ -17,7 +23,7 @@ void CoreAppScene::initialize() {
 	cubeTransform.scale /= 2.0f;*/
 
 	// Flat Vase object
-	auto& flatVase = createGameObject("Vase Flat");
+	/*auto& flatVase = createGameObject("Vase Flat");
 	flatVase.addModule<ModelModule>(std::make_shared<ModelLoader>("flat_vase.obj"), std::make_shared<ColorMaterial>(RenderStage {0, 0}));
 	auto& vaseTransform = flatVase.getModule<TransformModule>();
 	vaseTransform.position = {-0.5f, 0.0f, 2.5f};
@@ -37,7 +43,7 @@ void CoreAppScene::initialize() {
 	testGO.addModule<ModelModule>(std::make_shared<ModelLoader>("viking_room.obj"),
 	                              std::make_shared<TextureMaterial>(RenderStage {0, 0}, "viking_room.png"));
 	testGO.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
-	testGO.getModule<TransformModule>().scale /= 3.0f;
+	testGO.getModule<TransformModule>().scale /= 3.0f;*/
 
 
 	// Minecraft sceen test game object

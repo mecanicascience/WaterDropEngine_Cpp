@@ -20,6 +20,14 @@ namespace wde::scene {
 			};
 
 
+			// Serializers
+			json serialize() override {
+				return json({
+					{"type", "Cube"}
+				});
+			}
+
+
 		protected:
 			// Model description
 			std::vector<Vertex> getVertices() override {

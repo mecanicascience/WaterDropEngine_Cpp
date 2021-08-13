@@ -107,6 +107,9 @@ namespace wde::scene {
 			/** Clean up the model */
 			void cleanUp();
 
+			// Serialize
+			virtual json serialize() = 0;
+
 			virtual std::vector<Vertex> getVertices() = 0;
 			virtual std::vector<uint32_t> getIndices() = 0;
 

@@ -117,6 +117,25 @@ namespace wde::scene {
 					module->renderGizmo(gizmo);
 			}
 
+			/** Serialize the game object */
+			json serialize() {
+				json serializedGO;
+				// Game object properties
+				serializedGO["id"] = getID();
+				serializedGO["name"] = getName();
+
+				// Serialize modules
+				serializedGO["modules"] = json::array();
+				for (auto& module : _moduleList) {
+					json serializeData = module->serializeModule();
+					if (serializeData != json(""))
+						serializedGO["modules"].push_back(serializeData);
+				}
+
+				// Return json
+				return serializedGO;
+			}
+
 			/** Clean up game object */
 			void cleanUp() {
 				WDE_PROFILE_FUNCTION();

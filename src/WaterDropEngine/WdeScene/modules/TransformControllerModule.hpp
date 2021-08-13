@@ -25,6 +25,15 @@ namespace wde::scene {
 			}
 
 
+			// Serializers
+			json serialize() override {
+				return json({
+					{"moveSpeed", _moveSpeed},
+					{"lookSpeed", _lookSpeed}
+				});
+			}
+
+
 		private:
 			// Movement speed
 			float _moveSpeed {1.3f};

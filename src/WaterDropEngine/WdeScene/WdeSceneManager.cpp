@@ -53,12 +53,46 @@ namespace wde::scene {
 
 
 
+	// Serializers
+	void WdeSceneManager::serializeScene() {
+		WDE_PROFILE_FUNCTION();
+		Logger::debug("Serializing scene.", LoggerChannel::SCENE);
+
+		if (_scene == nullptr) {
+			Logger::warn("Cannot serialize an empty scene.", LoggerChannel::SCENE);
+			return;
+		}
+
+		// Serialize scene
+		json sceneJSON = _scene->serialize();
+		std::string sceneName = _scene->getName();
+		std::transform(sceneName.begin(), sceneName.end(), sceneName.begin(), [](unsigned char c){ return std::tolower(c); });
+		for (char& character : sceneName)
+			if (character == ' ')
+				character = '_';
+		WdeFileUtils::saveFileDialog(to_string(sceneJSON), "json");
+		Logger::info("Scene saved.", LoggerChannel::SCENE);
+	}
+
+	void WdeSceneManager::deserializeScene(const json& sceneJSONContent) {
+		// Set scene
+		setScene(std::make_unique<LoadedScene>(sceneJSONContent));
+
+		// Deserialize scene
+		_scene->deserialize(sceneJSONContent);
+	}
+
+
+
 	// Setters and getters
 	void WdeSceneManager::setScene(std::unique_ptr<Scene> scene) {
 		WDE_PROFILE_FUNCTION();
 		// Delete last scene
-		if (WdeSceneManager::get()._scene != nullptr)
+		if (WdeSceneManager::get()._scene != nullptr) {
+			Logger::debug("Cleaning up last scene", LoggerChannel::SCENE);
+			WdeRenderEngine::get().waitForDevicesReady();
 			WdeSceneManager::get()._scene->cleanUp();
+		}
 
 		// Set new scene
 		WdeSceneManager::get()._scene = std::move(scene);

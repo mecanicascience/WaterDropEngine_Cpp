@@ -88,6 +88,9 @@ namespace wde::scene {
 				ImGui::Text(("Polygon mode : " + polygonMode + ".").c_str());
 			}
 
+			// Serializers
+			virtual json serialize() = 0;
+
 
 			// Descriptors and push constants
 			/**

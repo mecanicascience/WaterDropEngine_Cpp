@@ -48,4 +48,13 @@ namespace wde::scene {
 		// Clean up model
 		_model->cleanUp();
 	}
+
+
+	// Serializers
+	json ModelModule::serialize() {
+		return json({
+			{"model", _model->serialize()},
+			{"material", _material->serialize()}
+		});
+	}
 }

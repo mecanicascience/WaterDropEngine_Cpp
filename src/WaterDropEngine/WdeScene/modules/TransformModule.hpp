@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../utils/SceneSerializerUtils.hpp"
 #include "Module.hpp"
 #include "../../WdeGUI/GUITheme.hpp"
 #include "../../WdeGUI/GUIRenderer.hpp"
@@ -29,6 +30,16 @@ namespace wde::scene {
 				gui::GUIRenderer::addVec3Button("Position", position);
 				gui::GUIRenderer::addVec3Button("Rotation", rotation);
 				gui::GUIRenderer::addVec3Button("Scale", scale, 1.0f);
+			}
+
+
+			// Serializers
+			json serialize() override {
+				return json({
+					{"position", SceneSerializerUtils::asJson(position)},
+					{"rotation", SceneSerializerUtils::asJson(rotation)},
+					{"scale"   , SceneSerializerUtils::asJson(scale)}
+				});
 			}
 
 

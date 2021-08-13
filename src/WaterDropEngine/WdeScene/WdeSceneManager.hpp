@@ -1,11 +1,15 @@
 #pragma once
 
+#include <memory>
+#include <utility>
+#include <algorithm>
+#include <cctype>
+#include <string>
+
 #include "../WdeCore/WdeModule.hpp"
 #include "../../wde.hpp"
 #include "Scene.hpp"
-
-#include <memory>
-#include <utility>
+#include "../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 
 namespace wde::scene {
 	class WdeSceneManager : public WdeModule::Module<WdeSceneManager> {
@@ -27,6 +31,12 @@ namespace wde::scene {
 			void setupGUI(ImGuiID &parentID);
 			/** Render the GUI elements (called by the GUI manager) */
 			void renderGUI();
+
+			// Serializers
+			/** Serialize the scene as a json file */
+			void serializeScene();
+			/** Deserialize the scene given it's json structure */
+			void deserializeScene(const json& sceneJSONContent);
 
 
 			// Getters and setters

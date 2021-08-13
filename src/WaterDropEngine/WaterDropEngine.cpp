@@ -15,6 +15,7 @@ namespace wde {
             Logger::initialize("logs/", logLevel, activatedChannels);
 
             Logger::debug("======== Initializing program ========", LoggerChannel::MAIN);
+            Logger::info("Initializing program.", LoggerChannel::MAIN);
 
             // Create WaterDropEngine instance
 			_instance = std::make_unique<WdeInstance>();
@@ -49,6 +50,7 @@ namespace wde {
 			WDE_PROFILE_BEGIN_SESSION("Running", "logs/profiler_run.json");
 			// Starts instance
 			Logger::debug("======== Starting program ========", LoggerChannel::MAIN);
+			Logger::info("Starting program.", LoggerChannel::MAIN);
 			if (_instance->run() != WdeStatus::WDE_SUCCESS)
 				throw WdeException("Error running engine.", LoggerChannel::MAIN);
 			Logger::debug("======== Program ended ========\n\n", LoggerChannel::MAIN);
@@ -59,6 +61,7 @@ namespace wde {
 			WDE_PROFILE_BEGIN_SESSION("Cleaning", "logs/profiler_cleanup.json");
 			// CleanUp instance
 			Logger::debug("======== Cleaning up ========", LoggerChannel::MAIN);
+			Logger::info("Closing program.", LoggerChannel::MAIN);
 			if (_instance->cleanUp() != WdeStatus::WDE_SUCCESS)
 				throw WdeException("Error cleaning up engine.", LoggerChannel::MAIN);
 			Logger::debug("======== End of program ========\n", LoggerChannel::MAIN);

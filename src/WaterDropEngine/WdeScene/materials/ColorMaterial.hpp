@@ -35,6 +35,18 @@ namespace wde::scene {
 				push.ambientValue = 0.2f;
 				_pipeline.setPushConstants(0, &push);
 			}
+
+
+			// Serializers
+			json serialize() override {
+				return json({
+					{"type", _materialName},
+					{"stage", {
+						{"first", _stage.first},
+						{"second", _stage.second}
+					}}
+				});
+			}
 	};
 }
 

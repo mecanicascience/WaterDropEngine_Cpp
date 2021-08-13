@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <map>
 
 #include "../../wde.hpp"
 #include "objects/GameObject.hpp"
@@ -10,9 +11,11 @@
 namespace wde::scene {
 	class Scene : NonCopyable {
 		public:
+			explicit Scene(std::string sceneName) : _sceneName(std::move(sceneName)) {}
+
 			// Core functions
 			/** Initialize scene */
-			virtual void initialize() = 0;
+			virtual void initialize() {};
 			/** Initialize scene game objects */
 			virtual void initializeGameObjects() final {
 				WDE_PROFILE_FUNCTION();
@@ -83,6 +86,31 @@ namespace wde::scene {
 				_gameObjects.clear();
 			}
 
+			/** Serialize the scene */
+			json serialize() {
+				WDE_PROFILE_FUNCTION();
+
+				// Initial json string
+				json sceneJSON;
+				sceneJSON["name"] = _sceneName;
+
+				// Serialize game objects
+				sceneJSON["gameObjects"] = json::array();
+				for (auto& go : _gameObjects)
+					sceneJSON["gameObjects"].push_back(go->serialize());
+
+				return sceneJSON;
+			}
+
+			/** Deserialize the scene from a json string */
+			void deserialize(const json& sceneContent) {
+				WDE_PROFILE_FUNCTION();
+				Logger::info("Loading scene " + _sceneName + ".", LoggerChannel::SCENE);
+
+				std::cout << sceneContent << std::endl;
+				// TODO
+			}
+
 
 			// GUI functions
 			/**
@@ -139,6 +167,7 @@ namespace wde::scene {
 			std::vector<std::unique_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			bool hasCamera() { return _sceneCameraID != -1; }
 			GameObject& getCamera() { return *_gameObjects[_sceneCameraID]; }
+			std::string& getName() { return _sceneName; }
 
 
 		protected:
@@ -147,6 +176,9 @@ namespace wde::scene {
 
 
 		private:
+			/** The scene name */
+			std::string _sceneName;
+
 			/** The list of the scene game objects */
 			std::vector<std::unique_ptr<GameObject>> _gameObjects {};
 			/** The id of the selected game object */
@@ -158,5 +190,21 @@ namespace wde::scene {
 			std::chrono::time_point<std::chrono::system_clock> _currentTime = std::chrono::high_resolution_clock::now();
 			/** Last computed delta time */
 			float _deltaTime = 0;
+	};
+
+	/**
+	 * Class that represents a scene loaded from a file
+	 */
+	class LoadedScene : public Scene {
+		public:
+			/**
+			 * Create a new loaded scene given a new
+			 * @param name
+			 */
+			LoadedScene(const json& sceneData) : _sceneData(sceneData), Scene(sceneData["name"]) {}
+
+		private:
+			/** The loaded json scene data */
+			json _sceneData;
 	};
 }

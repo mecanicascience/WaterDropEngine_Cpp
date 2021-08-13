@@ -47,8 +47,26 @@ namespace wde::scene {
 			virtual void renderGizmo(Gizmo &gizmo) {}
 			/** Render the module GUI */
 			virtual void renderGUI() {};
+			/** Serialize the module */
+			virtual json serialize() { return json(""); };
 			/** Cleaning up the module */
-			virtual void cleanUp() {};
+			virtual void cleanUp() {}
+
+
+			/** Serialize the module */
+			json serializeModule() {
+				json initialJSON;
+				// Module global data
+				initialJSON["name"] = _moduleName;
+
+				// Module specific data
+				json serializeData = serialize();
+				if (serializeData != json(""))
+					initialJSON["data"] = serializeData;
+
+				// Return json
+				return initialJSON;
+			}
 
 
 			// Getters and setters

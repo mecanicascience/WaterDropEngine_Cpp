@@ -23,9 +23,9 @@ namespace wde::scene {
 			 */
 			explicit TextureMaterial(RenderStage stage, const std::string& relativeTexturePath, VkFilter textureFilter = VK_FILTER_LINEAR,
 									 VkSamplerAddressMode textureAdressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT)
-					: Material("Texture Material", stage, "texture/textureShader.vert", "texture/textureShader.frag") {
+					 : _textureAdressMode(textureAdressMode), _relativeTexturePath(relativeTexturePath), Material("Texture Material", stage, "texture/textureShader.vert", "texture/textureShader.frag") {
 				// Create texture
-				_materialTexture = std::make_unique<Texture2D>("res/textures/" + relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, textureFilter, textureAdressMode);
+				_materialTexture = std::make_unique<Texture2D>("res/textures/" + _relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, textureFilter, textureAdressMode);
 			}
 
 			void initialize(std::shared_ptr<Descriptor>& descriptor) override {
@@ -60,9 +60,33 @@ namespace wde::scene {
 			}
 
 
+			// Serializers
+			json serialize() override {
+				return json({
+					{"type", _materialName},
+					{"stage", {
+						{"first", _stage.first},
+						{"second", _stage.second}
+					}},
+					{"texturePath", _relativeTexturePath},
+					{"textureFilter", _polygonMode},
+					{"textureAdressMode", _textureAdressMode},
+					{"data", {
+						{"lightDirection", SceneSerializerUtils::asJson(_lightDirection)},
+						{"ambientLevel", _ambientLevel}
+					}}
+				});
+			}
+
+
 		private:
+			// Data
 			std::unique_ptr<Texture2D> _materialTexture;
 			glm::vec3 _lightDirection {1.0f, 0.0f, 0.0f};
 			float _ambientLevel {0.0f};
+
+			// Core values
+			std::string _relativeTexturePath;
+			VkSamplerAddressMode _textureAdressMode;
 	};
 }

@@ -8,6 +8,10 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+// Json configuration
+#include "../lib/json/single_include/nlohmann/json.hpp"
+using namespace nlohmann;
+
 // ImGUI includes
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/backends/imgui_impl_glfw.h"

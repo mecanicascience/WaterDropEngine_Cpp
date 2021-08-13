@@ -11,8 +11,8 @@ namespace wde::scene {
 			 * Loads a new model
 			 * @param relativePath The relative path of the object (final path will be "res/models/your_path"
 			 */
-			explicit ModelLoader(const std::string& relativePath) : Model() {
-				std::string path = "res/models/" + relativePath;
+			explicit ModelLoader(const std::string& relativePath) : _relativePath(relativePath), Model() {
+				std::string path = "res/models/" + _relativePath;
 
 				// Load model
 				tinyobj::attrib_t attrib;
@@ -88,6 +88,14 @@ namespace wde::scene {
 				this->initialize(false); // Assume that model normals are correct
 			};
 
+			// Serializers
+			json serialize() override {
+				return json({
+					{"type", "external"},
+					{"relativePath", _relativePath}
+				});
+			}
+
 
 		protected:
 			// Model description
@@ -96,6 +104,8 @@ namespace wde::scene {
 
 
 		private:
+			std::string _relativePath;
+
 			std::vector<Vertex> _vertices {};
 			std::vector<uint32_t> _indices {};
 	};

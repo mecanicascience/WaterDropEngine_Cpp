@@ -2,6 +2,7 @@
 
 #include "Module.hpp"
 #include "../../WdeRenderingEngine/WdeRenderEngine.hpp"
+#include "../utils/SceneSerializerUtils.hpp"
 
 namespace wde::scene {
 	/**
@@ -135,6 +136,25 @@ namespace wde::scene {
 				data.transformCameraSpace = getView();
 				data.transformProjSpace   = getProjection();
 				return data;
+			}
+
+
+			// Serializers
+			json serialize() override {
+				return json({
+					{"projectionMatrix", SceneSerializerUtils::asJson(_projectionMatrix)},
+					{"viewMatrix"      , SceneSerializerUtils::asJson(_viewMatrix)},
+					{"projectionType"  , _projectionType},
+					{"orthographic", {
+						{"bottomCorner", SceneSerializerUtils::asJson(_bottomCorner)},
+						{"topCorner", SceneSerializerUtils::asJson(_topCorner)}
+					}},
+					{"perspective", {
+						{"fov", _fov},
+						{"nearPlane", _nearPlane},
+						{"farPlane", _farPlane}
+					}}
+				});
 			}
 
 

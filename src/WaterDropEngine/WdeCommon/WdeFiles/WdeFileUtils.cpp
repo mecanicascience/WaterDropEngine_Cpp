@@ -1,9 +1,13 @@
 #include "WdeFileUtils.hpp"
 #include "../../../wde.hpp"
 
+#include "../../lib/portable-file-dialogs/portable-file-dialogs.h"
+
 namespace wde {
+	// Raw
 	std::vector<char> WdeFileUtils::readFile(const std::string &fileName) {
         WDE_PROFILE_FUNCTION();
+        Logger::debug("Reading file " + fileName, LoggerChannel::COMMON);
 		std::ifstream file(fileName, std::ios::ate | std::ios::binary);
 
 		// Can't open file
@@ -20,5 +24,32 @@ namespace wde {
 		// Close and return
 		file.close();
 		return buffer;
+	}
+
+
+	// Dialogs
+	std::vector<char> WdeFileUtils::readFileDialog(const std::string& format) {
+		WDE_PROFILE_FUNCTION();
+		Logger::debug("Opening file.", LoggerChannel::COMMON);
+
+		auto selection = pfd::open_file("Select a file", ".", { "Format", "*." + format, "All Files", "*" }).result();
+		if (!selection.empty())
+			return readFile(selection[0]);
+
+		return {};
+	}
+
+	void WdeFileUtils::saveFileDialog(const std::string& fileContent, const std::string& format) {
+		WDE_PROFILE_FUNCTION();
+		Logger::debug("Saving file.", LoggerChannel::COMMON);
+
+		// Select where to save
+		auto destination = pfd::save_file("Save file as", ".", { "Format", "*." + format, "All Files", "*" }, pfd::opt::force_overwrite).result();
+		if (!destination.empty()) {
+			// Write to file
+			std::ofstream out(destination);
+			out << fileContent;
+			out.close();
+		}
 	}
 }
