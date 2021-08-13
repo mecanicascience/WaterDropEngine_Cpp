@@ -142,6 +142,10 @@ namespace wde::renderEngine {
 		// Recreate render passes
 		for (auto &pass : _renderer->getRenderPasses())
 			pass->initialize(getSelectedDevice().getSwapChain());
+
+		// Recreate descriptors specific image views
+		/*for (auto descriptor : _descriptors)
+			descriptor->recreate();*/
 	}
 
 

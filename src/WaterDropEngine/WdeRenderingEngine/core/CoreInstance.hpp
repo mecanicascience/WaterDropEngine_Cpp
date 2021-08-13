@@ -12,6 +12,7 @@
 #include "../renderer/Renderer.hpp"
 #include "../commands/CommandBuffer.hpp"
 #include "../commands/CommandPool.hpp"
+#include "../descriptors/Descriptor.hpp"
 
 namespace wde::renderEngine {
 	class CoreWindow;
@@ -69,7 +70,7 @@ namespace wde::renderEngine {
 			void waitForDevicesReady();
 
 
-	private:
+		private:
             explicit CoreInstance() = default;
 			~CoreInstance() = default;
 
@@ -79,6 +80,8 @@ namespace wde::renderEngine {
 			CoreWindow* _window = nullptr;
 			/** The given renderer */
 			std::unique_ptr<Renderer> _renderer;
+			/** The rendering descriptor list */
+			std::vector<std::shared_ptr<Descriptor>> _descriptors {};
 
 			// Vulkan values
 			/** A reference to the Vulkan instance */

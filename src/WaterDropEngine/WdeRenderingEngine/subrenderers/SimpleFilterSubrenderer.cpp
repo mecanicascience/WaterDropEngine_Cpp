@@ -8,7 +8,7 @@ namespace wde::renderEngine {
 				  { },
 				  PipelineGraphics::Mode::MRT, PipelineGraphics::Depth::ReadWrite,
 				  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL,
-				  VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE) {}
+				  VK_CULL_MODE_NONE) {}
 
 	// Core functions
 	void SimpleFilterSubrenderer::initialize() {
@@ -22,7 +22,6 @@ namespace wde::renderEngine {
 		/*_descriptor->addSet(0, {
 			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, frameBuffers.getImageAttachment(0)->getView()}
 		});*/
-
 
 		// Setup pipeline
 		_pipeline.addDescriptor(_descriptor);
