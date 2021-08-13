@@ -18,7 +18,7 @@ namespace wde::renderEngine {
 			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1, _stage.first}
 		});
 		/*_descriptor->addSet(0, {
-			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 0}
+			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 0, _stage.first}
 		});*/
 
 		// Setup pipeline

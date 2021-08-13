@@ -80,7 +80,13 @@ namespace wde::renderEngine {
 	}
 
 	void DescriptorSet::recreate() {
-		// TODO
+		WDE_PROFILE_FUNCTION();
+		// Update attachments when recreating swap chain
+		for (auto& binding : _bindingsData) {
+			// Input attachment
+			if (binding._descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT)
+				addInputAttachment((int) binding._bindingIndex, binding._renderPassIndex, binding._attachmentBindingIndex);
+		}
 	}
 
 	void DescriptorSet::updateBuffer(int bindingIndex, const void* newData) {
