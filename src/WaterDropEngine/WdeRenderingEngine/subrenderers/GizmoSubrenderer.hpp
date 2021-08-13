@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../renderer/Subrenderer.hpp"
+#include "Subrenderer.hpp"
 #include "../../WdeScene/WdeSceneManager.hpp"
 #include "../pipelines/PipelineGraphics.hpp"
 #include "../../WdeScene/gizmos/Gizmo.hpp"

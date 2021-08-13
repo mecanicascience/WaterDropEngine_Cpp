@@ -1,6 +1,6 @@
 #pragma once
 
-#include "descriptors/RenderStage.hpp"
+#include "../renderer/descriptors/RenderStage.hpp"
 #include "../commands/CommandBuffer.hpp"
 
 namespace wde::renderEngine {

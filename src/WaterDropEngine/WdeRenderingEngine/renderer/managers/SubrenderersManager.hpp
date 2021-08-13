@@ -4,7 +4,7 @@
 
 #include "../descriptors/RenderStage.hpp"
 #include "../managers/TypeInfo.hpp"
-#include "../Subrenderer.hpp"
+#include "../../subrenderers/Subrenderer.hpp"
 
 namespace wde::renderEngine {
 	class SubrenderersManager : NonCopyable {

@@ -1,5 +1,4 @@
 #include "CoreAppRenderer.hpp"
-#include "../src/WaterDropEngine/WdeRenderingEngine/subrenderers/SimpleFilterSubrenderer.hpp"
 
 void CoreAppRenderer::initialize() {
 	// == Creates the render pass 0 ==
@@ -7,8 +6,8 @@ void CoreAppRenderer::initialize() {
 	std::vector<RenderPassAttachment> renderPassAttachments0 = {
             // Depth image
             {0, "Depth attachment", RenderPassAttachment::Type::Depth},
-            // Filter image
-            {1, "Filter image", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM},
+            // Mesh image
+            {1, "Mesh image", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM},
             // Render to swapchain
             {2, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)}
 	};
@@ -16,7 +15,6 @@ void CoreAppRenderer::initialize() {
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
 			{0, { 0, 1 }},
 			{1, { 2 }, { 1 }},
-			//{1, { 2 }, { 0 }},
 			{2, { 2 }}
 	};
 
@@ -29,11 +27,8 @@ void CoreAppRenderer::start() {
 	// Mesh sub-renderer
 	this->addSubrenderer<MeshSubrenderer>({0, 0});
 
-	// Gizmo sub-renderer
-	//this->addSubrenderer<GizmoSubrenderer>({0, 0});
-
-	// Sub pass 0.1
-	this->addSubrenderer<SimpleFilterSubrenderer>({0, 1});
+	this->addSubrenderer<InvertFilter>({0, 1}, 1);
+	//this->addSubrenderer<DefaultFilter>({0, 1}, 1);
 
 	// Gui sub-renderer
 	this->addSubrenderer<GUISubrenderer>({0, 2});
