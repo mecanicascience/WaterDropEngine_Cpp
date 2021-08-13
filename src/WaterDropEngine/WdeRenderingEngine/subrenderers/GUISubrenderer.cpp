@@ -28,17 +28,17 @@ namespace wde::renderEngine {
 
 
 		// === Initialize ImGui for Vulkan ===
-		ImGui_ImplVulkan_InitInfo init_info = {};
-		init_info.Instance = renderInstance.getInstance();
-		init_info.PhysicalDevice = renderInstance.getSelectedDevice().getPhysicalDevice();
-		init_info.Device = renderInstance.getSelectedDevice().getDevice();
+		ImGui_ImplVulkan_InitInfo initInfo = {};
+		initInfo.Instance = renderInstance.getInstance();
+		initInfo.PhysicalDevice = renderInstance.getSelectedDevice().getPhysicalDevice();
+		initInfo.Device = renderInstance.getSelectedDevice().getDevice();
 
 		// Using the same graphics queue as the render engine
-		init_info.QueueFamily = renderEngine::CoreDeviceHelper::findQueueFamilies(renderInstance.getSelectedDevice().getPhysicalDevice()).graphicsFamily;
-		init_info.Queue = renderInstance.getSelectedDevice().getGraphicsQueue();
+		initInfo.QueueFamily = renderEngine::CoreDeviceHelper::findQueueFamilies(renderInstance.getSelectedDevice().getPhysicalDevice()).graphicsFamily;
+		initInfo.Queue = renderInstance.getSelectedDevice().getGraphicsQueue();
 
 		// Create descriptor pool for ImGui
-		VkDescriptorPoolSize pool_sizes[] = { // TODO implement a render descriptor pool creation option
+		VkDescriptorPoolSize poolSizes[] = { // TODO implement a render descriptor pool creation option
 				{ VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
 				{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
 				{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, 1000 },
@@ -52,26 +52,26 @@ namespace wde::renderEngine {
 				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, 1000 }
 		};
 
-		VkDescriptorPoolCreateInfo pool_info = {};
-		pool_info.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-		pool_info.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
-		pool_info.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes);
-		pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
-		pool_info.pPoolSizes = pool_sizes;
-		if(vkCreateDescriptorPool(renderInstance.getSelectedDevice().getDevice(), &pool_info, nullptr, &_descriptorPool) != VK_SUCCESS)
+		VkDescriptorPoolCreateInfo poolInfo = {};
+		poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+		poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
+		poolInfo.maxSets = 1000 * IM_ARRAYSIZE(poolSizes);
+		poolInfo.poolSizeCount = (uint32_t)IM_ARRAYSIZE(poolSizes);
+		poolInfo.pPoolSizes = poolSizes;
+		if(vkCreateDescriptorPool(renderInstance.getSelectedDevice().getDevice(), &poolInfo, nullptr, &_descriptorPool) != VK_SUCCESS)
 			throw WdeException("Failed to create a descriptor pool for the ImGUI.", LoggerChannel::GUI);
-		init_info.DescriptorPool = _descriptorPool;
+		initInfo.DescriptorPool = _descriptorPool;
 
 		// Continue parameters configuration
-		init_info.PipelineCache = VK_NULL_HANDLE;
-		init_info.Allocator = nullptr;
-		init_info.MinImageCount = 2;
-		init_info.ImageCount = renderInstance.getSelectedDevice().getSwapChain().getImageCount();
-		init_info.CheckVkResultFn = OnGuiConfigError;
-		init_info.Subpass = stage.second;
+		initInfo.PipelineCache = VK_NULL_HANDLE;
+		initInfo.Allocator = nullptr;
+		initInfo.MinImageCount = 2;
+		initInfo.ImageCount = renderInstance.getSelectedDevice().getSwapChain().getImageCount();
+		initInfo.CheckVkResultFn = OnGuiConfigError;
+		initInfo.Subpass = stage.second;
 
 		// == Create ImGui render pass ==
-		ImGui_ImplVulkan_Init(&init_info, *renderInstance.getRenderer()->getRenderPass(stage.first)->getRenderPass());
+		ImGui_ImplVulkan_Init(&initInfo, *renderInstance.getRenderer()->getRenderPass(stage.first)->getRenderPass());
 
 		// == Uploads ImGui fonts to the GPU ==
 		Logger::debug("Uploading ImGui fonts to the GPU.", LoggerChannel::GUI);
