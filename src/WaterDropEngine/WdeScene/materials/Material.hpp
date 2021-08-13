@@ -15,13 +15,6 @@
 
 namespace wde::scene {
 	class Material {
-		/**
-		 * Material simple constant push data
-		 */
-		struct PushConstantData {
-			alignas(16) glm::vec3 ambientLightVector {0.0f, 1.0f, 0.0f};
-		};
-
 		public:
 			// Constructors
 			/**
@@ -46,7 +39,7 @@ namespace wde::scene {
 
 			// Core functions
 			/** Initialize the material descriptor and pipeline */
-			void initialize(std::shared_ptr<Descriptor>& descriptor) {
+			virtual void initialize(std::shared_ptr<Descriptor>& descriptor) {
 				WDE_PROFILE_FUNCTION();
 
 				// Setup descriptor
@@ -60,10 +53,6 @@ namespace wde::scene {
 					// Reference descriptor to pipeline
 					_pipeline.addDescriptor(_descriptor);
 				}
-
-
-				// Setup push constants
-				_pipeline.addPushConstants(0, sizeof(PushConstantData));
 
 				// Initialize pipeline
 				_pipeline.initialize();
@@ -84,22 +73,15 @@ namespace wde::scene {
 			}
 
 
-			// Push constants
-			/** Push constants to the material pipeline */
-			void pushConstants() {
-				// Set push constants
-				PushConstantData push {};
-				push.ambientLightVector = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
-				_pipeline.setPushConstants(0, &push);
-			}
-
-
-			// Descriptors
+			// Descriptors and push constants
 			/**
 			 * Setup the material descriptor
 			 * @param descriptor
 			 */
 			virtual void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) {}
+
+			/** Update push constants */
+			virtual void pushConstants() {}
 
 			/** Update the descriptor buffers */
 			virtual void pushDescriptors() {}

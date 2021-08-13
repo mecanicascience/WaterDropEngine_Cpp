@@ -15,6 +15,7 @@ layout(set = 1, binding = 0) uniform GameObjectBuffer {
 // Input values from the pipeline
 layout(push_constant) uniform Push {
     vec3 ambientLightVector;
+    float ambientValue;
 } inPush;
 
 
@@ -31,15 +32,19 @@ layout(location = 0) out vec3 outFragColor;
 
 // Executed once for each vertex
 void main() {
-    gl_Position = inSceneData.transformProjSpace        // To Vulkan frustum position
-                * inSceneData.transformCameraSpace      // To Camera space position
-                * inGameObjectData.transformWorldSpace  // To World space position
-                * vec4(inPosition, 1.0f);               // Object local space position
+    // Computes world space position
+    vec4 positionWorldSpace = inGameObjectData.transformWorldSpace * vec4(inPosition, 1.0); // To world space position
+    gl_Position = inSceneData.transformProjSpace    // To Vulkan frustum position
+                * inSceneData.transformCameraSpace  // To Camera space position
+                * positionWorldSpace;               // Object world space position
 
-    float shadowAmount = (dot(inPush.ambientLightVector, inNormal) + 1.0f) / 2.0f;
-    outFragColor = inColor * shadowAmount;
+    // Compute normal world space position
+    vec3 normalWorldSpace = normalize(mat3(inGameObjectData.transformWorldSpace) * inNormal);
 
-    // Depth
-    // float z = 1.0 - (gl_Position.z / gl_Position.w);
-    // outFragColor = vec3(z, z, z);
+    // Compute real direct lightning color
+    float lightIntensity = max(dot(normalWorldSpace, inPush.ambientLightVector), 0);
+    // outFragColor = inColor * lightIntensity;
+
+    // Compute ambiant approximation color (simulate reflexion)
+    outFragColor = (inPush.ambientValue + lightIntensity) * inColor;
 }
