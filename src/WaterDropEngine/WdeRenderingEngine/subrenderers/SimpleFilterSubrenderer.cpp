@@ -15,7 +15,7 @@ namespace wde::renderEngine {
 		// Initialize descriptor
 		auto& frameBuffers = WdeRenderEngine::get().getRenderer()->getRenderPass(_stage.first)->getFrameBuffers();
 
-		_descriptor = std::make_shared<Descriptor>(10, 10, 10, 10);
+		_descriptor = std::make_shared<Descriptor>();
 		_descriptor->addSet(0, {
 			{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, frameBuffers.getImageAttachment(1)->getView()}
 		});
