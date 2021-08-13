@@ -72,6 +72,22 @@ namespace wde::scene {
 					_pipeline.bind(_descriptor);
 			}
 
+			/** Render GUI elements to the screen */
+			virtual void renderGUI() {
+				// Default GUI rendering
+				ImGui::Text(("Vertex shader : " + getVertexShader() + ".").c_str());
+				ImGui::Text(("Fragment shader : " + getFragmentShader() + ".").c_str());
+
+				std::string polygonMode;
+				if (getPolygonMode() == VK_POLYGON_MODE_POINT)
+					polygonMode = "Point mode";
+				else if (getPolygonMode() == VK_POLYGON_MODE_LINE)
+					polygonMode = "Line mode";
+				else
+					polygonMode = "Fill mode";
+				ImGui::Text(("Polygon mode : " + polygonMode + ".").c_str());
+			}
+
 
 			// Descriptors and push constants
 			/**

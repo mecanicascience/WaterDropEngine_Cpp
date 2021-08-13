@@ -114,8 +114,8 @@ namespace wde::scene {
 				ImGui::Dummy(ImVec2(0.0f, 5.0f));
 				if (ImGui::TreeNode("Orthographic")) {
 					ImGui::Dummy(ImVec2(0.0f, 0.12f));
-					gui::GUIRenderer::createVec3Button("Bottom", _bottomCorner, -1.0f);
-					gui::GUIRenderer::createVec3Button("Top", _topCorner, 1.0f);
+					gui::GUIRenderer::addVec3Button("Bottom", _bottomCorner, -1.0f);
+					gui::GUIRenderer::addVec3Button("Top", _topCorner, 1.0f);
 					ImGui::TreePop();
 				}
 

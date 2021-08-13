@@ -12,7 +12,7 @@ namespace wde::gui {
 			 * @param resetValue The value that will be used to reset the values if the button is clicked (default 0)
 			 * @param columnWidth The width of the columns (default 80)
 			 */
-			static void createVec3Button(const std::string& label, glm::vec3 &values, float resetValue = 0.0f, float columnWidth = 80.0f) {
+			static void addVec3Button(const std::string& label, glm::vec3 &values, float resetValue = 0.0f, float columnWidth = 80.0f) {
 				ImGui::PushID(label.c_str()); // label vector id
 				ImGui::Columns(2); // two columns (one label / one vector)
 				ImGui::SetColumnWidth(0, columnWidth);
@@ -68,15 +68,17 @@ namespace wde::gui {
 		}
 
 
-		/**
-		 * Creates a float dragger
-		 * @param name Label
-		 * @param value A reference to the value
-		 * @param resetValue The reset value when the user clicks on the associated button (default 0)
-		 * @param buttonColor Color of button selected and active (default colorMajorLight)
-		 * @param hoverColor Color of button hovered (default colorMinorLight)
-		 */
-		static void addFloatDraggerButton(const std::string& name, float &value, float resetValue = 0.0f, ImVec4 buttonColor = GUITheme::colorMajorLight, ImVec4 hoverColor = GUITheme::colorMinorLight) {
+
+		private:
+			/**
+			 * Creates a float dragger
+			 * @param name Label
+			 * @param value A reference to the value
+			 * @param resetValue The reset value when the user clicks on the associated button (default 0)
+			 * @param buttonColor Color of button selected and active (default colorMajorLight)
+			 * @param hoverColor Color of button hovered (default colorMinorLight)
+			 */
+			static void addFloatDraggerButton(const std::string& name, float &value, float resetValue = 0.0f, ImVec4 buttonColor = GUITheme::colorMajorLight, ImVec4 hoverColor = GUITheme::colorMinorLight) {
 				ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);

@@ -26,9 +26,9 @@ namespace wde::scene {
 			}
 
 			void renderGUI() override {
-				gui::GUIRenderer::createVec3Button("Position", position);
-				gui::GUIRenderer::createVec3Button("Rotation", rotation);
-				gui::GUIRenderer::createVec3Button("Scale", scale, 1.0f);
+				gui::GUIRenderer::addVec3Button("Position", position);
+				gui::GUIRenderer::addVec3Button("Rotation", rotation);
+				gui::GUIRenderer::addVec3Button("Scale", scale, 1.0f);
 			}
 
 

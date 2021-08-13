@@ -23,23 +23,25 @@ namespace wde::scene {
 
 	void ModelModule::renderGUI() {
 		// Model infos
-		ImGui::Text("Object model data.");
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+		ImGui::Text("  Model data");
+		ImGui::Dummy(ImVec2(0.0f, 0.3f));
+		ImGui::PopFont();
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 		ImGui::Text(("Vertices count : " + std::to_string(_model->getVertices().size()) + ".").c_str());
 		ImGui::Text(("Indices count : " + std::to_string(_model->getIndices().size()) + ".").c_str());
 
-		// Material infos
-		ImGui::Text("Material data.");
-		ImGui::Text(("Vertex shader : " + _material->getVertexShader() + ".").c_str());
-		ImGui::Text(("Fragment shader : " + _material->getFragmentShader() + ".").c_str());
 
-		std::string polygonMode;
-		if (_material->getPolygonMode() == VK_POLYGON_MODE_POINT)
-			polygonMode = "Point mode";
-		else if (_material->getPolygonMode() == VK_POLYGON_MODE_LINE)
-			polygonMode = "Line mode";
-		else
-			polygonMode = "Fill mode";
-		ImGui::Text(("Polygon mode : " + polygonMode + ".").c_str());
+		// Material infos
+		ImGui::Dummy(ImVec2(0.0f, 12.0f));
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+		ImGui::Text("  Material data");
+		ImGui::Dummy(ImVec2(0.0f, 0.3f));
+		ImGui::PopFont();
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+		_material->renderGUI();
 	}
 
 	void ModelModule::cleanUp() {

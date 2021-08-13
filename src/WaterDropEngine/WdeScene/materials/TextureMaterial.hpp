@@ -10,7 +10,7 @@ namespace wde::scene {
 		 */
 		struct PushConstantLightsData {
 			glm::vec3 ambientLightVector;
-			float ambientValue;
+			float ambientLevel;
 		};
 
 		public:
@@ -45,17 +45,24 @@ namespace wde::scene {
 				});
 			}
 
-
 			void pushConstants() override {
 				// Set push constants
 				PushConstantLightsData push {};
-				push.ambientLightVector = glm::normalize(glm::vec3(0.7f, 0.0f, -0.1f));
-				push.ambientValue = 0.2f;
+				push.ambientLightVector = glm::normalize(_lightDirection);
+				push.ambientLevel = _ambientLevel;
 				_pipeline.setPushConstants(0, &push);
+			}
+
+
+			void renderGUI() override {
+				gui::GUIRenderer::addVec3Button("Light direction", _lightDirection, 1.0f, 120.0f);
+				gui::GUIRenderer::addFloatDragger("Ambient level", _ambientLevel, 0.0f);
 			}
 
 
 		private:
 			std::unique_ptr<Texture2D> _materialTexture;
+			glm::vec3 _lightDirection {1.0f, 0.0f, 0.0f};
+			float _ambientLevel {0.0f};
 	};
 }
