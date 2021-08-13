@@ -113,7 +113,7 @@ namespace wde::scene {
 				for (auto& go : _gameObjects) {
 					ImGui::Dummy(ImVec2(0.2f, 0.0f));
 					ImGui::SameLine();
-					if (ImGui::Selectable(go->getName().c_str(), selected == objID))
+					if (ImGui::Selectable((std::to_string(go->getID()) + " - " + go->getName()).c_str(), selected == objID))
 						selected = objID;
 					objID++;
 				}

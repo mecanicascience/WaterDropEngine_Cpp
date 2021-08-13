@@ -133,7 +133,7 @@ namespace wde::scene {
 				WDE_PROFILE_FUNCTION();
 				// Render module top
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
-				ImGui::Text(_objectName.c_str());
+				ImGui::Text((std::to_string(_objectID) + " - " + _objectName).c_str());
 				ImGui::PopFont();
 				ImGui::Dummy(ImVec2(0.0f, 3.0f));
 				ImGui::Separator();

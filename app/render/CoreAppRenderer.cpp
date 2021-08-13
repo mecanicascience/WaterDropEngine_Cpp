@@ -7,7 +7,7 @@ void CoreAppRenderer::initialize() {
             // Depth image
             {0, "Depth attachment", RenderPassAttachment::Type::Depth},
             // Mesh image
-            {1, "Mesh image", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM},
+            {1, "Mesh image", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM, Color(0.1f, 0.105f, 0.11f)},
             // Render to swapchain
             {2, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)}
 	};
