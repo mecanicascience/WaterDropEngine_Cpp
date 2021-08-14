@@ -75,6 +75,7 @@ namespace wde::renderEngine {
 		}
 	}
 
+	std::vector<VkDescriptorSetLayout> _descriptorsVec {};
 	void PipelineGraphics::createPipelineLayout() {
         WDE_PROFILE_FUNCTION();
 		VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
@@ -90,29 +91,29 @@ namespace wde::renderEngine {
 
 
 		// Descriptor sets
-		pipelineLayoutCreateInfo.setLayoutCount = 0;
-		pipelineLayoutCreateInfo.pSetLayouts = nullptr;
 		if (_descriptors.empty()) {
 			pipelineLayoutCreateInfo.setLayoutCount = 0;
 			pipelineLayoutCreateInfo.pSetLayouts = nullptr;
 		}
 		else {
-			std::vector<VkDescriptorSetLayout> descriptorsVec {};
+			_descriptorsVec.clear();
 			for (auto& descriptor : _descriptors) {
 				descriptor->createLayouts();
 
 				std::vector<VkDescriptorSetLayout>& descriptorVector = descriptor->getLayouts();
 				for (auto& v : descriptorVector)
-					descriptorsVec.push_back(v);
+					_descriptorsVec.push_back(v);
 			}
-			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(descriptorsVec.size());
-			pipelineLayoutCreateInfo.pSetLayouts = descriptorsVec.data();
+			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(_descriptorsVec.size());
+			pipelineLayoutCreateInfo.pSetLayouts = _descriptorsVec.data();
 		}
 
 
 		// Create layout
+		std::cout << "Pipeline layout creation." << std::endl;
 		if (vkCreatePipelineLayout(CoreInstance::get().getSelectedDevice().getDevice(), &pipelineLayoutCreateInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
 			throw WdeException("Failed to create pipelines layout.", LoggerChannel::RENDERING_ENGINE);
+		std::cout << "Passed pipeline layout creation." << std::endl;
 	}
 
 
@@ -175,8 +176,9 @@ namespace wde::renderEngine {
 		_configInfo.colorBlendState.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
 		_configInfo.colorBlendState.logicOpEnable = VK_FALSE;
 		_configInfo.colorBlendState.logicOp = VK_LOGIC_OP_COPY; // Optional
-		_configInfo.colorBlendState.attachmentCount = static_cast<uint32_t>(_blendAttachmentStates.size());
-		_configInfo.colorBlendState.pAttachments = _blendAttachmentStates.data();
+		/* Done just before pipeline layout creation to avoid pointer problems in debugger mode (not sure why)
+		 * _configInfo.colorBlendState.attachmentCount = static_cast<uint32_t>(_blendAttachmentStates.size());
+		 * _configInfo.colorBlendState.pAttachments = _blendAttachmentStates.data(); */
 		_configInfo.colorBlendState.blendConstants[0] = 0.0f; // Optional
 		_configInfo.colorBlendState.blendConstants[1] = 0.0f; // Optional
 		_configInfo.colorBlendState.blendConstants[2] = 0.0f; // Optional
@@ -316,6 +318,10 @@ namespace wde::renderEngine {
 		pipelineCreateInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 		pipelineCreateInfo.stageCount = static_cast<uint32_t>(_shaderStagesInfo.size());
 		pipelineCreateInfo.pStages = _shaderStagesInfo.data();
+
+		// Set color attachments
+		_configInfo.colorBlendState.attachmentCount = static_cast<uint32_t>(_blendAttachmentStates.size());
+		_configInfo.colorBlendState.pAttachments = _blendAttachmentStates.data();
 
 		// Fixed-function states
 		pipelineCreateInfo.pVertexInputState = &_configInfo.vertexInputStateCreateInfo;

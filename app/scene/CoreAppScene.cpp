@@ -15,11 +15,11 @@ void CoreAppScene::initialize() {
 	// ColorMaterial - ColorMaterialOutline - TextureMaterial
 
 	// Cube
-	/*auto& cube = createGameObject("Cube");
+	auto& cube = createGameObject("Cube");
 	cube.addModule<ModelModule>(std::make_shared<ModelCube>(), std::make_shared<ColorMaterial>(RenderStage {0, 0}));
 	auto& cubeTransform = cube.getModule<TransformModule>();
 	cubeTransform.position = {0.0f, 0.0f, 2.5f};
-	cubeTransform.scale /= 2.0f;*/
+	cubeTransform.scale /= 2.0f;
 
 	// Flat Vase object
 	/*auto& flatVase = createGameObject("Vase Flat");
@@ -46,7 +46,7 @@ void CoreAppScene::initialize() {
 
 
 	// Minecraft scene test game object
-	auto& mcScene = createGameObject("Minecraft Scene");
+	/*auto& mcScene = createGameObject("Minecraft Scene");
 	mcScene.addModule<ModelModule>(std::make_shared<ModelLoader>("lost_empire.obj"),
-								   std::make_shared<TextureMaterial>(RenderStage {0, 0}, "lost_empire.png", VK_FILTER_NEAREST));
+								   std::make_shared<TextureMaterial>(RenderStage {0, 0}, "lost_empire.png", VK_FILTER_NEAREST));*/
 }

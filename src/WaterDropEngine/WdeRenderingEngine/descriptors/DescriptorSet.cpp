@@ -171,7 +171,7 @@ namespace wde::renderEngine {
 		WDE_PROFILE_FUNCTION();
 
 		// Get corresponding image view
-		VkImageView& imageView = WdeRenderEngine::get().getRenderer()->getRenderPass(renderPassIndex)->getFrameBuffers().getImageAttachment(attachmentBindingIndex)->getView();
+		VkImageView& imageView = WdeRenderEngine::get().getRenderer()->getRenderPass(renderPassIndex)->getFrameBuffers().getImageAttachment((int) attachmentBindingIndex)->getView();
 
 		// Create image info
 		VkDescriptorImageInfo imageInfo {};
