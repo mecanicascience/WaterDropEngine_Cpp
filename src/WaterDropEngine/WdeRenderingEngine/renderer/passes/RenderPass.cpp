@@ -81,7 +81,7 @@ namespace wde::renderEngine {
 
 		// Create depth stencil
 		if (_depthAttachment)
-			_depthStencil = std::make_unique<ImageDepth>(_renderArea.getExtent());
+			_depthStencil = std::make_unique<ImageDepth>(_renderArea.getExtent(), VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT);
         VkFormat depthFormat = _depthStencil ? _depthStencil->getFormat() : VK_FORMAT_UNDEFINED;
 
 		// Creates associated render pass

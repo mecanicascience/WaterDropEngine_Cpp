@@ -110,10 +110,8 @@ namespace wde::renderEngine {
 
 
 		// Create layout
-		std::cout << "Pipeline layout creation." << std::endl;
 		if (vkCreatePipelineLayout(CoreInstance::get().getSelectedDevice().getDevice(), &pipelineLayoutCreateInfo, nullptr, &_pipelineLayout) != VK_SUCCESS)
 			throw WdeException("Failed to create pipelines layout.", LoggerChannel::RENDERING_ENGINE);
-		std::cout << "Passed pipeline layout creation." << std::endl;
 	}
 
 

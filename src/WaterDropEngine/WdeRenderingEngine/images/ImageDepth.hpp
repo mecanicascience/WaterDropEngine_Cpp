@@ -15,17 +15,16 @@ namespace wde::renderEngine {
      */
     class ImageDepth : public Image, NonCopyable {
         public:
-            /**
-             * Create a new image view
-             * @param imageExtent
-             */
-            explicit ImageDepth(VkExtent2D imageExtent)
+	        /**
+			 * Create a new image view
+			 * @param imageExtent
+			 * @param usage The usage of the image (default VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
+			 */
+	        explicit ImageDepth(VkExtent2D imageExtent, VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
                 : Image(VK_IMAGE_TYPE_2D, VK_IMAGE_VIEW_TYPE_2D, 1, findSupportedFormat(DEPTH_TRY_FORMATS,
-							VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT),
+						VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT),
                         {imageExtent.width, imageExtent.height, 1}, 1, VK_IMAGE_TILING_OPTIMAL,
-                        VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-                        VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1) {
-                WDE_PROFILE_FUNCTION();
-            }
+                        usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+                        VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1) { }
     };
 }

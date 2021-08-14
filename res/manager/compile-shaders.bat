@@ -8,5 +8,3 @@ for /r %%f in (*) do (
     )
 )
 cd "../manager/"
-
-exit /b 0

@@ -14,7 +14,7 @@ void CoreAppRenderer::initialize() {
 	// List of every sub-passes in the render pass
 	std::vector<RenderSubpassType> renderPassSubpasses0 = {
 			{0, { 0, 1 }},
-			{1, { 2 }, { 1 }},
+			{1, { 2 }, { 0 }},
 			{2, { 2 }}
 	};
 
@@ -29,7 +29,7 @@ void CoreAppRenderer::start() {
 
 	// Filter
 	// this->addSubrenderer<InvertFilter>({0, 1}, 1);
-	this->addSubrenderer<DefaultFilter>({0, 1}, 1);
+	this->addSubrenderer<DefaultFilter>({0, 1}, 0);
 
 	// Gui sub-renderer
 	this->addSubrenderer<GUISubrenderer>({0, 2});

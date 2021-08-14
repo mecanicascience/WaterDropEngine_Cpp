@@ -171,12 +171,34 @@ namespace wde::renderEngine {
 		WDE_PROFILE_FUNCTION();
 
 		// Get corresponding image view
-		VkImageView& imageView = WdeRenderEngine::get().getRenderer()->getRenderPass(renderPassIndex)->getFrameBuffers().getImageAttachment((int) attachmentBindingIndex)->getView();
+		RenderPass* renderPass = WdeRenderEngine::get().getRenderer()->getRenderPass(renderPassIndex);
+		auto attachmentType = renderPass->getAttachment(attachmentBindingIndex)->getType();
+		VkImageView* imageView = nullptr;
+
+		switch(attachmentType) {
+			case RenderPassAttachment::Type::Swapchain: {
+				// Not allowed to read from swapchain
+				break;
+			}
+			case RenderPassAttachment::Type::Depth: {
+				imageView = &renderPass->getDepthStencil().getView();
+				ImageDepth& depthImageTmp = renderPass->getDepthStencil();
+				break;
+			}
+			case RenderPassAttachment::Type::Image: {
+				imageView = &renderPass->getFrameBuffers().getImageAttachment((int) attachmentBindingIndex)->getView();
+				break;
+			}
+		}
+
+		// Test if image view exists
+		if (imageView == nullptr)
+			throw WdeException("Trying to create an image descriptor of an attachment that has a nullptr image view.", LoggerChannel::RENDERING_ENGINE);
 
 		// Create image info
 		VkDescriptorImageInfo imageInfo {};
 		imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		imageInfo.imageView = imageView;
+		imageInfo.imageView = *imageView;
 		imageInfo.sampler = VK_NULL_HANDLE;
 
 		// Write buffers into the set
