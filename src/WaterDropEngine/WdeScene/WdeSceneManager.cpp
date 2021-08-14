@@ -6,8 +6,11 @@ namespace wde::scene {
 	void WdeSceneManager::initialize() {
 		WDE_PROFILE_FUNCTION();
 		Logger::debug("== Initializing Scene Manager ==", LoggerChannel::SCENE);
-		if (_scene == nullptr)
-			throw WdeException("Scene not set before initialization.", LoggerChannel::SCENE);
+		if (_scene == nullptr) {
+			Logger::warn("Scene not set before initialization.", LoggerChannel::SCENE);
+			_hasStarted = true;
+			return;
+		}
 
 		// Initialize scene
 		Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
