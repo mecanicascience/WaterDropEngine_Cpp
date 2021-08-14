@@ -2,6 +2,9 @@
 #include "../../WdeGUI/GUITheme.hpp"
 
 namespace wde {
+	// Main thread
+	std::thread::id Logger::MAIN_THREAD_ID = std::this_thread::get_id();
+
     // Log file not initialized by default
     bool Logger::_logFileInitialized = false;
     std::ofstream Logger::_logFile;
@@ -36,33 +39,35 @@ namespace wde {
 		_logLines.emplace_back(message, "debug", channel);
 
 		// If more line than threshold, clear first lines
-		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+		if (std::this_thread::get_id() == MAIN_THREAD_ID && _logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
 			_logLines.erase(_logLines.begin());
 	}
 
 	void Logger::info(const std::string &message, LoggerChannel channel) {
 		if (!checkValidInput(channel, LoggerLogLevel::INFO))
 			return;
+
 		outputMessage(getFormatedMessage(message, " INFO  ", channel));
 
 		// Add line to the log line list
 		_logLines.emplace_back(message, "info", channel);
 
 		// If more line than threshold, clear first lines
-		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+		if (std::this_thread::get_id() == MAIN_THREAD_ID && _logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
 			_logLines.erase(_logLines.begin());
 	}
 
 	void Logger::warn(const std::string &message, LoggerChannel channel) {
 		if (!checkValidInput(channel, LoggerLogLevel::WARN))
 			return;
+
 		outputMessage(getFormatedMessage(message, "WARNING", channel));
 
 		// Add line to the log line list
 		_logLines.emplace_back(message, "warning", channel);
 
 		// If more line than threshold, clear first lines
-		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+		if (std::this_thread::get_id() == MAIN_THREAD_ID && _logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
 			_logLines.erase(_logLines.begin());
 	}
 
@@ -74,7 +79,7 @@ namespace wde {
 		_logLines.emplace_back(message, "error", channel);
 
 		// If more line than threshold, clear first lines
-		if (_logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
+		if (std::this_thread::get_id() == MAIN_THREAD_ID && _logLines.size() > Constants::GUI_CONSOLE_MAX_LINES)
 			_logLines.erase(_logLines.begin());
 
 		// Throw error

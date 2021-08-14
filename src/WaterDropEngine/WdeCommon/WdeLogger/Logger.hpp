@@ -7,6 +7,7 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
+#include <thread>
 #include "../../../lib/imgui/imgui.h"
 
 #include "../WdeUtils/Constants.hpp"
@@ -181,6 +182,7 @@ namespace wde {
 
             // Core variables
             static std::vector<LogMessage> _logLines;
+            static std::thread::id MAIN_THREAD_ID;
 
             // Channel colors
             static std::unordered_map<LoggerChannel, ImColor> _channelsColors;

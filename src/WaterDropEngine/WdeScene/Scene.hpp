@@ -198,6 +198,11 @@ namespace wde::scene {
 			GameObject& getCamera() { return *_gameObjects[_sceneCameraID]; }
 			std::string& getName() { return _sceneName; }
 
+			/** @return true if the scene is initialized and ready to render */
+			bool isInitialized() { return _isInitialized; }
+			/** Say that the scene initialized */
+			void setInitialized() { _isInitialized = true; }
+
 
 		protected:
 			/** @return the delta time since the last update (in seconds) */
@@ -207,6 +212,8 @@ namespace wde::scene {
 		private:
 			/** The scene name */
 			std::string _sceneName;
+			/** True when the scene is initialized */
+			bool _isInitialized = false;
 
 			/** The list of the scene game objects */
 			std::vector<std::unique_ptr<GameObject>> _gameObjects {};

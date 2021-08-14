@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <cctype>
 #include <string>
+#include <thread>
 
 #include "../WdeCore/WdeModule.hpp"
 #include "../../wde.hpp"
@@ -17,6 +18,9 @@ namespace wde::scene {
 		inline static const int MODULE_REGISTERED = RegisterModule("sceneManager", Stage::POST);
 
 		public:
+			// Constructors
+			~WdeSceneManager() override;
+
 			// Core module functions
 			/** Initialize the module */
 			void initialize() override;
@@ -46,10 +50,18 @@ namespace wde::scene {
 			 */
 			void setScene(std::unique_ptr<Scene> scene);
 			std::unique_ptr<Scene>& getActiveScene() { return _scene; }
+			/** @return true if the scene is ready to render */
+			bool hasScene() {
+				if (_scene == nullptr)
+					return false;
+				return getActiveScene()->isInitialized();
+			}
 
 
 		private:
 			std::unique_ptr<Scene> _scene {};
-			bool _hasStarted = false;
+
+			/** Scene loading and storing threads */
+			std::thread _initializeSceneThread;
 	};
 }

@@ -11,7 +11,7 @@ namespace wde::renderEngine {
 						+ "-" + std::to_string(_stage.second) + ".", LoggerChannel::RENDERING_ENGINE);
 
 		// Renders game objects in scene if the scene has a camera
-		if(scene::WdeSceneManager::get().getActiveScene() != nullptr && scene::WdeSceneManager::get().getActiveScene()->hasCamera())
+		if(scene::WdeSceneManager::get().hasScene() && scene::WdeSceneManager::get().getActiveScene()->hasCamera())
 			scene::WdeSceneManager::get().getActiveScene()->render(commandBuffer, _stage);
 	}
 }

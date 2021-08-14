@@ -1,4 +1,5 @@
 #include "WdeRenderEngine.hpp"
+#include "../WdeScene/WdeSceneManager.hpp"
 
 namespace wde::renderEngine {
 	// Core functions
@@ -29,6 +30,9 @@ namespace wde::renderEngine {
 
 	void WdeRenderEngine::draw() {
         WDE_PROFILE_FUNCTION();
+        if (!scene::WdeSceneManager::get().hasScene())
+        	return;
+
 		// The selected device will draw the next frame to the screen
 		Logger::debug("Drawing frame to the screen.", LoggerChannel::RENDERING_ENGINE);
 		CoreInstance::get().getSelectedDevice().draw();
