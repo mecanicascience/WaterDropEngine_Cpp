@@ -44,6 +44,7 @@
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/filters/FilterSubrenderer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/filters/InvertFilter.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/filters/DefaultFilter.hpp"
+#include "WaterDropEngine/WdeRenderingEngine/subrenderers/filters/DepthViewerFilter.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/utils/FPSUtils.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/WdeRenderEngine.hpp"
 

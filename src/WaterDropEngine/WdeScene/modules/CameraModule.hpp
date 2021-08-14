@@ -16,6 +16,8 @@ namespace wde::scene {
 			struct GPUCameraData {
 				alignas(16) glm::mat4 transformCameraSpace {1.0f};
 				alignas(16) glm::mat4 transformProjSpace   {1.0f};
+				float nearPlane {0.0f};
+				float farPlane {1.0f};
 			};
 
 
@@ -31,6 +33,8 @@ namespace wde::scene {
 				GPUCameraData data {};
 				data.transformCameraSpace = getView();
 				data.transformProjSpace   = getProjection();
+				data.nearPlane = _nearPlane;
+				data.farPlane  = _farPlane;
 				return data;
 			}
 

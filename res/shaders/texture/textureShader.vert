@@ -4,6 +4,8 @@
 layout(set = 0, binding = 0) uniform SceneBuffer {
     mat4 transformCameraSpace;
     mat4 transformProjSpace;
+    float nearPlane;
+    float farPlane;
 } inSceneData;
 
 // Game object set values
@@ -17,6 +19,7 @@ layout(set = 1, binding = 0) uniform GameObjectBuffer {
 layout(push_constant) uniform Push {
     vec3 ambientLightVector;
     float ambientValue;
+    bool showDepth;
 } inPush;
 
 
@@ -39,6 +42,7 @@ void main() {
                 * inGameObjectData.transformWorldSpace  // To World space position
                 * vec4(inPosition, 1.0f);               // Object local space position
 
+    // UV coords
     outTexCoord = inTexCoord;
 
     // Using ambiant color values

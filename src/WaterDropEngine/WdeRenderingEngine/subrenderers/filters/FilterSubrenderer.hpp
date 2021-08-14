@@ -29,7 +29,7 @@ namespace wde::renderEngine {
 
 			// Core functions
 			/** Initialize the sub-renderer pipeline and descriptor */
-			void initialize() final {
+			void initialize() override {
 				WDE_PROFILE_FUNCTION();
 				// Initialize descriptor
 				_descriptor = std::make_shared<Descriptor>();
@@ -52,7 +52,7 @@ namespace wde::renderEngine {
 			}
 
 			/** Renders the filter */
-			void render(CommandBuffer &commandBuffer) final {
+			void render(CommandBuffer &commandBuffer) override {
 				WDE_PROFILE_FUNCTION();
 				Logger::debug("Rendering filter at stage " + std::to_string(_stage.first)
 					+ "-" + std::to_string(_stage.second) + ".", LoggerChannel::RENDERING_ENGINE);
@@ -66,7 +66,7 @@ namespace wde::renderEngine {
 			}
 
 
-		private:
+		protected:
 			/** The associated filter render pipeline */
 			PipelineGraphics _pipeline;
 			/** The associated filter ressource descriptor */

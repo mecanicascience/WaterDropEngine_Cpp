@@ -12,6 +12,7 @@ namespace wde::scene {
 		struct PushConstantLightsData {
 			glm::vec3 ambientLightVector;
 			float ambientLevel;
+			bool showDepth;
 		};
 
 		public:
@@ -24,7 +25,9 @@ namespace wde::scene {
 			 */
 			explicit TextureMaterial(RenderStage stage, const std::string& relativeTexturePath, VkFilter textureFilter = VK_FILTER_LINEAR,
 									 VkSamplerAddressMode textureAdressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT)
-					 : _textureAdressMode(textureAdressMode), _relativeTexturePath(relativeTexturePath), Material("Texture Material", stage, "texture/textureShader.vert", "texture/textureShader.frag") {
+					 : _textureAdressMode(textureAdressMode),
+					   _relativeTexturePath(relativeTexturePath),
+					   Material("Texture Material", stage, "texture/textureShader.vert", "texture/textureShader.frag") {
 				// Create texture
 				_materialTexture = std::make_unique<Texture2D>("res/textures/" + _relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, textureFilter, textureAdressMode);
 			}
@@ -51,6 +54,7 @@ namespace wde::scene {
 				PushConstantLightsData push {};
 				push.ambientLightVector = glm::normalize(_lightDirection);
 				push.ambientLevel = _ambientLevel;
+				push.showDepth = _showDepth;
 				_pipeline.setPushConstants(0, &push);
 			}
 
@@ -58,6 +62,8 @@ namespace wde::scene {
 			void renderGUI() override {
 				gui::GUIRenderer::addVec3Button("Light direction", _lightDirection, 1.0f, 120.0f);
 				gui::GUIRenderer::addFloatDragger("Ambient level", _ambientLevel, 0.0f);
+				ImGui::Separator();
+				ImGui::Checkbox("See depth", &_showDepth);
 			}
 
 
@@ -94,5 +100,8 @@ namespace wde::scene {
 			// Core values
 			std::string _relativeTexturePath;
 			VkSamplerAddressMode _textureAdressMode;
+
+			// Depth
+			bool _showDepth = false;
 	};
 }

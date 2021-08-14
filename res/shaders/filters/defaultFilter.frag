@@ -11,14 +11,7 @@ layout(location = 0) out vec4 outColor;
 
 // Just copy input color attachment
 void main() {
-   /* // Color input
+    // Suppose color input
     vec3 inputTextureColor = subpassLoad(inputTexture).rgb;
-    outColor = vec4(inputTextureColor, 1.0f);*/
-
-    // Depth input
-    float depth = subpassLoad(inputTexture).r;
-    float min = 0.0f;
-    float max = 1.0f;
-    rgbColor = vec3((depth - min) * 1.0 / (max - min));
-    outColor = vec4(rgbColor, 1.0f);
+    outColor = vec4(inputTextureColor, 1.0f);
 }
