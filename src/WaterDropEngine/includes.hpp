@@ -86,4 +86,6 @@
 #include "WaterDropEngine/WdeScene/objects/Model.hpp"
 #include "WaterDropEngine/WdeScene/Scene.hpp"
 #include "WaterDropEngine/WdeScene/WdeSceneManager.hpp"
+#include "WaterDropEngine/WdeScene/scene/LoadedScene.hpp"
+#include "WaterDropEngine/WdeScene/scene/EmptyScene.hpp"
 #include "WaterDropEngine/WdeScene/utils/SceneSerializerUtils.hpp"

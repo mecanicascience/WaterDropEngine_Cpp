@@ -3,8 +3,8 @@
 int main() {
     CoreApp app {};
 
-    WdeStatus status = app.initialize();
+    app.start();
 
-    return WdeException::toInt(status);
+    return 0;
 }
 

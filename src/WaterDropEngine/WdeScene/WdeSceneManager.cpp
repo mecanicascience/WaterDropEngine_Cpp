@@ -1,5 +1,7 @@
 #include "WdeSceneManager.hpp"
 #include "../WdeGUI/WdeGUI.hpp"
+#include "scene/LoadedScene.hpp"
+#include "scene/EmptyScene.hpp"
 
 namespace wde::scene {
 	// Constructors
@@ -8,40 +10,71 @@ namespace wde::scene {
 	}
 
 
-
 	// Core functions
 	void WdeSceneManager::initialize() {
 		WDE_PROFILE_FUNCTION();
 		Logger::debug("== Initializing Scene Manager ==", LoggerChannel::SCENE);
-		if (_scene == nullptr) {
-			Logger::warn("Scene not set before initialization.", LoggerChannel::SCENE);
-			_initializeSceneThread.join();
-			return;
-		}
+		if (_scene != nullptr)
+			throw WdeException("Scene must be set after initialization.", LoggerChannel::SCENE);
 
-		// Initialize scene
-		Logger::info("Initializing scene asynchronously.", LoggerChannel::SCENE);
-		_initializeSceneThread = std::thread([this]{
-			// Initialize scene components
-			Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
-			_scene->initialize();
-
-			// Initialize scene game objects
-			Logger::debug("Initializing selected scene game objects.", LoggerChannel::SCENE);
-			_scene->initializeGameObjects();
-
-			// Say that the scene is initialized
-			Logger::info("Scene loaded.", LoggerChannel::SCENE);
-			_scene->setInitialized();
-		});
+		// Set waiting scene (synchronously)
+		Logger::debug("Initializing waiting scene.", LoggerChannel::SCENE);
+		WdeSceneManager::get()._scene = std::move(std::make_unique<EmptyScene>());
+		_scene->initialize();
+		_scene->initializeGameObjects();
+		_scene->setInitialized();
+		gui::WdeGUI::get().reset();
 
 		// Start manager
 		Logger::debug("== Initialization done ==", LoggerChannel::SCENE);
 	}
 
+	static bool isFirstTick = true;
 	void WdeSceneManager::tick() {
 		WDE_PROFILE_FUNCTION();
+		if (isFirstTick) { // Do not start scene on first tick
+			isFirstTick = false;
+			return;
+		}
+
 		Logger::debug("Updating scene game objects.", LoggerChannel::SCENE);
+		if (_sceneToAdd != nullptr) { // Should add a new scene
+			// Delete last scene
+			if (_scene != nullptr) {
+				Logger::debug("Cleaning up last scene", LoggerChannel::SCENE);
+				WdeRenderEngine::get().waitForDevicesReady();
+				_scene->cleanUp();
+				_scene.reset();
+			}
+
+			// Set new scene (will be initialized on the next tick of the scene manager)
+			_scene = std::move(_sceneToAdd);
+			_sceneToAdd = nullptr;
+
+			// Say that GUI scene should be reset on next render frame
+			gui::WdeGUI::get().reset();
+
+			// Initialize scene async
+			Logger::info("Initializing scene asynchronously.", LoggerChannel::SCENE);
+			if (_initializeSceneThread.joinable())
+				_initializeSceneThread.join();
+			_initializeSceneThread = std::thread([this]{
+				// Initialize scene components
+				Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
+				_scene->initialize();
+
+				// Initialize scene game objects
+				Logger::debug("Initializing selected scene game objects.", LoggerChannel::SCENE);
+				_scene->initializeGameObjects();
+
+				// Say that the scene is initialized
+				Logger::info("Scene loaded.", LoggerChannel::SCENE);
+				_scene->setInitialized();
+			});
+
+			return;
+		}
+
 		if (_scene != nullptr)
 			_scene->update();
 	}
@@ -127,19 +160,6 @@ namespace wde::scene {
 	// Setters and getters
 	void WdeSceneManager::setScene(std::unique_ptr<Scene> scene) {
 		WDE_PROFILE_FUNCTION();
-
-		// Delete last scene
-		if (WdeSceneManager::get()._scene != nullptr) {
-			Logger::debug("Cleaning up last scene", LoggerChannel::SCENE);
-			WdeRenderEngine::get().waitForDevicesReady();
-			WdeSceneManager::get()._scene->cleanUp();
-			WdeSceneManager::get()._scene.reset();
-		}
-
-		// Set new scene
-		WdeSceneManager::get()._scene = std::move(scene);
-
-		// Say that GUI scene should be reset on next render frame
-		gui::WdeGUI::get().reset();
+		WdeSceneManager::get()._sceneToAdd = std::move(scene);
 	}
 }

@@ -60,8 +60,9 @@ namespace wde::scene {
 
 		private:
 			std::unique_ptr<Scene> _scene {};
+			std::unique_ptr<Scene> _sceneToAdd {};
 
 			/** Scene loading and storing threads */
-			std::thread _initializeSceneThread;
+			std::thread _initializeSceneThread {};
 	};
 }

@@ -227,20 +227,4 @@ namespace wde::scene {
 			/** Last computed delta time */
 			float _deltaTime = 0;
 	};
-
-	/**
-	 * Class that represents a scene loaded from a file
-	 */
-	class LoadedScene : public Scene {
-		public:
-			/**
-			 * Create a new loaded scene given a new
-			 * @param name
-			 */
-			LoadedScene(const json& sceneData) : _sceneData(sceneData), Scene(sceneData["name"]) {}
-
-		private:
-			/** The loaded json scene data */
-			json _sceneData;
-	};
 }
