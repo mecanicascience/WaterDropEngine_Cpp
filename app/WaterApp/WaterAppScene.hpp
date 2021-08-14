@@ -4,6 +4,7 @@
 #include "meshes/Plane.hpp"
 #include "materials/WaterMaterial.hpp"
 #include "materials/DepthMaterial.hpp"
+#include "materials/NormalMaterial.hpp"
 
 using namespace wde::scene;
 
@@ -22,14 +23,14 @@ class WaterAppScene : public Scene {
 
 			// Texture rendering to attachment
 			auto& landTexture = createGameObject("Land");
-			landTexture.addModule<ModelModule>(
-					std::make_shared<ModelLoader>("land.obj"),
-			        std::vector<std::shared_ptr<Material>>({
-						std::make_shared<TextureMaterial>(RenderStage {0, 0}, "land.png"),
-						std::make_shared<DepthMaterial>  (RenderStage {0, 1}),
-						std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png")
-			        })
-			);
+			std::vector<std::shared_ptr<Material>> landMaterials {
+				// std::make_shared<NormalMaterial> (RenderStage {0, 0}),
+				std::make_shared<TextureMaterial>(RenderStage {0, 0}, "land.png"),
+				std::make_shared<DepthMaterial>  (RenderStage {0, 1}),
+				std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png")
+			};
+			landTexture.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), landMaterials);
+
 			landTexture.getModule<TransformModule>().rotation = {3 * glm::half_pi<float>(), 0.0f, 0.0f};
 			landTexture.getModule<TransformModule>().scale *= 0.01f;
 

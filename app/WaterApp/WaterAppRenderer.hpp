@@ -17,8 +17,8 @@ class WaterAppRenderer : public Renderer {
 			std::vector<RenderPassAttachment> renderPassAttachments0 = {
 					// Depth image
 					{0, "Depth attachment", RenderPassAttachment::Type::Depth},
-					// Land mesh
-					{1, "Land mesh", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM, backgroundColor},
+					// Land normals
+					{1, "Land normal", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM, backgroundColor},
 					// Land depth
 					{2, "Land depth", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM},
 					// Swapchain image
@@ -26,7 +26,7 @@ class WaterAppRenderer : public Renderer {
 			};
 			// List of every sub-passes in the render pass
 			std::vector<RenderSubpassType> renderPassSubpasses0 = {
-					// Draw land mesh
+					// Draw land normal map
 					{0, { 1 }},
 					// Compute land depth
 					{1, { 2 }},
@@ -45,7 +45,7 @@ class WaterAppRenderer : public Renderer {
 
 		/** Starts the renderer */
 		void start() override {
-			// Draw land mesh
+			// Draw land normal map
 			this->addSubrenderer<MeshSubrenderer>({0, 0});
 
 			// Compute land depth
