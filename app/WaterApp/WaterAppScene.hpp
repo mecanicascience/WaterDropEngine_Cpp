@@ -3,6 +3,7 @@
 #include <WaterDropEngine/includes.hpp>
 #include "meshes/Plane.hpp"
 #include "materials/WaterMaterial.hpp"
+#include "materials/DepthMaterial.hpp"
 
 using namespace wde::scene;
 
@@ -18,22 +19,33 @@ class WaterAppScene : public Scene {
 			camera.getModule<TransformModule>().position = {-3.88f, 1.82f, -6.87f};
 			camera.getModule<TransformModule>().rotation = {0.4f, 0.17f, 0.0f};
 
+
+			// Texture rendering to attachment
+			auto& landTexture = createGameObject("Land Mesh");
+			landTexture.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), std::make_shared<TextureMaterial>(RenderStage {0, 0}, "land.png"));
+			landTexture.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
+			landTexture.getModule<TransformModule>().scale *= 0.01f;
+
+			// Depth rendering
+			auto& landDepth = createGameObject("Land Depth");
+			landDepth.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), std::make_shared<DepthMaterial>(RenderStage {0, 1}));
+			landDepth.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
+			landDepth.getModule<TransformModule>().scale *= 0.01f;
+
+			// Texture rendering
+			auto& landSwapchain = createGameObject("Land Swapchain");
+			landSwapchain.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png"));
+			landSwapchain.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
+			landSwapchain.getModule<TransformModule>().scale *= 0.01f;
+
+
 			// Plane
 			auto& waterPlane = createGameObject("Water Plane");
 			waterPlane.addModule<ModelModule>(
 					std::make_shared<Plane>(30, 30),
-					std::make_shared<WaterMaterial>(RenderStage {0, 0}, VK_POLYGON_MODE_FILL, 1));
+					std::make_shared<WaterMaterial>(RenderStage {0, 3}, VK_POLYGON_MODE_FILL, 1, 2));
 			waterPlane.getModule<TransformModule>().scale *= 12.0f; // Plane will be X units long
 			waterPlane.getModule<TransformModule>().position.y = 0.3f;
-
-
-			// Land
-			auto& land = createGameObject("Land");
-			land.addModule<ModelModule>(
-					std::make_shared<ModelLoader>("land.obj"),
-					std::make_shared<TextureMaterial>(RenderStage {0, 1}, "land.png"));
-			land.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
-			land.getModule<TransformModule>().scale *= 0.01f;
 		}
 };
 

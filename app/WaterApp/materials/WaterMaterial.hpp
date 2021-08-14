@@ -10,8 +10,8 @@ class WaterMaterial : public Material {
 
 
 	public:
-		explicit WaterMaterial(RenderStage stage, VkPolygonMode polygonMode, uint32_t landMeshBinding)
-				: _landMeshBinding(landMeshBinding),
+		explicit WaterMaterial(RenderStage stage, VkPolygonMode polygonMode, uint32_t landMeshBinding, uint32_t landDepthBinding)
+				: _landMeshBinding(landMeshBinding), _landDepthBinding(landDepthBinding),
 				  Material("Water Material", stage, "WaterApp/waterShader.vert", "WaterApp/waterShader.frag", polygonMode) {
 			// Set constants
 			_lightDirection = glm::vec3(0.2f, 1.5f, -3.0f);
@@ -28,9 +28,10 @@ class WaterMaterial : public Material {
 
 		void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) override {
 			// Set descriptor bindings inputs
-			/*_descriptor->addSet(3, {
-				{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, _landMeshBinding, _stage.first}
-			});*/
+			_descriptor->addSet(2, {
+				{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, _landMeshBinding, _stage.first},
+				{1, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, _landDepthBinding, _stage.first}
+			});
 		}
 
 		/** Push constants to the material pipeline */
@@ -45,5 +46,6 @@ class WaterMaterial : public Material {
 
 	private:
 		uint32_t _landMeshBinding;
+		uint32_t _landDepthBinding;
 		glm::vec3 _lightDirection {};
 };

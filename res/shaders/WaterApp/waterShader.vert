@@ -1,5 +1,6 @@
 #version 450
 
+
 // Scene set values
 layout(set = 0, binding = 0) uniform SceneBuffer {
     mat4 transformCameraSpace;  // Matrix from world space to camera space

@@ -102,7 +102,8 @@ namespace wde::renderEngine {
 
 				std::vector<VkDescriptorSetLayout>& descriptorVector = descriptor->getLayouts();
 				for (auto& v : descriptorVector)
-					_descriptorsVec.push_back(v);
+					if (v != VK_NULL_HANDLE)
+						_descriptorsVec.push_back(v);
 			}
 			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(_descriptorsVec.size());
 			pipelineLayoutCreateInfo.pSetLayouts = _descriptorsVec.data();

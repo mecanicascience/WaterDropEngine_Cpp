@@ -19,14 +19,23 @@ class WaterAppRenderer : public Renderer {
 					{0, "Depth attachment", RenderPassAttachment::Type::Depth},
 					// Land mesh
 					{1, "Land mesh", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM, backgroundColor},
+					// Land depth
+					{2, "Land depth", RenderPassAttachment::Type::Image, VK_FORMAT_R8G8B8A8_UNORM},
 					// Swapchain image
-					{2, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, VK_FORMAT_UNDEFINED, backgroundColor}
+					{3, "Swapchain attachment", RenderPassAttachment::Type::Swapchain, VK_FORMAT_UNDEFINED, backgroundColor}
 			};
 			// List of every sub-passes in the render pass
 			std::vector<RenderSubpassType> renderPassSubpasses0 = {
-					{0, { 0, 1 }},
-					{1, { 0, 2 }},
-					{2, { 2 }}
+					// Draw land mesh
+					{0, { 1 }},
+					// Compute land depth
+					{1, { 2 }},
+					// Draw land mesh texture to the swapchain
+					{2, { 0, 3 }},
+					// Draw water
+					{3, { 0, 3 }, { 1, 2 }},
+					// Draw GUI
+					{4, { 3 }}
 			};
 
 			// Creates the render pass 0
@@ -36,13 +45,19 @@ class WaterAppRenderer : public Renderer {
 
 		/** Starts the renderer */
 		void start() override {
-			// Land mesh
+			// Draw land mesh
 			this->addSubrenderer<MeshSubrenderer>({0, 0});
 
-			// Water mesh
+			// Compute land depth
 			this->addSubrenderer<MeshSubrenderer>({0, 1});
 
-			// Gui sub-renderer
-			this->addSubrenderer<GUISubrenderer>({0, 2});
+			// Draw land mesh to the swapchain
+			this->addSubrenderer<MeshSubrenderer>({0, 2});
+
+			// Draw water
+			this->addSubrenderer<MeshSubrenderer>({0, 3});
+
+			// Draw GUI
+			this->addSubrenderer<GUISubrenderer>({0, 4});
 		}
 };
