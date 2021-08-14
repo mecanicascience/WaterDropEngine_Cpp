@@ -12,20 +12,17 @@ namespace wde::renderEngine {
 			/**
 			  * Adds a Sub-renderer to the list
 			  * @tparam T The Subrenderers type
-			  * @param stage The Subrenderers renderer stage
-			  * @param subrender The subrenderers
+			  * @param stage The renderer stage of the subrenderer
+			  * @param subrender The subrenderer
 			  * @return The added renderer
 			  */
 			template<typename T, typename... Args>
 			T *add(const RenderStage &stage, std::unique_ptr<T> &&subrender) {
-				const auto typeID = TypeInfo<Subrenderer>::getTypeID<T>();
+				// Insert the subrenderer to the list
+				_subrenders.push_back(std::move(subrender));
+				_subrendererStages[stage].push_back(_subrenders.size() - 1);
 
-				// Insert the stage value to the list
-				_stages.insert({StageIndex(stage, _subrenders.size()), typeID});
-
-				// Then, add the sub-renderer to list as <TypeID, Sub-renderer>
-				_subrenders[typeID] = std::move(subrender);
-				return static_cast<T *>(_subrenders[typeID].get());
+				return static_cast<T *>(_subrenders[_subrenders.size() - 1].get());
 			}
 
 			/** Initialize renderers */
@@ -33,7 +30,7 @@ namespace wde::renderEngine {
 				WDE_PROFILE_FUNCTION();
 
 				// Initialize sub-renderers
-				for (const auto &[renderID, subrenderer] : _subrenders)
+				for (auto& subrenderer : _subrenders)
 					if (subrenderer->isEnabled())
 						subrenderer->initialize();
 			}
@@ -45,28 +42,23 @@ namespace wde::renderEngine {
 			 */
 			void renderStage(const RenderStage &stage, CommandBuffer &commandBuffer) {
                 WDE_PROFILE_FUNCTION();
-				for (const auto &[stageIndex, typeID] : _stages) {
-					if (stageIndex.first != stage)
-						continue;
+                Logger::debug("Rendering sub-renderers for stage " + std::to_string(stage.first) + "-" + std::to_string(stage.second) + ".",
+							  LoggerChannel::RENDERING_ENGINE);
 
-					// Renders all the sub-renderers corresponding enabled and corresponding to the stage
-					if (auto &subrender = _subrenders[typeID]) {
-						if (subrender->isEnabled()) {
-							subrender->render(commandBuffer);
-						}
-					}
-				}
+                // Render subrenders at given stage
+                for (int id : _subrendererStages[stage]) {
+                    if (_subrenders[id]->isEnabled())
+                    	_subrenders[id]->render(commandBuffer);
+                }
 			}
 
 
 
 
 		private:
-			using StageIndex = std::pair<RenderStage, std::size_t>;
-
-			/** List of all Subrenders */
-			std::unordered_map<TypeID, std::unique_ptr<Subrenderer>> _subrenders;
-			/** List of subrender stages. */
-			std::multimap<StageIndex, TypeID> _stages;
+			/** List of each render stages, and their corresponding subrender IDs in the subrenderer array */
+			std::map<RenderStage, std::vector<int>> _subrendererStages {};
+			/** An array of pointers to the subrenderers */
+			std::vector<std::unique_ptr<Subrenderer>> _subrenders {};
 	};
 }

@@ -88,7 +88,7 @@ namespace wde::scene {
 			}
 
 			// Serializers
-			virtual json serialize() = 0;
+			virtual json serialize() { return {}; };
 			virtual void deserialize(json data) {};
 
 

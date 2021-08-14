@@ -5,7 +5,6 @@
 #include "../objects/models/ModelCube.hpp"
 #include "../objects/models/ModelLoader.hpp"
 #include "../materials/ColorMaterial.hpp"
-#include "../materials/ColorMaterialOutline.hpp"
 #include "../materials/TextureMaterial.hpp"
 #include "../modules/Module.hpp"
 #include "../modules/TransformModule.hpp"
@@ -195,10 +194,18 @@ namespace wde::scene {
 						std::shared_ptr<Material> material;
 						std::string materialType = to_string(module["data"]["material"]["type"]);
 						RenderStage stage {int(module["data"]["material"]["stage"]["first"]), int(module["data"]["material"]["stage"]["second"])};
-						if (nameEquals(materialType, "Color Material"))
-							material = std::make_shared<ColorMaterial>(stage);
-						else if (nameEquals(materialType, "Color Material Outlined"))
-							material = std::make_shared<ColorMaterialOutline>(stage);
+						if (nameEquals(materialType, "Color Material")) {
+							VkPolygonMode polygMode = VK_POLYGON_MODE_FILL;
+							if (int(module["data"]["material"]["mode"]) == VK_POLYGON_MODE_LINE)
+								polygMode = VK_POLYGON_MODE_LINE;
+							else if (int(module["data"]["material"]["mode"]) == VK_POLYGON_MODE_POINT)
+								polygMode = VK_POLYGON_MODE_POINT;
+							else if (int(module["data"]["material"]["mode"]) == VK_POLYGON_MODE_FILL_RECTANGLE_NV)
+								polygMode = VK_POLYGON_MODE_FILL_RECTANGLE_NV;
+							else if (int(module["data"]["material"]["mode"]) == VK_POLYGON_MODE_MAX_ENUM)
+								polygMode = VK_POLYGON_MODE_MAX_ENUM;
+							material = std::make_shared<ColorMaterial>(stage, polygMode);
+						}
 						else if (nameEquals(materialType, "Texture Material"))
 							material = std::make_shared<TextureMaterial>(stage, module["data"]["material"]["texturePath"], module["data"]["material"]["textureFilter"],
 																		 module["data"]["material"]["textureAdressMode"]);

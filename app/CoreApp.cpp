@@ -1,4 +1,6 @@
 #include "CoreApp.hpp"
+#include "WaterApp/WaterAppRenderer.hpp"
+#include "WaterApp/WaterAppScene.hpp"
 
 
 WdeStatus CoreApp::initialize() {
@@ -7,10 +9,12 @@ WdeStatus CoreApp::initialize() {
 	WaterDropEngine engine {};
 
 	// Set renderer
-	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<CoreAppRenderer>());
+	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<CoreAppRenderer>());
+	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<WaterAppRenderer>());
 
 	// Set scene
-	scene::WdeSceneManager::get().setScene(std::make_unique<CoreAppScene>());
+	//scene::WdeSceneManager::get().setScene(std::make_unique<CoreAppScene>());
+	scene::WdeSceneManager::get().setScene(std::make_unique<WaterAppScene>());
 
 	// Initialize main engine
 	WdeStatus statusInit = engine.initialize();

@@ -42,6 +42,6 @@ void main() {
     else {
         // Show texture
         vec4 textureColor = texture(inTexture, inTexCoord);
-        outColor = vec4(textureColor.xyz * inLightIntensity, textureColor.w);
+        outColor = vec4(textureColor.xyz * inLightIntensity, 1.0f);
     }
 }

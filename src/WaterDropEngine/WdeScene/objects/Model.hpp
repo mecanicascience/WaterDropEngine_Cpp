@@ -108,7 +108,7 @@ namespace wde::scene {
 			void cleanUp();
 
 			// Serialize
-			virtual json serialize() = 0;
+			virtual json serialize() { return {}; };
 			virtual void deserialize(json data) {};
 
 			virtual std::vector<Vertex> getVertices() = 0;

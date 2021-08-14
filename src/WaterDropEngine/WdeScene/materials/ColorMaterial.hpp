@@ -16,8 +16,8 @@ namespace wde::scene {
 
 
 		public:
-			explicit ColorMaterial(RenderStage stage)
-				: Material("Color Material", stage, "color/colorShader.vert", "color/colorShader.frag") {}
+			explicit ColorMaterial(RenderStage stage, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL)
+				: Material("Color Material", stage, "color/colorShader.vert", "color/colorShader.frag", polygonMode) {}
 
 			/** Initialize the color material */
 			void initialize(std::shared_ptr<Descriptor>& descriptor) override {
@@ -45,7 +45,8 @@ namespace wde::scene {
 					{"stage", {
 						{"first", _stage.first},
 						{"second", _stage.second}
-					}}
+					}},
+					{"mode", _polygonMode}
 				});
 			}
 	};

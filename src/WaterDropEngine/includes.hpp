@@ -73,7 +73,6 @@
 #include "WaterDropEngine/WdeScene/gizmos/Gizmo.hpp"
 #include "WaterDropEngine/WdeScene/gizmos/GizmoRenderer.hpp"
 #include "WaterDropEngine/WdeScene/materials/ColorMaterial.hpp"
-#include "WaterDropEngine/WdeScene/materials/ColorMaterialOutline.hpp"
 #include "WaterDropEngine/WdeScene/materials/Material.hpp"
 #include "WaterDropEngine/WdeScene/materials/TextureMaterial.hpp"
 #include "WaterDropEngine/WdeScene/modules/CameraModule.hpp"
