@@ -21,22 +21,17 @@ class WaterAppScene : public Scene {
 
 
 			// Texture rendering to attachment
-			auto& landTexture = createGameObject("Land Mesh");
-			landTexture.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), std::make_shared<TextureMaterial>(RenderStage {0, 0}, "land.png"));
-			landTexture.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
+			auto& landTexture = createGameObject("Land");
+			landTexture.addModule<ModelModule>(
+					std::make_shared<ModelLoader>("land.obj"),
+			        std::vector<std::shared_ptr<Material>>({
+						std::make_shared<TextureMaterial>(RenderStage {0, 0}, "land.png"),
+						std::make_shared<DepthMaterial>  (RenderStage {0, 1}),
+						std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png")
+			        })
+			);
+			landTexture.getModule<TransformModule>().rotation = {3 * glm::half_pi<float>(), 0.0f, 0.0f};
 			landTexture.getModule<TransformModule>().scale *= 0.01f;
-
-			// Depth rendering
-			auto& landDepth = createGameObject("Land Depth");
-			landDepth.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), std::make_shared<DepthMaterial>(RenderStage {0, 1}));
-			landDepth.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
-			landDepth.getModule<TransformModule>().scale *= 0.01f;
-
-			// Texture rendering
-			auto& landSwapchain = createGameObject("Land Swapchain");
-			landSwapchain.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png"));
-			landSwapchain.getModule<TransformModule>().rotation = {3*glm::half_pi<float>(), 0.0f, 0.0f};
-			landSwapchain.getModule<TransformModule>().scale *= 0.01f;
 
 
 			// Plane

@@ -11,10 +11,21 @@ namespace wde::scene {
 			 * Add a mesh to a game object
 			 * @param gameObject A reference to the parent game object (auto set by the Scene)
 			 * @param model The game object model
+			 * @param materials The corresponding object materials
+			 */
+			explicit ModelModule(GameObject &gameObject, std::shared_ptr<Model> model, std::vector<std::shared_ptr<Material>> materials)
+				:  _model(std::move(model)), _materials(std::move(materials)), Module(gameObject, "Model") {}
+
+			/**
+			 * Add a mesh to a game object
+			 * @param gameObject A reference to the parent game object (auto set by the Scene)
+			 * @param model The game object model
 			 * @param material The corresponding object material
 			 */
 			explicit ModelModule(GameObject &gameObject, std::shared_ptr<Model> model, std::shared_ptr<Material> material)
-				:  _model(std::move(model)), _material(std::move(material)), Module(gameObject, "Model") {}
+					:  _model(std::move(model)), Module(gameObject, "Model") {
+				_materials.push_back(std::move(material));
+			}
 
 			// Core functions
 			void initialize() override;
@@ -29,7 +40,7 @@ namespace wde::scene {
 
 		private:
 			std::shared_ptr<Model> _model;
-			std::shared_ptr<Material> _material;
+			std::vector<std::shared_ptr<Material>> _materials {};
 	};
 }
 
