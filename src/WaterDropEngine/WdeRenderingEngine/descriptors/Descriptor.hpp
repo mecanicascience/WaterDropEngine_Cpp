@@ -21,16 +21,18 @@ namespace wde::renderEngine {
 			 * @param maxInputAttachmentCount The maximum number of input attachments in the descriptor (default 1000)
 			 */
 			explicit Descriptor(int maxUniformBufferCount = 1000, int maxUniformBufferDynamicCount = 1000, int maxStorageBufferCount = 1000, int maxCombinedImageSamplerCount = 1000, int maxInputAttachmentCount = 1000);
-			~Descriptor();
+			~Descriptor() {
+				cleanUp();
+			}
 
 
 			// Core functions
 			/** Initialize the descriptor */
 			void initialize();
-
 			/** Recreate the descriptor elements (called when the window size changes) */
 			void recreate();
-
+			/** Clean up the descriptor */
+			void cleanUp();
 			/** Bind the descriptor to the pipeline */
 			void bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint);
 

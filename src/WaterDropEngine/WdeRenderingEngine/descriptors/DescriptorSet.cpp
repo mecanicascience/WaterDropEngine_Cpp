@@ -81,6 +81,9 @@ namespace wde::renderEngine {
 
 	void DescriptorSet::recreate() {
 		WDE_PROFILE_FUNCTION();
+		if (_bindingsData.empty())
+			return;
+
 		// Update attachments when recreating swap chain
 		for (auto& binding : _bindingsData) {
 			// Input attachment

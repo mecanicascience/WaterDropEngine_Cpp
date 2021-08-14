@@ -37,7 +37,7 @@ class WaterAppRenderer : public Renderer {
 		/** Starts the renderer */
 		void start() override {
 			// Land mesh
-			this->addSubrenderer<MeshSubrenderer>({0, 1});
+			this->addSubrenderer<MeshSubrenderer>({0, 0});
 
 			// Water mesh
 			this->addSubrenderer<MeshSubrenderer>({0, 1});

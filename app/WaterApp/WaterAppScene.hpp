@@ -22,7 +22,7 @@ class WaterAppScene : public Scene {
 			auto& waterPlane = createGameObject("Water Plane");
 			waterPlane.addModule<ModelModule>(
 					std::make_shared<Plane>(30, 30),
-					std::make_shared<WaterMaterial>(RenderStage {0, 1}, VK_POLYGON_MODE_FILL, 1));
+					std::make_shared<WaterMaterial>(RenderStage {0, 0}, VK_POLYGON_MODE_FILL, 1));
 			waterPlane.getModule<TransformModule>().scale *= 12.0f; // Plane will be X units long
 			waterPlane.getModule<TransformModule>().position.y = 0.3f;
 

@@ -18,11 +18,6 @@ namespace wde::renderEngine {
 		WdeRenderEngine::get().addDescriptor(this);
 	}
 
-	Descriptor::~Descriptor() {
-		Logger::debug("Cleaning up descriptor.", LoggerChannel::RENDERING_ENGINE);
-		for (int i = 0; i < _layouts.size(); i++)
-			vkDestroyDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), _layouts[i], nullptr);
-	}
 
 
 	// Core functions
@@ -54,6 +49,16 @@ namespace wde::renderEngine {
 		Logger::debug("Recreating a descriptor.", LoggerChannel::RENDERING_ENGINE);
 		for (auto& set : _descriptorSets)
 			set.second->recreate();
+	}
+
+	void Descriptor::cleanUp() {
+		Logger::debug("Cleaning up descriptor.", LoggerChannel::RENDERING_ENGINE);
+		// Dereference descriptors and pool
+		_descriptorSets.clear();
+		_pool.reset();
+
+		for (auto& _layout : _layouts)
+			vkDestroyDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), _layout, nullptr);
 	}
 
 	void Descriptor::bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint) {

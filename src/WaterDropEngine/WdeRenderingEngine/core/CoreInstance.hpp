@@ -48,8 +48,15 @@ namespace wde::renderEngine {
 			std::size_t& getCurrentFrame() { return _currentFrame; }
 			const int getMaxFramesInFlight() { return _currentFramesInFlightCount; }
 			CoreWindow& getCoreWindow() { return *_window; }
-			void addDescriptor(Descriptor* descriptor) {
-				_descriptors.push_back(descriptor);
+			void addDescriptor(Descriptor* descriptor) { _descriptors.push_back(descriptor); }
+			void clearDescriptors() {
+				for (Descriptor* desc : _descriptors) {
+					if (desc == nullptr)
+						continue;
+
+					desc->cleanUp();
+				}
+				_descriptors.clear();
 			}
 
 			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
