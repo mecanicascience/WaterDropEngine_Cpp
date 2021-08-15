@@ -47,7 +47,7 @@ namespace wde::renderEngine {
 				_descriptor->addSet(0, bindingData);
 
 				// Setup pipeline
-				_pipeline.addDescriptor(_descriptor);
+				_pipeline.setDescriptor(_descriptor);
 				_pipeline.initialize();
 			}
 

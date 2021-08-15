@@ -20,10 +20,14 @@ namespace wde::scene {
 			virtual void initializeGameObjects() final {
 				WDE_PROFILE_FUNCTION();
 				for (auto& go : _gameObjects) {
+					// Create game object descriptors
+					go->createDescriptors();
+
 					// Add game object scene descriptor set (binding 0)
-					go->getDescriptor()->addSet(0, {
-						{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(CameraModule::GPUCameraData)} // Camera buffer
-					});
+					for (auto& descriptor : go->getDescriptors())
+						descriptor->addSet(0, {
+							{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(CameraModule::GPUCameraData)} // Camera buffer
+						});
 
 					// Initialize game objects
 					go->initialize();
@@ -61,7 +65,8 @@ namespace wde::scene {
 
 				for (auto& go : _gameObjects) {
 					// Update game object scene set
-					go->getDescriptor()->getSet(0).updateBuffer(0, &camData);
+					for (auto& descriptor : go->getDescriptors())
+						descriptor->getSet(0).updateBuffer(0, &camData);
 
 					// Render game object
 					go->render(commandBuffer, stage);

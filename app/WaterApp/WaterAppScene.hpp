@@ -24,8 +24,7 @@ class WaterAppScene : public Scene {
 			// Texture rendering to attachment
 			auto& landTexture = createGameObject("Land");
 			std::vector<std::shared_ptr<Material>> landMaterials {
-				// std::make_shared<NormalMaterial> (RenderStage {0, 0}),
-				std::make_shared<TextureMaterial>(RenderStage {0, 0}, "land.png"),
+				std::make_shared<NormalMaterial> (RenderStage {0, 0}),
 				std::make_shared<DepthMaterial>  (RenderStage {0, 1}),
 				std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png")
 			};

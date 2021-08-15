@@ -20,12 +20,12 @@ namespace wde::scene {
 				: Material("Color Material", stage, "color/colorShader.vert", "color/colorShader.frag", polygonMode) {}
 
 			/** Initialize the color material */
-			void initialize(std::shared_ptr<Descriptor>& descriptor) override {
+			void initialize() override {
 				// Setup push constants
 				_pipeline.addPushConstants(0, sizeof(PushConstantLightsData));
 
 				// Setup material
-				Material::initialize(descriptor);
+				Material::initialize();
 			}
 
 			/** Push constants to the material pipeline */

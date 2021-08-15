@@ -37,7 +37,6 @@ namespace wde::scene {
 			return;
 		}
 
-		Logger::debug("Updating scene game objects.", LoggerChannel::SCENE);
 		if (_sceneToAdd != nullptr) { // Should add a new scene
 			// Delete last scene
 			if (_scene != nullptr) {
@@ -82,8 +81,10 @@ namespace wde::scene {
 			return;
 		}
 
-		if (_scene != nullptr)
+		if (_scene != nullptr) {
+			Logger::debug("Updating scene game objects.", LoggerChannel::SCENE);
 			_scene->update();
+		}
 	}
 
 	void WdeSceneManager::cleanUp() {

@@ -84,11 +84,11 @@ namespace wde::renderEngine {
 			 * Set the pipeline optional descriptor
 			 * @param descriptor An instance of a descriptor
 			 */
-			void addDescriptor(std::shared_ptr<Descriptor> &descriptor) {
+			void setDescriptor(std::shared_ptr<Descriptor> &descriptor) {
 				if (_initialized)
 					throw WdeException("Tying to set a pipeline descriptor after it's creation.", LoggerChannel::RENDERING_ENGINE);
 
-				_descriptors.push_back(descriptor);
+				_descriptor = descriptor;
 			}
 
 
@@ -116,7 +116,7 @@ namespace wde::renderEngine {
 			/** Corresponding binding indices */
 			std::unordered_map<int, int> _pushConstantsBoundingIndices;
 
-			// Descriptors
-			std::vector<std::shared_ptr<Descriptor>> _descriptors {};
+			// Pipeline optional descriptor
+			std::shared_ptr<Descriptor> _descriptor {};
 	};
 }

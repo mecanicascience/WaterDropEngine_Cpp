@@ -38,20 +38,11 @@ namespace wde::scene {
 
 			// Core functions
 			/** Initialize the material descriptor and pipeline */
-			virtual void initialize(std::shared_ptr<Descriptor>& descriptor) {
+			virtual void initialize() {
 				WDE_PROFILE_FUNCTION();
 
-				// Setup descriptor
-				if (descriptor != nullptr) {
-					// Set descriptor
-					_descriptor = descriptor;
-
-					// Setup the material descriptor
-					setupDescriptor(descriptor);
-
-					// Reference descriptor to pipeline
-					_pipeline.addDescriptor(_descriptor);
-				}
+				// Reference descriptor to pipeline
+				_pipeline.setDescriptor(_descriptor);
 
 				// Initialize pipeline
 				_pipeline.initialize();
@@ -93,11 +84,14 @@ namespace wde::scene {
 
 
 			// Descriptors and push constants
+			/** Reference the material descriptor */
+			void setDescriptor(std::shared_ptr<Descriptor>& descriptor) { _descriptor = descriptor; }
+
 			/**
 			 * Setup the material descriptor
 			 * @param descriptor
 			 */
-			virtual void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) {}
+			virtual void setupDescriptor() {}
 
 			/** Update push constants */
 			virtual void pushConstants() {}
@@ -130,6 +124,9 @@ namespace wde::scene {
 			std::string _vertexShaderName;
 			std::string _fragmentShaderName;
 			VkPolygonMode _polygonMode;
+
+			/** The id of the module descriptor */
+			int descriptorID;
 	};
 }
 

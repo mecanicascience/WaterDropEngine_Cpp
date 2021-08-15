@@ -44,9 +44,8 @@ namespace wde::renderEngine {
 		_initialized = true;
 
 		// Initialize pipeline descriptor
-		if (!_descriptors.empty())
-			for (auto& descriptor : _descriptors)
-				descriptor->initialize();
+		if (_descriptor != nullptr)
+			_descriptor->initialize();
 	}
 
 
@@ -91,20 +90,19 @@ namespace wde::renderEngine {
 
 
 		// Descriptor sets
-		if (_descriptors.empty()) {
+		if (_descriptor == nullptr) {
 			pipelineLayoutCreateInfo.setLayoutCount = 0;
 			pipelineLayoutCreateInfo.pSetLayouts = nullptr;
 		}
 		else {
 			_descriptorsVec.clear();
-			for (auto& descriptor : _descriptors) {
-				descriptor->createLayouts();
+			_descriptor->createLayouts();
 
-				std::vector<VkDescriptorSetLayout>& descriptorVector = descriptor->getLayouts();
-				for (auto& v : descriptorVector)
-					if (v != VK_NULL_HANDLE)
-						_descriptorsVec.push_back(v);
-			}
+			std::vector<VkDescriptorSetLayout>& descriptorVector = _descriptor->getLayouts();
+			for (auto& v : descriptorVector)
+				if (v != VK_NULL_HANDLE)
+					_descriptorsVec.push_back(v);
+
 			pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(_descriptorsVec.size());
 			pipelineLayoutCreateInfo.pSetLayouts = _descriptorsVec.data();
 		}

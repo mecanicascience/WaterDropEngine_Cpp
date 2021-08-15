@@ -74,9 +74,31 @@ namespace wde::renderEngine {
 
 	void Descriptor::createLayouts() {
 		WDE_PROFILE_FUNCTION();
-		for (int i = 0; i < _descriptorSets.size(); i++) {
-			_layouts.push_back(VkDescriptorSetLayout {});
-			_descriptorSets[i]->createLayout(_layouts[i]);
+
+		// Create descriptor layouts in descriptor order
+		for (int descriptorSetID = 0; descriptorSetID < _descriptorSets.size(); descriptorSetID++) {
+			// Find descriptor corresponding to this ID
+			bool found = false;
+			for (auto& descriptor : _descriptorSets) {
+				if (descriptor.first == descriptorSetID) {
+					// Create descriptor layout
+					if (descriptor.second == nullptr)
+						throw WdeException("Descriptor set " + std::to_string(descriptorSetID) + " is undefined.", LoggerChannel::RENDERING_ENGINE);
+
+					VkDescriptorSetLayout layout {};
+					_layouts.push_back(layout);
+					descriptor.second->createLayout(_layouts[_layouts.size() - 1]);
+
+					// Say that we found the descriptor at the searched ID
+					found = true;
+					break;
+				}
+			}
+
+			// Found set N but did not find set N - 1
+			if (!found)
+				throw WdeException("Failed to create descriptor layouts. Didn't found set " + std::to_string(descriptorSetID)
+					+ " but sets are supposed to go up to " + std::to_string(_descriptorSets.size()) + " sets.", LoggerChannel::RENDERING_ENGINE);
 		}
 	}
 

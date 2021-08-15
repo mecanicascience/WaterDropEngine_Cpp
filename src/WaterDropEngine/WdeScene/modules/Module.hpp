@@ -27,6 +27,8 @@ namespace wde::scene {
 
 
 			// Core functions
+			/** Create descriptors before initialization */
+			virtual void createDescriptors() {}
 			/** Initialize the module */
 			virtual void initialize() {};
 			/**
@@ -75,6 +77,7 @@ namespace wde::scene {
 
 			// Getters and setters
 			std::string& getModuleName() { return _moduleName; }
+
 
 
 		protected:

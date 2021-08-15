@@ -81,9 +81,10 @@ namespace wde::scene {
 			void initialize() {
 				WDE_PROFILE_FUNCTION();
 				// Add game object descriptor set (binding 1)
-				_descriptor->addSet(1, {
-					{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(GPUGameObjectData)} // Game object description buffer
-				});
+				for (auto& descriptor : _descriptors)
+					descriptor->addSet(1, {
+						{0, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, sizeof(GPUGameObjectData)} // Game object description buffer
+					});
 
 				// Initialize modules
 				for (auto& module : _moduleList)
@@ -114,7 +115,8 @@ namespace wde::scene {
 				GPUGameObjectData goData {};
 				goData.transformWorldSpace = getModule<TransformModule>().getTransform();
 				goData.normalMatrix = (glm::mat4) getModule<TransformModule>().getNormalMatrix();
-				_descriptor->getSet(1).updateBuffer(0, &goData);
+				for (auto& descriptor : _descriptors)
+					descriptor->getSet(1).updateBuffer(0, &goData);
 
 				// Render modules
 				for (auto& module : _moduleList)
@@ -269,7 +271,16 @@ namespace wde::scene {
 			id_t getID() const { return _objectID; }
 			std::string& getName() { return _objectName; }
 			std::vector<Module*>& getModules() { return _moduleList; }
-			std::shared_ptr<Descriptor>& getDescriptor() { return _descriptor; }
+			std::vector<std::shared_ptr<Descriptor>>& getDescriptors() { return _descriptors; }
+			void createDescriptors() {
+				for (auto& module : _moduleList)
+					module->createDescriptors();
+			}
+
+			std::shared_ptr<Descriptor>& createDescriptor() {
+				_descriptors.push_back(std::make_shared<Descriptor>());
+				return _descriptors[_descriptors.size() - 1];
+			}
 
 
 
@@ -281,16 +292,14 @@ namespace wde::scene {
 			// List of game object modules
 			std::vector<Module*> _moduleList;
 			// The game object sets descriptor
-			std::shared_ptr<Descriptor> _descriptor {};
+			std::vector<std::shared_ptr<Descriptor>> _descriptors {};
 
 			/**
 			 * Creates a new game object
 			 * @param objectID
 			 */
 			explicit GameObject(id_t objectID, std::string &objectName)
-				: _objectID(objectID),
-				  _objectName(objectName),
-				  _descriptor(std::make_shared<Descriptor>()) {}
+				: _objectID(objectID), _objectName(objectName) {}
 	};
 }
 

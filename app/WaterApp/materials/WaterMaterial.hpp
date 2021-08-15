@@ -18,15 +18,15 @@ class WaterMaterial : public Material {
 		}
 
 		/** Initialize the color material */
-		void initialize(std::shared_ptr<Descriptor>& descriptor) override {
+		void initialize() override {
 			// Setup push constants
 			_pipeline.addPushConstants(0, sizeof(PushConstantsData));
 
 			// Setup material
-			Material::initialize(descriptor);
+			Material::initialize();
 		}
 
-		void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) override {
+		void setupDescriptor() override {
 			// Set descriptor bindings inputs
 			_descriptor->addSet(2, {
 				{0, VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, _landMeshBinding, _stage.first},

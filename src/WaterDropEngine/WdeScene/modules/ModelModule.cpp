@@ -2,10 +2,20 @@
 #include "../objects/GameObject.hpp"
 
 namespace wde::scene {
+	void ModelModule::createDescriptors() {
+		// Reference the descriptors and each material
+		for (auto& material : _materials) {
+			std::shared_ptr<Descriptor>& descriptor = _gameObject.createDescriptor();
+			material->setDescriptor(descriptor);
+		}
+	}
+
 	void ModelModule::initialize() {
-		// Initialize materials
-		for (auto& material : _materials)
-			material->initialize(_gameObject.getDescriptor());
+		// Setup the material descriptors and initialize it
+		for (auto& material : _materials) {
+			material->setupDescriptor();
+			material->initialize();
+		}
 	}
 
 	void ModelModule::render(CommandBuffer& commandBuffer, RenderStage stage) {
@@ -50,7 +60,7 @@ namespace wde::scene {
 
 		// Material GUI
 		for (auto& material : _materials) {
-			material->initialize(_gameObject.getDescriptor());
+			material->renderGUI();
 			ImGui::Separator();
 		}
 	}

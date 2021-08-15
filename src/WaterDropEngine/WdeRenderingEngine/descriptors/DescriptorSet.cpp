@@ -46,8 +46,14 @@ namespace wde::renderEngine {
 		setLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 		setLayoutInfo.pNext = nullptr;
 		setLayoutInfo.flags = 0;
-		setLayoutInfo.bindingCount = static_cast<uint32_t>(_bindingsLayouts.size());
-		setLayoutInfo.pBindings = _bindingsLayouts.data();
+		if (_bindingsLayouts.empty()) {
+			setLayoutInfo.bindingCount = 0;
+			setLayoutInfo.pBindings = nullptr;
+		}
+		else {
+			setLayoutInfo.bindingCount = static_cast<uint32_t>(_bindingsLayouts.size());
+			setLayoutInfo.pBindings = _bindingsLayouts.data();
+		}
 
 		if (vkCreateDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), &setLayoutInfo, nullptr, &descriptorSetLayout) != VK_SUCCESS)
 			throw WdeException("Failed to create a description set layout.", LoggerChannel::RENDERING_ENGINE);

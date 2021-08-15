@@ -28,6 +28,7 @@ namespace wde::scene {
 			}
 
 			// Core functions
+			void createDescriptors() override;
 			void initialize() override;
 			void render(CommandBuffer& commandBuffer, RenderStage stage) override;
 			void renderGUI() override;

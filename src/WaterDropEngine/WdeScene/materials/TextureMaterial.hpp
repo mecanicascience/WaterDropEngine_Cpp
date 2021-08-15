@@ -32,19 +32,19 @@ namespace wde::scene {
 				_materialTexture = std::make_unique<Texture2D>("res/textures/" + _relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, textureFilter, textureAdressMode);
 			}
 
-			void initialize(std::shared_ptr<Descriptor>& descriptor) override {
+			void initialize() override {
 				// Setup push constants
 				_pipeline.addPushConstants(0, sizeof(PushConstantLightsData));
 
 				// Setup material
-				Material::initialize(descriptor);
+				Material::initialize();
 			}
 
 
 
-			void setupDescriptor(std::shared_ptr<Descriptor>& descriptor) override {
+			void setupDescriptor() override {
 				// Add material set (binding 2)
-				descriptor->addSet(2, {
+				_descriptor->addSet(2, {
 					{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _materialTexture->getView(), _materialTexture->getSampler()}
 				});
 			}
