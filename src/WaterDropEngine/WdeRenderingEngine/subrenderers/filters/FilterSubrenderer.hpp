@@ -20,7 +20,9 @@ namespace wde::renderEngine {
 			 * @param inputAttachmentBinding The bindings of the attachments that the filter will read from (they will be in the same order on set 0)
 			 */
 			explicit FilterSubrenderer(const RenderStage &stage, const std::string& filterShader, std::vector<uint32_t> inputAttachmentBindings)
-				: Subrenderer(stage), _inputAttachmentBindings(std::move(inputAttachmentBindings)),
+				: Subrenderer(stage),
+				  _inputAttachmentBindings(std::move(inputAttachmentBindings)),
+				  _descriptor(std::make_shared<Descriptor>()),
 				  _pipeline(stage, {"res/shaders/filters/defaultFilter.vert.spv", "res/shaders/filters/" + filterShader},
 						  {}, PipelineGraphics::Mode::MRT, PipelineGraphics::Depth::ReadWrite,
 						  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL,
@@ -31,9 +33,6 @@ namespace wde::renderEngine {
 			/** Initialize the sub-renderer pipeline and descriptor */
 			void initialize() override {
 				WDE_PROFILE_FUNCTION();
-				// Initialize descriptor
-				_descriptor = std::make_shared<Descriptor>();
-
 				// Set descriptor bindings inputs
 				std::vector<DescriptorSetBindingData> bindingData {};
 				for (uint32_t i = 0; i < _inputAttachmentBindings.size(); i++)

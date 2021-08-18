@@ -48,7 +48,7 @@ namespace wde::gui {
 		 * @param resetValue The reset value (default 0)
 		 * @param columnWidth The label column width (default 120)
 		 */
-		static void addFloatDragger(const std::string& label, float &value, float resetValue = 0.0f, float columnWidth = 120.0f) {
+		static void addFloatDragger(const std::string& label, float &value, float resetValue = 0.0f, float columnWidth = 120.0f, float cursorSpeed = 0.1f) {
 				// Array
 				ImGui::PushID(label.c_str());
 				ImGui::Columns(2);
@@ -60,7 +60,7 @@ namespace wde::gui {
 
 				// Drag
 				ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
-				addFloatDraggerButton("Reset", value, resetValue);
+				addFloatDraggerButton("Reset", value, resetValue, GUITheme::colorMajorLight, GUITheme::colorMinorLight, cursorSpeed);
 				ImGui::PopStyleVar();
 
 				// End of array
@@ -79,7 +79,7 @@ namespace wde::gui {
 			 * @param buttonColor Color of button selected and active (default colorMajorLight)
 			 * @param hoverColor Color of button hovered (default colorMinorLight)
 			 */
-			static void addFloatDraggerButton(const std::string& name, float &value, float resetValue = 0.0f, ImVec4 buttonColor = GUITheme::colorMajorLight, ImVec4 hoverColor = GUITheme::colorMinorLight) {
+			static void addFloatDraggerButton(const std::string& name, float &value, float resetValue = 0.0f, ImVec4 buttonColor = GUITheme::colorMajorLight, ImVec4 hoverColor = GUITheme::colorMinorLight, float cursorSpeed = 0.1f) {
 				ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, buttonColor);
@@ -88,7 +88,7 @@ namespace wde::gui {
 				ImGui::PopStyleColor(3);
 
 				ImGui::SameLine();
-				ImGui::DragFloat(("##" + name).c_str(), &value, 0.1f, 0.0f, 0.0f, "%0.2f");
+				ImGui::DragFloat(("##" + name).c_str(), &value, cursorSpeed, 0.0f, 0.0f, "%0.2f");
 			}
 	};
 }

@@ -9,9 +9,10 @@ namespace wde::scene {
 		public:
 			/**
 			 * Loads a new model
-			 * @param relativePath The relative path of the object (final path will be "res/models/your_path"
+			 * @param relativePath The relative path of the object (final path will be "res/models/your_path")
+			 * @param recalculateNormals True if the program needs to recalculate model normals (default : false)
 			 */
-			explicit ModelLoader(const std::string& relativePath) : _relativePath(relativePath), Model() {
+			explicit ModelLoader(const std::string& relativePath, bool recalculateNormals = false) : _relativePath(relativePath), Model() {
 				std::string path = "res/models/" + _relativePath;
 
 				// Load model
@@ -85,7 +86,7 @@ namespace wde::scene {
 
 				// Initialize model
 				Logger::debug("Initializing model.", LoggerChannel::SCENE);
-				this->initialize(false); // Assume that model normals are correct
+				this->initialize(recalculateNormals); // Assume that model normals are correct
 			};
 
 			// Serializers

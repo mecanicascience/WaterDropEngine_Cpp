@@ -21,12 +21,12 @@ class WaterAppScene : public Scene {
 			camera.getModule<TransformModule>().rotation = {0.4f, 0.17f, 0.0f};
 
 
-			// Texture rendering to attachment
 			auto& landTexture = createGameObject("Land");
 			std::vector<std::shared_ptr<Material>> landMaterials {
-				std::make_shared<NormalMaterial> (RenderStage {0, 0}),
-				std::make_shared<DepthMaterial>  (RenderStage {0, 1}),
-				std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png")
+				std::make_shared<DepthMaterial> (RenderStage {0, 0}),
+				std::make_shared<NormalMaterial>(RenderStage {0, 1}),
+				std::make_shared<TextureMaterial>(RenderStage {0, 2}, "land.png"),
+				std::make_shared<TextureMaterial>(RenderStage {0, 3}, "land.png")
 			};
 			landTexture.addModule<ModelModule>(std::make_shared<ModelLoader>("land.obj"), landMaterials);
 
@@ -36,9 +36,10 @@ class WaterAppScene : public Scene {
 
 			// Plane
 			auto& waterPlane = createGameObject("Water Plane");
+			int planeSize = 50;
 			waterPlane.addModule<ModelModule>(
-					std::make_shared<Plane>(30, 30),
-					std::make_shared<WaterMaterial>(RenderStage {0, 3}, VK_POLYGON_MODE_FILL, 1, 2));
+					std::make_shared<Plane>(planeSize, planeSize),
+					std::make_shared<WaterMaterial>(RenderStage {0, 4}, VK_POLYGON_MODE_FILL, 1, 2, 3));
 			waterPlane.getModule<TransformModule>().scale *= 12.0f; // Plane will be X units long
 			waterPlane.getModule<TransformModule>().position.y = 0.3f;
 		}

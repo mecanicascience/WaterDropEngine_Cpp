@@ -52,7 +52,6 @@ namespace wde::renderEngine {
 	}
 
 	void Descriptor::cleanUp() {
-		Logger::debug("Cleaning up descriptor.", LoggerChannel::RENDERING_ENGINE);
 		// Dereference descriptors and pool
 		_descriptorSets.clear();
 		_pool.reset();

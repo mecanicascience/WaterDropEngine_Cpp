@@ -44,10 +44,6 @@ namespace wde::scene {
 				// Wait for device
 				WdeRenderEngine::get().waitForDevicesReady();
 
-				// Clear render engine previous descriptors
-				Logger::info("Clearing previous scene descriptors.", LoggerChannel::SCENE);
-				WdeRenderEngine::get().clearDescriptors();
-
 				// Clear scene
 				_scene->cleanUp();
 				_scene.reset();

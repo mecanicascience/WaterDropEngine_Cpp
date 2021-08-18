@@ -32,6 +32,6 @@ void main() {
                 * vec4(inPosition, 1.0f);               // Object local space position
 
     // Compute normal color from world space normal position
-    vec4 normalWorldSpace = inGameObjectData.transformWorldSpace * vec4(inNormal, 1.0f);
-    outNormalColor = normalWorldSpace.xyz;
+    vec4 normalWorldSpace = inGameObjectData.normalMatrix * vec4(inNormal, 1.0);
+    outNormalColor = normalize(normalWorldSpace.xyz);
 }
