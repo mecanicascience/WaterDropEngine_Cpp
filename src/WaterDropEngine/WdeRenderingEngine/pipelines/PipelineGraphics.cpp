@@ -19,6 +19,7 @@ namespace wde::renderEngine {
 
 	void PipelineGraphics::initialize() {
 		WDE_PROFILE_FUNCTION();
+        Logger::debug("Initializing graphics pipeline.", LoggerChannel::RENDERING_ENGINE);
 
 		// Sorts the vertices
 		std::sort(_vertexInputs.begin(), _vertexInputs.end());

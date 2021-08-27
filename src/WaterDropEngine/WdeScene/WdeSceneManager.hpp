@@ -56,13 +56,25 @@ namespace wde::scene {
 					return false;
 				return getActiveScene()->isInitialized();
 			}
+			/**
+			 * Set loading mode
+			 * @param loadAsync The scene will be load asynchronously
+			 */
+			void setLoadingMode(bool loadAsync) { _loadAsync = loadAsync; }
 
 
 		private:
+	        // Scene data
 			std::unique_ptr<Scene> _scene {};
 			std::unique_ptr<Scene> _sceneToAdd {};
 
 			/** Scene loading and storing threads */
 			std::thread _initializeSceneThread {};
+			/** true if the scene manager will load scenes asynchronously (default false) */
+			bool _loadAsync = false;
+
+
+			// Setup the scene
+            void setupScene(json sceneJSONContent = {});
 	};
 }

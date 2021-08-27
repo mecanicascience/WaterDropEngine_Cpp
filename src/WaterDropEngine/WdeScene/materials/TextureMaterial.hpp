@@ -29,7 +29,7 @@ namespace wde::scene {
 					   _relativeTexturePath(relativeTexturePath),
 					   Material("Texture Material", stage, "texture/textureShader.vert", "texture/textureShader.frag") {
 				// Create texture
-				_materialTexture = std::make_unique<Texture2D>("res/textures/" + _relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, textureFilter, textureAdressMode);
+				_materialTexture = std::make_unique<Texture2D>("res/textures/" + _relativeTexturePath, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_USAGE_SAMPLED_BIT, textureFilter, textureAdressMode);
 			}
 
 			void initialize() override {

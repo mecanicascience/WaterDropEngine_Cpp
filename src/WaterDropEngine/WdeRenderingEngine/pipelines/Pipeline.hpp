@@ -105,6 +105,8 @@ namespace wde::renderEngine {
 			// Pipeline parameters
 			/** true if the pipeline was initialized */
 			bool _initialized = false;
+			/** The corresponding pipeline */
+            VkPipeline _pipeline = VK_NULL_HANDLE;
 			/** The corresponding pipeline layout */
 			VkPipelineLayout _pipelineLayout = VK_NULL_HANDLE;
 			/** The last binded command buffer */

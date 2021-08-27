@@ -14,17 +14,40 @@ namespace wde::renderEngine {
 	class Texture2D {
 		public:
 			// Constructors
-			/**
+            /**
+             * Creates a new empty texture
+             * @param imageExtent The size of the texture image
+             * @param textureUsage The usage of the texture (default as sampled image)
+             * @param textureFormat The format of the texture (default VK_FORMAT_R8G8B8A8_SRGB)
+             * @param textureFilter The optional image filter (default linear filter)
+             * @param textureAdressMode The repeat image mode (default repeat image)
+             */
+            explicit Texture2D(VkExtent2D imageExtent, VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB, VkImageUsageFlags textureUsage = VK_IMAGE_USAGE_SAMPLED_BIT,
+                               VkFilter textureFilter = VK_FILTER_LINEAR, VkSamplerAddressMode textureAdressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
+
+
+            /**
 			 * Creates a new texture given a file path
 			 * @param filepath Absolute project file path to the texture
+             * @param textureUsage The usage of the texture (default as sampled image)
 			 * @param textureFormat The format of the texture (default VK_FORMAT_R8G8B8A8_SRGB)
 			 * @param textureFilter The optional image filter (default linear filter)
 			 * @param textureAdressMode The repeat image mode (default repeat image)
 			 */
-			explicit Texture2D(std::string filepath, VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB,
+			explicit Texture2D(std::string filepath, VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB, VkImageUsageFlags textureUsage = VK_IMAGE_USAGE_SAMPLED_BIT,
 							   VkFilter textureFilter = VK_FILTER_LINEAR, VkSamplerAddressMode textureAdressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
-			/** Texture desctructor */
+
+			/** Texture destructor */
 			~Texture2D();
+
+			// Helper functions
+			/**
+			 * Take a screenshot of the texture and saves it to a file
+			 * @param filePath
+			 */
+			void takeScreenshot(const std::string& filePath) {
+			    _textureImage->takeScreenshot(filePath);
+			}
 
 			// Getters and setters
 			VkImageView& getView() { return _textureImage->getView(); }
@@ -35,6 +58,8 @@ namespace wde::renderEngine {
 			// Texture parameters
 			std::string _filepath;
 			VkFormat _textureFormat;
+			VkExtent2D _imageExtent;
+			VkImageUsageFlags _textureUsage;
 
 			// Texture data
 			std::unique_ptr<Image2D> _textureImage;
@@ -61,7 +86,7 @@ namespace wde::renderEngine {
 			 * @param oldLayout Old layout of the image
 			 * @param newLayout New layout of the image
 			 */
-			static void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
+			static void transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout);
 	};
 }
 

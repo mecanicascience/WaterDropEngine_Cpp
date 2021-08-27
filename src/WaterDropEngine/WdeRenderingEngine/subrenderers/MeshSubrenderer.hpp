@@ -22,6 +22,8 @@ namespace wde::renderEngine {
 
 
 			// Core functions
+            /** Pre-renders the meshes to the command buffer */
+            void preRender(CommandBuffer &commandBuffer) override;
 			/** Renders the meshes to the command buffer */
 			void render(CommandBuffer &commandBuffer) override;
 	};

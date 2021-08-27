@@ -26,6 +26,7 @@
 #include "WaterDropEngine/WdeRenderingEngine/images/Texture2D.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/pipelines/Pipeline.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/pipelines/PipelineGraphics.hpp"
+#include "WaterDropEngine/WdeRenderingEngine/pipelines/PipelineCompute.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/pipelines/ShaderUtils.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/renderer/descriptors/RenderPassAttachment.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"

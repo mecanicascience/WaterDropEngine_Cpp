@@ -6,7 +6,8 @@
 namespace wde::scene {
 	// Constructors
 	WdeSceneManager::~WdeSceneManager() {
-		_initializeSceneThread.join();
+	    if (_initializeSceneThread.joinable())
+		    _initializeSceneThread.join();
 	}
 
 
@@ -57,22 +58,19 @@ namespace wde::scene {
 			gui::WdeGUI::get().reset();
 
 			// Initialize scene async
-			Logger::info("Initializing scene asynchronously.", LoggerChannel::SCENE);
-			if (_initializeSceneThread.joinable())
-				_initializeSceneThread.join();
-			_initializeSceneThread = std::thread([this]{
-				// Initialize scene components
-				Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
-				_scene->initialize();
+			if (_loadAsync) {
+                Logger::info("Initializing scene asynchronously.", LoggerChannel::SCENE);
+                if (_initializeSceneThread.joinable())
+                    _initializeSceneThread.join();
+                _initializeSceneThread = std::thread([this]{
+                    setupScene();
+                });
+			}
+			else {
+			    Logger::info("Initializing scene.", LoggerChannel::SCENE);
+			    setupScene();
+            }
 
-				// Initialize scene game objects
-				Logger::debug("Initializing selected scene game objects.", LoggerChannel::SCENE);
-				_scene->initializeGameObjects();
-
-				// Say that the scene is initialized
-				Logger::info("Scene loaded.", LoggerChannel::SCENE);
-				_scene->setInitialized();
-			});
 
 			return;
 		}
@@ -137,26 +135,41 @@ namespace wde::scene {
 		setScene(std::make_unique<LoadedScene>(sceneJSONContent));
 
 		// Deserialize scene
-		Logger::info("Loading scene asynchronously.", LoggerChannel::SCENE);
-		_initializeSceneThread.join();
-		_initializeSceneThread = std::thread([this, sceneJSONContent]{
-			WDE_PROFILE_FUNCTION();
-			// Initialize scene components
-			Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
-			_scene->initialize();
+		if (_loadAsync) {
+            Logger::info("Loading scene asynchronously.", LoggerChannel::SCENE);
+            _initializeSceneThread.join();
+            _initializeSceneThread = std::thread([this, sceneJSONContent]{
+                setupScene(sceneJSONContent);
+            });
+		}
+		else {
+		    Logger::info("Loading scene.", LoggerChannel::SCENE);
+		    setupScene(sceneJSONContent);
+		}
+	}
 
-			// Initialize scene game objects
-			Logger::debug("Initializing selected scene game objects.", LoggerChannel::SCENE);
-			_scene->initializeGameObjects();
 
-			// Deserialize scene
-			Logger::debug("Deserializing scene.", LoggerChannel::SCENE);
-			_scene->deserialize(sceneJSONContent);
 
-			// Say that the scene is initialized
-			Logger::info("Scene loaded.", LoggerChannel::SCENE);
-			_scene->setInitialized();
-		});
+	// Setup scene configuration
+	void WdeSceneManager::setupScene(json sceneJSONContent) {
+        WDE_PROFILE_FUNCTION();
+        // Initialize scene components
+        Logger::debug("Initializing selected scene.", LoggerChannel::SCENE);
+        _scene->initialize();
+
+        // Initialize scene game objects
+        Logger::debug("Initializing selected scene game objects.", LoggerChannel::SCENE);
+        _scene->initializeGameObjects();
+
+        // Deserialize scene
+        if (!sceneJSONContent.empty()) {
+            Logger::debug("Deserializing scene.", LoggerChannel::SCENE);
+            _scene->deserialize(sceneJSONContent);
+        }
+
+        // Say that the scene is initialized
+        Logger::info("Scene loaded.", LoggerChannel::SCENE);
+        _scene->setInitialized();
 	}
 
 

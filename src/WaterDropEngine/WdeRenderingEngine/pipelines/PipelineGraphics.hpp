@@ -99,7 +99,6 @@ namespace wde::renderEngine {
 			VkFrontFace _normalOrientation;
 
 			// Vulkan parameters
-			VkPipeline _pipeline = VK_NULL_HANDLE;
 			/** Type of the pipeline (graphics, compute, ...) */
 			VkPipelineBindPoint _pipelineBindPoint;
 

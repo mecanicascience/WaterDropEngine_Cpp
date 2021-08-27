@@ -35,6 +35,24 @@ namespace wde::renderEngine {
 						subrenderer->initialize();
 			}
 
+
+            /**
+             * Pre-renders a given stage
+             * @param stage The renderer chain to pre-renderer
+             * @param commandBuffer The corresponding command buffer
+             */
+			void preRenderStage(const RenderStage &stage, CommandBuffer &commandBuffer) {
+                WDE_PROFILE_FUNCTION();
+                Logger::debug("Pre-Rendering sub-renderers for stage " + std::to_string(stage.first) + "-" + std::to_string(stage.second) + ".",
+                              LoggerChannel::RENDERING_ENGINE);
+
+                // Render subrenders at given stage
+                for (int id : _subrendererStages[stage]) {
+                    if (_subrenders[id]->isEnabled())
+                        _subrenders[id]->preRender(commandBuffer);
+                }
+			}
+
 			/**
 			 * Renders a given stage
 			 * @param stage The renderer chain to renderer

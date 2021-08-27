@@ -38,7 +38,7 @@ namespace wde::renderEngine {
 			 : _bindingIndex(bindingIndex), _descriptorCount(descriptorCount), _descriptorType(descriptorType), _elementSize(elementSize), _shaderStageFlags(shaderStageFlags) {}
 
 		/**
-		 * Describes a binding data for an image sampler
+		 * Describes a binding data for an image sampler and a storage image
 		 * @param bindingIndex The index in the descriptor of the binding
 		 * @param descriptorType Type of the descriptor binding
 		 * @param imageView The image view
@@ -84,20 +84,15 @@ namespace wde::renderEngine {
 			~DescriptorSet();
 
 
-
-
 			// Core functions
 			/** Create the new binding layouts given the class data parameters */
 			void createBindingLayouts();
-
 			/** Create the descriptor set layout */
 			void createLayout(VkDescriptorSetLayout& descriptorSetLayout);
 
 
-
 			/** Initialize the descriptor (setup the buffers) */
 			void initialize();
-
 			/** Recreate the descriptor set (called when the window is resized) */
 			void recreate();
 
@@ -134,7 +129,10 @@ namespace wde::renderEngine {
 			void addBuffer(int bindingIndex, int bufferSize);
 
 			/** Add a new image sampler as a binding */
-			void addImageSampler(int bindingIndex, VkImageView& imageView, VkSampler& imageSampler);
+			void addImageSampler(int bindingIndex, VkDescriptorType descriptorType, VkImageView& imageView, VkSampler& imageSampler);
+
+			/** Add a new storage image as a binding */
+			void addImageStorage(int bindingIndex, VkDescriptorType descriptorType, VkImageView& imageView, VkSampler& imageSampler);
 
 			/** Add a new input attachment as a binding */
 			void addInputAttachment(int bindingIndex, uint32_t renderPassIndex, uint32_t attachmentBindingIndex);

@@ -3,8 +3,20 @@
 
 namespace wde::renderEngine {
 	// Constructor
-	Texture2D::Texture2D(std::string filepath, VkFormat textureFormat, VkFilter textureFilter, VkSamplerAddressMode textureAdressMode)
-			: _filepath(std::move(filepath)), _textureFormat(textureFormat) {
+	Texture2D::Texture2D(VkExtent2D imageExtent, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAdressMode)
+			: _filepath(), _textureFormat(textureFormat), _imageExtent(imageExtent), _textureUsage(textureUsage) {
+		// Create the texture image
+		createTextureImage();
+
+		// Create the texture layout
+		_textureImage->createImageView();
+
+		// Create the texture sampler
+		createTextureSampler(textureFilter, textureAdressMode);
+	}
+
+	Texture2D::Texture2D(std::string filepath, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAdressMode)
+			: _filepath(std::move(filepath)), _textureFormat(textureFormat), _textureUsage(textureUsage) {
 		// Create the texture image
 		createTextureImage();
 
@@ -23,44 +35,70 @@ namespace wde::renderEngine {
 
 	// Core functions
 	void Texture2D::createTextureImage() {
-		// Load the texture
-		Logger::debug("Loading texture " + _filepath + ".", LoggerChannel::RENDERING_ENGINE);
-		int texWidth, texHeight, texChannels;
-		stbi_uc* pixels = stbi_load(_filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-		VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-		if (!pixels)
-			throw WdeException("Failed to load texture image.", LoggerChannel::RENDERING_ENGINE);
-
-		// Create staging buffer
 		CoreDevice& device = CoreInstance::get().getSelectedDevice();
-		VkBuffer stagingBuffer;
-		VkDeviceMemory stagingBufferMemory;
-		BufferUtils::createBuffer(device.getPhysicalDevice(), device.getDevice(), imageSize,
-								  VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-								  stagingBuffer, stagingBufferMemory);
 
-		void* data;
-		vkMapMemory(device.getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
-		memcpy(data, pixels, static_cast<size_t>(imageSize));
-		vkUnmapMemory(device.getDevice(), stagingBufferMemory);
+		// Load the texture
+		if (!_filepath.empty()) {
+			Logger::debug("Loading texture " + _filepath + ".", LoggerChannel::RENDERING_ENGINE);
+			int texChannels;
+			int texWidth;
+			int texHeight;
 
-		stbi_image_free(pixels); // clean-up pixel array
+			stbi_uc* pixels = stbi_load(_filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+			VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+			if (!pixels)
+				throw WdeException("Failed to load texture image.", LoggerChannel::RENDERING_ENGINE);
+
+			// Create staging buffer
+			VkBuffer stagingBuffer;
+			VkDeviceMemory stagingBufferMemory;
+			BufferUtils::createBuffer(device.getPhysicalDevice(), device.getDevice(), imageSize,
+									  VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+									  stagingBuffer, stagingBufferMemory);
+
+			void* data;
+			vkMapMemory(device.getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
+			memcpy(data, pixels, static_cast<size_t>(imageSize));
+			vkUnmapMemory(device.getDevice(), stagingBufferMemory);
+
+			stbi_image_free(pixels); // clean-up pixel array
+
+			// Create image
+			VkExtent2D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
+			_textureImage = std::make_unique<Image2D>(_textureFormat, extent, VK_IMAGE_USAGE_TRANSFER_DST_BIT | _textureUsage, false);
+			_textureImage->createImage();
+
+			// Transition layouts and copy image buffer to texture image
+			transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+			BufferUtils::copyBufferToImage(stagingBuffer, _textureImage->getImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+
+			if ((_textureUsage & VK_IMAGE_USAGE_STORAGE_BIT) == VK_IMAGE_USAGE_STORAGE_BIT) // Transition to image storage usage
+                transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
+            // Default (transition to image sampled and other)
+			else
+                transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 
-		// Create image
-		VkExtent2D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
-		_textureImage = std::make_unique<Image2D>(_textureFormat, extent, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, false);
-		_textureImage->createImage();
+			// Free staging buffers
+			vkDestroyBuffer(device.getDevice(), stagingBuffer, nullptr);
+			vkFreeMemory(device.getDevice(), stagingBufferMemory, nullptr);
+		}
 
-		// Transition layouts and copy image buffer to texture image
-		transitionImageLayout(_textureImage->getImage(), VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		BufferUtils::copyBufferToImage(stagingBuffer, _textureImage->getImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-		transitionImageLayout(_textureImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		// Create a new empty texture
+		else {
+			Logger::debug("Creating an empty texture.", LoggerChannel::RENDERING_ENGINE);
 
-		// Free staging buffers
-		vkDestroyBuffer(device.getDevice(), stagingBuffer, nullptr);
-		vkFreeMemory(device.getDevice(), stagingBufferMemory, nullptr);
+			// Create image
+			_textureImage = std::make_unique<Image2D>(_textureFormat, _imageExtent, _textureUsage, false);
+			_textureImage->createImage();
+
+			// Transition image to used layout
+            if ((_textureUsage & VK_IMAGE_USAGE_STORAGE_BIT) == VK_IMAGE_USAGE_STORAGE_BIT) // Transition to image storage usage
+                transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
+            else // Default (transition to image sampled and other)
+                transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+		}
 	}
 
 	void Texture2D::createTextureSampler(VkFilter sampler, VkSamplerAddressMode adressMode) {
@@ -113,7 +151,7 @@ namespace wde::renderEngine {
 	 * @param oldLayout Old layout of the image
 	 * @param newLayout New layout of the image
 	 */
-	void Texture2D::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
+	void Texture2D::transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout) {
 		// Create a temporary command buffer
 		CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
 		commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -125,7 +163,7 @@ namespace wde::renderEngine {
 		barrier.newLayout = newLayout;
 		barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED; // Not use transfer queue
 		barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED; // Not use transfer queue
-		barrier.image = image;
+		barrier.image = image.getImage();
 		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 
 		// Not an array and doesn't have mip levels
@@ -140,8 +178,8 @@ namespace wde::renderEngine {
 		VkPipelineStageFlags destinationStage;
 
 		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-			barrier.srcAccessMask = 0;
-			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+		    barrier.srcAccessMask = 0;
+		    barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
@@ -152,6 +190,20 @@ namespace wde::renderEngine {
 
 			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+        else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+        }
+		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) { // && newLayout == VK_IMAGE_LAYOUT_GENERAL
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+
+            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+            destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 		}
 		else
 			throw WdeException("Unsupported layout transition.", LoggerChannel::RENDERING_ENGINE);
@@ -170,5 +222,8 @@ namespace wde::renderEngine {
 		commandBuffer.end();
 		commandBuffer.submit();
 		commandBuffer.waitForQueueIdle();
+
+		// Set new layout info
+        image.setLayout(newLayout);
 	}
 }

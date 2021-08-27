@@ -73,9 +73,14 @@ namespace wde::renderEngine {
 
 			// Image sampler
 			else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
-				addImageSampler((int) binding._bindingIndex, binding._imageView, binding._imageSampler);
+				addImageSampler((int) binding._bindingIndex, binding._descriptorType, binding._imageView, binding._imageSampler);
 
-			// Input attachment
+            // Storage image
+            else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
+                addImageStorage((int) binding._bindingIndex, binding._descriptorType, binding._imageView, binding._imageSampler);
+
+
+                // Input attachment
 			else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT)
 				addInputAttachment((int) binding._bindingIndex, binding._renderPassIndex, binding._attachmentBindingIndex);
 
@@ -150,7 +155,7 @@ namespace wde::renderEngine {
 		vkUpdateDescriptorSets(WdeRenderEngine::get().getSelectedDevice().getDevice(), 1, &setWrite, 0, nullptr);
 	}
 
-	void DescriptorSet::addImageSampler(int bindingIndex, VkImageView& imageView, VkSampler& imageSampler) {
+	void DescriptorSet::addImageSampler(int bindingIndex, VkDescriptorType descriptorType, VkImageView& imageView, VkSampler& imageSampler) {
 		WDE_PROFILE_FUNCTION();
 		// Create image info
 		VkDescriptorImageInfo imageInfo {};
@@ -166,7 +171,7 @@ namespace wde::renderEngine {
 		setWrite.dstArrayElement = 0; // if we write array, starting array index (default : 0)
 		setWrite.dstSet = _descriptorSet;
 		setWrite.descriptorCount = 1; // Update 1 descriptor at a time
-		setWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		setWrite.descriptorType = descriptorType;
 		setWrite.pBufferInfo = nullptr;
 		setWrite.pImageInfo = &imageInfo;
 		setWrite.pTexelBufferView = nullptr;
@@ -174,6 +179,32 @@ namespace wde::renderEngine {
 		// Update sets
 		vkUpdateDescriptorSets(WdeRenderEngine::get().getSelectedDevice().getDevice(), 1, &setWrite, 0, nullptr);
 	}
+
+
+    void DescriptorSet::addImageStorage(int bindingIndex, VkDescriptorType descriptorType, VkImageView& imageView, VkSampler& imageSampler) {
+        WDE_PROFILE_FUNCTION();
+        // Create image info
+        VkDescriptorImageInfo imageInfo {};
+        imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+        imageInfo.imageView = imageView;
+        imageInfo.sampler = imageSampler;
+
+        // Write buffers into the set
+        VkWriteDescriptorSet setWrite = {};
+        setWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        setWrite.pNext = nullptr;
+        setWrite.dstBinding = bindingIndex;
+        setWrite.dstArrayElement = 0; // if we write array, starting array index (default : 0)
+        setWrite.dstSet = _descriptorSet;
+        setWrite.descriptorCount = 1; // Update 1 descriptor at a time
+        setWrite.descriptorType = descriptorType;
+        setWrite.pBufferInfo = nullptr;
+        setWrite.pImageInfo = &imageInfo;
+        setWrite.pTexelBufferView = nullptr;
+
+        // Update sets
+        vkUpdateDescriptorSets(WdeRenderEngine::get().getSelectedDevice().getDevice(), 1, &setWrite, 0, nullptr);
+    }
 
 
 	void DescriptorSet::addInputAttachment(int bindingIndex, uint32_t renderPassIndex, uint32_t attachmentBindingIndex) {

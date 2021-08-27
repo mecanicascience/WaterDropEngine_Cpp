@@ -103,6 +103,20 @@ namespace wde::scene {
 					module->update(deltaTime);
 			}
 
+
+			/**
+			 * Pre-renders the game object
+			 * @param commandBuffer
+			 * @param stage
+			 */
+            void preRender(CommandBuffer &commandBuffer, RenderStage stage) {
+                WDE_PROFILE_FUNCTION();
+
+                // Pre-render modules
+                for (auto& module : _moduleList)
+                    module->preRender(commandBuffer, stage);
+            }
+
 			/**
 			 * Draws the game object to the screen at a given render stage
 			 * @param commandBuffer

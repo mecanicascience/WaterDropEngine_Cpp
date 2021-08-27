@@ -47,6 +47,20 @@ namespace wde::renderEngine {
 		// Update command buffers on each render passes
 		RenderStage stage;
 		for (auto &renderPass : instance.getRenderer()->getRenderPasses()) {
+		    // Pre-render render pass
+            CommandBuffer preCommandBuffer {true};
+            for (const auto &subpass : renderPass->getSubpasses()) {
+                Logger::debug("Pre-Rendering sub-pass.", LoggerChannel::RENDERING_ENGINE);
+                // Acquire ID
+                stage.second = subpass.getBindingIndex();
+
+                // Renders sub-render pipelines
+                instance.getRenderer()->getSubRenderersManager().preRenderStage(stage, preCommandBuffer);
+            }
+            preCommandBuffer.end();
+            preCommandBuffer.submit();
+            preCommandBuffer.waitForQueueIdle();
+
 			// Starts render pass
 			Logger::debug("= Starting render pass =", LoggerChannel::RENDERING_ENGINE);
 			startRenderPass(*renderPass);

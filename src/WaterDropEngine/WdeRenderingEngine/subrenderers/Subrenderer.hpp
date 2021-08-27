@@ -19,6 +19,11 @@ namespace wde::renderEngine {
 
             /** Initialize the sub-renderer */
             virtual void initialize() {};
+            /**
+             * Pre-renders the sub-renderer on the provided command buffer
+             * @param commandBuffer
+             */
+            virtual void preRender(CommandBuffer &commandBuffer) {};
 			/**
 			 * Renders the sub-renderer on the provided command buffer
 			 * @param commandBuffer

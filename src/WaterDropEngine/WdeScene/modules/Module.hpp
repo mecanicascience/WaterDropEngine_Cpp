@@ -36,6 +36,13 @@ namespace wde::scene {
 			 * @param deltaTime Time since last update (in seconds)
 			 */
 			virtual void update(float deltaTime) {};
+
+			/**
+			 * Pre-renders elements outside of a render pass
+			 * @param commandBuffer The command buffer to submit render operations to
+			 * @param stage The rendering stage
+			 */
+			virtual void preRender(CommandBuffer& commandBuffer, RenderStage stage) {};
 			/**
 			 * Performs render operations given the command buffer during a render stage
 			 * @param commandBuffer The command buffer to submit render operations to

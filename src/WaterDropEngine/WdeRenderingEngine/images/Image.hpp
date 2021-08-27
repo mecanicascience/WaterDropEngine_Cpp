@@ -42,10 +42,11 @@ namespace wde::renderEngine {
             VkFormat& getFormat() { return _format; }
             VkImageView& getView() { return _view; }
             VkImage& getImage() { return _image; }
+            VkDeviceMemory& getMemory() { return _memory; }
+            void setLayout(VkImageLayout layout) { _layout = layout; }
 
 
-
-        protected:
+            // Helper functions
             /**
              * Choose the first supported format
              * @param candidates
@@ -55,12 +56,19 @@ namespace wde::renderEngine {
              */
             static VkFormat findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
 
+            /**
+             * Save the image to a destination file
+             * @param filePath
+             */
+            void takeScreenshot(const std::string& filePath);
+
 
         private:
             // Vulkan image values
             VkImage _image = VK_NULL_HANDLE;
             VkImageView _view = VK_NULL_HANDLE;
             VkDeviceMemory _memory = VK_NULL_HANDLE;
+            VkImageLayout _layout = VK_IMAGE_LAYOUT_UNDEFINED;
 
             // Image description values
             VkImageType _type;
@@ -76,5 +84,30 @@ namespace wde::renderEngine {
             uint32_t _baseMipLevel;
             uint32_t _baseArrayLayer;
             uint32_t _layerCount;
+
+
+            // Helper functions
+            /**
+             * Transition the image from one layout to another
+             * @param commandBuffer
+             * @param image
+             * @param srcAccessMasks
+             * @param dstAccessMasks
+             * @param oldImageLayout
+             * @param newImageLayout
+             * @param srcStageMask
+             * @param dstStageMask
+             * @param imageAspect
+             * @param mipLevels
+             * @param baseMipLevel
+             * @param layerCount
+             * @param baseArrayLayer
+             */
+            static void insertImageMemoryBarrier(CommandBuffer commandBuffer, VkImage &image, VkAccessFlags srcAccessMasks,
+                                          VkAccessFlags dstAccessMasks, VkImageLayout oldImageLayout,
+                                          VkImageLayout newImageLayout, VkPipelineStageFlagBits srcStageMask,
+                                          VkPipelineStageFlagBits dstStageMask, VkImageAspectFlagBits imageAspect,
+                                          int mipLevels,
+                                          int baseMipLevel, int layerCount, int baseArrayLayer);
     };
 }
