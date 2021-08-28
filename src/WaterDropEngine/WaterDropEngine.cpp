@@ -42,10 +42,14 @@ namespace wde {
 			Logger::err(e.what(), e.getChannel());
 		}
 
+		_initialized = true;
 		return WdeStatus::WDE_SUCCESS;
 	}
 
 	WdeStatus WaterDropEngine::run() {
+		if (!_initialized)
+			throw WdeException("Engine was run before being initialized.", LoggerChannel::MAIN);
+
 		try {
 			WDE_PROFILE_BEGIN_SESSION("Running", "logs/profiler_run.json");
 			// Starts instance

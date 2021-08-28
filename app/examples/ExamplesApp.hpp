@@ -9,6 +9,7 @@
 #include "03_LoadShapes/LoadShapesScene.hpp"
 #include "04_DrawGUI/DrawGUIRenderer.hpp"
 #include "04_DrawGUI/DrawGUIScene.hpp"
+#include "05_ComputeShader/ComputeShaderRenderer.hpp"
 
 using namespace wde;
 class ExamplesApp {

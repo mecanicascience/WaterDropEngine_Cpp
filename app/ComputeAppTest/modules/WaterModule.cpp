@@ -2,8 +2,7 @@
 
 void WaterModule::createDescriptors() {
     // Create material descriptor
-    std::shared_ptr<Descriptor>& descriptor = _gameObject.createDescriptor();
-    _material->setDescriptor(descriptor);
+    _material->setDescriptor(_gameObject.createDescriptor());
 
     // Create compute pipeline descriptor
     _computeDescriptor = _gameObject.createDescriptor();
@@ -14,7 +13,7 @@ void WaterModule::createDescriptors() {
 
 void WaterModule::initialize() {
 	// Set image
-	_chessboardImage = std::make_shared<Texture2D>(VkExtent2D{100, 100},
+	_chessboardImage = std::make_shared<Texture2D>(VkExtent2D{500, 500},
 												   VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
 
     // Compute shader
@@ -42,26 +41,13 @@ void WaterModule::initialize() {
     CommandBuffer commandBuffer {true};
     _computePipeline.bind(commandBuffer);
     _computePipeline.bind(_computeDescriptor);
-    vkCmdDispatch(commandBuffer, 16, 16, 1);
+    vkCmdDispatch(commandBuffer, 32, 32, 1);
     commandBuffer.end();
     commandBuffer.submit();
     commandBuffer.waitForQueueIdle();
 
     // Transition image from compute layout to present layout
     _chessboardImage->toLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-}
-
-void WaterModule::preRender(CommandBuffer &commandBuffer, RenderStage stage) {
-
-    // Wait for compute shader to end // TODO
-    /*VkImageMemoryBarrier barrier = _chessboardImage.
-    vkCmdPipelineBarrier(
-            commandBuffer,
-            VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-            0,
-            0, nullptr,
-            0, nullptr,
-            1, &barrier);*/
 
     // Save image to file
     //_chessboardImage->takeScreenshot("chessboard.png");
@@ -93,8 +79,4 @@ void WaterModule::renderGUI() {
 void WaterModule::cleanUp() {
     // Clean up model
     // _model->cleanUp();
-
-    // Clean up descriptors
-    _computeDescriptor->cleanUp();
-    _textureDisplayDescriptor->cleanUp();
 }

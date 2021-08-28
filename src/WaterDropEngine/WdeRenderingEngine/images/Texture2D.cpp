@@ -145,6 +145,9 @@ namespace wde::renderEngine {
 
 
 	void Texture2D::toLayout(VkImageLayout layout) {
+		if (layout == _textureImage->getLayout())
+			return;
+
 		transitionImageLayout(*_textureImage, _textureImage->getLayout(), layout);
 	}
 

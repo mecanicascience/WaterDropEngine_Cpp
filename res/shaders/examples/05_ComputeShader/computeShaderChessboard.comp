@@ -1,10 +1,10 @@
 #version 450
 
-// Size of each group
-layout(local_size_x = 4, local_size_y = 4, local_size_z = 1) in;
+// Size of each group (use groups of size 16*16*1)
+layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
 
 // The image to write to
-layout(rgba8, set = 2, binding = 0) uniform writeonly image2D outImage;
+layout(rgba8, set = 0, binding = 0) uniform writeonly image2D outImage;
 
 void main() {
     // Compute block coordinates X and Y

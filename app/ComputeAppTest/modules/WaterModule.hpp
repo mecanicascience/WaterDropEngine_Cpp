@@ -9,7 +9,7 @@ class WaterModule : public Module {
         explicit WaterModule(GameObject &gameObject, std::shared_ptr<Model> model, std::shared_ptr<Material> material)
                 : _model(std::move(model)),
                   _material(std::move(material)),
-                  _computePipeline("res/shaders/compute/testcompute.comp.spv"),
+                  _computePipeline("res/shaders/compute/computeShaderChessboard.comp.spv"),
                   _textureDisplayPipeline({0, 0}, {"res/shaders/texture/imageDisplayer.vert.spv", "res/shaders/texture/imageDisplayer.frag.spv"}, {},
 										  PipelineGraphics::Mode::Polygon, PipelineGraphics::Depth::ReadWrite,
 										  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VK_POLYGON_MODE_FILL,
@@ -19,7 +19,6 @@ class WaterModule : public Module {
         // Core functions
         void createDescriptors() override;
         void initialize() override;
-        void preRender(CommandBuffer& commandBuffer, RenderStage stage) override;
         void render(CommandBuffer& commandBuffer, RenderStage stage) override;
         void renderGUI() override;
         void cleanUp() override;

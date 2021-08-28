@@ -5,6 +5,7 @@ void ExamplesApp::start() {
 	WaterDropEngine engine {};
 
 
+
 	// == 01 - Simple triangle ==
 	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<DrawSimpleTriangleRenderer>());  // Set renderer
 	//engine.initialize();  // Initialize the engine
@@ -23,6 +24,10 @@ void ExamplesApp::start() {
 	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<DrawGUIRenderer>());  // Set renderer
 	//engine.initialize();  // Initialize the engine
 	//scene::WdeSceneManager::get().setScene(std::make_unique<DrawGUIScene>());  // Set scene
+
+	// == 05 - Compute Shader ==
+	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<ComputeShaderRenderer>());  // Set renderer
+	engine.initialize();  // Initialize the engine
 
 
 

@@ -1,7 +1,7 @@
 #version 450
 
 // Input texture
-layout(set = 2, binding = 0) uniform sampler2D inTexture;
+layout(set = 0, binding = 0) uniform sampler2D inTexture;
 
 
 // Input UV

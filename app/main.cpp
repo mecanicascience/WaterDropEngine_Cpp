@@ -3,10 +3,10 @@
 
 int main() {
 	// Use custom app
-    CoreApp app {};
+    // CoreApp app {};
 
     // Use examples
-    // ExamplesApp app {};
+    ExamplesApp app {};
 
     app.start();
 

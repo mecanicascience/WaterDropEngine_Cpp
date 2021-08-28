@@ -16,5 +16,8 @@ namespace wde {
 		private:
 			/** The WaterDropInstance */
 			std::unique_ptr<WdeInstance> _instance;
+
+			/** True if the engine has been initialized */
+			bool _initialized = false;
 	};
 }
