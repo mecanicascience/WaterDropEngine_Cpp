@@ -26,8 +26,13 @@ void ExamplesApp::start() {
 	//scene::WdeSceneManager::get().setScene(std::make_unique<DrawGUIScene>());  // Set scene
 
 	// == 05 - Compute Shader ==
-	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<ComputeShaderRenderer>());  // Set renderer
+	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<ComputeShaderRenderer>());  // Set renderer
+	//engine.initialize();  // Initialize the engine
+
+	// == 06 - Post Processing ==
+	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<PostProcessingRenderer>());  // Set renderer
 	engine.initialize();  // Initialize the engine
+	scene::WdeSceneManager::get().setScene(std::make_unique<PostProcessingScene>());  // Set scene
 
 
 
