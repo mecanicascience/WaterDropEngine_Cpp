@@ -1,6 +1,6 @@
 # Main Config
 cmake_minimum_required(VERSION 3.17)
-project(WaterDropEngine VERSION 0.1.0)
+project(WaterDropEngine VERSION 1.2.0)
 
 
 # == SETUP PROJECT CONFIGURATION ==
