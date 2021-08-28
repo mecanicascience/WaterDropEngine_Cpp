@@ -19,6 +19,8 @@ WaterDropEngine is a free and open-source project, so you can directly support i
 new pull requests or issues.
 We'll be happy to answer your questions and to add your new code implementation ideas.
 
+You will find engine documentation [here](https://codedocs.xyz/mecanicascience/WaterDropEngine/).
+
 <br/>
 
 ## Getting Started
