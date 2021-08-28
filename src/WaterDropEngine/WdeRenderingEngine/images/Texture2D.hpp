@@ -42,12 +42,20 @@ namespace wde::renderEngine {
 
 			// Helper functions
 			/**
+			 * Transition the texture to the given layout
+			 * @param layout
+			 */
+			void toLayout(VkImageLayout layout);
+
+			/**
 			 * Take a screenshot of the texture and saves it to a file
 			 * @param filePath
 			 */
 			void takeScreenshot(const std::string& filePath) {
 			    _textureImage->takeScreenshot(filePath);
 			}
+
+
 
 			// Getters and setters
 			VkImageView& getView() { return _textureImage->getView(); }

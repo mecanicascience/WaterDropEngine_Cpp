@@ -3,8 +3,6 @@
 #include <WaterDropEngine/includes.hpp>
 #include "meshes/Plane.hpp"
 #include "materials/WaterMaterial.hpp"
-#include "materials/DepthMaterial.hpp"
-#include "materials/NormalMaterial.hpp"
 
 using namespace wde::scene;
 

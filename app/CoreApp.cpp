@@ -6,24 +6,19 @@
 
 
 void CoreApp::start() {
-	// == Initialize engine ==
-	// Create rendering engine
+	// Create render engine
 	WaterDropEngine engine {};
 
-	// Set renderer
-	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<CoreAppRenderer>());
-	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<WaterAppRenderer>());
-    renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<ComputeAppRenderer>());
-
-	// Initialize main engine
+	// Water app engine
+	renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<WaterAppRenderer>());
 	engine.initialize();
+	scene::WdeSceneManager::get().setScene(std::make_unique<WaterAppScene>());
 
-	// Set scene
-	//scene::WdeSceneManager::get().setScene(std::make_unique<CoreAppScene>());
-	//scene::WdeSceneManager::get().setScene(std::make_unique<WaterAppScene>());
-    scene::WdeSceneManager::get().setScene(std::make_unique<ComputeAppScene>());
+	// Compute app test
+	//renderEngine::WdeRenderEngine::get().setRenderer(std::make_unique<ComputeAppRenderer>());
+	//engine.initialize();
+	//scene::WdeSceneManager::get().setScene(std::make_unique<ComputeAppScene>());
 
-
-	// == Run engine ==
+	// Run engine
 	engine.run();
 }

@@ -11,7 +11,6 @@
 #include "../modules/CameraModule.hpp"
 #include "../modules/ModelModule.hpp"
 #include "../modules/TransformControllerModule.hpp"
-#include "../gizmos/Gizmo.hpp"
 #include "../../WdeRenderingEngine/descriptors/Descriptor.hpp"
 
 namespace wde::scene {
@@ -135,17 +134,6 @@ namespace wde::scene {
 				// Render modules
 				for (auto& module : _moduleList)
 					module->render(commandBuffer, stage);
-			}
-
-			/**
-			 * Render Game object gizmo
-			 * @param gizmo The gizmo instance
-			 */
-			void renderGizmo(Gizmo &gizmo) {
-				WDE_PROFILE_FUNCTION();
-				// Render modules gizmo
-				for (auto& module : _moduleList)
-					module->renderGizmo(gizmo);
 			}
 
 			/** Clean up game object */

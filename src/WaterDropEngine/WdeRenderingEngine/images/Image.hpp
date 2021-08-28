@@ -44,6 +44,7 @@ namespace wde::renderEngine {
             VkImage& getImage() { return _image; }
             VkDeviceMemory& getMemory() { return _memory; }
             void setLayout(VkImageLayout layout) { _layout = layout; }
+            VkImageLayout& getLayout() { return _layout; }
 
 
             // Helper functions

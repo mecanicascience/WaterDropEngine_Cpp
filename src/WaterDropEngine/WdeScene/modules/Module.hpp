@@ -5,7 +5,6 @@
 #include "../../../wde.hpp"
 #include "../../WdeRenderingEngine/renderer/descriptors/RenderStage.hpp"
 #include "../../WdeRenderingEngine/commands/CommandBuffer.hpp"
-#include "../gizmos/Gizmo.hpp"
 
 using namespace wde::renderEngine;
 
@@ -49,11 +48,6 @@ namespace wde::scene {
 			 * @param stage The rendering stage
 			 */
 			virtual void render(CommandBuffer& commandBuffer, RenderStage stage) {};
-			/**
-			 * Render Game object gizmo
-			 * @param gizmo The gizmo instance
-			 */
-			virtual void renderGizmo(Gizmo &gizmo) {}
 			/** Render the module GUI */
 			virtual void renderGUI() {};
 			/** Cleaning up the module */

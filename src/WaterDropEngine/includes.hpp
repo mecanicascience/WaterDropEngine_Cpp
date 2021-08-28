@@ -39,7 +39,6 @@
 #include "WaterDropEngine/WdeRenderingEngine/renderer/passes/SwapChain.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/renderer/Renderer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/Subrenderer.hpp"
-#include "WaterDropEngine/WdeRenderingEngine/subrenderers/GizmoSubrenderer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/GUISubrenderer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/MeshSubrenderer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/subrenderers/filters/FilterSubrenderer.hpp"
@@ -71,11 +70,11 @@
 #include "WaterDropEngine/WdeInputEngine/InputManager.hpp"
 
 // Scene
-#include "WaterDropEngine/WdeScene/gizmos/Gizmo.hpp"
-#include "WaterDropEngine/WdeScene/gizmos/GizmoRenderer.hpp"
 #include "WaterDropEngine/WdeScene/materials/ColorMaterial.hpp"
 #include "WaterDropEngine/WdeScene/materials/Material.hpp"
 #include "WaterDropEngine/WdeScene/materials/TextureMaterial.hpp"
+#include "WaterDropEngine/WdeScene/materials/NormalMaterial.hpp"
+#include "WaterDropEngine/WdeScene/materials/DepthMaterial.hpp"
 #include "WaterDropEngine/WdeScene/modules/CameraModule.hpp"
 #include "WaterDropEngine/WdeScene/modules/ModelModule.hpp"
 #include "WaterDropEngine/WdeScene/modules/Module.hpp"

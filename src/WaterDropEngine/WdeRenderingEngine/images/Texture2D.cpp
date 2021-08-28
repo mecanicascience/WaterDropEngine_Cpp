@@ -144,19 +144,16 @@ namespace wde::renderEngine {
 
 
 
+	void Texture2D::toLayout(VkImageLayout layout) {
+		transitionImageLayout(*_textureImage, _textureImage->getLayout(), layout);
+	}
 
-	/**
-	 * Transition between from one layout to another
-	 * @param image The image that will transition formats
-	 * @param oldLayout Old layout of the image
-	 * @param newLayout New layout of the image
-	 */
 	void Texture2D::transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout) {
 		// Create a temporary command buffer
 		CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
 		commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
-		// Create memory barrier (synchronize accesses to resources)
+		// Create memory barrier (synchronize accesses to² resources)
 		VkImageMemoryBarrier barrier {};
 		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
 		barrier.oldLayout = oldLayout;
@@ -177,6 +174,8 @@ namespace wde::renderEngine {
 		VkPipelineStageFlags sourceStage;
 		VkPipelineStageFlags destinationStage;
 
+
+		// From undefined
 		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
 		    barrier.srcAccessMask = 0;
 		    barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
@@ -184,6 +183,22 @@ namespace wde::renderEngine {
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+			barrier.srcAccessMask = 0;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) { // && newLayout == VK_IMAGE_LAYOUT_GENERAL
+			barrier.srcAccessMask = 0;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+
+			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+			destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+		}
+
+		// From transfer distance
 		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
 			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
@@ -191,22 +206,19 @@ namespace wde::renderEngine {
 			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
-        else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-        }
-		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) { // && newLayout == VK_IMAGE_LAYOUT_GENERAL
-            barrier.srcAccessMask = 0;
-            barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+		// From general layout
+		else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) { // && oldLayout == VK_IMAGE_LAYOUT_GENERAL
+			barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
-            sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-            destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+			sourceStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
+
+		// Not implemented
 		else
-			throw WdeException("Unsupported layout transition.", LoggerChannel::RENDERING_ENGINE);
+			throw WdeException("Layout transition currently not implemented.", LoggerChannel::RENDERING_ENGINE);
 
 		// Push barrier to the command buffer
 		vkCmdPipelineBarrier(

@@ -20,12 +20,6 @@ namespace wde::scene {
 			// Constructors
 			explicit TransformModule(GameObject &gameObject) : Module(gameObject, "Transform") {}
 
-			// Core functions
-			void renderGizmo(Gizmo& gizmo) override {
-				// Add a temporary line
-				gizmo.drawLine({0, 0, 0}, position);
-			}
-
 			void renderGUI() override {
 				gui::GUIRenderer::addVec3Button("Position", position);
 				gui::GUIRenderer::addVec3Button("Rotation", rotation);

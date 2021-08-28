@@ -52,12 +52,18 @@ namespace wde::renderEngine {
 	}
 
 	void Descriptor::cleanUp() {
+		if (_cleanUp)
+			return;
+
 		// Dereference descriptors and pool
 		_descriptorSets.clear();
 		_pool.reset();
 
 		for (auto& _layout : _layouts)
 			vkDestroyDescriptorSetLayout(WdeRenderEngine::get().getSelectedDevice().getDevice(), _layout, nullptr);
+
+		// Set clean up done
+		_cleanUp = true;
 	}
 
 	void Descriptor::bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint) {

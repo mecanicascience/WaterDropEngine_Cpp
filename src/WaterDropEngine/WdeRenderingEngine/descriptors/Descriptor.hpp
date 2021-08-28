@@ -58,6 +58,9 @@ namespace wde::renderEngine {
 
 			// Layouts creation
 			std::vector<VkDescriptorSetLayout> _layouts {};
+
+			/** True if the layout has been cleared */
+			bool _cleanUp = false;
 	};
 }
 

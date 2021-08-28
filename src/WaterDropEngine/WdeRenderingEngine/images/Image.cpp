@@ -151,11 +151,11 @@ namespace wde::renderEngine {
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 1, 0, 1, 0);
 
         // Transition image from previous usage to transfer source layout
-        /*insertImageMemoryBarrier(commandBuffer, _image, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_TRANSFER_READ_BIT, srcImageLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+        insertImageMemoryBarrier(commandBuffer, _image, VK_ACCESS_MEMORY_READ_BIT, VK_ACCESS_TRANSFER_READ_BIT, srcImageLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, VK_IMAGE_ASPECT_COLOR_BIT, 1, _mipLevels, 1, _arrayLayers);
 
         // If source and destination support blit we'll blit as this also does automatic format conversion (e.g. from BGR to RGB)
-		if (supportsBlit) {
+        /*if (supportsBlit) {
 			// Define the region to blit (we will blit the whole swapchain image)
 			VkOffset3D blitSize;
 			blitSize.x = (int32_t) _extent.width;
