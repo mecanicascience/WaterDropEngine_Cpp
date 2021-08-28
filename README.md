@@ -30,7 +30,8 @@ and open a terminal window inside the `WaterDropEngine` cloned folder.<br/>
 Once this step is done, go to the `lib` folder, and run the command `git clone https://github.com/glfw/glfw` to clone the GLFW library.
 Then, go to `lib` and run the command `git clone https://github.com/g-truc/glm`.
 
-Once all of these is done, you are ready to start using WaterDropEngine. Just go under the `app` folder and start creating your own application.
+Once all of these is done, you are ready to start using WaterDropEngine. Just go under the `app` folder and start creating your own application. 
+You can see engine examples under the `app/examples` folder.
 
 <br/>
 
@@ -66,7 +67,3 @@ You can find further information and library credits down below.
 - If you want to use WaterDropEngine, you need to follow the [license requirements](https://github.com/mecanicascience/WaterDropEngine/blob/master/LICENSE) (to sum up, you can use pSEngine everywhere and for any purpose, as long as there is a copyright notice).
 - You can find all WaterDropEngine versions on [this link](https://github.com/mecanicascience/WaterDropEngine/releases).
 - WaterDropEngine uses [Vulkan](https://www.vulkan.org/), [GLFW](https://www.glfw.org/), [GLM](https://github.com/g-truc/glm) and [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader).
-
-## Engine structure
-![engine structure](https://github.com/mecanicascience/WaterDropEngine/blob/main/imgs/Engine%20Structure/engineStructure.png)
-
