@@ -1,9 +1,9 @@
-#include "CoreApp.hpp"
+#include "projects/ProjectsApp.hpp"
 #include "examples/ExamplesApp.hpp"
 
 int main() {
-	// Use custom app
-    CoreApp app {};
+	// Use projects app
+    ProjectsApp app {};
 
     // Use examples
     // ExamplesApp app {};
