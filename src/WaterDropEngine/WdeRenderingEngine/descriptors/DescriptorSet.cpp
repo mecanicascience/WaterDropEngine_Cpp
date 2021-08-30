@@ -13,10 +13,7 @@ namespace wde::renderEngine {
 
 	DescriptorSet::~DescriptorSet() {
 		// Destroy set buffers
-		for (auto& [bindingIndex, bufferStruct] : _bindingsBuffers) {
-			vkDestroyBuffer(WdeRenderEngine::get().getSelectedDevice().getDevice(), bufferStruct.buffer, nullptr);
-			vkFreeMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), bufferStruct.bufferMemory, nullptr);
-		}
+		_bindingsBuffers.clear();
 
 		// Destroy set layout
 		_descriptorSetLayout = nullptr;
@@ -67,9 +64,9 @@ namespace wde::renderEngine {
 		WDE_PROFILE_FUNCTION();
 		// Create bindings
 		for (auto& binding : _bindingsData) {
-			// Uniform buffers
-			if (binding._descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER)
-				addBuffer((int) binding._bindingIndex, binding._elementSize);
+			// Uniform buffers or storage buffer
+			if (binding._descriptorType == VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER || binding._descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER)
+				addBuffer((int) binding._bindingIndex, binding._elementSize, binding._buffer, binding._descriptorType);
 
 			// Image sampler
 			else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER)
@@ -79,8 +76,7 @@ namespace wde::renderEngine {
             else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_IMAGE)
                 addImageStorage((int) binding._bindingIndex, binding._descriptorType, binding._imageView, binding._imageSampler);
 
-
-                // Input attachment
+            // Input attachment
 			else if (binding._descriptorType == VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT)
 				addInputAttachment((int) binding._bindingIndex, binding._renderPassIndex, binding._attachmentBindingIndex);
 
@@ -104,39 +100,47 @@ namespace wde::renderEngine {
 	}
 
 	void DescriptorSet::updateBuffer(int bindingIndex, const void* newData) {
-		if (_bindingsBuffers[bindingIndex].bufferMemory == nullptr) // If no buffer memory (ex camera object), return
+		if (_bindingsBuffers[bindingIndex] == nullptr || _bindingsBuffers[bindingIndex]->getMemory() == nullptr) // If no buffer memory (ex camera object), return
 			return;
 		WDE_PROFILE_FUNCTION();
 
 		void* data;
-		vkMapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex].bufferMemory,
-					0, _bindingsBuffers[bindingIndex].bufferSize, 0, &data);
-		memcpy(data, newData, _bindingsBuffers[bindingIndex].bufferSize);
-		vkUnmapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex].bufferMemory);
+		vkMapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex]->getMemory(),
+					0, _bindingsBuffers[bindingIndex]->getSize(), 0, &data);
+		memcpy(data, newData, _bindingsBuffers[bindingIndex]->getSize());
+		vkUnmapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bindingsBuffers[bindingIndex]->getMemory());
 	}
 
 
 
 
 	// Core functions
-	void DescriptorSet::addBuffer(int bindingIndex, int bufferSize) {
+	void DescriptorSet::addBuffer(int bindingIndex, int bufferSize, std::shared_ptr<Buffer>& buffer, VkDescriptorType descriptorType) {
 		WDE_PROFILE_FUNCTION();
-		// Create buffer struct
-		_bindingsBuffers[bindingIndex] = DescriptorSetBindingBuffer {};
-		_bindingsBuffers[bindingIndex].bindingIndex = bindingIndex;
-		_bindingsBuffers[bindingIndex].bufferSize = bufferSize;
 
-		// Create buffer
-		BufferUtils::createBuffer(WdeRenderEngine::get().getSelectedDevice().getPhysicalDevice(),
-								  WdeRenderEngine::get().getSelectedDevice().getDevice(),
-								  bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-								  _bindingsBuffers[bindingIndex].buffer, _bindingsBuffers[bindingIndex].bufferMemory);
+		// Create buffer if necessary
+		if (buffer == nullptr) {
+			if (descriptorType == VK_DESCRIPTOR_TYPE_STORAGE_BUFFER) { // Storage buffer
+				_bindingsBuffers[bindingIndex] = std::make_shared<Buffer>(
+						bufferSize,
+						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+						VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			}
+			else { // Simple buffer
+				_bindingsBuffers[bindingIndex] = std::make_shared<Buffer>(
+						bufferSize,
+						VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+						VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
+			}
+		}
+		else
+			_bindingsBuffers[bindingIndex] = buffer;
 
 		// Vulkan binding buffer
 		VkDescriptorBufferInfo bufferInfo {};
-		bufferInfo.buffer = _bindingsBuffers[bindingIndex].buffer;
+		bufferInfo.buffer = _bindingsBuffers[bindingIndex]->getBuffer();
 		bufferInfo.offset = 0;
-		bufferInfo.range = bufferSize;
+		bufferInfo.range = _bindingsBuffers[bindingIndex]->getSize();
 
 		// Write buffers into the set
 		VkWriteDescriptorSet setWrite = {};
@@ -146,7 +150,7 @@ namespace wde::renderEngine {
 		setWrite.dstArrayElement = 0; // if we write array, starting array index (default : 0)
 		setWrite.dstSet = _descriptorSet;
 		setWrite.descriptorCount = 1; // Update 1 descriptor at a time
-		setWrite.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		setWrite.descriptorType = descriptorType;
 		setWrite.pBufferInfo = &bufferInfo;
 		setWrite.pImageInfo = nullptr;
 		setWrite.pTexelBufferView = nullptr;

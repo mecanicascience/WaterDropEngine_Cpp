@@ -95,6 +95,12 @@ namespace wde::renderEngine {
 			throw WdeException("Failed to submit draw command buffer.", LoggerChannel::RENDERING_ENGINE);
 	}
 
+	void CommandBuffer::submitIdle() {
+		end();
+		submit();
+		waitForQueueIdle();
+	}
+
 
 
 	// Helpers

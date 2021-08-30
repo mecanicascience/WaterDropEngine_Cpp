@@ -1,40 +1,37 @@
 #include "WaterModule.hpp"
 
+WaterModule::WaterModule(GameObject &gameObject, std::shared_ptr<Model> model, std::shared_ptr<Material> material)
+	: Module(gameObject, "Water Module"),
+	  _model(std::move(model)),
+	  _material(std::move(material)),
+	  _computePipeline("res/shaders/ComputeAppTest/computeShaders/generateWaves.comp.spv") {}
+
 void WaterModule::createDescriptors() {
     // Create material descriptor
     _material->setDescriptor(_gameObject.createDescriptor());
 
     // Create compute pipeline descriptor
     _computeDescriptor = _gameObject.createDescriptor();
-
-    // Create texture pipeline descriptor
-    _textureDisplayDescriptor = _gameObject.createDescriptor();
 }
 
 void WaterModule::initialize() {
-	// Set image
-	_chessboardImage = std::make_shared<Texture2D>(VkExtent2D{500, 500},
-												   VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_USAGE_STORAGE_BIT | VK_IMAGE_USAGE_SAMPLED_BIT);
+	// Create buffer
+	struct BufferData {
+		int defaultVal = 0;
+	};
+	auto wavesData = std::make_shared<Buffer>(sizeof(BufferData), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
     // Compute shader
     _computeDescriptor->addSet(2, {
-            {0, VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, _chessboardImage->getView(), _chessboardImage->getSampler(), VK_SHADER_STAGE_COMPUTE_BIT}
+    	{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, wavesData, VK_SHADER_STAGE_COMPUTE_BIT}
     });
     _computePipeline.setDescriptor(_computeDescriptor);
     _computePipeline.initialize();
 
 
-    // Set texture descriptor
-    _textureDisplayDescriptor->addSet(2, {
-    	{0, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, _chessboardImage->getView(), _chessboardImage->getSampler()}
-    });
-    _textureDisplayPipeline.setDescriptor(_textureDisplayDescriptor);
-    _textureDisplayPipeline.initialize();
-
-
     // Initialize material
-    /*_material->setupDescriptor();
-    _material->initialize();*/
+    _material->setupDescriptor();
+    _material->initialize();
 
 
     // Run compute shader
@@ -42,41 +39,24 @@ void WaterModule::initialize() {
     _computePipeline.bind(commandBuffer);
     _computePipeline.bind(_computeDescriptor);
     vkCmdDispatch(commandBuffer, 32, 32, 1);
-    commandBuffer.end();
-    commandBuffer.submit();
-    commandBuffer.waitForQueueIdle();
-
-    // Transition image from compute layout to present layout
-    _chessboardImage->toLayout(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-
-    // Save image to file
-    //_chessboardImage->takeScreenshot("chessboard.png");
+    commandBuffer.submitIdle();
 }
 
 void WaterModule::render(CommandBuffer &commandBuffer, RenderStage stage) {
-    /*if (stage != _material->getStage()) // Not in the right rendering stage
-        return;*/
+    if (stage != _material->getStage()) // Not in the right rendering stage
+        return;
 
     // Bind material to the game object and push camera constants to it
-    /*_material->bind(commandBuffer);
+    _material->bind(commandBuffer);
     _material->pushConstants();
     _material->pushDescriptors();
 
     // Render model
     _model->bind(commandBuffer);
-    _model->render();*/
-
-    // Display texture image
-    _textureDisplayPipeline.bind(commandBuffer);
-    _textureDisplayPipeline.bind(_textureDisplayDescriptor);
-    vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-}
-
-void WaterModule::renderGUI() {
-    // TODO
+    _model->render();
 }
 
 void WaterModule::cleanUp() {
     // Clean up model
-    // _model->cleanUp();
+    _model->cleanUp();
 }

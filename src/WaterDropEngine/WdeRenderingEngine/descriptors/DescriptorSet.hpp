@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include "../buffers/Buffer.hpp"
 
 #include "../../../wde.hpp"
 
@@ -14,8 +15,9 @@ namespace wde::renderEngine {
 		VkDescriptorType _descriptorType;
 		VkShaderStageFlags _shaderStageFlags;
 
-		// Buffer
+		// Buffers
 		int _elementSize = 0;
+		std::shared_ptr<Buffer> _buffer {};
 
 		// Image sampler
 		VkImageView _imageView {};
@@ -25,8 +27,10 @@ namespace wde::renderEngine {
 		uint32_t _attachmentBindingIndex = -1;
 		uint32_t _renderPassIndex = -1;
 
+
+		// SUPPORTED BINDINGS : Uniform buffers, Storage buffers, Image Samplers, Storage Images, and Image Attachments
 		/**
-		 * Describes a binding data for a uniform buffer
+		 * Describes multiple binding data for a uniform or storage buffer, here WDE will create the buffer
 		 * @param bindingIndex The index in the descriptor of the binding
 		 * @param descriptorCount The number of descriptor in the binding
 		 * @param descriptorType Type of the descriptor binding
@@ -36,6 +40,29 @@ namespace wde::renderEngine {
 		DescriptorSetBindingData(uint32_t bindingIndex, uint32_t descriptorCount, VkDescriptorType descriptorType,
 								 int elementSize, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
 			 : _bindingIndex(bindingIndex), _descriptorCount(descriptorCount), _descriptorType(descriptorType), _elementSize(elementSize), _shaderStageFlags(shaderStageFlags) {}
+
+		/**
+		  * Describes a unique binding data for a uniform or storage buffer, here WDE will create the buffer
+		  * @param bindingIndex The index in the descriptor of the binding
+		  * @param descriptorType Type of the descriptor binding
+		  * @param bufferSize The corresponding size of the buffer
+		  * @param shaderStageFlags In which shaders the descriptor binding will be available (default, vertex and fragment shaders)
+		  */
+		DescriptorSetBindingData(uint32_t bindingIndex, VkDescriptorType descriptorType,
+							  int bufferSize, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
+			  : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _elementSize(bufferSize), _shaderStageFlags(shaderStageFlags) {}
+
+		/**
+		  * Describes a unique binding data for a uniform or storage buffer, here WDE will NOT create the buffer
+		  * @param bindingIndex The index in the descriptor of the binding
+		  * @param descriptorType Type of the descriptor binding
+		  * @param buffer The corresponding buffer
+		  * @param shaderStageFlags In which shaders the descriptor binding will be available (default, vertex and fragment shaders)
+		  */
+	    DescriptorSetBindingData(uint32_t bindingIndex, VkDescriptorType descriptorType,
+								 std::shared_ptr<Buffer>& buffer, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT)
+			 : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _buffer(buffer), _shaderStageFlags(shaderStageFlags) {}
+
 
 		/**
 		 * Describes a binding data for an image sampler and a storage image
@@ -61,16 +88,6 @@ namespace wde::renderEngine {
 								 uint32_t attachmentBindingIndex, uint32_t renderPassIndex, VkShaderStageFlags shaderStageFlags = VK_SHADER_STAGE_FRAGMENT_BIT)
 			 : _bindingIndex(bindingIndex), _descriptorCount(1), _descriptorType(descriptorType), _attachmentBindingIndex(attachmentBindingIndex),
 			   _renderPassIndex(renderPassIndex), _shaderStageFlags(shaderStageFlags) {}
-	};
-
-	/**
-	 * Describes a binding buffer
-	 */
-	struct DescriptorSetBindingBuffer {
-		int bindingIndex;
-		VkBuffer buffer;
-		VkDeviceMemory bufferMemory;
-		int bufferSize;
 	};
 
 
@@ -117,7 +134,7 @@ namespace wde::renderEngine {
 			/** List of binding layouts */
 			std::vector<VkDescriptorSetLayoutBinding> _bindingsLayouts {};
 			/** The binding buffers based on binding index */
-			std::unordered_map<int, DescriptorSetBindingBuffer> _bindingsBuffers {};
+			std::unordered_map<int, std::shared_ptr<Buffer>> _bindingsBuffers {};
 
 			// Vulkan parameters
 			VkDescriptorSetLayout* _descriptorSetLayout {};
@@ -125,8 +142,8 @@ namespace wde::renderEngine {
 
 
 			// Core functions
-			/** Add a new buffer as a binding */
-			void addBuffer(int bindingIndex, int bufferSize);
+			/** Add a new buffer or storage buffer as a binding */
+			void addBuffer(int bindingIndex, int bufferSize, std::shared_ptr<Buffer>& buffer, VkDescriptorType descriptorType);
 
 			/** Add a new image sampler as a binding */
 			void addImageSampler(int bindingIndex, VkDescriptorType descriptorType, VkImageView& imageView, VkSampler& imageSampler);

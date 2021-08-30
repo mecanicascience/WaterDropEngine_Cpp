@@ -11,6 +11,7 @@
 // Rendering engine
 #include "WaterDropEngine/WdeRenderingEngine/buffers/BufferUtils.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/buffers/Framebuffers.hpp"
+#include "WaterDropEngine/WdeRenderingEngine/buffers/Buffer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/commands/CommandBuffer.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/commands/CommandPool.hpp"
 #include "WaterDropEngine/WdeRenderingEngine/core/CoreDevice.hpp"

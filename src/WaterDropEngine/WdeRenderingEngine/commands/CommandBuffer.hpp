@@ -36,6 +36,8 @@ namespace wde::renderEngine {
 			 * @param signalSemaphore
 			 */
 			void submit(VkFence fence = VK_NULL_HANDLE, const VkSemaphore &waitSemaphore = VK_NULL_HANDLE, const VkSemaphore &signalSemaphore = VK_NULL_HANDLE);
+			/** Ends a command buffer, submit the infos to the queue, and wait for the queue */
+			void submitIdle();
 			/** Wait for the queue to be idle */
 			void waitForQueueIdle();
 
