@@ -87,4 +87,5 @@ Here are some of the most interesting things done using the WaterDropEngine.
 ### Water Simulation
 This is a project currently being created, which aims to simulate water in a desert-like terrain.
 
+![Waves Generation](imgs/showroom/WavesGeneration.gif)
 ![Water Simulation](imgs/showroom/WaterTerrain.png)

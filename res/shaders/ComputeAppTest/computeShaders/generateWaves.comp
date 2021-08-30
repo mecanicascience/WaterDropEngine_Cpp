@@ -1,13 +1,40 @@
 #version 450
 
-// Size of each group (use groups of size 16*16*1)
-layout(local_size_x = 16, local_size_y = 16, local_size_z = 1) in;
+// Each work group will execute 16*16*1 times the compute shader (use local size of 16*16*1)
+layout(local_size_x = 32, local_size_y = 32, local_size_z = 1) in;
 
-// The buffer to write to
-layout(std140, set = 2, binding = 0) writeonly buffer ObjectBuffer {
-    int defaultVal;
-} objectBuffer;
+// The waves height buffer
+layout(std430, set = 2, binding = 0) writeonly buffer ObjectBuffer {
+    float wavesHeight[];
+} inObjectBuffer;
+
+// Compute infos
+layout(std430, set = 3, binding = 0) readonly buffer ComputeInfos {
+    float time;
+} inData;
 
 void main() {
-    objectBuffer.defaultVal = 0;
+    // Normalized plane coordinates (0 - 1)
+    float xRel = float(gl_GlobalInvocationID.x) / float(gl_WorkGroupSize.x);
+    float yRel = float(gl_GlobalInvocationID.y) / float(gl_WorkGroupSize.y);
+
+    vec2 size   = vec2(10.0, 10.0);
+    vec2 offset = vec2(0.0, 0.0);
+    vec2 center = vec2(size.x * 2.0 + 5.0, size.y * 2.0);
+
+    float amplitude = 10.0;
+    float omega = 2.0;
+    float k = 1.0;
+
+    float x = xRel * size.x + offset.x;
+    float y = yRel * size.y + offset.y;
+    float r = sqrt((x-center.x)*(x-center.x) + (y-center.y)*(y-center.y));
+    if (r == 0.0)
+        r = 0.000001;
+
+    float waveNormalizedVal = amplitude / r * sin(k * r - inData.time * omega);
+
+    uint id = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * gl_NumWorkGroups.y * gl_WorkGroupSize.y;
+    float maxAmp = 2 * amplitude;
+    inObjectBuffer.wavesHeight[id] = min(maxAmp, waveNormalizedVal);
 }

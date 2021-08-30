@@ -3,6 +3,7 @@
 #include <WaterDropEngine/includes.hpp>
 #include "../WaterApp/meshes/Plane.hpp"
 #include "modules/WaterModule.hpp"
+#include "materials/WaterMaterialCompute.hpp"
 
 using namespace wde::scene;
 
@@ -21,11 +22,13 @@ class ComputeAppScene : public Scene {
 
 			// Plane
 			auto& waterPlane = createGameObject("Water Plane");
-			int planeSize = 50;
+			int planeSizeFactor = 10;
 			waterPlane.addModule<WaterModule>(
-					std::make_shared<Plane>(planeSize, planeSize),
-					std::make_shared<ColorMaterial>(RenderStage {0, 0}, VK_POLYGON_MODE_FILL));
+					planeSizeFactor,
+					std::make_shared<Plane>(planeSizeFactor * 32, planeSizeFactor * 32),
+					std::make_shared<WaterMaterialCompute>(RenderStage {0, 0}, VK_POLYGON_MODE_LINE));
 			waterPlane.getModule<TransformModule>().scale *= 12.0f; // Plane will be X units long
+			waterPlane.getModule<TransformModule>().scale.y /= 8.0f;
 			waterPlane.getModule<TransformModule>().position.y = 0.3f;
 		}
 };

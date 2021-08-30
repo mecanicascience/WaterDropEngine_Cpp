@@ -1,7 +1,9 @@
 #include "WaterModule.hpp"
 
-WaterModule::WaterModule(GameObject &gameObject, std::shared_ptr<Model> model, std::shared_ptr<Material> material)
+
+WaterModule::WaterModule(GameObject &gameObject, int planeSizeFactor, std::shared_ptr<Model> model, std::shared_ptr<WaterMaterialCompute> material)
 	: Module(gameObject, "Water Module"),
+	  _planeSizeFactor(planeSizeFactor),
 	  _model(std::move(model)),
 	  _material(std::move(material)),
 	  _computePipeline("res/shaders/ComputeAppTest/computeShaders/generateWaves.comp.spv") {}
@@ -16,34 +18,52 @@ void WaterModule::createDescriptors() {
 
 void WaterModule::initialize() {
 	// Create buffer
-	struct BufferData {
-		int defaultVal = 0;
-	};
-	auto wavesData = std::make_shared<Buffer>(sizeof(BufferData), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+	wavesData = std::make_shared<Buffer>(sizeof(BufferData), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
     // Compute shader
     _computeDescriptor->addSet(2, {
     	{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, wavesData, VK_SHADER_STAGE_COMPUTE_BIT}
+    });
+    _computeDescriptor->addSet(3, {
+    	{0, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, (int) sizeof(ReadBufferData), VK_SHADER_STAGE_COMPUTE_BIT}
     });
     _computePipeline.setDescriptor(_computeDescriptor);
     _computePipeline.initialize();
 
 
     // Initialize material
+    _material->setWavesBuffer(wavesData);
     _material->setupDescriptor();
     _material->initialize();
 
-
-    // Run compute shader
-    CommandBuffer commandBuffer {true};
-    _computePipeline.bind(commandBuffer);
-    _computePipeline.bind(_computeDescriptor);
-    vkCmdDispatch(commandBuffer, 32, 32, 1);
-    commandBuffer.submitIdle();
+    // Display result
+    /*auto bfData = (BufferData*) wavesData->map();
+    for (int i : bfData->wavesHeight) {
+    	wde::Logger::info("Result " + std::to_string(i), wde::LoggerChannel::MAIN);
+    }
+	wavesData->unmap();*/
 }
 
+auto startTime = std::chrono::system_clock::now();
 void WaterModule::render(CommandBuffer &commandBuffer, RenderStage stage) {
-    if (stage != _material->getStage()) // Not in the right rendering stage
+	// Update time
+	auto newTime = std::chrono::system_clock::now();
+	auto deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(newTime - startTime).count();
+	ReadBufferData newData {};
+	newData.time = deltaTime / 1000.0f;
+	_computeDescriptor->getSet(3).updateBuffer(0, &newData);
+
+	// Run compute shader
+	CommandBuffer commandBufferCompute {true};
+	_computePipeline.bind(commandBufferCompute);
+	_computePipeline.bind(_computeDescriptor);
+
+	// Use n*n*1 work groups
+	vkCmdDispatch(commandBufferCompute, _planeSizeFactor, _planeSizeFactor, 1);
+	commandBufferCompute.submitIdle();
+
+	// If material is not in the right rendering stage
+    if (stage != _material->getStage())
         return;
 
     // Bind material to the game object and push camera constants to it

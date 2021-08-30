@@ -26,6 +26,14 @@ namespace wde::renderEngine {
 			~Buffer();
 
 
+			// Core functions
+			/** @return the mapped buffer */
+			void* map();
+
+			/** Unmap the buffer memory */
+			void unmap();
+
+
 			// Getters and setters
 			VkBuffer& getBuffer() { return _buffer; }
 			VkDeviceMemory& getMemory() { return _bufferMemory; }
