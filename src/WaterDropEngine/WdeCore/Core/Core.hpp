@@ -19,7 +19,7 @@ namespace wde::core {
 				_subject->addObserver(_render);
 
 				// GUI Core
-				_gui = std::make_shared<WdeGUI>(_subject);
+				_gui = std::make_shared<gui::WdeGUI>(_subject);
 				_subject->addObserver(_gui);
 				WDE_PROFILE_END_SESSION();
 			}
@@ -55,7 +55,7 @@ namespace wde::core {
 		private:
 			// Modules
 			std::shared_ptr<WdeRender> _render;
-			std::shared_ptr<WdeGUI> _gui;
+			std::shared_ptr<gui::WdeGUI> _gui;
 
 			// Modules communication subject
 			std::shared_ptr<core::Subject> _subject;

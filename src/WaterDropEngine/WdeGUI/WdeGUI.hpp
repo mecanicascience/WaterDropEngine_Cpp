@@ -2,6 +2,7 @@
 
 #include "../WdeCommon/WdeUtils/Config.hpp"
 #include "../WdeCore/Core/Module.hpp"
+#include "GUITheme.hpp"
 
 namespace wde::gui {
 	class WdeGUI : public core::Module {
@@ -12,6 +13,14 @@ namespace wde::gui {
 			void cleanUp() override;
 
 			// Notifications
-			void onNotify(core::Event event) override;
+			void onNotify(core::Event event) override {};
+
+		private:
+			// Core parameters
+			/** Main root dockspace ID */
+			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace Window";
+
+			// Create elements in the GUI
+			void createElements();
 	};
 }

@@ -10,6 +10,11 @@
 #include <chrono>
 #include <thread>
 
+// Glm configuration
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+
 // ImGUI includes
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/backends/imgui_impl_glfw.h"
