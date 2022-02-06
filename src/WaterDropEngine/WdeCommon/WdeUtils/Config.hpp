@@ -1,7 +1,9 @@
 #pragma once
 
-// This macro allow the program to record profiling
-#define WDE_USE_PROFILING
+// Set engine mode (1 = production, 2 = debug)
+#ifndef WDE_ENGINE_MODE
+#define WDE_ENGINE_MODE 2
+#endif
 
 namespace wde {
 	class Config {

@@ -10,6 +10,12 @@
 #include <chrono>
 #include <thread>
 
+// ImGUI includes
+#include "../lib/imgui/imgui.h"
+#include "../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../lib/imgui/imgui_internal.h"
+
 // Main used classes
 #include "WaterDropEngine/WdeCommon/WdeUtils/Config.hpp"
 #include "WaterDropEngine/WdeCommon/WdeLogger/Logger.hpp"

@@ -1,6 +1,7 @@
 #include "WdeGUI.hpp"
 
-namespace wde {
+namespace wde::gui {
+#if WDE_ENGINE_MODE == 2 // Debug
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
 		WDE_PROFILE_FUNCTION();
@@ -26,4 +27,12 @@ namespace wde {
 	void WdeGUI::onNotify(core::Event event) {
 		logger::log() << "Notification received from GUI : " << event.msg << logger::endl;
 	}
+#endif
+
+#if WDE_ENGINE_MODE == 1 // Production
+	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {}
+	void WdeGUI::tick() {}
+	void WdeGUI::cleanUp() {}
+	void WdeGUI::onNotify(core::Event event) {}
+#endif
 }

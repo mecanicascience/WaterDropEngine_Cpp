@@ -197,7 +197,7 @@ namespace wde {
 
 
 // Defines profiler options whether profiling is enabled
-#ifdef WDE_USE_PROFILING
+#if WDE_ENGINE_MODE == 2
 	#define WDE_PROFILE_BEGIN_SESSION(name, filepath) Instrumentor::get().beginSession(name, filepath)
 	#define WDE_PROFILE_END_SESSION() Instrumentor::get().endSession()
 

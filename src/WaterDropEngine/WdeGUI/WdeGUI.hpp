@@ -1,8 +1,9 @@
 #pragma once
 
+#include "../WdeCommon/WdeUtils/Config.hpp"
 #include "../WdeCore/Core/Module.hpp"
 
-namespace wde {
+namespace wde::gui {
 	class WdeGUI : public core::Module {
 		public:
 			// Module commands
