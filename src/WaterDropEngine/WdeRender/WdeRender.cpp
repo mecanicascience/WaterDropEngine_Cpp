@@ -15,7 +15,7 @@ namespace wde {
 	}
 
 
-	// On message from another module
+	// On message from another modul
 	void WdeRender::onNotify(core::Event event) {
 		std::cout << "Render received a message : " << event.msg << std::endl;
 	}
