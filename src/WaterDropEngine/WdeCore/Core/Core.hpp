@@ -8,6 +8,7 @@ namespace wde::core {
 	class Core {
 		public:
 			explicit Core() {
+				WDE_PROFILE_BEGIN_SESSION("Initialization", "profiler/profiler_init.json");
 				// ===== CREATE MODULE SUBJECT =====
 				_subject = std::make_shared<core::Subject>("Core Subject");
 
@@ -20,9 +21,11 @@ namespace wde::core {
 				// GUI Core
 				_gui = std::make_shared<WdeGUI>(_subject);
 				_subject->addObserver(_gui);
+				WDE_PROFILE_END_SESSION();
 			}
 
 			void start() {
+				WDE_PROFILE_BEGIN_SESSION("Running", "profiler/profiler_run.json");
 				// INITIALIZE
 				// Payload message test
 				_subject->notify({"test"});
@@ -33,15 +36,18 @@ namespace wde::core {
 				// RUN HERE
 				// ...
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Program ended ========" << logger::endl << logger::endl;
+				WDE_PROFILE_END_SESSION();
 			}
 
 			~Core() {
+				WDE_PROFILE_BEGIN_SESSION("Cleaning Up", "profiler/profiler_cleanup.json");
 				// ===== DELETE MODULES IN REVERSE ORDER =====
 				_gui->cleanUp();
 				_render->cleanUp();
 
 				// ==== DELETE MODULE COMMUNICATION SERVICE ==
 				_subject.reset();
+				WDE_PROFILE_END_SESSION();
 			}
 
 

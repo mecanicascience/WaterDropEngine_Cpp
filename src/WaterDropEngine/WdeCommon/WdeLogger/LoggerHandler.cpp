@@ -1,4 +1,5 @@
 #include "LoggerHandler.hpp"
+#include "../WdeUtils/Config.hpp"
 
 namespace wde::logger {
 	// Log config
@@ -18,9 +19,9 @@ namespace wde::logger {
 
 
 	// Log configuration values
-	void LoggerHandler::initialize(const std::string &filepath, int logLevel) {
+	void LoggerHandler::initialize(const std::string &filepath) {
 		// Set local variables
-		_logLevel = logLevel;
+		_logLevel = Config::LOG_LEVEL;
 
 		// Gets time as format %Y.%m.%d-%H.%M.%S
 		std::time_t rawtime;

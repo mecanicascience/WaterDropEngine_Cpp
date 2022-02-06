@@ -11,5 +11,7 @@
 #include <thread>
 
 // Main used classes
+#include "WaterDropEngine/WdeCommon/WdeUtils/Config.hpp"
 #include "WaterDropEngine/WdeCommon/WdeLogger/Logger.hpp"
 #include "WaterDropEngine/WdeCommon/WdeException/WdeException.hpp"
+#include "WaterDropEngine/WdeCommon/WdeLogger/Instrumentation.hpp"

@@ -44,7 +44,7 @@ namespace wde {
 		class LoggerHandler {
 			public:
 				/** Initialize the LoggerHandler - Must be called only one time by one thread. */
-				static void initialize(const std::string& filepath, int logLevel);
+				static void initialize(const std::string& filepath);
 
 				/** Clean-up the LoggerHandler - Must be called only one time by one thread. */
 				static void cleanUp();
