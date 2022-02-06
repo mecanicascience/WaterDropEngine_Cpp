@@ -23,11 +23,16 @@ namespace wde::core {
 			}
 
 			void start() {
+				// INITIALIZE
 				// Payload message test
 				_subject->notify({"test"});
+				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
 
+
+				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Starting engine ========" << logger::endl;
 				// RUN HERE
 				// ...
+				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Program ended ========" << logger::endl << logger::endl;
 			}
 
 			~Core() {

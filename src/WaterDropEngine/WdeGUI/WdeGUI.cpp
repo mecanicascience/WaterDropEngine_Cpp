@@ -3,20 +3,24 @@
 namespace wde {
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
-		std::cout << "Creating GUI engine." << std::endl;
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initializing GUI Engine ==" << logger::endl;
+		// Init
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initialization Done ==" << logger::endl;
 	}
 
 	void WdeGUI::tick() {
-
+		// Tick for module
 	}
 
 	void WdeGUI::cleanUp() {
-		std::cout << "Cleaning up GUI." << std::endl;
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up GUI Engine ==" << logger::endl;
+		// Clean Up
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up Done ==" << logger::endl;
 	}
 
 
 	// On message from another module
 	void WdeGUI::onNotify(core::Event event) {
-		std::cout << "GUI received a message : " << event.msg << std::endl;
+		logger::log() << "Notification received from GUI : " << event.msg << logger::endl;
 	}
 }
