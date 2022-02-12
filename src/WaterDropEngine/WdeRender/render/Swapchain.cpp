@@ -5,7 +5,6 @@ namespace wde::render {
 	Swapchain::Swapchain() {
 		CoreInstance& render = WaterDropEngine::get().getRender().getInstance();
 
-		// Create swapchain (stores to this->swapChain and to this->swapChainImages)
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating swapchain." << logger::endl;
 		{
 			WDE_PROFILE_FUNCTION();
@@ -147,6 +146,9 @@ namespace wde::render {
 					throw WdeException(LogChannel::RENDER, "Failed to create synchronization objects for the " + std::to_string(i) + "th frame.");
 			}
 		}
+
+		// Set the rendering engine swapchain current image index to 0
+		render.getCurrentFrame() = 0;
 	}
 
 	Swapchain::~Swapchain() {

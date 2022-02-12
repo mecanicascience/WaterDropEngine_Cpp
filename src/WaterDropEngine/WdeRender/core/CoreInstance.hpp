@@ -13,10 +13,11 @@
 namespace wde::render {
 	class CoreInstance {
 		public:
-			// core functions
+			// Core functions
 			explicit CoreInstance(CoreWindow& window);
 			void cleanUp();
 			void start();
+			void onWindowResized();
 
 
 			// Getters and setters

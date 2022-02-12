@@ -40,8 +40,6 @@ namespace wde::render {
 		auto appWindow = reinterpret_cast<CoreWindow*>(glfwGetWindowUserPointer(window));
 		appWindow->_windowSize.first = width;
 		appWindow->_windowSize.second = height;
-
-		// TODO : Handle resize notification to the engine
 		appWindow->_moduleSubject->notify({LogChannel::RENDER, "WINDOW_RESIZED"});
 	}
 }

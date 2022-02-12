@@ -151,6 +151,46 @@ namespace wde::render {
 
 
 
+	void CoreInstance::onWindowResized() {
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "== Swapchain is outdated, recreating it. ==" << logger::endl;
+
+		// Wait if window minimized
+		{
+			WDE_PROFILE_FUNCTION();
+			int width = 0, height = 0;
+			glfwGetFramebufferSize(&_window.getWindow(), &width, &height);
+			while (width == 0 || height == 0) {
+				glfwGetFramebufferSize(&_window.getWindow(), &width, &height);
+				glfwWaitEvents();
+			}
+		}
+
+		// Wait until devices operations finished
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Waiting for device to be ready" << logger::endl;
+		waitForDevicesReady();
+
+		// Clean up command buffers and swapchain
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Recreating old swapchain and command buffers." << logger::endl;
+		{
+			WDE_PROFILE_FUNCTION();
+			_swapchain.reset();
+			_swapchain = std::make_unique<Swapchain>();
+
+			_commandBuffers.clear();
+			_commandBuffers.resize(_swapchain->getImageCount());
+
+			// Create command buffers
+			for (size_t i = 0; i < _currentFramesInFlightCount; i++) {
+				// Create command commands
+				_commandBuffers[i] = std::make_unique<CommandBuffer>(false);
+			}
+		}
+
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "== Swapchain recreated ==" << logger::endl;
+	}
+
+
+
 
 
 

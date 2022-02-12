@@ -34,7 +34,7 @@ class EngineInstance : public WaterDropEngineInstance {
 					0,
 					0, nullptr,
 					0, nullptr,
-					1, &barrier); // Use only memory barrie
+					1, &barrier); // Use only memory barrier
 		}
 
 		void cleanUp() override { }

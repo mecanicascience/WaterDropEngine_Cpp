@@ -13,7 +13,6 @@ namespace wde::render {
 			explicit Swapchain();
 			~Swapchain();
 
-
 			// Getters and setters
 			int getImageCount() { return (int) _swapChainImageViews.size(); }
 			VkFormat getImageFormat() { return _swapChainImageFormat; }
@@ -43,6 +42,7 @@ namespace wde::render {
 			VkResult presentToQueue(VkQueue presentQueue);
 
 
+
 		private:
 			// Vulkan parameters
 			/** The swapchain (stores images to be rendered to the GPU for Vulkan) as VkImages in the swapChainImages vector */
@@ -69,5 +69,10 @@ namespace wde::render {
 			// Sync objects
 			/** Signals when the corresponding image ends being used by the swapchain */
 			std::vector<VkFence> _imagesInFlight;
+
+
+			// Core functions
+			/** Create swapchain images */
+			void createSwapchain();
 	};
 }
