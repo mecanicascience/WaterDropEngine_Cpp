@@ -22,7 +22,7 @@ namespace wde::render {
 			appInfo.applicationVersion = Config::APPLICATION_VERSION;
 			appInfo.pEngineName = "No Engine";
 			appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-			appInfo.apiVersion = VK_API_VERSION_1_0;
+			appInfo.apiVersion = Config::VULKAN_VERSION;
 
 			// Vulkan Application Info struct
 			VkInstanceCreateInfo createInfo = {};
@@ -118,37 +118,10 @@ namespace wde::render {
 		{
 			WDE_PROFILE_FUNCTION();
 			_swapchain = std::make_unique<Swapchain>();
-
-			// === CREATE THREE SEMAPHORES + 1 CMD BUFFER FOR EACH IMAGE IN THE SWAPCHAIN ===
-			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Swapchain sync objects." << logger::endl;
-			// Destroy previous fences and semaphores
-			for (std::size_t i = 0; i < _inFlightFences.size(); i++) {
-				vkDestroyFence(_device->getDevice(), _inFlightFences[i], nullptr);
-				vkDestroySemaphore(_device->getDevice(), _imageAvailableSemaphores[i], nullptr);
-				vkDestroySemaphore(_device->getDevice(), _renderFinishedSemaphores[i], nullptr);
-			}
-
-			// Resize semaphores, fences and command buffers
-			_imageAvailableSemaphores.resize(_currentFramesInFlightCount);
-			_renderFinishedSemaphores.resize(_currentFramesInFlightCount);
-			_inFlightFences.resize(_currentFramesInFlightCount);
 			_commandBuffers.resize(_swapchain->getImageCount());
 
-			// Create structs
-			VkSemaphoreCreateInfo semaphoreInfo {};
-			semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-			VkFenceCreateInfo fenceInfo {};
-			fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-			fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Fence are enabled in init (to launch the program on the first frame renderer)
-
+			// Create command buffers
 			for (size_t i = 0; i < _currentFramesInFlightCount; i++) {
-				// Create semaphores
-				if (vkCreateSemaphore(_device->getDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS
-				    || vkCreateSemaphore(_device->getDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS
-				    || vkCreateFence(_device->getDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
-					throw WdeException(LogChannel::RENDER, "Failed to create synchronization objects for the " + std::to_string(i) + "th frame.");
-
 				// Create command commands
 				_commandBuffers[i] = std::make_unique<CommandBuffer>(false);
 			}
@@ -157,13 +130,6 @@ namespace wde::render {
 
 	void CoreInstance::cleanUp() {
 		WDE_PROFILE_FUNCTION();
-		// Cleanup sync objects
-		for (std::size_t i = 0; i < _inFlightFences.size(); i++) {
-			vkDestroyFence(_device->getDevice(), _inFlightFences[i], nullptr);
-			vkDestroySemaphore(_device->getDevice(), _imageAvailableSemaphores[i], nullptr);
-			vkDestroySemaphore(_device->getDevice(), _renderFinishedSemaphores[i], nullptr);
-		}
-
 		// Cleanup commands
 		_commandBuffers.clear();
 		_commandPools.clear();
@@ -181,12 +147,6 @@ namespace wde::render {
 		// Destroy Vulkan surface and instance
 		vkDestroySurfaceKHR(_instance, _surface, nullptr);
 		vkDestroyInstance(_instance, nullptr);
-	}
-
-	void CoreInstance::tick() {
-		WDE_PROFILE_FUNCTION();
-		logger::log() << "OK." << logger::endl;
-		//throw WdeException(LogChannel::RENDER, "Temp exception");
 	}
 
 

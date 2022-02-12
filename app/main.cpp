@@ -1,9 +1,8 @@
-// Engine includes
-#include "../src/WaterDropEngine/WaterDropEngine.hpp"
+#include "EngineInstance.hpp"
 
 int main() {
-	// Start the engine
-	wde::WaterDropEngine::get().start();
+	EngineInstance instance {};
+	instance.start();
 
 	return 0;
 }

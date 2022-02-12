@@ -16,4 +16,7 @@ namespace wde::Config {
 	int WIDTH = 1280;
 	/** Fixed initial CoreWindow height */
 	int HEIGHT = 720;
+
+	/** Vulka, API version */
+	uint32_t VULKAN_VERSION = VK_VERSION_1_2;
 }

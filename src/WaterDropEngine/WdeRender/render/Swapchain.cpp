@@ -62,24 +62,24 @@ namespace wde::render {
 			createInfo.oldSwapchain = VK_NULL_HANDLE;
 
 			// Create swap chain
-			if (vkCreateSwapchainKHR(render.getDevice().getDevice(), &createInfo, nullptr, &_swapChain) != VK_SUCCESS)
+			if (vkCreateSwapchainKHR(render.getDevice().getDevice(), &createInfo, nullptr, &_swapchain) != VK_SUCCESS)
 				throw WdeException(LogChannel::RENDER, "Failed to create swap chain.");
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Created swap chain." << logger::endl;
 
 			// Say to store swap chain items to swapChainImages
-			vkGetSwapchainImagesKHR(render.getDevice().getDevice(), _swapChain, &imageCount, nullptr);
+			vkGetSwapchainImagesKHR(render.getDevice().getDevice(), _swapchain, &imageCount, nullptr);
 			_swapChainImages.resize(imageCount);
-			vkGetSwapchainImagesKHR(render.getDevice().getDevice(), _swapChain, &imageCount, _swapChainImages.data());
+			vkGetSwapchainImagesKHR(render.getDevice().getDevice(), _swapchain, &imageCount, _swapChainImages.data());
 
 			_swapChainImageFormat = surfaceFormat.format;
 			_swapChainExtent = extent;
 		}
 
-		// Create a basic image view for every image in the swap chain
+		// Create an image view for every image in the swapchain
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating swapchain image views." << logger::endl;
 		{
 			WDE_PROFILE_FUNCTION();
-			// Setup one image view for each image in the swapChain
+			// Setup one image view for each image in the swapchain
 			_swapChainImageViews.resize(_swapChainImages.size());
 
 			for (size_t i = 0; i < _swapChainImages.size(); i++) {
@@ -106,7 +106,7 @@ namespace wde::render {
 
 				// Create image view
 				if (vkCreateImageView(render.getDevice().getDevice(), &createInfo, nullptr, &_swapChainImageViews[i]) != VK_SUCCESS)
-					throw WdeException(LogChannel::RENDER, "Failed to create image views.");
+					throw WdeException(LogChannel::RENDER, "Failed to create image view.");
 			}
 		}
 
@@ -115,12 +115,50 @@ namespace wde::render {
 		{
 			WDE_PROFILE_FUNCTION();
 			_imagesInFlight.resize(_swapChainImages.size(), VK_NULL_HANDLE); // By default, = VK_NULL
+
+			// === CREATE THREE SEMAPHORES + 1 CMD BUFFER FOR EACH IMAGE IN THE SWAPCHAIN ===
+			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Swapchain sync objects." << logger::endl;
+			// Destroy previous fences and semaphores
+			for (std::size_t i = 0; i < _inFlightFences.size(); i++) {
+				vkDestroyFence(render.getDevice().getDevice(), _inFlightFences[i], nullptr);
+				vkDestroySemaphore(render.getDevice().getDevice(), _imageAvailableSemaphores[i], nullptr);
+				vkDestroySemaphore(render.getDevice().getDevice(), _renderFinishedSemaphores[i], nullptr);
+			}
+
+			// Resize semaphores, fences and command buffers
+			int currentFramesInFlightCount = render.getMaxFramesInFlight();
+			_imageAvailableSemaphores.resize(currentFramesInFlightCount);
+			_renderFinishedSemaphores.resize(currentFramesInFlightCount);
+			_inFlightFences.resize(currentFramesInFlightCount);
+
+			// Create structs
+			VkSemaphoreCreateInfo semaphoreInfo {};
+			semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
+
+			VkFenceCreateInfo fenceInfo {};
+			fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
+			fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT; // Fence are enabled in init (to launch the program on the first frame renderer)
+
+			for (size_t i = 0; i < currentFramesInFlightCount; i++) {
+				// Create semaphores
+				if (vkCreateSemaphore(render.getDevice().getDevice(), &semaphoreInfo, nullptr, &_imageAvailableSemaphores[i]) != VK_SUCCESS
+				    || vkCreateSemaphore(render.getDevice().getDevice(), &semaphoreInfo, nullptr, &_renderFinishedSemaphores[i]) != VK_SUCCESS
+				    || vkCreateFence(render.getDevice().getDevice(), &fenceInfo, nullptr, &_inFlightFences[i]) != VK_SUCCESS)
+					throw WdeException(LogChannel::RENDER, "Failed to create synchronization objects for the " + std::to_string(i) + "th frame.");
+			}
 		}
 	}
 
 	Swapchain::~Swapchain() {
 		WDE_PROFILE_FUNCTION();
 		VkDevice &device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
+
+		// Cleanup sync objects
+		for (std::size_t i = 0; i < _inFlightFences.size(); i++) {
+			vkDestroyFence(device, _inFlightFences[i], nullptr);
+			vkDestroySemaphore(device, _imageAvailableSemaphores[i], nullptr);
+			vkDestroySemaphore(device, _renderFinishedSemaphores[i], nullptr);
+		}
 
 		// Cleanup fences
 		for (auto &imageInFlight : _imagesInFlight)
@@ -131,6 +169,53 @@ namespace wde::render {
 			vkDestroyImageView(device, imageView, nullptr);
 
 		// Destroy swapchain
-		vkDestroySwapchainKHR(device, _swapChain, nullptr);
+		vkDestroySwapchainKHR(device, _swapchain, nullptr);
+	}
+
+
+
+	// Core functions
+	VkResult Swapchain::aquireNextImage() {
+		CoreInstance &instance = WaterDropEngine::get().getRender().getInstance();
+		VkDevice &device = instance.getDevice().getDevice();
+		std::size_t currentFrame = instance.getCurrentFrame();
+
+		{
+			WDE_PROFILE_FUNCTION();
+			// Wait until the last presentation to the queue of this frame is done
+			vkWaitForFences(device, 1, &_inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+		}
+
+		{
+			WDE_PROFILE_FUNCTION();
+			VkResult acquireResult = vkAcquireNextImageKHR(
+					device,
+					_swapchain,
+					UINT64_MAX, // don't set timeout before image becomes available
+					_imageAvailableSemaphores[currentFrame], // signaled when presentation engine finished using image
+					VK_NULL_HANDLE,
+					&_activeImageIndex); // output index of swap chain image that became available (frame is at swapChainImages[imageIndex])
+
+			if (acquireResult != VK_SUCCESS && acquireResult != VK_SUBOPTIMAL_KHR)
+				throw WdeException(LogChannel::RENDER, "Failed to acquire swap chain image.");
+
+			return acquireResult;
+		}
+	}
+
+	VkResult Swapchain::presentToQueue(VkQueue presentQueue) {
+		WDE_PROFILE_FUNCTION();
+
+		VkPresentInfoKHR presentInfo = {};
+		presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+		// Wait for command buffer to be submitted to queue
+		presentInfo.waitSemaphoreCount = 1;
+		presentInfo.pWaitSemaphores = &_renderFinishedSemaphores[WaterDropEngine::get().getRender().getInstance().getCurrentFrame()];
+
+		presentInfo.swapchainCount = 1;
+		presentInfo.pSwapchains = &_swapchain;
+		presentInfo.pImageIndices = &_activeImageIndex;
+
+		return vkQueuePresentKHR(presentQueue, &presentInfo);
 	}
 }

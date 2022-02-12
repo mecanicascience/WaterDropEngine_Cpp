@@ -25,6 +25,9 @@ namespace wde::Config {
 	extern int WIDTH;
 	/** Fixed initial CoreWindow height */
 	extern int HEIGHT;
+
+	/** Current api vulkan version used */
+	extern uint32_t VULKAN_VERSION;
 }
 #endif
 

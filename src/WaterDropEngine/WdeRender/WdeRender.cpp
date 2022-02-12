@@ -23,9 +23,6 @@ namespace wde::render {
 	void WdeRender::tick() {
 		WDE_PROFILE_FUNCTION();
 
-		// Update vulkan instance
-		_vkInstance->tick();
-
 		// Check if window should close
 		if (glfwWindowShouldClose(&_window->getWindow()))
 			_moduleSubject->notify({LogChannel::RENDER, "WINDOW_SHOULD_CLOSE"});

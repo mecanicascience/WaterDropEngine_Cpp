@@ -59,7 +59,7 @@ namespace wde::render {
 		_running = false;
 	}
 
-	void CommandBuffer::submit(VkFence fence, VkSemaphore const &waitSemaphore, VkSemaphore const &signalSemaphore) {
+	void CommandBuffer::submit(VkFence const &fence, VkSemaphore const &waitSemaphore, VkSemaphore const &signalSemaphore) {
 		WDE_PROFILE_FUNCTION();
 		if (_running)
 			end();
@@ -83,7 +83,7 @@ namespace wde::render {
 			submitInfo.pSignalSemaphores = &signalSemaphore;
 		}
 
-		// Resets blocking infos
+		// Make sure fence status is currently not signaled
 		if (fence != VK_NULL_HANDLE)
 			vkResetFences(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), 1, &fence);
 

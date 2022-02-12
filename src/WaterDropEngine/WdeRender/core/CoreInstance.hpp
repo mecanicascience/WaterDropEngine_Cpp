@@ -17,7 +17,6 @@ namespace wde::render {
 			explicit CoreInstance(CoreWindow& window);
 			void cleanUp();
 			void start();
-			void tick();
 
 
 			// Getters and setters
@@ -26,8 +25,11 @@ namespace wde::render {
 			CoreDevice& getDevice() { return *_device; }
 			static bool enableValidationLayers() { return WDE_ENGINE_MODE == 2; }
 			std::vector<const char *>& getValidationLayers() { return _validationLayers; }
-			const int getMaxFramesInFlight() { return _currentFramesInFlightCount; }
+			const int getMaxFramesInFlight() const { return _currentFramesInFlightCount; }
 			void setFramesInFlightCount(int count) { _currentFramesInFlightCount = count; }
+			Swapchain& getSwapchain() { return *_swapchain; }
+			std::size_t& getCurrentFrame() { return _currentFrame; }
+			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
 
 			/** @return the corresponding thread's command pool to allocate command buffers from */
 			std::shared_ptr<CommandPool>& getCommandPool(const std::thread::id &threadID = std::this_thread::get_id()) {
@@ -69,12 +71,6 @@ namespace wde::render {
 			int _currentFramesInFlightCount = 3;
 			/** Current drawn frame (% MAX_FRAMES_IN_FLIGHT) */
 			std::size_t _currentFrame = 0;
-			/** Signals when the corresponding image is done being used by the GPU (CPU-GPU synchronization) */
-			std::vector<VkFence> _inFlightFences;
-			/** Signals when the corresponding image has been acquired and is ready for rendering */
-			std::vector<VkSemaphore> _imageAvailableSemaphores;
-			/** Signals when the corresponding image rendering is done, and presentation can happen */
-			std::vector<VkSemaphore> _renderFinishedSemaphores;
 
 
 

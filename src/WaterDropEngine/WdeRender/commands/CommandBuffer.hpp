@@ -15,7 +15,6 @@ namespace wde::render {
 			 * @param bufferLevel The level of the command buffer (Primary or Secondary) - Default is primary
 			 */
 			explicit CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-
 			~CommandBuffer();
 
 
@@ -31,11 +30,11 @@ namespace wde::render {
 
 			/**
 			 * Submits the current command buffer to the specified queue
-			 * @param fence
-			 * @param waitSemaphore
-			 * @param signalSemaphore
+			 * @param fence The fence to signal when submitting is done
+			 * @param waitSemaphore The semaphore to wait from before submitting
+			 * @param signalSemaphore The semaphore to signal when submitting is done
 			 */
-			void submit(VkFence fence = VK_NULL_HANDLE, const VkSemaphore &waitSemaphore = VK_NULL_HANDLE,
+			void submit(const VkFence &fence = VK_NULL_HANDLE, const VkSemaphore &waitSemaphore = VK_NULL_HANDLE,
 			            const VkSemaphore &signalSemaphore = VK_NULL_HANDLE);
 
 			/** Ends a command buffer, submit the infos to the queue, and wait for the queue */
@@ -45,8 +44,10 @@ namespace wde::render {
 			void waitForQueueIdle();
 
 
+
 			// Getters and setters
 			operator const VkCommandBuffer &() const { return _commandBuffer; }
+			bool isRunning() const { return _running; }
 
 
 		private:
