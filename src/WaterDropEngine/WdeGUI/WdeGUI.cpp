@@ -120,6 +120,6 @@ namespace wde::gui {
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {}
 	void WdeGUI::tick() {}
 	void WdeGUI::cleanUp() {}
-	void WdeGUI::onNotify(core::Event event) {}
+	void WdeGUI::createElements() {}
 #endif
 }
