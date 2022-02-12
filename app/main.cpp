@@ -3,7 +3,7 @@
 
 int main() {
 	// Start the engine
-	wde::WaterDropEngine::get();
+	wde::WaterDropEngine::get().start();
 
 	return 0;
 }

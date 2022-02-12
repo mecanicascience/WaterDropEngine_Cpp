@@ -9,7 +9,6 @@ namespace wde {
 	 */
 	class WaterDropEngine {
 		public:
-			// Main instance
 			/** Create a WDE main engine instance */
 			static core::Core& get() {
 				static auto *instance = new WaterDropEngine();
@@ -18,26 +17,16 @@ namespace wde {
 
 
 		private:
-			/** Core session instance */
+			/** core session instance */
 			std::unique_ptr<core::Core> _instanceCore;
 
+
 			/** Create the engine and starts it */
-			explicit WaterDropEngine() {
+			explicit WaterDropEngine() : _instanceCore(std::make_unique<core::Core>()) {
 				// Create logging service
 				logger::LoggerHandler::initialize("logs/");
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Initializing program ========" << logger::endl;
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "Initializing program." << logger::endl;
-
-				// Create and start core
-				_instanceCore = std::make_unique<core::Core>();
-				_instanceCore->start();
-
-				// Clean up core and logger
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Cleaning up ========" << logger::endl;
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "Closing program." << logger::endl;
-				_instanceCore.reset();
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of program ========" << logger::endl << logger::endl;
-				logger::LoggerHandler::cleanUp();
-			};
+			}
 	};
 }

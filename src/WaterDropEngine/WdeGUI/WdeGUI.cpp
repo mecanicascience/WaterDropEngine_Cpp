@@ -5,6 +5,9 @@ namespace wde::gui {
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
 		WDE_PROFILE_FUNCTION();
+		// TODO Create GUI
+		return;
+
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initializing GUI Engine ==" << logger::endl;
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Setting up gui configuration." << logger::endl;
 
@@ -32,7 +35,7 @@ namespace wde::gui {
 		GUITheme::setCustomColorTheme();
 		GUITheme::setCustomStyle();
 
-		// Use classic windows theme on Windows
+		// Use classic windows theme on CoreWindow
 		ImGuiStyle& style = ImGui::GetStyle();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			style.WindowRounding = 0.0f;
@@ -43,6 +46,7 @@ namespace wde::gui {
 
 	void WdeGUI::tick() {
 		WDE_PROFILE_FUNCTION();
+		return;
 
 		// RENDER
 		// Setup main window
@@ -54,7 +58,7 @@ namespace wde::gui {
 				| ImGuiWindowFlags_NoFocusOnAppearing       // Disable focus animation
 				| ImGuiWindowFlags_NoBringToFrontOnFocus    // Disable focus grayish color
 				| ImGuiWindowFlags_NoNavFocus               // Cannot focus window (auto-focused)
-				| ImGuiWindowFlags_NoDocking                // Main Window cannot be docked
+				| ImGuiWindowFlags_NoDocking                // Main CoreWindow cannot be docked
 				| ImGuiWindowFlags_NoBackground             // Disables window background
 				| ImGuiWindowFlags_MenuBar;                 // Enable menu bar
 
@@ -85,6 +89,8 @@ namespace wde::gui {
 
 	void WdeGUI::cleanUp() {
 		WDE_PROFILE_FUNCTION();
+		return;
+
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up GUI Engine ==" << logger::endl;
 
 		// Clean Up

@@ -16,9 +16,9 @@ namespace wde::gui {
 			void onNotify(core::Event event) override {};
 
 		private:
-			// Core parameters
+			// core parameters
 			/** Main root dockspace ID */
-			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace Window";
+			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace CoreWindow";
 
 			// Create elements in the GUI
 			void createElements();
