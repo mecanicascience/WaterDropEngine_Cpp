@@ -4,6 +4,7 @@
 #include "WdeRender/WdeRender.hpp"
 #include "WdeGUI/WdeGUI.hpp"
 #include "WdeCore/Core/WaterDropEngineInstance.hpp"
+#include "WdeCommon/WdeUtils/FPSUtils.hpp"
 
 namespace wde {
 	/**
@@ -52,11 +53,14 @@ namespace wde {
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Starting engine ========" << logger::endl;
 
 				// Run
+				FPSUtils fpsManager {};
 				while (_render->shouldRun()) {
-					logger::log() << "====== Updating new frame. ======" << logger::endl;
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "====== Updating new frame. ======" << logger::endl;
+					fpsManager.update();
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking FPS : " << fpsManager.getFPS() << "." << logger::endl;
 
 					// Poll glfw events
-					logger::log() << "Polling GLFW events." << logger::endl;
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Polling GLFW events." << logger::endl;
 					glfwPollEvents();
 
 					// Update for engine instance
@@ -64,7 +68,7 @@ namespace wde {
 					instance.update();
 
 					// Tick for modules
-					logger::log() << "Ticking for modules." << logger::endl;
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for modules." << logger::endl;
 					_render->tick();
 					_gui->tick();
 

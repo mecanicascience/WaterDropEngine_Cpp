@@ -131,20 +131,26 @@ namespace wde::render {
 	void CoreInstance::cleanUp() {
 		WDE_PROFILE_FUNCTION();
 		// Cleanup commands
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up command buffers and command pools." << logger::endl;
 		_commandBuffers.clear();
 		_commandPools.clear();
 
 		// Cleanup swapchain
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up swapchain." << logger::endl;
 		_swapchain.reset();
 
 		// Cleanup devices
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up device." << logger::endl;
 		_device.reset();
 
 		// Destroy debug messenger callback
-		if (enableValidationLayers())
+		if (enableValidationLayers()) {
+			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up validation layers." << logger::endl;
 			destroyDebugUtilsMessengerEXT(_instance, _debugMessenger, nullptr);
+		}
 
 		// Destroy Vulkan surface and instance
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Destroying Vulkan surface and instance." << logger::endl;
 		vkDestroySurfaceKHR(_instance, _surface, nullptr);
 		vkDestroyInstance(_instance, nullptr);
 	}
