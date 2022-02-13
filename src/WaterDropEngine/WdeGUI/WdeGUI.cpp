@@ -1,20 +1,16 @@
 #include "WdeGUI.hpp"
+#include "../WaterDropEngine.hpp"
 
 namespace wde::gui {
 #if WDE_ENGINE_MODE == 2 // Debug
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
-		WDE_PROFILE_FUNCTION();
-		// TODO Create GUI
-		return;
-
-		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initializing GUI Engine ==" << logger::endl;
-		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Setting up gui configuration." << logger::endl;
-
-		// Setup ImGUI
+		// === Create ImGui context ===
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
 
+		// Setup ImGui config
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Setting up gui configuration." << logger::endl;
 		// Enable windows docking and keyboard
 		ImGuiIO& io = ImGui::GetIO(); (void) io;
 		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
@@ -35,18 +31,91 @@ namespace wde::gui {
 		GUITheme::setCustomColorTheme();
 		GUITheme::setCustomStyle();
 
-		// Use classic windows theme on CoreWindow
+		// Use classic windows theme on Windows
 		ImGuiStyle& style = ImGui::GetStyle();
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
+
+		// === Initialize ImGui for GLFW ===
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Configuring ImGUI with GLFW." << logger::endl;
+		auto& renderInstance = WaterDropEngine::get().getRender();
+		ImGui_ImplGlfw_InitForVulkan(&renderInstance.getWindow().getWindow(), true);
+
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initialization Done ==" << logger::endl;
 	}
 
+	void WdeGUI::initialize(std::pair<int, int> renderStage) {
+		auto& renderInstance = WaterDropEngine::get().getRender();
+
+		// === Initialize ImGui for Vulkan ===
+		ImGui_ImplVulkan_InitInfo initInfo = {};
+		initInfo.Instance = renderInstance.getInstance().getInstance();
+		initInfo.PhysicalDevice = renderInstance.getInstance().getDevice().getPhysicalDevice();
+		initInfo.Device = renderInstance.getInstance().getDevice().getDevice();
+
+		// Using the same graphics queue as the render engine
+		initInfo.QueueFamily = renderInstance.getInstance().getDevice().findQueueFamilies().graphicsFamily;
+		initInfo.Queue = renderInstance.getInstance().getDevice().getGraphicsQueue();
+
+		// Create descriptor pool for ImGui
+		uint32_t poolMaxElements = 1000;
+		std::vector<VkDescriptorPoolSize> poolSizes = {
+				{ VK_DESCRIPTOR_TYPE_SAMPLER,  poolMaxElements},
+				{ VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_IMAGE, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, poolMaxElements },
+				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, poolMaxElements }
+		};
+		WaterDropEngine::get().getGUI()._imGUIdescriptorPool = std::make_shared<render::DescriptorPool>(poolSizes, poolMaxElements * 11, false);
+		WaterDropEngine::get().getGUI()._imGUIdescriptorPool->createPool(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
+		initInfo.DescriptorPool = WaterDropEngine::get().getGUI()._imGUIdescriptorPool->getPool();
+
+		// Continue parameters configuration
+		initInfo.PipelineCache = VK_NULL_HANDLE;
+		initInfo.Allocator = nullptr;
+		initInfo.MinImageCount = 2;
+		initInfo.ImageCount = renderInstance.getInstance().getSwapchain().getImageCount();
+		initInfo.CheckVkResultFn = OnGuiConfigError;
+		initInfo.Subpass = renderStage.second;
+
+		render::RenderPass& pass = WaterDropEngine::get().getInstance().getPipeline().getRenderPass(renderStage.first);
+
+		// == Create ImGui render pass ==
+		ImGui_ImplVulkan_Init(&initInfo, WaterDropEngine::get().getInstance().getPipeline().getRenderPass(renderStage.first).getRenderPass());
+
+		// == Uploads ImGui fonts to the GPU ==
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Uploading ImGui fonts to the GPU." << logger::endl;
+		render::CommandBuffer commandBuffer {false};
+		commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
+		ImGui_ImplVulkan_CreateFontsTexture(commandBuffer);
+		commandBuffer.end();
+		commandBuffer.submit();
+		renderInstance.getInstance().waitForDevicesReady();
+		ImGui_ImplVulkan_DestroyFontUploadObjects();
+	}
+
+
 	void WdeGUI::tick() {
+		// Update gui bar
+		_guiBar.updateGUI();
+	}
+
+	void WdeGUI::render(render::CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
-		return;
+
+		// Start the ImGui frame
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Rendering GUI new frame." << logger::endl;
+		ImGui_ImplVulkan_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		// RENDER
 		// Setup main window
@@ -72,16 +141,51 @@ namespace wde::gui {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-		ImGui::Begin(DOCKSPACE_ROOT_ID.c_str(), nullptr, windowFlags);
+		ImGui::Begin(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str(), nullptr, windowFlags);
 		ImGui::PopStyleVar(3);
+
+
+		// ==== BUILD GUI ====
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Creating GUI elements." << logger::endl;
+		ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
+		ImGuiViewport* viewportGUI = ImGui::GetMainViewport();
+
+		// Clear out the existing global layout
+		ImGui::DockBuilderRemoveNode(dockspaceID);
+		ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
+		ImGui::DockBuilderSetNodeSize(dockspaceID, viewportGUI->Size);
+		ImGui::DockBuilderFinish(dockspaceID);
+
+		// Setup GUI bar every frame
+		ImGui::BeginMenuBar();
+		WaterDropEngine::get().getGUI()._guiBar.renderGUI();
+		ImGui::EndMenuBar();
+		// ==== END BUILD GUI ====
+
 
 		// Set dockspace main flags
 		ImGuiDockNodeFlags dockspaceFlags = ImGuiDockNodeFlags_PassthruCentralNode; // No background
-		ImGuiID dockspaceId = ImGui::GetID(DOCKSPACE_ROOT_ID.c_str());
+		ImGuiID dockspaceId = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
 		ImGui::DockSpace(dockspaceId, ImVec2(0.0f, 0.0f), dockspaceFlags);
 
 		// End dockspace
 		ImGui::End();
+
+		// ==== RENDER ELEMENTS HERE ====
+		if (WaterDropEngine::get().getGUI()._guiBar.displayGUI()) {
+			// HERE
+		}
+
+		// Rendering
+		ImGui::Render();
+		ImDrawData* draw_data = ImGui::GetDrawData();
+		ImGui_ImplVulkan_RenderDrawData(draw_data, commandBuffer);
+
+		// Update windows size (currently broken for Vulkan in ImGui)
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 
 		// Render GUI elements in Scene
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Rendering GUI elements." << logger::endl;
@@ -89,31 +193,20 @@ namespace wde::gui {
 
 	void WdeGUI::cleanUp() {
 		WDE_PROFILE_FUNCTION();
-		return;
-
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up GUI Engine ==" << logger::endl;
 
-		// Clean Up
-		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Destroying ImGUI context." << logger::endl;
+		// Destroy descriptor
+		_imGUIdescriptorPool.reset();
+
+		// Clean Up Context
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Cleaning up Gui context." << logger::endl;
+		ImGui_ImplVulkan_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up Done ==" << logger::endl;
 	}
 
-	void WdeGUI::createElements() {
-		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Creating GUI elements." << logger::endl;
-		ImGuiID dockspaceID = ImGui::GetID(DOCKSPACE_ROOT_ID.c_str());
-		ImGuiViewport* viewport = ImGui::GetMainViewport();
-
-		// Clear out the existing global layout
-		ImGui::DockBuilderRemoveNode(dockspaceID);
-		ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
-		ImGui::DockBuilderSetNodeSize(dockspaceID, viewport->Size);
-		ImGuiID dockparentID = dockspaceID; // Master node ID
-
-		// End building
-		ImGui::DockBuilderFinish(dockspaceID);
-	}
 #endif
 
 #if WDE_ENGINE_MODE == 1 // Production

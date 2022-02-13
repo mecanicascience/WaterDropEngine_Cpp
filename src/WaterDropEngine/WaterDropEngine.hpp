@@ -109,6 +109,7 @@ namespace wde {
 			render::WdeRender& getRender() { return *_render; }
 			gui::WdeGUI& getGUI() { return *_gui; }
 			WdeInstance& getInstance() { return *_instance; }
+			core::Subject& getSubject() { return *_subject; }
 
 
 		private:

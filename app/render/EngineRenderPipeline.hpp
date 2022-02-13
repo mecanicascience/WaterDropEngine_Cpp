@@ -19,9 +19,13 @@ class EngineRenderPipeline : public WdeRenderPipeline {
 			// Create passes and subpasses structure
 			setStructure({
 				{0, {
-					{0, {}, { 0 }}
+					{0, {}, { 0 }},
+					{1, {}, { 0 }} // GUI Pass
 				}}
 	        });
+
+			// Initialize GUI
+			gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
 
 			// Create pipeline
 			_trianglePipeline = std::make_unique<PipelineGraphics>(
@@ -37,13 +41,17 @@ class EngineRenderPipeline : public WdeRenderPipeline {
 		void render(CommandBuffer& commandBuffer) override {
 			beginRenderPass(0);
 				beginRenderSubPass(0);
+					// Bind the pipeline to the command buffer
+					_trianglePipeline->bind(commandBuffer);
 
-				// Bind the pipeline to the command buffer
-				_trianglePipeline->bind(commandBuffer);
+					// Draw 3 hard-coded vertices in the shader
+					vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+				endRenderSubPass();
 
-				// Draw 3 hard-coded vertices in the shader
-				vkCmdDraw(commandBuffer, 3, 1, 0, 0);
 
+				beginRenderSubPass(1);
+					// Render GUI
+					gui::WdeGUI::render(commandBuffer);
 				endRenderSubPass();
 			endRenderPass();
 		}
