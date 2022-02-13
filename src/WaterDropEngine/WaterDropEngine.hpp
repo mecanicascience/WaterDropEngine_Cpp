@@ -20,6 +20,8 @@ namespace wde {
 
 
 			void start(WdeInstance& instance) {
+				_instance = &instance;
+
 				// Create logging service
 				logger::LoggerHandler::initialize("logs/");
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Initializing program ========" << logger::endl;
@@ -70,7 +72,7 @@ namespace wde {
 
 					// Render for engine instance
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
-					instance.tick();
+					instance.tickInstance();
 
 					logger::log() << "====== End of tick. ======\n\n" << logger::endl;
 				}
@@ -83,17 +85,17 @@ namespace wde {
 				// Clean up WaterDropEngine
 				WDE_PROFILE_BEGIN_SESSION("Cleaning Up", "profiler/profiler_cleanup.json");
 				// ===== DELETE MODULES IN REVERSE ORDER =====
+				// Clear engine instance
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Cleaning up modules ========" << logger::endl;
+				logger::log(LogLevel::INFO, LogChannel::CORE) << "Cleaning up engine instance." << logger::endl;
+				instance.cleanUpInstance();
+
 				_gui->cleanUp();
 				_render->cleanUp();
 
 				// ==== DELETE MODULE COMMUNICATION SERVICE ==
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Cleaning up ended ========" << logger::endl;
 				_subject.reset();
-
-				// Init engine instance
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "Cleaning up engine instance." << logger::endl;
-				instance.cleanUp();
 
 				// Clean up core and logger
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "Closing program." << logger::endl;
@@ -106,6 +108,7 @@ namespace wde {
 			// Modules getters
 			render::WdeRender& getRender() { return *_render; }
 			gui::WdeGUI& getGUI() { return *_gui; }
+			WdeInstance& getInstance() { return *_instance; }
 
 
 		private:
@@ -115,6 +118,9 @@ namespace wde {
 
 			// Modules communication subject
 			std::shared_ptr<core::Subject> _subject;
+
+			// Engine instance
+			WdeInstance* _instance;
 
 			// Constructor
 			explicit WaterDropEngine() = default;

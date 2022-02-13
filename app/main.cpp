@@ -2,7 +2,7 @@
 
 int main() {
 	EngineInstance instance {};
-	instance.start();
+	instance.startInstance();
 
 	return 0;
 }

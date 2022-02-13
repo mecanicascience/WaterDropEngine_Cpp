@@ -1,4 +1,5 @@
 #include "WdeRender.hpp"
+#include "../WaterDropEngine.hpp"
 
 namespace wde::render {
 	// Module commands
@@ -26,6 +27,7 @@ namespace wde::render {
 		// Check if should reset elements
 		if (_windowResized) {
 			_coreInstance->onWindowResized();
+			WaterDropEngine::get().getInstance().onWindowResizedInstance();
 			_windowResized = false;
 		}
 

@@ -6,31 +6,31 @@ using namespace wde;
 using namespace wde::render;
 
 class EngineRenderPipeline : public WdeRenderPipeline {
+	void setup() override {
+		// Create passes attachments
+		setAttachments({
+			{0, "Swapchain attachment", RenderAttachment::SWAPCHAIN, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)},
+			{1, "Depth attachment", RenderAttachment::DEPTH},
+			{2, "Image attachment", RenderAttachment::IMAGE, VK_FORMAT_R16_UNORM}
+		});
+
+		// Create passes and subpasses structure
+		setStructure({
+			{0, {
+				{0, { }, { 2 }},
+				{1, { 2 }, { 0, 1 }}
+			}}
+        });
+	}
+
 	void render(CommandBuffer& commandBuffer) override {
-		CoreInstance& renderer = WaterDropEngine::get().getRender().getInstance();
+		beginRenderPass(0);
+			beginRenderSubPass(0);
+			endRenderSubPass();
 
-		// For now, just change swapchain image layout to presentation layout
-		VkImageMemoryBarrier barrier {};
-		barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-		barrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		barrier.image = renderer.getSwapchain().getActiveImage();
-		barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-		barrier.subresourceRange.baseMipLevel = 0;
-		barrier.subresourceRange.levelCount = 1;
-		barrier.subresourceRange.baseArrayLayer = 0;
-		barrier.subresourceRange.layerCount = 1;
-		barrier.srcAccessMask = 0;
-		barrier.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
-		// Execute command
-		vkCmdPipelineBarrier(
-				commandBuffer,
-				VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT,
-				0,
-				0, nullptr,
-				0, nullptr,
-				1, &barrier); // Use only memory barrier
+			beginRenderSubPass(1);
+			endRenderSubPass();
+		endRenderPass();
 	}
 };
 

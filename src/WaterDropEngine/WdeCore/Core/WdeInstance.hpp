@@ -18,16 +18,32 @@ namespace wde {
 
 
 			/** Start the engine */
-			void start();
+			void startInstance();
 			/** Tick for the engine instance (called by WaterDropEngine) */
-			void tick();
+			void tickInstance();
+			/** Clean up the engine instance (called by WaterDropEngine) */
+			void cleanUpInstance() {
+				// Destroy render pipeline
+				_pipeline.reset();
+
+				// Clean up instance
+				cleanUp();
+			}
+			/** Called when window format changes (called by WaterDropEngine) */
+			void onWindowResizedInstance() {
+				_pipeline->onWindowResized();
+			}
 
 
 
 		protected:
 			/** Change the engine rendering pipeline instance */
 			void setRenderPipeline(std::unique_ptr<render::WdeRenderPipeline> pipeline) {
+				WDE_PROFILE_FUNCTION();
 				_pipeline = std::move(pipeline);
+
+				// Create pipeline
+				_pipeline->setup();
 			}
 
 

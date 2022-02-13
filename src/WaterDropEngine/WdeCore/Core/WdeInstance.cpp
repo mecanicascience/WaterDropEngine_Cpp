@@ -7,12 +7,12 @@ namespace wde {
 		WaterDropEngine::get();
 	}
 
-	void WdeInstance::start() {
+	void WdeInstance::startInstance() {
 		// Start the engine
 		WaterDropEngine::get().start(*this);
 	}
 
-	void WdeInstance::tick() {
+	void WdeInstance::tickInstance() {
 		// Update the engine
 		update();
 
