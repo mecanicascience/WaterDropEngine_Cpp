@@ -3,7 +3,7 @@
 #include "../wde.hpp"
 #include "WdeRender/WdeRender.hpp"
 #include "WdeGUI/WdeGUI.hpp"
-#include "WdeCore/Core/WaterDropEngineInstance.hpp"
+#include "WdeCore/Core/WdeInstance.hpp"
 #include "WdeCommon/WdeUtils/FPSUtils.hpp"
 
 namespace wde {
@@ -19,7 +19,7 @@ namespace wde {
 			}
 
 
-			void start(WaterDropEngineInstance& instance) {
+			void start(WdeInstance& instance) {
 				// Create logging service
 				logger::LoggerHandler::initialize("logs/");
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Initializing program ========" << logger::endl;
@@ -63,18 +63,14 @@ namespace wde {
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Polling GLFW events." << logger::endl;
 					glfwPollEvents();
 
-					// Update for engine instance
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "Updating for engine instance." << logger::endl;
-					instance.update();
-
 					// Tick for modules
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for modules." << logger::endl;
 					_render->tick();
 					_gui->tick();
 
 					// Render for engine instance
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "Rendering for engine instance." << logger::endl;
-					instance.renderWDE();
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
+					instance.tick();
 
 					logger::log() << "====== End of tick. ======\n\n" << logger::endl;
 				}

@@ -1,18 +1,8 @@
-#include "WaterDropEngineInstance.hpp"
+#include "WdeRenderPipeline.hpp"
 #include "../../WaterDropEngine.hpp"
 
-namespace wde {
-	WaterDropEngineInstance::WaterDropEngineInstance() {
-		// Create the engine instance
-		WaterDropEngine::get();
-	}
-
-	void WaterDropEngineInstance::start() {
-		// Start the engine
-		WaterDropEngine::get().start(*this);
-	}
-
-	void WaterDropEngineInstance::renderWDE() {
+namespace wde::render {
+	void WdeRenderPipeline::tick() {
 		render::CoreInstance& renderer = WaterDropEngine::get().getRender().getInstance();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Drawing next frame to the screen with id " << renderer.getCurrentFrame() << "." << logger::endl;
 
@@ -26,7 +16,7 @@ namespace wde {
 		if (!commandBuffer.isRunning())
 			commandBuffer.begin();
 
-		// Engine rendering
+		// Engine recording commands to the current frame command buffer
 		render(commandBuffer);
 
 		// Wait for last swapchain image to finish rendering before sending to queue
@@ -37,8 +27,8 @@ namespace wde {
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Submitting command buffer to graphics queue." << logger::endl;
 		commandBuffer.end();
 		commandBuffer.submit(renderer.getSwapchain().getInFlightFences()[renderer.getSwapchain().getActiveImageIndex()], // When submitting is done, signal it to the fence
-		                      renderer.getSwapchain().getImageAvailableSemaphores()[renderer.getSwapchain().getActiveImageIndex()], // Wait for swapchain to acquire image
-		                      renderer.getSwapchain().getRenderFinishedSemaphores()[renderer.getSwapchain().getActiveImageIndex()]); // Say that image has been presented
+		                     renderer.getSwapchain().getImageAvailableSemaphores()[renderer.getSwapchain().getActiveImageIndex()], // Wait for swapchain to acquire image
+		                     renderer.getSwapchain().getRenderFinishedSemaphores()[renderer.getSwapchain().getActiveImageIndex()]); // Say that image has been presented
 
 		// Send the current swapchain image to the presentation device queue
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Sending swapchain frame to presentation queue." << logger::endl;
@@ -50,3 +40,4 @@ namespace wde {
 		renderer.getCurrentFrame() = (renderer.getCurrentFrame() + 1) % renderer.getMaxFramesInFlight();
 	}
 }
+
