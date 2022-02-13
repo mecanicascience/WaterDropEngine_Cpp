@@ -45,6 +45,7 @@ namespace wde::render {
 				}
 				subpassDescription.colorAttachmentCount = static_cast<uint32_t>(colorAttachments[i].size());
 				subpassDescription.pColorAttachments = colorAttachments[i].data();
+				_attachmentsColorCount.push_back(static_cast<int>(colorAttachments[i].size()));
 
 
 				// Set optional depth attachment
@@ -184,10 +185,6 @@ namespace wde::render {
 
 		// Destroy render pass
 		vkDestroyRenderPass(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _renderPass, nullptr);
-	}
-
-	void RenderPass::onWindowResized() {
-		logger::log() << "HEY" << logger::endl;
 	}
 
 

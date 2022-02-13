@@ -35,6 +35,15 @@ namespace wde::render {
 			 */
 			virtual void setup() = 0;
 
+			/**
+			 * Clean up the pipeline resources
+			 */
+			virtual void cleanUp() = 0;
+
+
+			// Getters and setters
+			RenderPass& getRenderPass(uint32_t renderPassID) { return *_passes[renderPassID]; }
+
 
 
 		protected:

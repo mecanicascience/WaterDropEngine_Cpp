@@ -23,10 +23,6 @@ namespace wde::render {
 			~RenderPass();
 
 
-			// Events
-			void onWindowResized();
-
-
 			// Render commands
 			void start();
 			static void end();
@@ -37,6 +33,11 @@ namespace wde::render {
 
 			// Getters and setters
 			uint32_t getSubPassesCount() const { return _subpassesStructure.size(); }
+			VkRenderPass& getRenderPass() { return _renderPass; }
+			int getAttachmentColorCount(int subpassID) { return _attachmentsColorCount[subpassID]; }
+			ImageDepth& getDepthStencil() { return *_depthStencil; }
+			FrameBuffers& getFrameBuffers() { return *_framebuffers; }
+			RenderAttachment& getAttachment(uint32_t index) { return _attachments[index]; }
 
 
 		private:
@@ -51,6 +52,8 @@ namespace wde::render {
 			std::unique_ptr<FrameBuffers> _framebuffers;
 			/** Clear values of the different attachments */
 			std::vector<VkClearValue> _clearValues;
+			/** Number of color attachments in the subpass */
+			std::vector<int> _attachmentsColorCount;
 
 			// Vulkan data
 			VkRenderPass _renderPass = VK_NULL_HANDLE;

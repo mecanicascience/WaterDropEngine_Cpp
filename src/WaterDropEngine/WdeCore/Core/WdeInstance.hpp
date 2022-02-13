@@ -24,6 +24,7 @@ namespace wde {
 			/** Clean up the engine instance (called by WaterDropEngine) */
 			void cleanUpInstance() {
 				// Destroy render pipeline
+				_pipeline->cleanUp();
 				_pipeline.reset();
 
 				// Clean up instance
@@ -33,6 +34,10 @@ namespace wde {
 			void onWindowResizedInstance() {
 				_pipeline->onWindowResized();
 			}
+
+
+			// Getters and setters
+			render::WdeRenderPipeline& getPipeline() { return *_pipeline; }
 
 
 

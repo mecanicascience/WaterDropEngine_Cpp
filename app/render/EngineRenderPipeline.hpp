@@ -1,36 +1,56 @@
 #pragma once
 
 #include "../../src/WaterDropEngine/WdeRender/render/WdeRenderPipeline.hpp"
+#include "../../src/WaterDropEngine/WdeRender/pipelines/PipelineGraphics.hpp"
 
 using namespace wde;
 using namespace wde::render;
 
 class EngineRenderPipeline : public WdeRenderPipeline {
-	void setup() override {
-		// Create passes attachments
-		setAttachments({
-			{0, "Swapchain attachment", RenderAttachment::SWAPCHAIN, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)},
-			{1, "Depth attachment", RenderAttachment::DEPTH},
-			{2, "Image attachment", RenderAttachment::IMAGE, VK_FORMAT_R16_UNORM}
-		});
+	std::unique_ptr<PipelineGraphics> _trianglePipeline;
 
-		// Create passes and subpasses structure
-		setStructure({
-			{0, {
-				{0, { }, { 2 }},
-				{1, { 2 }, { 0, 1 }}
-			}}
-        });
-	}
+	public:
+		void setup() override {
+			// Create passes attachments
+			setAttachments({
+				{0, "Swapchain attachment", RenderAttachment::SWAPCHAIN, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)}
+			});
 
-	void render(CommandBuffer& commandBuffer) override {
-		beginRenderPass(0);
-			beginRenderSubPass(0);
-			endRenderSubPass();
+			// Create passes and subpasses structure
+			setStructure({
+				{0, {
+					{0, {}, { 0 }}
+				}}
+	        });
 
-			beginRenderSubPass(1);
-			endRenderSubPass();
-		endRenderPass();
-	}
+			// Create pipeline
+			_trianglePipeline = std::make_unique<PipelineGraphics>(
+					std::pair<int, int>{0, 0},
+					std::vector<std::string>{"res/shaders/triangle.vert.spv", "res/shaders/triangle.frag.spv"}, // Shaders
+					PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
+					PipelineGraphics::Depth::None,    // Do not use depth
+					VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
+					VK_POLYGON_MODE_FILL,   // Fill drawn shapes
+					VK_CULL_MODE_NONE);   // Disable pipeline culling
+		}
+
+		void render(CommandBuffer& commandBuffer) override {
+			beginRenderPass(0);
+				beginRenderSubPass(0);
+
+				// Bind the pipeline to the command buffer
+				_trianglePipeline->bind(commandBuffer);
+
+				// Draw 3 hard-coded vertices in the shader
+				vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+				endRenderSubPass();
+			endRenderPass();
+		}
+
+
+		void cleanUp() override {
+			_trianglePipeline.reset();
+		}
 };
 

@@ -30,6 +30,7 @@ namespace wde::render {
 
 			// Getters and setters
 			VkFramebuffer& get(uint32_t index) { return _framebuffers[index]; }
+			Image2D& getImageAttachment(uint32_t index) { return *_imageAttachments[index]; }
 
 
 		private:
