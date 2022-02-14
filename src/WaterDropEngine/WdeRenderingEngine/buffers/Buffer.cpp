@@ -18,16 +18,4 @@ namespace wde::renderEngine {
 								  _bufferSize, _bufferUsageFlags, _memoryProperties,
 								  _buffer, _bufferMemory);
 	}
-
-
-	// Core functions
-	void* Buffer::map() {
-		void* bufferData;
-		vkMapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bufferMemory, 0, _bufferSize, 0, &bufferData);
-		return bufferData;
-	}
-
-	void Buffer::unmap() {
-		vkUnmapMemory(WdeRenderEngine::get().getSelectedDevice().getDevice(), _bufferMemory);
-	}
 }

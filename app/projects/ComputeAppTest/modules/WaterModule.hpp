@@ -1,13 +1,12 @@
 #pragma once
 
 #include <WaterDropEngine/includes.hpp>
-#include "../materials/WaterMaterialCompute.hpp"
 
 using namespace wde::scene;
 
 class WaterModule : public Module {
     public:
-		explicit WaterModule(GameObject &gameObject, int planeSizeFactor, std::shared_ptr<Model> model, std::shared_ptr<WaterMaterialCompute> material);
+        explicit WaterModule(GameObject &gameObject, std::shared_ptr<Model> model, std::shared_ptr<Material> material);
 
         // Core functions
         void createDescriptors() override;
@@ -17,19 +16,8 @@ class WaterModule : public Module {
 
 
     private:
-		struct BufferData {
-			float wavesHeight[32*32*10*10]; // Wave height
-		};
-
-		struct ReadBufferData {
-			float time;
-		};
-
-		std::shared_ptr<Buffer> wavesData {};
-		int _planeSizeFactor;
-
         std::shared_ptr<Model> _model;
-        std::shared_ptr<WaterMaterialCompute> _material {};
+        std::shared_ptr<Material> _material {};
 
         PipelineCompute _computePipeline;
         std::shared_ptr<Descriptor> _computeDescriptor {};
