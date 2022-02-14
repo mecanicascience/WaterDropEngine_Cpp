@@ -32,7 +32,10 @@ namespace examples {
 				// Create pipeline
 				_trianglePipeline = std::make_unique<PipelineGraphics>(
 						std::pair<int, int>{0, 0},
-						std::vector<std::string>{"res/shaders/triangle.vert.spv", "res/shaders/triangle.frag.spv"}, // Shaders
+						std::vector<std::string>{
+							"res/shaders/examples/01-Triangle/triangle.vert.spv",
+							"res/shaders/examples/01-Triangle/triangle.frag.spv"
+						}, // Shaders
 						PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
 						PipelineGraphics::Depth::None,    // Do not use depth
 						VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
