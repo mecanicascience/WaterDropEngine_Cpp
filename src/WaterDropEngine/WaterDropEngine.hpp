@@ -52,7 +52,7 @@ namespace wde {
 
 				// Start
 				WDE_PROFILE_BEGIN_SESSION("Running", "profiler/profiler_run.json");
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Starting engine ========" << logger::endl;
+				logger::log(LogLevel::INFO, LogChannel::CORE) << "Starting engine." << logger::endl;
 
 				// Run
 				FPSUtils fpsManager {};
@@ -74,7 +74,7 @@ namespace wde {
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
 					instance.tickInstance();
 
-					logger::log() << "====== End of tick. ======\n\n" << logger::endl;
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "====== End of tick. ======\n\n" << logger::endl;
 				}
 
 				// Wait until every used device are ready
@@ -99,7 +99,6 @@ namespace wde {
 
 				// Clean up core and logger
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "Closing program." << logger::endl;
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of program ========" << logger::endl << logger::endl;
 				WDE_PROFILE_END_SESSION();
 				logger::LoggerHandler::cleanUp();
 			}

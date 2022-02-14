@@ -5,7 +5,7 @@
 #include <vulkan/vulkan_core.h>
 
 // Set engine mode (1 = production, 2 = debug)
-#ifndef WDE_ENGINE_MODE
+#ifndef DEBUG
 #define WDE_ENGINE_MODE 2
 #endif
 

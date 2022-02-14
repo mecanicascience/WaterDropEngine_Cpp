@@ -211,8 +211,10 @@ namespace wde::gui {
 
 #if WDE_ENGINE_MODE == 1 // Production
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {}
+	void WdeGUI::initialize(std::pair<int, int> renderStage) {}
 	void WdeGUI::tick() {}
 	void WdeGUI::cleanUp() {}
+	void WdeGUI::render(render::CommandBuffer &commandBuffer) {}
 	void WdeGUI::createElements() {}
 #endif
 }

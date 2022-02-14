@@ -22,6 +22,8 @@ namespace wde::logger {
 	void LoggerHandler::initialize(const std::string &filepath) {
 		// Set local variables
 		_logLevel = Config::LOG_LEVEL;
+		if (WDE_ENGINE_MODE == 1 && _logLevel >= 2)
+			_logLevel = 2;
 
 		// Gets time as format %Y.%m.%d-%H.%M.%S
 		std::time_t rawtime;

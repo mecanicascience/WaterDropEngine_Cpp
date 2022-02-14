@@ -1,7 +1,7 @@
 #include "Config.hpp"
 
 namespace wde::Config {
-	/** LOG OUTPUT LEVEL (0 = error - 1 = + warnings - 2 = + info - 3 = + debug) */
+	/** LOG OUTPUT LEVEL (0 = error - 1 = + warnings - 2 = + info - 3 = + debug) - If Mode = Production, log_level <= 2 */
 	int LOG_LEVEL = 3;
 
 	/** Application name */

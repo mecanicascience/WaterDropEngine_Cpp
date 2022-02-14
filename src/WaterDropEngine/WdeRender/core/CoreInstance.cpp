@@ -72,16 +72,15 @@ namespace wde::render {
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating DebugMessenger callback." << logger::endl;
 		{
 			WDE_PROFILE_FUNCTION();
-			if (WDE_ENGINE_MODE == 1)
-				return;
+			if (WDE_ENGINE_MODE != 1) {
+				// Setup messenger and callbacks
+				VkDebugUtilsMessengerCreateInfoEXT createInfo;
+				populateDebugMessengerCreateInfo(createInfo);
 
-			// Setup messenger and callbacks
-			VkDebugUtilsMessengerCreateInfoEXT createInfo;
-			populateDebugMessengerCreateInfo(createInfo);
-
-			// Tell vulkan to use our custom debug messenger
-			if (createDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
-				throw WdeException(LogChannel::RENDER, "Failed to set up debug messenger.");
+				// Tell vulkan to use our custom debug messenger
+				if (createDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
+					throw WdeException(LogChannel::RENDER, "Failed to set up debug messenger.");
+			}
 		}
 
 		// ============ CREATE DEVICE ============
@@ -217,7 +216,6 @@ namespace wde::render {
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
 		std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
-
 		// Add debug messenger layer if validation layers enabled
 		if (WDE_ENGINE_MODE == 2)
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
