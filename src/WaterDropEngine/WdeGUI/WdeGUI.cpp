@@ -48,6 +48,7 @@ namespace wde::gui {
 
 	void WdeGUI::initialize(std::pair<int, int> renderStage) {
 		auto& renderInstance = WaterDropEngine::get().getRender();
+		WaterDropEngine::get().getGUI()._initialized = true;
 
 		// === Initialize ImGui for Vulkan ===
 		ImGui_ImplVulkan_InitInfo initInfo = {};
@@ -200,9 +201,11 @@ namespace wde::gui {
 
 		// Clean Up Context
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Cleaning up Gui context." << logger::endl;
-		ImGui_ImplVulkan_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
+		if (WaterDropEngine::get().getGUI()._initialized) {
+			ImGui_ImplVulkan_Shutdown();
+			ImGui_ImplGlfw_Shutdown();
+			ImGui::DestroyContext();
+		}
 
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up Done ==" << logger::endl;
 	}

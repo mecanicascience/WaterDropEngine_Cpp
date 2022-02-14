@@ -31,7 +31,10 @@ namespace wde::gui {
 			void onNotify(core::Event event) override {};
 
 		private:
-			// core parameters
+			// Core parameters
+			/** True if the gui has been initialized */
+			bool _initialized = false;
+
 			/** Main root dockspace ID */
 			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace CoreWindow";
 			/** ImGUI resources descriptor pool */
@@ -39,18 +42,15 @@ namespace wde::gui {
 			/** ImGUI top bar */
 			GUIBar _guiBar {};
 
-			// Create elements in the GUI
-			void createElements();
 
-
-		/**
-		 * On a ImGui initialization error is thrown
-		 * @param err
-		 */
-		static void OnGuiConfigError(VkResult err) {
-			if (err == 0)
-				return;
-			logger::log(LogLevel::ERR, LogChannel::GUI) << "ImGui reported an error :" << err << logger::endl;
-		}
+			/**
+			 * On a ImGui initialization error is thrown
+			 * @param err
+			 */
+			static void OnGuiConfigError(VkResult err) {
+				if (err == 0)
+					return;
+				logger::log(LogLevel::ERR, LogChannel::GUI) << "ImGui reported an error :" << err << logger::endl;
+			}
 	};
 }

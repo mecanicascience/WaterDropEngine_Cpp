@@ -1,7 +1,8 @@
-#include "EngineInstance.hpp"
+#include "examples/EngineExampleInstance.hpp"
 
 int main() {
-	EngineInstance instance {};
+	// === EXAMPLES ===
+	examples::EngineExampleInstance instance {};
 	instance.startInstance();
 
 	return 0;
