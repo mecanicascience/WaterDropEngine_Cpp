@@ -8,6 +8,7 @@
 #include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 #include "ShaderUtils.hpp"
 #include "../render/RenderPass.hpp"
+#include "../descriptors/Descriptor.hpp"
 
 namespace wde::render {
 	class PipelineGraphics : public Pipeline {
@@ -56,10 +57,14 @@ namespace wde::render {
 			 */
 			~PipelineGraphics() override;
 
+			/** Initialize the pipeline */
+			void initialize();
+
 
 			// Getters and setters
 			const VkPipeline &getPipeline() const override { return _pipeline; };
 			const VkPipelineBindPoint &getPipelineBindPoint() const override { return _pipelineBindPoint; }
+			void addDescriptor(const std::shared_ptr<Descriptor>& desc) { _descriptorList.push_back(desc); }
 
 
 
@@ -72,10 +77,13 @@ namespace wde::render {
 			VkPolygonMode _polygonDrawMode;
 			VkCullModeFlags _cullingMode;
 			VkFrontFace _normalOrientation;
+			std::pair<int, int> _renderTarget;
 
 			// Vulkan parameters
 			/** Type of the pipeline (graphics, compute, ...) */
 			VkPipelineBindPoint _pipelineBindPoint;
+			/** Descriptor list */
+			std::vector<std::shared_ptr<Descriptor>> _descriptorList {};
 
 			// Shader modules
 			std::vector<VkShaderModule> _shaderModules;

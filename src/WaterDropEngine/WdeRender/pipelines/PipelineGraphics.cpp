@@ -5,7 +5,7 @@ namespace wde::render {
 	PipelineGraphics::PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, Mode pipelineMode, Depth depthMode, VkPrimitiveTopology vertexTopology,
 									   VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation) :
 			_shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _pipelineMode(pipelineMode), _depthMode(depthMode),
-			_polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode),
+			_polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _renderTarget(renderTarget),
 			_normalOrientation(normalOrientation == VK_FRONT_FACE_CLOCKWISE ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE), // invert vertex orientation
 			_pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {
 		WDE_PROFILE_FUNCTION();
@@ -35,12 +35,53 @@ namespace wde::render {
 				_shaderModules.emplace_back(shaderModule);
 			}
 		}
+	}
 
+	PipelineGraphics::~PipelineGraphics() {
+		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up graphics pipeline." << logger::endl;
+
+		// Destroy shader modules
+		auto device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
+		for (const auto &shaderModule : _shaderModules)
+			vkDestroyShaderModule(device, shaderModule, nullptr);
+
+		// Destroy pipeline
+		vkDestroyPipeline(device, _pipeline, nullptr);
+		vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
+
+		// Destroy command buffer reference
+		_commandBuffer = nullptr;
+	}
+
+
+	void PipelineGraphics::initialize() {
 		// Create the pipeline layout
+		std::vector<VkDescriptorSetLayout> descriptorVec {};
 		{
 			WDE_PROFILE_FUNCTION();
 			VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
 			pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+
+
+			// Descriptors sets
+			// Descriptor sets
+			if (_descriptorList.empty()) {
+				pipelineLayoutCreateInfo.setLayoutCount = 0;
+				pipelineLayoutCreateInfo.pSetLayouts = nullptr;
+			}
+			else {
+				for (auto& desc : _descriptorList) {
+					if (!desc->hasCreatedLayouts())
+						desc->createLayouts();
+					std::vector<VkDescriptorSetLayout>& descriptorVector = desc->getLayouts();
+					for (auto& v : descriptorVector)
+						if (v != VK_NULL_HANDLE)
+							descriptorVec.push_back(v);
+				}
+				pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(descriptorVec.size());
+				pipelineLayoutCreateInfo.pSetLayouts = descriptorVec.data();
+			}
 
 
 			// Push constants
@@ -197,7 +238,7 @@ namespace wde::render {
 		if (_pipelineMode == Mode::MRT) {
 			WDE_PROFILE_FUNCTION();
 			// Blend attachment states
-			auto attachmentCount = WaterDropEngine::get().getInstance().getPipeline().getRenderPass(renderTarget.first).getAttachmentColorCount(renderTarget.second);
+			auto attachmentCount = WaterDropEngine::get().getInstance().getPipeline().getRenderPass(_renderTarget.first).getAttachmentColorCount(_renderTarget.second);
 			std::vector<VkPipelineColorBlendAttachmentState> blendAttachmentStates;
 			blendAttachmentStates.reserve(attachmentCount);
 
@@ -258,8 +299,8 @@ namespace wde::render {
 			pipelineCreateInfo.layout = _pipelineLayout;
 
 			// Reference the render pass and index of sub pass where pipelines will be used
-			pipelineCreateInfo.renderPass = WaterDropEngine::get().getInstance().getPipeline().getRenderPass(renderTarget.first).getRenderPass();
-			pipelineCreateInfo.subpass = renderTarget.second;
+			pipelineCreateInfo.renderPass = WaterDropEngine::get().getInstance().getPipeline().getRenderPass(_renderTarget.first).getRenderPass();
+			pipelineCreateInfo.subpass = _renderTarget.second;
 
 			// If the pipelines derives from a parent one
 			pipelineCreateInfo.basePipelineHandle = VK_NULL_HANDLE; // Optional
@@ -273,22 +314,5 @@ namespace wde::render {
 
 		// Set pipeline initialized status
 		_initialized = true;
-	}
-
-	PipelineGraphics::~PipelineGraphics() {
-		WDE_PROFILE_FUNCTION();
-		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up graphics pipeline." << logger::endl;
-
-		// Destroy shader modules
-		auto device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
-		for (const auto &shaderModule : _shaderModules)
-			vkDestroyShaderModule(device, shaderModule, nullptr);
-
-		// Destroy pipeline
-		vkDestroyPipeline(device, _pipeline, nullptr);
-		vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
-
-		// Destroy command buffer reference
-		_commandBuffer = nullptr;
 	}
 }

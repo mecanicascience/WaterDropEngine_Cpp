@@ -1,9 +1,10 @@
 #pragma once
 
 #include "../../../wde.hpp"
-#include "../commands/CommandBuffer.hpp"
 #include "DescriptorSet.hpp"
 #include "DescriptorPool.hpp"
+#include "../commands/CommandBuffer.hpp"
+#include "../pipelines/Pipeline.hpp"
 
 namespace wde::render {
 	/**
@@ -13,7 +14,7 @@ namespace wde::render {
 		public:
 			// Constructor
 			/**
-			 * Create a new resources descriptor
+			 * Create a new descriptor
 			 * @param maxUniformBufferCount The maximum number of uniform buffers in the descriptor (default 1000)
 			 * @param maxUniformBufferDynamicCount The maximum number of uniform dynamic buffers in the descriptor (default 1000)
 			 * @param maxStorageBufferCount The maximum number of storage buffers in the descriptor (default 1000)
@@ -27,10 +28,12 @@ namespace wde::render {
 
 
 			// Core functions
+			/** Initialize the descriptor */
+			void initialize();
 			/** Recreate the descriptor elements (called when the window size changes) */
 			void recreate();
 			/** Bind the descriptor to the pipeline */
-			void bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint);
+			void bind(CommandBuffer& commandBuffer, Pipeline& pipeline);
 
 			/** Create the descriptor layouts */
 			void createLayouts();
@@ -44,8 +47,8 @@ namespace wde::render {
 			 * @param bindingsData
 			 */
 			void addSet(int bindingIndex, const std::vector<DescriptorSetBindingData>& bindingsData);
-
 			DescriptorSet& getSet(int bindingIndex);
+			bool hasCreatedLayouts() { return _layoutsCreated; }
 
 
 		private:
@@ -54,6 +57,6 @@ namespace wde::render {
 
 			// Layouts creation
 			std::vector<VkDescriptorSetLayout> _layouts {};
+			bool _layoutsCreated = false;
 	};
 }
-

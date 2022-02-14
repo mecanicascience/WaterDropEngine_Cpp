@@ -14,18 +14,10 @@ namespace wde::render {
 			 * Create a new descriptor pool
 			 * @param poolSizes The different buffer sizes of the descriptor pool
 			 * @param maxSets The max sets of the pool (default 8192, can change to 16384)
-			 * @param initialize Should initialize the pool
+			 * @param flags Flags applied at the pool creation
 			 */
-			explicit DescriptorPool(std::vector<VkDescriptorPoolSize> poolSizes, uint32_t maxSets = 8192, bool initialize = true);
+			explicit DescriptorPool(std::vector<VkDescriptorPoolSize> poolSizes, uint32_t maxSets = 8192, VkDescriptorPoolCreateFlags flags = 0);
 			~DescriptorPool();
-
-
-			// Core functions
-			/**
-			 * Create a new pool
-			 * @param flags Default : No flags
-			 */
-			void createPool(VkDescriptorPoolCreateFlags flags = 0);
 
 
 			// Getters and setters

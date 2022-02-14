@@ -7,8 +7,17 @@ namespace wde::render {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating a descriptor set." << logger::endl;
 
-		// Create layouts
-		createBindingLayouts();
+		// Create binding layouts
+		for (auto& bindingData : _bindingsData) {
+			VkDescriptorSetLayoutBinding bindingLayout {};
+			bindingLayout.binding = bindingData._bindingIndex;
+			bindingLayout.descriptorCount = bindingData._descriptorCount;
+			bindingLayout.descriptorType = bindingData._descriptorType;
+			bindingLayout.stageFlags = bindingData._shaderStageFlags;
+			bindingLayout.pImmutableSamplers = nullptr; // Optional
+
+			_bindingsLayouts.push_back(bindingLayout);
+		}
 	}
 
 	DescriptorSet::~DescriptorSet() {
@@ -23,20 +32,6 @@ namespace wde::render {
 
 
 	// Core functions
-	void DescriptorSet::createBindingLayouts() {
-		// Create binding layouts
-		for (auto& bindingData : _bindingsData) {
-			VkDescriptorSetLayoutBinding bindingLayout {};
-			bindingLayout.binding = bindingData._bindingIndex;
-			bindingLayout.descriptorCount = bindingData._descriptorCount;
-			bindingLayout.descriptorType = bindingData._descriptorType;
-			bindingLayout.stageFlags = bindingData._shaderStageFlags;
-			bindingLayout.pImmutableSamplers = nullptr; // Optional
-
-			_bindingsLayouts.push_back(bindingLayout);
-		}
-	}
-
 	void DescriptorSet::createLayout(VkDescriptorSetLayout& descriptorSetLayout) {
 		// Create descriptor layout
 		VkDescriptorSetLayoutCreateInfo setLayoutInfo = {};

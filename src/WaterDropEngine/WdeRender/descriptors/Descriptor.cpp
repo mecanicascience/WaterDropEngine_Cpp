@@ -13,6 +13,16 @@ namespace wde::render {
 				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, static_cast<uint32_t>(maxInputAttachmentCount) }
 		};
 		_pool = std::make_unique<DescriptorPool>(poolSizes);
+	}
+
+
+
+	// Core functions
+	void Descriptor::initialize() {
+		WDE_PROFILE_FUNCTION();
+
+		// Make sure layouts are created
+		createLayouts();
 
 		// Create descriptor sets
 		for (auto& [bindingIndex, descriptor] : _descriptorSets) {
@@ -33,8 +43,7 @@ namespace wde::render {
 	}
 
 	Descriptor::~Descriptor() {
-		// Dereference descriptors and pools
-		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up descriptor." << logger::endl;
+		// Dereference descriptors and pool
 		_descriptorSets.clear();
 		_pool.reset();
 
@@ -51,13 +60,13 @@ namespace wde::render {
 			set.second->recreate();
 	}
 
-	void Descriptor::bind(CommandBuffer& commandBuffer, const VkPipelineLayout& layout, VkPipelineBindPoint bindPoint) {
+	void Descriptor::bind(CommandBuffer& commandBuffer, Pipeline& pipeline) {
 		WDE_PROFILE_FUNCTION();
 
 		// Update every descriptor sets
 		for (int i = 0; i < _descriptorSets.size(); i++) { // Must be set in binding index incrementing order
 			// Binds the descriptors to the pipeline
-			vkCmdBindDescriptorSets(commandBuffer, bindPoint, layout, i,
+			vkCmdBindDescriptorSets(commandBuffer, pipeline.getPipelineBindPoint(), pipeline.getLayout(), i,
 			                        1, &getSet(i).getSet(), 0, nullptr);
 		}
 	}
@@ -90,6 +99,8 @@ namespace wde::render {
 				throw WdeException(LogChannel::RENDER, "Failed to create descriptor layouts. Didn't found set " + std::to_string(descriptorSetID)
 				                   + " but sets are supposed to go up to " + std::to_string(_descriptorSets.size()) + " sets.");
 		}
+
+		_layoutsCreated = true;
 	}
 
 

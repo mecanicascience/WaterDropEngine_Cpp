@@ -76,8 +76,7 @@ namespace wde::gui {
 				{ VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, poolMaxElements },
 				{ VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT, poolMaxElements }
 		};
-		WaterDropEngine::get().getGUI()._imGUIdescriptorPool = std::make_shared<render::DescriptorPool>(poolSizes, poolMaxElements * 11, false);
-		WaterDropEngine::get().getGUI()._imGUIdescriptorPool->createPool(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
+		WaterDropEngine::get().getGUI()._imGUIdescriptorPool = std::make_shared<render::DescriptorPool>(poolSizes, poolMaxElements * 11, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
 		initInfo.DescriptorPool = WaterDropEngine::get().getGUI()._imGUIdescriptorPool->getPool();
 
 		// Continue parameters configuration

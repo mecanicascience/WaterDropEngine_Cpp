@@ -1,7 +1,8 @@
 #pragma once
 
-#include "../../../wde.hpp"
+#include <utility>
 #include "../buffers/Buffer.hpp"
+#include "../../../wde.hpp"
 
 namespace wde::render {
 	/**
@@ -100,8 +101,6 @@ namespace wde::render {
 
 
 		// Core functions
-		/** Create the new binding layouts given the class data parameters */
-		void createBindingLayouts();
 		/** Create the descriptor set layout */
 		void createLayout(VkDescriptorSetLayout& descriptorSetLayout);
 
