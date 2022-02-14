@@ -4,16 +4,22 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
-// Set engine mode (1 = production, 2 = debug)
+// Set engine mode production / debug
 #ifndef DEBUG
-#define WDE_ENGINE_MODE 2
+	// #define WDE_ENGINE_MODE_PRODUCTION
+	#define WDE_ENGINE_MODE_DEBUG
+#endif
+
+#ifndef LOG_LEVEL_VAR
+	#ifdef WDE_ENGINE_MODE_DEBUG
+		#define LOG_LEVEL 3 // LOG OUTPUT LEVEL (0 = error - 1 = + warnings - 2 = + info - 3 = + debug) - If Mode = Production, log_level <= 2
+	#else
+		#define LOG_LEVEL 0
+	#endif
 #endif
 
 #ifndef WDE_CONFIG_DATA
 namespace wde::Config {
-	/** LOG OUTPUT LEVEL (0 = error - 1 = + warnings - 2 = + info - 3 = + debug) */
-	extern int LOG_LEVEL;
-
 	/** Application name */
 	extern std::string APPLICATION_NAME;
 	/** Application version */

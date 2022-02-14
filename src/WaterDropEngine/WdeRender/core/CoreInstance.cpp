@@ -12,8 +12,10 @@ namespace wde::render {
 			WDE_PROFILE_FUNCTION();
 			// Check if required debug layers are all available
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Checking validation layer support." << logger::endl;
-			if (WDE_ENGINE_MODE == 2 && !checkValidationLayerSupport())
-				throw WdeException(LogChannel::RENDER, "Validation layers requested, but not available.");
+			#ifdef WDE_ENGINE_MODE_DEBUG
+				if (!checkValidationLayerSupport())
+					throw WdeException(LogChannel::RENDER, "Validation layers requested, but not available.");
+			#endif
 
 			// Vulkan Application Infos
 			VkApplicationInfo appInfo {};
@@ -37,17 +39,17 @@ namespace wde::render {
 
 			// Validation layers
 			VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo;
-			if (WDE_ENGINE_MODE == 2) { // enable debug layers
+			#ifdef WDE_ENGINE_MODE_DEBUG
+				// enable debug layers
 				createInfo.enabledLayerCount = static_cast<uint32_t>(_validationLayers.size());
 				createInfo.ppEnabledLayerNames = _validationLayers.data();
 
 				populateDebugMessengerCreateInfo(debugCreateInfo);
 				createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
-			}
-			else {
+			#else
 				createInfo.enabledLayerCount = 0;
 				createInfo.pNext = nullptr;
-			}
+			#endif
 
 			// Create Vulkan instance
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating the Vulkan instance." << logger::endl;
@@ -72,7 +74,7 @@ namespace wde::render {
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating DebugMessenger callback." << logger::endl;
 		{
 			WDE_PROFILE_FUNCTION();
-			if (WDE_ENGINE_MODE != 1) {
+			#ifdef WDE_ENGINE_MODE_DEBUG
 				// Setup messenger and callbacks
 				VkDebugUtilsMessengerCreateInfoEXT createInfo;
 				populateDebugMessengerCreateInfo(createInfo);
@@ -80,7 +82,7 @@ namespace wde::render {
 				// Tell vulkan to use our custom debug messenger
 				if (createDebugUtilsMessengerEXT(_instance, &createInfo, nullptr, &_debugMessenger) != VK_SUCCESS)
 					throw WdeException(LogChannel::RENDER, "Failed to set up debug messenger.");
-			}
+			#endif
 		}
 
 		// ============ CREATE DEVICE ============
@@ -217,8 +219,9 @@ namespace wde::render {
 
 		std::vector<const char *> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 		// Add debug messenger layer if validation layers enabled
-		if (WDE_ENGINE_MODE == 2)
+		#ifdef WDE_ENGINE_MODE_DEBUG
 			extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+		#endif
 
 		return extensions;
 	}

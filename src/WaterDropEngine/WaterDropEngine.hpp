@@ -44,7 +44,11 @@ namespace wde {
 				_subject->addObserver(_gui);
 
 				// Init engine instance
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "Initializing engine instance." << logger::endl;
+				#ifdef WDE_ENGINE_MODE_DEBUG
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Initializing engine instance." << logger::endl;
+				#else
+					std::cout << "Initializing engine instance." << std::endl;
+				#endif
 				instance.initialize();
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
@@ -52,14 +56,25 @@ namespace wde {
 
 				// Start
 				WDE_PROFILE_BEGIN_SESSION("Running", "profiler/profiler_run.json");
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "Starting engine." << logger::endl;
+				#ifdef WDE_ENGINE_MODE_DEBUG
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Starting engine." << logger::endl;
+				#else
+					std::cout << "Starting engine." << std::endl;
+				#endif
 
 				// Run
 				FPSUtils fpsManager {};
 				while (_render->shouldRun()) {
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "====== Updating new frame. ======" << logger::endl;
 					fpsManager.update();
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking FPS : " << fpsManager.getFPS() << "." << logger::endl;
+
+					#ifdef WDE_ENGINE_MODE_DEBUG
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking FPS : " << fpsManager.getFPS() << "." << logger::endl;
+					#else
+						if (fpsManager.hasNewValue()) {
+							std::cout << "Ticking FPS : " << fpsManager.getFPS() << "." << std::endl;
+						}
+					#endif
 
 					// Poll glfw events
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Polling GLFW events." << logger::endl;
@@ -87,7 +102,11 @@ namespace wde {
 				// ===== DELETE MODULES IN REVERSE ORDER =====
 				// Clear engine instance
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Cleaning up modules ========" << logger::endl;
-				logger::log(LogLevel::INFO, LogChannel::CORE) << "Cleaning up engine instance." << logger::endl;
+				#ifdef WDE_ENGINE_MODE_DEBUG
+					logger::log(LogLevel::INFO, LogChannel::CORE) << "Cleaning up engine instance." << logger::endl;
+				#else
+					std::cout << "Cleaning up engine instance." << std::endl;
+				#endif
 				instance.cleanUpInstance();
 
 				_gui->cleanUp();

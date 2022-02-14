@@ -25,17 +25,26 @@ namespace wde {
 					// Add FPS
 					_lastFPSValue = _currentFPSCount;
 					_currentFPSCount = 0;
+					_newValue = true;
 				}
 				_currentFPSCount++;
 			}
 
 			/** @return the actual average FPS */
 			int getFPS() { return _lastFPSValue; }
+			bool hasNewValue() {
+				if (_newValue) {
+					_newValue = false;
+					return true;
+				}
+				return false;
+			}
 
 
 		private:
 			int _lastFPSValue = 0;
 			int _currentFPSCount = 0;
+			bool _newValue = false;
 			std::chrono::time_point<std::chrono::steady_clock> _lastTime = std::chrono::steady_clock::now();
 	};
 }

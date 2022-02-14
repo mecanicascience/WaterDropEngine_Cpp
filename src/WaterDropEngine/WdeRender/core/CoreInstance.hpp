@@ -24,7 +24,14 @@ namespace wde::render {
 			VkInstance& getInstance() { return _instance; }
 			VkSurfaceKHR& getSurface() { return _surface; }
 			CoreDevice& getDevice() { return *_device; }
-			static bool enableValidationLayers() { return WDE_ENGINE_MODE == 2; }
+			static bool enableValidationLayers() {
+				#ifdef WDE_ENGINE_MODE_PRODUCTION
+					return false;
+				#endif
+				#ifdef WDE_ENGINE_MODE_DEBUG
+					return true;
+				#endif
+			}
 			std::vector<const char *>& getValidationLayers() { return _validationLayers; }
 			const int getMaxFramesInFlight() const { return _currentFramesInFlightCount; }
 			void setFramesInFlightCount(int count) { _currentFramesInFlightCount = count; }

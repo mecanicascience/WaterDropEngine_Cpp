@@ -2,7 +2,7 @@
 #include "../WaterDropEngine.hpp"
 
 namespace wde::gui {
-#if WDE_ENGINE_MODE == 2 // Debug
+#ifdef WDE_ENGINE_MODE_DEBUG // Debug
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
 		// === Create ImGui context ===
@@ -209,7 +209,7 @@ namespace wde::gui {
 
 #endif
 
-#if WDE_ENGINE_MODE == 1 // Production
+#ifdef WDE_ENGINE_MODE_PRODUCTION // Production
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {}
 	void WdeGUI::initialize(std::pair<int, int> renderStage) {}
 	void WdeGUI::tick() {}

@@ -9,6 +9,7 @@
 #include <chrono>
 #include <thread>
 #include <mutex>
+#include "../WdeUtils/Config.hpp"
 
 
 namespace wde {
