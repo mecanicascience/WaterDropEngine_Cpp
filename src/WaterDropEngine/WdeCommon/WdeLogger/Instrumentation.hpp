@@ -202,7 +202,7 @@ namespace wde {
 	#define WDE_PROFILE_END_SESSION() Instrumentor::get().endSession()
 
 	#define WDE_PROFILE_SCOPE_LINE2(name, line) constexpr auto fixedName##line = instrumentorUtils::cleanupOutputString(name, "__cdecl ");\
-	InstrumentationTimer timer##line(fixedName##line.data)
+		InstrumentationTimer timer##line(fixedName##line.data)
 	#define WDE_PROFILE_SCOPE_LINE(name, line) WDE_PROFILE_SCOPE_LINE2(name, line)
 	#define WDE_PROFILE_SCOPE(name) WDE_PROFILE_SCOPE_LINE(name, __LINE__)
 	#define WDE_PROFILE_FUNCTION() WDE_PROFILE_SCOPE(__PRETTY_FUNCTION__)

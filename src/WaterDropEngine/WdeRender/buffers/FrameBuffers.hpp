@@ -2,8 +2,8 @@
 
 #include "../../../wde.hpp"
 #include "../images/Image2D.hpp"
-#include "../render/passes/RenderAttachment.hpp"
-#include "../render/passes/RenderPassStructure.hpp"
+#include "../render/RenderAttachment.hpp"
+#include "../render/RenderPassStructure.hpp"
 #include "../images/ImageDepth.hpp"
 
 namespace wde::render {

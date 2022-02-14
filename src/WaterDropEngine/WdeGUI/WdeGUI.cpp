@@ -7,6 +7,7 @@ namespace wde::gui {
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
 		// === Create ImGui context ===
 		IMGUI_CHECKVERSION();
+		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initializing GUI Engine ==" << logger::endl;
 		ImGui::CreateContext();
 
 		// Setup ImGui config
@@ -105,6 +106,7 @@ namespace wde::gui {
 
 
 	void WdeGUI::tick() {
+		WDE_PROFILE_FUNCTION();
 		// Update gui bar
 		_guiBar.updateGUI();
 	}

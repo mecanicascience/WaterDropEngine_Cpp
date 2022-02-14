@@ -2,11 +2,11 @@
 
 #include <utility>
 
-#include "../../../../wde.hpp"
+#include "../../../wde.hpp"
 #include "RenderAttachment.hpp"
 #include "RenderPassStructure.hpp"
-#include "../../images/ImageDepth.hpp"
-#include "../../buffers/FrameBuffers.hpp"
+#include "../images/ImageDepth.hpp"
+#include "../buffers/FrameBuffers.hpp"
 
 namespace wde::render {
 	/**

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../../wde.hpp"
-#include "../../../WdeCommon/WdeUtils/Color.hpp"
+#include "../../../wde.hpp"
+#include "../../WdeCommon/WdeUtils/Color.hpp"
 
 namespace wde::render {
 	/**

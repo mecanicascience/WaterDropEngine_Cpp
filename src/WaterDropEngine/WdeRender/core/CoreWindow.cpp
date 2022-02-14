@@ -6,16 +6,25 @@ namespace wde::render {
 		WDE_PROFILE_FUNCTION();
 
 		// Setup glfw
-		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating GLFW window." << logger::endl;
-		glfwInit();
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
+		{
+			WDE_PROFILE_FUNCTION();
+			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating GLFW window." << logger::endl;
+			glfwInit();
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
+		}
 
 		// Create window
-		_window = glfwCreateWindow(_windowSize.first, _windowSize.second, _windowName.c_str(), nullptr, nullptr);
+		{
+			WDE_PROFILE_FUNCTION();
+			_window = glfwCreateWindow(_windowSize.first, _windowSize.second, _windowName.c_str(), nullptr, nullptr);
+		}
 
 		// Add callbacks
-		glfwSetWindowUserPointer(_window, this);
-		glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+		{
+			WDE_PROFILE_FUNCTION();
+			glfwSetWindowUserPointer(_window, this);
+			glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
+		}
 	}
 
 	CoreWindow::~CoreWindow() {

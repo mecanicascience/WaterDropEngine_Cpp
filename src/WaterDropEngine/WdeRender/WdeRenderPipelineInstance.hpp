@@ -1,18 +1,18 @@
 #pragma once
 
-#include "../commands/CommandBuffer.hpp"
-#include "passes/RenderAttachment.hpp"
-#include "passes/RenderPass.hpp"
-#include "passes/RenderPassStructure.hpp"
+#include "commands/CommandBuffer.hpp"
+#include "render/RenderAttachment.hpp"
+#include "render/RenderPass.hpp"
+#include "render/RenderPassStructure.hpp"
 
 namespace wde::render {
 	/**
 	 * Represents an instance of the engine rendering pipeline
 	 */
-	class WdeRenderPipeline {
+	class WdeRenderPipelineInstance {
 		public:
-			WdeRenderPipeline() = default;
-			~WdeRenderPipeline() {
+			WdeRenderPipelineInstance() = default;
+			~WdeRenderPipelineInstance() {
 				// Destroy render passes
 				_passes.clear();
 			}

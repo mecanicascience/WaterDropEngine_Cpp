@@ -5,6 +5,7 @@
 #include "WdeGUI/WdeGUI.hpp"
 #include "WdeCore/Core/WdeInstance.hpp"
 #include "WdeCommon/WdeUtils/FPSUtils.hpp"
+#include "WdeScene/WdeScene.hpp"
 
 namespace wde {
 	/**
@@ -43,6 +44,10 @@ namespace wde {
 				_gui = std::make_shared<gui::WdeGUI>(_subject);
 				_subject->addObserver(_gui);
 
+				// Scene core
+				_scene = std::make_shared<scene::WdeScene>(_subject);
+				_subject->addObserver(_scene);
+
 				// Init engine instance
 				#ifdef WDE_ENGINE_MODE_DEBUG
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Initializing engine instance." << logger::endl;
@@ -65,31 +70,38 @@ namespace wde {
 				// Run
 				FPSUtils fpsManager {};
 				while (_render->shouldRun()) {
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "====== Updating new frame. ======" << logger::endl;
-					fpsManager.update();
+					{
+						WDE_PROFILE_SCOPE("wde::WaterDropEngine::tick()::glfwPollEvents");
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "====== Updating new frame. ======" << logger::endl;
+						fpsManager.update();
 
-					#ifdef WDE_ENGINE_MODE_DEBUG
-						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking FPS : " << fpsManager.getFPS() << "." << logger::endl;
-					#else
-						if (fpsManager.hasNewValue()) {
-							std::cout << "Ticking FPS : " << fpsManager.getFPS() << "." << std::endl;
-						}
-					#endif
+						#ifdef WDE_ENGINE_MODE_DEBUG
+							logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking FPS : " << fpsManager.getFPS() << "." << logger::endl;
+						#else
+							if (fpsManager.hasNewValue()) {
+								std::cout << "Ticking FPS : " << fpsManager.getFPS() << "." << std::endl;
+							}
+						#endif
 
-					// Poll glfw events
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "Polling GLFW events." << logger::endl;
-					glfwPollEvents();
+						// Poll glfw events
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "Polling GLFW events." << logger::endl;
+						glfwPollEvents();
+					}
 
-					// Tick for modules
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for modules." << logger::endl;
-					_render->tick();
-					_gui->tick();
+					{
+						WDE_PROFILE_SCOPE("wde::WaterDropEngine::tick()::tick");
+						// Tick for modules
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for modules." << logger::endl;
+						_render->tick();
+						_gui->tick();
+						_scene->tick();
 
-					// Render for engine instance
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
-					instance.tickInstance();
+						// Render for engine instance
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
+						instance.tickInstance();
 
-					logger::log(LogLevel::INFO, LogChannel::CORE) << "====== End of tick. ======\n\n" << logger::endl;
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "====== End of tick. ======\n\n" << logger::endl;
+					}
 				}
 
 				// Wait until every used device are ready
@@ -109,6 +121,7 @@ namespace wde {
 				#endif
 				instance.cleanUpInstance();
 
+				_scene->cleanUp();
 				_gui->cleanUp();
 				_render->cleanUp();
 
@@ -128,12 +141,14 @@ namespace wde {
 			gui::WdeGUI& getGUI() { return *_gui; }
 			WdeInstance& getInstance() { return *_instance; }
 			core::Subject& getSubject() { return *_subject; }
+			scene::WdeScene& getScene() { return *_scene; }
 
 
 		private:
 			// Modules
 			std::shared_ptr<render::WdeRender> _render;
 			std::shared_ptr<gui::WdeGUI> _gui;
+			std::shared_ptr<scene::WdeScene> _scene;
 
 			// Modules communication subject
 			std::shared_ptr<core::Subject> _subject;

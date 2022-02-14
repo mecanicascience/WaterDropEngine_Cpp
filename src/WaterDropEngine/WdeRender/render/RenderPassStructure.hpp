@@ -2,7 +2,7 @@
 
 #include <utility>
 
-#include "../../../../wde.hpp"
+#include "../../../wde.hpp"
 
 namespace wde::render {
 	// Pass command manager

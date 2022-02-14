@@ -7,7 +7,7 @@
 #include "Pipeline.hpp"
 #include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 #include "ShaderUtils.hpp"
-#include "../render/passes/RenderPass.hpp"
+#include "../render/RenderPass.hpp"
 
 namespace wde::render {
 	class PipelineGraphics : public Pipeline {

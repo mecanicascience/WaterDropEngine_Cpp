@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../../../src/WaterDropEngine/WdeRender/render/WdeRenderPipeline.hpp"
+#include "../../../src/WaterDropEngine/WdeRender/WdeRenderPipelineInstance.hpp"
 
 using namespace wde;
 using namespace wde::render;
 
 namespace examples {
-	class PipelineExample02 : public WdeRenderPipeline {
+	class PipelineExample02 : public WdeRenderPipelineInstance {
 		public:
 			void setup() override {
 				// Create passes attachments

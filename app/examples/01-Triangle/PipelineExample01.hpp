@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../src/WaterDropEngine/WdeRender/render/WdeRenderPipeline.hpp"
+#include "../../../src/WaterDropEngine/WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../../src/WaterDropEngine/WdeRender/pipelines/PipelineGraphics.hpp"
 #include "../../../src/WaterDropEngine/WdeGUI/WdeGUI.hpp"
 
@@ -8,7 +8,7 @@ using namespace wde;
 using namespace wde::render;
 
 namespace examples {
-	class PipelineExample01 : public WdeRenderPipeline {
+	class PipelineExample01 : public WdeRenderPipelineInstance {
 		std::unique_ptr<PipelineGraphics> _trianglePipeline;
 
 		public:

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../../WdeRender/commands/CommandBuffer.hpp"
-#include "../../WdeRender/render/WdeRenderPipeline.hpp"
+#include "../../WdeRender/WdeRenderPipelineInstance.hpp"
+#include "../../WdeScene/WdeSceneInstance.hpp"
 
 namespace wde {
 	/**
@@ -23,6 +24,12 @@ namespace wde {
 			void tickInstance();
 			/** Clean up the engine instance (called by WaterDropEngine) */
 			void cleanUpInstance() {
+				// Destroy render scene
+				if (_scene != nullptr) {
+					_scene->cleanUp();
+					_scene.reset();
+				}
+
 				// Destroy render pipeline
 				_pipeline->cleanUp();
 				_pipeline.reset();
@@ -37,13 +44,13 @@ namespace wde {
 
 
 			// Getters and setters
-			render::WdeRenderPipeline& getPipeline() { return *_pipeline; }
+			render::WdeRenderPipelineInstance& getPipeline() { return *_pipeline; }
 
 
 
 		protected:
 			/** Change the engine rendering pipeline instance */
-			void setRenderPipeline(std::unique_ptr<render::WdeRenderPipeline> pipeline) {
+			void setRenderPipeline(std::unique_ptr<render::WdeRenderPipelineInstance> pipeline) {
 				WDE_PROFILE_FUNCTION();
 				_pipeline = std::move(pipeline);
 
@@ -51,9 +58,20 @@ namespace wde {
 				_pipeline->setup();
 			}
 
+			/** Change the engine rendering scene instance */
+			void setScene(std::unique_ptr<scene::WdeSceneInstance> scene) {
+				WDE_PROFILE_FUNCTION();
+				_scene = std::move(scene);
+
+				// Create scene
+				_scene->setup();
+			}
+
 
 		private:
 			/** Engine rendering pipeline */
-			std::unique_ptr<render::WdeRenderPipeline> _pipeline;
+			std::unique_ptr<render::WdeRenderPipelineInstance> _pipeline;
+			/** Engine active scene */
+			std::unique_ptr<scene::WdeSceneInstance> _scene;
 	};
 }
