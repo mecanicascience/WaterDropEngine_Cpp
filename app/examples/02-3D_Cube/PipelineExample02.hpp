@@ -12,7 +12,7 @@ namespace examples {
 			std::unique_ptr<PipelineGraphics> _pipeline {};
 			std::shared_ptr<Descriptor> _desc {};
 
-			int OBJECT_COUNT = 10;
+			int OBJECT_COUNT = 1;
 			struct GPUGameObjectData {
 				glm::mat4 objectMatrix {};
 			};
@@ -26,9 +26,13 @@ namespace examples {
 				// Create passes and subpasses structure
 				setStructure({
 					{0, {
-						{0, {}, { 0 }}
+						{0, {}, { 0 }},
+						{1, {}, { 0 }}
 					}}
 				});
+
+				// Initialize GUI
+				gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
 
 
 				// Create object descriptor
@@ -72,6 +76,18 @@ namespace examples {
 
 						// Draw 3 hard-coded vertices in the shader
 						vkCmdDraw(commandBuffer, 3, 1, 0, 0);
+
+						/**
+						 * TODO
+						 * Get active camera (scene -> activeCameraID)
+						 * [TODO => do culling writes GO ids to buffer]
+						 * Render GO (for each material, bind pipeline + render each game objects corresponding to that pipeline)
+						 */
+					endRenderSubPass();
+
+					beginRenderSubPass(1);
+						// Render GUI
+						gui::WdeGUI::render(commandBuffer);
 					endRenderSubPass();
 				endRenderPass();
 			}

@@ -9,7 +9,7 @@ namespace examples {
 	class EngineInstanceExample01 : public WdeInstance {
 		public:
 			void initialize() override {
-				setRenderPipeline(std::make_unique<PipelineExample01>());
+				setRenderPipeline(std::make_shared<PipelineExample01>());
 			}
 
 			void update() override { }

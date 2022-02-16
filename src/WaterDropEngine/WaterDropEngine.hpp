@@ -55,6 +55,7 @@ namespace wde {
 					std::cout << "Initializing engine instance." << std::endl;
 				#endif
 				instance.initialize();
+				_gui->addObserver(instance.getScenePointer(), true);
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
 				WDE_PROFILE_END_SESSION();

@@ -4,7 +4,7 @@
 namespace wde::gui {
 #ifdef WDE_ENGINE_MODE_DEBUG // Debug
 	// Module commands
-	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
+	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)), Subject("GUI Subject") {
 		// === Create ImGui context ===
 		IMGUI_CHECKVERSION();
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initializing GUI Engine ==" << logger::endl;
@@ -148,15 +148,21 @@ namespace wde::gui {
 
 
 		// ==== BUILD GUI ====
-		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Creating GUI elements." << logger::endl;
-		ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
-		ImGuiViewport* viewportGUI = ImGui::GetMainViewport();
+		if (ImGui::DockBuilderGetNode(ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str())) == nullptr) {
+			logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Creating GUI elements." << logger::endl;
+			ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
+			ImGuiViewport *viewportGUI = ImGui::GetMainViewport();
 
-		// Clear out the existing global layout
-		ImGui::DockBuilderRemoveNode(dockspaceID);
-		ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
-		ImGui::DockBuilderSetNodeSize(dockspaceID, viewportGUI->Size);
-		ImGui::DockBuilderFinish(dockspaceID);
+			// Clear out the existing global layout
+			ImGui::DockBuilderRemoveNode(dockspaceID);
+			ImGui::DockBuilderAddNode(dockspaceID, ImGuiDockNodeFlags_DockSpace);
+			ImGui::DockBuilderSetNodeSize(dockspaceID, viewportGUI->Size);
+
+			// Create gui
+			WaterDropEngine::get().getGUI().notify({LogChannel::GUI, "CreateGUI"});
+
+			ImGui::DockBuilderFinish(dockspaceID);
+		}
 
 		// Setup GUI bar every frame
 		ImGui::BeginMenuBar();
@@ -175,7 +181,8 @@ namespace wde::gui {
 
 		// ==== RENDER ELEMENTS HERE ====
 		if (WaterDropEngine::get().getGUI()._guiBar.displayGUI()) {
-			// HERE
+			// Notify GUI drawing
+			WaterDropEngine::get().getGUI().notify({LogChannel::GUI, "DrawGUI"});
 		}
 
 		// Rendering
@@ -214,7 +221,7 @@ namespace wde::gui {
 #endif
 
 #ifdef WDE_ENGINE_MODE_PRODUCTION // Production
-	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {}
+	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)), Subject("GUI Subject") {}
 	void WdeGUI::initialize(std::pair<int, int> renderStage) {}
 	void WdeGUI::tick() {}
 	void WdeGUI::cleanUp() {}

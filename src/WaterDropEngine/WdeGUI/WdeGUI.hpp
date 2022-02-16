@@ -8,7 +8,7 @@
 #include "GUIBar.hpp"
 
 namespace wde::gui {
-	class WdeGUI : public core::Module {
+	class WdeGUI : public core::Module, public core::Subject {
 		public:
 			// Module commands
 			explicit WdeGUI(std::shared_ptr<core::Subject> moduleSubject);
@@ -30,13 +30,16 @@ namespace wde::gui {
 			// Notifications
 			void onNotify(core::Event event) override {};
 
+
+			/** Main root dockspace ID */
+			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace CoreWindow";
+
+
 		private:
 			// Core parameters
 			/** True if the gui has been initialized */
 			bool _initialized = false;
 
-			/** Main root dockspace ID */
-			const std::string DOCKSPACE_ROOT_ID = "Main Dockspace CoreWindow";
 			/** ImGUI resources descriptor pool */
 			std::shared_ptr<render::DescriptorPool> _imGUIdescriptorPool;
 			/** ImGUI top bar */

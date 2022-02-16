@@ -11,8 +11,8 @@ namespace examples {
 	class EngineInstanceExample02 : public WdeInstance {
 		public:
 			void initialize() override {
-				setRenderPipeline(std::make_unique<PipelineExample02>());
-				setScene(std::make_unique<SceneExample02>());
+				setRenderPipeline(std::make_shared<PipelineExample02>());
+				setScene(std::make_shared<SceneExample02>());
 			}
 
 			void update() override { }

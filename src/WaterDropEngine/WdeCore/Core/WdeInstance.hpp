@@ -45,12 +45,15 @@ namespace wde {
 
 			// Getters and setters
 			render::WdeRenderPipelineInstance& getPipeline() { return *_pipeline; }
+			scene::WdeSceneInstance& getScene() { return *_scene; }
+			std::shared_ptr<scene::WdeSceneInstance>& getScenePointer() { return _scene; }
+
 
 
 
 		protected:
 			/** Change the engine rendering pipeline instance */
-			void setRenderPipeline(std::unique_ptr<render::WdeRenderPipelineInstance> pipeline) {
+			void setRenderPipeline(std::shared_ptr<render::WdeRenderPipelineInstance> pipeline) {
 				WDE_PROFILE_FUNCTION();
 				_pipeline = std::move(pipeline);
 
@@ -59,7 +62,7 @@ namespace wde {
 			}
 
 			/** Change the engine rendering scene instance */
-			void setScene(std::unique_ptr<scene::WdeSceneInstance> scene) {
+			void setScene(std::shared_ptr<scene::WdeSceneInstance> scene) {
 				WDE_PROFILE_FUNCTION();
 				_scene = std::move(scene);
 
@@ -70,8 +73,8 @@ namespace wde {
 
 		private:
 			/** Engine rendering pipeline */
-			std::unique_ptr<render::WdeRenderPipelineInstance> _pipeline;
+			std::shared_ptr<render::WdeRenderPipelineInstance> _pipeline;
 			/** Engine active scene */
-			std::unique_ptr<scene::WdeSceneInstance> _scene;
+			std::shared_ptr<scene::WdeSceneInstance> _scene;
 	};
 }
