@@ -19,7 +19,8 @@ namespace examples {
 
 			// MESH OBJECTS
 			auto meshParent = createGameObject("Mesh Parent");
-			auto colorMat = createMaterial<ColorMaterial>();
+			auto colorMat = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0});
+			auto testMesh = createMesh<Mesh>("Test Mesh");
 			{
 				// Game Object 1
 				auto object3D_1 = createGameObject("First 3D Object");
@@ -28,6 +29,7 @@ namespace examples {
 
 				auto meshRenderer_1 = object3D_1->addModule<MeshRendererModule>();
 				meshRenderer_1->setMaterial(colorMat);
+				meshRenderer_1->setMesh(testMesh);
 			}
 			{
 				// Game Object 2

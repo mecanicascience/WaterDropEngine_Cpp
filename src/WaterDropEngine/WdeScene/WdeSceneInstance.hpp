@@ -4,6 +4,7 @@
 #include "gameObjects/GameObject.hpp"
 #include "../WdeCore/Structure/Observer.hpp"
 #include "gameObjects/materials/Material.hpp"
+#include "gameObjects/meshes/Mesh.hpp"
 
 namespace wde::scene {
 	/**
@@ -21,6 +22,19 @@ namespace wde::scene {
 			void tick();
 			void onNotify(core::Event event) override;
 			void drawGUIForGO(GameObject& go, int* selected, const std::string& depthIterator);
+			void cleanUpInstance() {
+			    _materials.clear();
+			    _meshes.clear();
+			    _gameObjects.clear();
+
+			    // Clean up scene
+                cleanUp();
+			}
+
+
+			// Getters and setters
+			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
+			GameObject& getGameObject(int goID) { return *_gameObjects[goID]; }
 
 
 
@@ -49,6 +63,12 @@ namespace wde::scene {
 				return std::static_pointer_cast<T>(_materials[_materials.size() - 1]);
 			}
 
+            template<typename T, typename ...Args>
+            std::shared_ptr<T> createMesh(Args ...args) {
+                _meshes.push_back(std::make_shared<T>(args...));
+                return std::static_pointer_cast<T>(_meshes[_meshes.size() - 1]);
+            }
+
 
 		private:
 			// Scene containers
@@ -56,6 +76,8 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>> _gameObjects;
 			/** List of scene materials */
 			std::vector<std::shared_ptr<Material>> _materials;
+            /** List of scene meshes */
+            std::vector<std::shared_ptr<Mesh>> _meshes;
 
 			// Scene utils
 			/** Selected game object ID (none = -1) */

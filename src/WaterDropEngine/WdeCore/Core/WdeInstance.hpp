@@ -26,7 +26,7 @@ namespace wde {
 			void cleanUpInstance() {
 				// Destroy render scene
 				if (_scene != nullptr) {
-					_scene->cleanUp();
+				    _scene->cleanUpInstance();
 					_scene.reset();
 				}
 

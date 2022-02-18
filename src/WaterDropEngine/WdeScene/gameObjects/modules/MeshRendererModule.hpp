@@ -4,6 +4,8 @@
 
 #include <utility>
 #include "../materials/Material.hpp"
+#include "../meshes/Mesh.hpp"
+#include "../GameObject.hpp"
 
 namespace wde::scene {
 	/**
@@ -17,6 +19,14 @@ namespace wde::scene {
 
 			void drawGUI() override {
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+				// Mesh
+                if (_mesh == nullptr)
+                    ImGui::Text(" No mesh selected.");
+                else
+                    ImGui::Text(" Mesh name : '%s'.", _mesh->getName().c_str());
+                ImGui::Separator();
+
+				// Material
 				if (_material == nullptr)
 					ImGui::Text(" No material selected.");
 				else
@@ -35,10 +45,18 @@ namespace wde::scene {
 				_material = material;
 				_material->addGameObject(_gameObject.getID());
 			}
+            std::shared_ptr<Material>& getMaterial() { return _material; }
+
+			void setMesh(const std::shared_ptr<Mesh>& mesh) {
+                _mesh = mesh;
+			}
+            std::shared_ptr<Mesh>& getMesh() { return _mesh; }
 
 
 		private:
 			// Core data
+			/** Selected game object mesh */
+			std::shared_ptr<Mesh> _mesh;
 			/** Selected material of the mesh renderer */
 			std::shared_ptr<Material> _material;
 	};

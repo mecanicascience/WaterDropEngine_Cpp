@@ -2,6 +2,10 @@
 
 #include "../../../src/WaterDropEngine/WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../../src/WaterDropEngine/WdeRender/descriptors/Descriptor.hpp"
+#include "../../../src/WaterDropEngine/WdeScene/gameObjects/meshes/Vertex.hpp"
+#include "../../../src/WaterDropEngine/WdeRender/pipelines/PipelineGraphics.hpp"
+#include "../../../src/WaterDropEngine/WdeGUI/WdeGUI.hpp"
+#include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/MeshRendererModule.hpp"
 
 using namespace wde;
 using namespace wde::render;
@@ -47,15 +51,16 @@ namespace examples {
 				_pipeline = std::make_unique<PipelineGraphics>(
 						std::pair<int, int>{0, 0},
 						std::vector<std::string>{
-								"res/shaders/examples/01-Triangle/triangle.vert.spv",
-								"res/shaders/examples/01-Triangle/triangle.frag.spv"
+								"res/shaders/examples/02-3D_Cube/cube.vert.spv",
+								"res/shaders/examples/02-3D_Cube/cube.frag.spv"
 						}, // Shaders
+                        std::vector<scene::VertexInput>{ scene::Vertex::getDescriptions() }, // Vertices
 						PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
 						PipelineGraphics::Depth::None,    // Do not use depth
 						VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
 						VK_POLYGON_MODE_FILL,   // Fill drawn shapes
 						VK_CULL_MODE_NONE);   // Disable pipeline culling
-				_pipeline->addDescriptor(_desc);
+				_pipeline->addDescriptorStructure(_desc);
 				_pipeline->initialize();
 
 
@@ -67,30 +72,7 @@ namespace examples {
 				_desc->getSet(0).updateBuffer(0, &objStruct);
 			}
 
-			void render(CommandBuffer& commandBuffer) override {
-				beginRenderPass(0);
-					beginRenderSubPass(0);
-						// Bind pipeline and descriptor
-						_pipeline->bind(commandBuffer);
-						_desc->bind(commandBuffer, *_pipeline);
-
-						// Draw 3 hard-coded vertices in the shader
-						vkCmdDraw(commandBuffer, 3, 1, 0, 0);
-
-						/**
-						 * TODO
-						 * Get active camera (scene -> activeCameraID)
-						 * [TODO => do culling writes GO ids to buffer]
-						 * Render GO (for each material, bind pipeline + render each game objects corresponding to that pipeline)
-						 */
-					endRenderSubPass();
-
-					beginRenderSubPass(1);
-						// Render GUI
-						gui::WdeGUI::render(commandBuffer);
-					endRenderSubPass();
-				endRenderPass();
-			}
+			void render(CommandBuffer& commandBuffer) override;
 
 
 			void cleanUp() override {

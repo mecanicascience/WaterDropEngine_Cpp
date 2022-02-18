@@ -9,6 +9,7 @@
 #include "ShaderUtils.hpp"
 #include "../render/RenderPass.hpp"
 #include "../descriptors/Descriptor.hpp"
+#include "../../WdeScene/gameObjects/meshes/Vertex.hpp"
 
 namespace wde::render {
 	class PipelineGraphics : public Pipeline {
@@ -37,7 +38,7 @@ namespace wde::render {
 			 * @param cullingMode The pipeline culling mode (default VK_CULL_MODE_BACK_BIT (culling enabled for faces backing their faces), VK_CULL_MODE_NONE, VK_CULL_MODE_FRONT_BIT)
 			 * @param normalOrientation How the normals will be computed from the indices order (default VK_FRONT_FACE_COUNTER_CLOCKWISE)
 			 */
-			explicit PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages,
+			explicit PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, std::vector<scene::VertexInput> vertexInputs = {},
 			                          Mode pipelineMode = Mode::Polygon, Depth depthMode = PipelineGraphics::Depth::ReadWrite,
 			                          VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                          VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_COUNTER_CLOCKWISE);
@@ -64,13 +65,18 @@ namespace wde::render {
 			// Getters and setters
 			const VkPipeline &getPipeline() const override { return _pipeline; };
 			const VkPipelineBindPoint &getPipelineBindPoint() const override { return _pipelineBindPoint; }
-			void addDescriptor(const std::shared_ptr<Descriptor>& desc) { _descriptorList.push_back(desc); }
+			/**
+			 * Tells the pipeline that it should except a descriptor of this format to be bound to it (must be called before pipeline initialize())
+			 * @param desc
+			 */
+			void addDescriptorStructure(const std::shared_ptr<Descriptor>& desc) { _descriptorList.push_back(desc); }
 
 
 
 		private:
 			// Pipeline description parameters
 			std::vector<std::string> _shaderStages;
+            std::vector<scene::VertexInput> _vertexInputs;
 			Mode _pipelineMode;
 			Depth _depthMode;
 			VkPrimitiveTopology _vertexTopology;

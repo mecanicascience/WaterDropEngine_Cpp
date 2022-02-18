@@ -79,8 +79,9 @@ namespace wde::scene {
 
 			template<typename T>
 			T* getModule() {
+			    // Iterate over every module
 				for (auto& mod : _modules)
-					if (static_cast<T*>(mod.get()) != nullptr)
+					if (dynamic_cast<T*>(mod.get()) != nullptr)
 						return static_cast<T*>(mod.get());
 
 				// Not found
@@ -88,6 +89,14 @@ namespace wde::scene {
 				// Try to add this module of this type with no parameters
 				return addModule<T>();
 			}
+
+            template<typename T>
+            bool hasModule() {
+                for (auto& mod : _modules)
+                    if (static_cast<T*>(mod.get()) != nullptr)
+                        return true;
+                return false;
+            }
 
 
 			// Public GO data
