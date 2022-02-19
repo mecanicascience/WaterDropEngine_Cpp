@@ -12,6 +12,7 @@ namespace wde::scene {
 	}
 
 	void CameraModule::tick() {
+		WDE_PROFILE_FUNCTION();
 		// Update camera object based on it's game object transform associated position and rotation
 		setViewYXZ(_gameObject.getModule<TransformModule>()->position, _gameObject.getModule<TransformModule>()->rotation);
 		// setViewDirection(glm::vec3(0.0f), glm::vec3(0.5f, 0.0f, 1.0f)); // Camera look to the right

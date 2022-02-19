@@ -10,6 +10,7 @@ namespace wde::scene {
 			~TransformModule() override;
 
 			void tick() override {
+				WDE_PROFILE_FUNCTION();
 				auto newTransform = getTransform();
 				if (_lastTransform != newTransform) {
 					changed = true;

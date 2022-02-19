@@ -7,12 +7,18 @@ namespace wde::scene {
 
 		// Update game objects
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene game objects." << logger::endl;
-		for (auto& go : _gameObjects)
-			go->tick();
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tickGameObjects");
+			for (auto &go: _gameObjects)
+				go->tick();
+		}
 
 		// Update scene
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Updating scene instance." << logger::endl;
-		update();
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::updateScene");
+			update();
+		}
 	}
 
 	void WdeSceneInstance::onNotify(core::Event event) {

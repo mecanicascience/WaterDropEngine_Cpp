@@ -13,9 +13,7 @@ namespace wde::scene {
 	 */
 	class MeshRendererModule : public Module {
 		public:
-			explicit MeshRendererModule(GameObject& gameObject) : Module(gameObject, "Mesh Renderer") { }
-
-			void tick() override { }
+			explicit MeshRendererModule(GameObject& gameObject) : Module(gameObject, "Mesh Renderer") {}
 
 			void drawGUI() override {
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);

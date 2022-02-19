@@ -14,7 +14,7 @@ namespace wde::scene {
 			virtual ~Module() = default;
 
 			// Inherited methods
-			virtual void tick() = 0;
+			virtual void tick() {};
 			virtual void drawGUI() = 0;
 
 

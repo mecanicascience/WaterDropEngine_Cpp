@@ -1,5 +1,7 @@
 #pragma once
 
+#include <thread>
+
 #include "../wde.hpp"
 #include "WdeRender/WdeRender.hpp"
 #include "WdeGUI/WdeGUI.hpp"
@@ -91,15 +93,16 @@ namespace wde {
 
 					{
 						WDE_PROFILE_SCOPE("wde::WaterDropEngine::tick()::tick");
-						// Tick for modules
+						// Tick
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for modules." << logger::endl;
 						_render->tick();
 						_gui->tick();
-						_scene->tick();
 
-						// Render for engine instance
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
 						instance.tickInstance();
+
+						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for scene instance." << logger::endl;
+						_scene->tick();
 
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "====== End of tick. ======\n\n" << logger::endl;
 					}

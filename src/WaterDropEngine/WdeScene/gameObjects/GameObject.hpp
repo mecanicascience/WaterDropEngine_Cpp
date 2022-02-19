@@ -41,6 +41,7 @@ namespace wde::scene {
 			}
 
 			void tick() {
+				WDE_PROFILE_FUNCTION();
 				// Tick for modules
 				for (auto& mod : _modules)
 					mod->tick();
