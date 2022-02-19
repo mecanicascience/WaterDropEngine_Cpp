@@ -230,6 +230,5 @@ namespace wde::gui {
 	void WdeGUI::tick() {}
 	void WdeGUI::cleanUp() {}
 	void WdeGUI::render(render::CommandBuffer &commandBuffer) {}
-	void WdeGUI::createElements() {}
 #endif
 }
