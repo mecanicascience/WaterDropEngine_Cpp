@@ -15,24 +15,22 @@ namespace wde::scene {
 					  render::PipelineGraphics::Depth::None,    // Do not use depth
 					  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
 					  VK_POLYGON_MODE_FILL,   // Fill drawn shapes
-					  VK_CULL_MODE_NONE)) {  // Disable pipeline culling
-		auto& pipeline = WaterDropEngine::get().getInstance().getPipeline();
-
-		// Create material descriptor set
-		_materialData = std::make_unique<render::Buffer>(sizeof(GPUMaterialData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-		render::DescriptorBuilder::begin()
-					.bind_buffer(0, &_materialData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-				.build(_materialSet.first, _materialSet.second);
-
-		// Add descriptors
-		_pipeline->addDescriptorSet(pipeline.getGlobalSet().second);
-		_pipeline->addDescriptorSet(_materialSet.second);
-
-		// Initialize pipeline
-		_pipeline->initialize();
-	}
+					  VK_CULL_MODE_NONE)) {}  // Disable pipeline culling
 
 	Material::~Material() {
 		_pipeline.reset();
+	}
+
+
+	void Material::createMaterial() {
+		auto& pipeline = WaterDropEngine::get().getInstance().getPipeline();
+
+		// Add descriptors if created
+		_pipeline->addDescriptorSet(pipeline.getGlobalSet().second);
+		if (_materialSet.first != VkDescriptorSet {})
+			_pipeline->addDescriptorSet(_materialSet.second);
+
+		// Initialize pipeline
+		_pipeline->initialize();
 	}
 }

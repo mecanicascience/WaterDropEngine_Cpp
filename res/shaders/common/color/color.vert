@@ -24,15 +24,21 @@ layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
 } inObjectBuffer;
 
 
+// Materials set
+layout(set = 1, binding = 0) uniform MaterialBuffer {
+    vec4 color; // Material color
+} inMaterialBuffer;
+
+
 
 // Executed once for each vertex
 void main() {
     // Computes world space position
     vec4 positionWorldSpace = inObjectBuffer.objects[gl_BaseInstance].model * vec4(vPosition, 1.0); // To world space position
     gl_Position = inSceneData.transformProjSpace    // To Vulkan frustum position
-                * inSceneData.transformCameraSpace  // To Camera space position
-                * positionWorldSpace;               // Object world space position
+    * inSceneData.transformCameraSpace  // To Camera space position
+    * positionWorldSpace;               // Object world space position
 
     // Vertex color
-    outColor = vColor;
+    outColor = inMaterialBuffer.color.xyz;
 }

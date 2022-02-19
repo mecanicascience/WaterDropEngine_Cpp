@@ -8,15 +8,16 @@
 namespace wde::scene {
 	class Material {
 		public:
-			struct GPUMaterialData {
-				// Nothing here yet
-			};
-
 			explicit Material(std::string  name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders);
             ~Material();
 
 
 			// Core functions
+			/**
+			 * Create the material
+			 */
+			void createMaterial();
+
 			/**
 			 * Binds the material to the command buffer
 			 * @param commandBuffer
@@ -60,11 +61,9 @@ namespace wde::scene {
 			render::PipelineGraphics& getPipeline() { return *_pipeline; }
 
 
-		private:
+		protected:
 			/** IDs of the game objects with materials corresponding to this material */
 			std::vector<int> _boundedGoIds {};
-			/** The material descriptor buffer */
-			std::unique_ptr<render::Buffer> _materialData;
 			/** Material descriptor set */
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet;
 

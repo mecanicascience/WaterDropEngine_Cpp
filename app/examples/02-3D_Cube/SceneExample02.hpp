@@ -16,10 +16,12 @@ namespace examples {
 			camera->addModule<CameraModule>();
 			setActiveCamera(camera);
 
+			// MATERIALS
+			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0});
+			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0});
 
 			// MESH OBJECTS
 			auto meshParent = createGameObject("Mesh Parent");
-			auto colorMat = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0});
 			auto testMesh = createMesh<Mesh>("Test Mesh");
 			{
 				// Game Object 1
@@ -28,7 +30,7 @@ namespace examples {
 				object3D_1->transform->position += glm::vec3(-5, 0, 0);
 
 				auto meshRenderer_1 = object3D_1->addModule<MeshRendererModule>();
-				meshRenderer_1->setMaterial(colorMat);
+				meshRenderer_1->setMaterial(colorMatRed);
 				meshRenderer_1->setMesh(testMesh);
 			}
 			{
@@ -38,7 +40,7 @@ namespace examples {
 				object3D_2->transform->position += glm::vec3(+5, 0, 0);
 
 				auto meshRenderer_2 = object3D_2->addModule<MeshRendererModule>();
-				meshRenderer_2->setMaterial(colorMat);
+				meshRenderer_2->setMaterial(colorMatGreen);
 				meshRenderer_2->setMesh(testMesh);
 			}
 		}
