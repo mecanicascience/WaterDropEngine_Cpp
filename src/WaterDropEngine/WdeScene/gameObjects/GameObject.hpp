@@ -98,20 +98,9 @@ namespace wde::scene {
 				for (auto& mod : _modules)
 					if (dynamic_cast<T*>(mod.get()) != nullptr)
 						return static_cast<T*>(mod.get());
-
 				// Not found
-				logger::log(LogLevel::WARN, LogChannel::SCENE) << "Trying to get an undefined module." << logger::endl;
-				// Try to add this module of this type with no parameters
-				return addModule<T>();
+				return nullptr;
 			}
-
-            template<typename T>
-            bool hasModule() {
-                for (auto& mod : _modules)
-                    if (static_cast<T*>(mod.get()) != nullptr)
-                        return true;
-                return false;
-            }
 
 
 			// Public GO data

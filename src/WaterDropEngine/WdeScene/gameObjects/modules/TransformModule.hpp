@@ -82,7 +82,7 @@ namespace wde::scene {
 			glm::vec3 scale {1.0f, 1.0f, 1.0f};
 
 			/** True if the transform module has changed since last tick */
-			bool changed = false;
+			bool changed = true;
 
 
 		private:

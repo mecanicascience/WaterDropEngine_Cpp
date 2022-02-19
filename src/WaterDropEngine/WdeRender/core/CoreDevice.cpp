@@ -50,10 +50,11 @@ namespace wde::render {
 				queueCreateInfos.push_back(queueCreateInfo);
 			}
 
-			// Specify used device extensions (allow queues, renderer and optionally validation layers)
+			// Specify used device extensions (allow queues, renderer and optionally validation layers and multi draw indirect commands)
 			VkPhysicalDeviceFeatures deviceFeatures = {};
 			deviceFeatures.samplerAnisotropy = VK_TRUE;
 			deviceFeatures.fillModeNonSolid = VK_TRUE;
+			deviceFeatures.multiDrawIndirect = VK_TRUE;
 
 			VkDeviceCreateInfo createInfo = {};
 			createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;

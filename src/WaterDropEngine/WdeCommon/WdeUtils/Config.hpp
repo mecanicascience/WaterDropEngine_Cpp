@@ -20,20 +20,18 @@
 
 #ifndef WDE_CONFIG_DATA
 namespace wde::Config {
-	/** Application name */
+	// Core data
 	extern std::string APPLICATION_NAME;
-	/** Application version */
-	// extern std::vector APPLICATION_VERSION_RAW {1, 0, 0}; // In order major, minor, patch
 	extern uint32_t APPLICATION_VERSION;
 	extern std::string APPLICATION_VERSION_FORMATTED;
 
-	/** Fixed initial CoreWindow width */
 	extern int WIDTH;
-	/** Fixed initial CoreWindow height */
 	extern int HEIGHT;
 
-	/** Current api vulkan version used */
 	extern uint32_t VULKAN_VERSION;
+
+	// Scene data
+	extern int MAX_SCENE_OBJECTS_COUNT;
 }
 #endif
 

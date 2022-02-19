@@ -11,7 +11,7 @@ namespace wde::scene {
 
 		public:
 			explicit ColorMaterial(std::pair<int, int> renderStage, Color materialColor)
-			    : Material("Color Material", renderStage, {
+			    : Material("Color Material " + materialColor.toString(), renderStage, {
                             "res/shaders/common/color/color.vert.spv",
                             "res/shaders/common/color/color.frag.spv"
                         }) {

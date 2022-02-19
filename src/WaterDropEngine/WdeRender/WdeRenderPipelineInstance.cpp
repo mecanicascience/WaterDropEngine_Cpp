@@ -1,6 +1,5 @@
 #include "WdeRenderPipelineInstance.hpp"
 #include "../WaterDropEngine.hpp"
-#include "../WdeScene/gameObjects/modules/CameraModule.hpp"
 
 namespace wde::render {
 	WdeRenderPipelineInstance::WdeRenderPipelineInstance() {
@@ -10,8 +9,7 @@ namespace wde::render {
 		_cameraData = std::make_unique<Buffer>(sizeof(GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
 		// Objects buffer
-		const int MAX_OBJECT_COUNT = 1000;
-		_objectsData = std::make_unique<Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * MAX_OBJECT_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+		_objectsData = std::make_unique<Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * Config::MAX_SCENE_OBJECTS_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
 		// Create global descriptor set
 		DescriptorBuilder::begin()
@@ -39,11 +37,10 @@ namespace wde::render {
 		if (!commandBuffer.isRunning())
 			commandBuffer.begin();
 
-
 		auto& scene = WaterDropEngine::get().getInstance().getScene();
-		// Engine recording commands to the current frame command buffer
+		// Update global set data
 		{
-			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::render");
+			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::updateGlobalSetData");
 			// Update camera buffer data
 			if (scene.getActiveCamera() == nullptr)
 				logger::log(LogLevel::WARN, LogChannel::SCENE) << "No camera in scene." << logger::endl;
@@ -74,12 +71,89 @@ namespace wde::render {
 				}
 				_objectsData->unmap();
 			}
-
-
-			// ==== RENDER COMMANDS ====
-			render(commandBuffer, scene);
 		}
 
+
+		// Create rendering batches
+		std::vector<RenderBatch> renderBatches {};
+		{
+			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
+			RenderBatch currentBatch {};
+
+			std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
+			std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
+
+			// Fetch every game objects
+			for (auto& go : scene.getGameObjects()) {
+				auto meshModule = go->getModule<scene::MeshRendererModule>();
+
+				// If no renderer, or material, or mesh, push last batch
+				if (meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr) {
+					if (currentBatch.indexCount > 0)
+						renderBatches.push_back(currentBatch);
+
+					// No mesh and material
+					lastGOMeshRef = nullptr;
+					lastGOMaterialRef = nullptr;
+
+					// Empty batch (do not draw this object)
+					currentBatch = RenderBatch {};
+					continue;
+				}
+
+				// If material different from last one, push last batch
+				auto& mat = meshModule->getMaterial();
+				if (currentBatch.indexCount > 0 && lastGOMaterialRef != mat) {
+					if (currentBatch.indexCount > 0)
+						renderBatches.push_back(currentBatch);
+
+					// Add this object to a new batch
+					currentBatch = RenderBatch {};
+					currentBatch.material = mat;
+					currentBatch.mesh = meshModule->getMesh();
+					currentBatch.firstIndex = static_cast<int>(go->getID());
+					currentBatch.indexCount = 1;
+					continue;
+				}
+				lastGOMaterialRef = mat;
+
+				// If mesh different from last one, push last batch
+				auto& mesh = meshModule->getMesh();
+				if (currentBatch.indexCount > 0 && lastGOMeshRef != mesh) {
+					if (currentBatch.indexCount > 0)
+						renderBatches.push_back(currentBatch);
+
+					// Add this object to a new batch
+					currentBatch = RenderBatch {};
+					currentBatch.material = mat;
+					currentBatch.mesh = mesh;
+					currentBatch.firstIndex = static_cast<int>(go->getID());
+					currentBatch.indexCount = 1;
+					continue;
+				}
+				lastGOMeshRef = mesh;
+
+				// Same material and mesh
+				currentBatch.material = mat;
+				currentBatch.mesh = mesh;
+				currentBatch.indexCount++;
+				if (currentBatch.firstIndex == -1)
+					currentBatch.firstIndex = static_cast<int>(go->getID());
+			}
+
+			// Push last batch
+			if (currentBatch.indexCount > 0)
+				renderBatches.push_back(currentBatch);
+		}
+
+
+		// Engine recording commands to the current frame command buffer
+		{
+			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::render");
+
+			// ==== RENDER COMMANDS ====
+			render(commandBuffer, scene, renderBatches);
+		}
 
 		// Wait for last swapchain image to finish rendering before sending to queue
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Waiting for last swapchain fence to end presentation." << logger::endl;

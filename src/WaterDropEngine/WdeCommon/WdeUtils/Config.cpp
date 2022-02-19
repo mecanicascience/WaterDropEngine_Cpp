@@ -1,6 +1,7 @@
 #include "Config.hpp"
 
 namespace wde::Config {
+	// Core data
 	/** Application name */
 	std::string APPLICATION_NAME = "WaterDropEngine";
 	/** Application version */
@@ -16,4 +17,9 @@ namespace wde::Config {
 
 	/** Vulkan API version */
 	uint32_t VULKAN_VERSION = VK_API_VERSION_1_2;
+
+
+	// Scene config
+	/** Max objects in the scene */
+	int MAX_SCENE_OBJECTS_COUNT = 100000;
 }

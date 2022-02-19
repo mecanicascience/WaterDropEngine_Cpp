@@ -45,7 +45,7 @@ namespace examples {
 				_trianglePipeline->initialize();
 			}
 
-			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance& scene) override {
+			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene, std::vector<RenderBatch> renderBatches) override {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
 						// Bind the pipeline to the command buffer

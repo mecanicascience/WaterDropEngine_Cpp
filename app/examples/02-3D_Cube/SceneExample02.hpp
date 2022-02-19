@@ -21,27 +21,37 @@ namespace examples {
 			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0});
 
 			// MESH OBJECTS
-			auto meshParent = createGameObject("Mesh Parent");
 			auto testMesh = createMesh<Mesh>("Test Mesh");
+			auto testMesh2 = createMesh<Mesh>("Test Mesh 2");
+
 			{
 				// Game Object 1
-				auto object3D_1 = createGameObject("First 3D Object");
-				object3D_1->transform->setParent(meshParent->transform);
-				object3D_1->transform->position += glm::vec3(-5, 0, 0);
+				auto object3D = createGameObject("Test Object 1");
+				object3D->transform->position += glm::vec3(-5, 0, 0);
 
-				auto meshRenderer_1 = object3D_1->addModule<MeshRendererModule>();
-				meshRenderer_1->setMaterial(colorMatRed);
-				meshRenderer_1->setMesh(testMesh);
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(colorMatRed);
+				meshRenderer->setMesh(testMesh);
 			}
 			{
 				// Game Object 2
-				auto object3D_2 = createGameObject("Second 3D Object");
-				object3D_2->transform->setParent(meshParent->transform);
-				object3D_2->transform->position += glm::vec3(+5, 0, 0);
+				auto object3D = createGameObject("Test Object 2");
+				object3D->transform->position += glm::vec3(0, 0, 0);
 
-				auto meshRenderer_2 = object3D_2->addModule<MeshRendererModule>();
-				meshRenderer_2->setMaterial(colorMatGreen);
-				meshRenderer_2->setMesh(testMesh);
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(colorMatRed);
+				meshRenderer->setMesh(testMesh2);
+			}
+
+			auto meshParent = createGameObject("Many 3D Objects Parent");
+			for (int i = 0; i < 1000; i++) {
+				auto object3D = createGameObject("Many 3D Objects " + std::to_string(i));
+				object3D->transform->setParent(meshParent->transform);
+				object3D->transform->position += glm::vec3(+5.0 - ((float) i) / 10.0, 0, 0);
+
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(colorMatRed);
+				meshRenderer->setMesh(testMesh);
 			}
 		}
 	};

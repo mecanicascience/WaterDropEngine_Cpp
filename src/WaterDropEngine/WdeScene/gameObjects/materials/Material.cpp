@@ -15,7 +15,10 @@ namespace wde::scene {
 					  render::PipelineGraphics::Depth::None,    // Do not use depth
 					  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
 					  VK_POLYGON_MODE_FILL,   // Fill drawn shapes
-					  VK_CULL_MODE_NONE)) {}  // Disable pipeline culling
+					  VK_CULL_MODE_NONE)) {  // Disable pipeline culling
+		static int materialID = 0;
+		_materialID = materialID++;
+	}
 
 	Material::~Material() {
 		_pipeline.reset();

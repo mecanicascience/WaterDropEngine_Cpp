@@ -2,7 +2,6 @@
 
 #include "../../../src/WaterDropEngine/WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../../src/WaterDropEngine/WdeGUI/WdeGUI.hpp"
-#include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/MeshRendererModule.hpp"
 
 using namespace wde;
 using namespace wde::render;
@@ -10,6 +9,8 @@ using namespace wde::render;
 namespace examples {
 	class PipelineExample02 : public WdeRenderPipelineInstance {
 		public:
+			std::unique_ptr<Buffer> _indirectCommandsBuffer {};
+
 			void setup() override {
 				// Create passes attachments
 				setAttachments({
@@ -26,41 +27,49 @@ namespace examples {
 
 				// Initialize GUI
 				gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
+
+				// Indirect drawing buffer
+				int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
+				_indirectCommandsBuffer = std::make_unique<Buffer>(
+						MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
+						VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 			}
 
-			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance& scene) override {
+			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene, std::vector<RenderBatch> renderBatches) override {
+				// Record drawing commands of every game object
+				{
+					auto *data = _indirectCommandsBuffer->map();
+					auto* commandsData = (VkDrawIndexedIndirectCommand*) data;
+					for (int i = 0; i < scene.getGameObjects().size(); i++) {
+						auto meshMod = scene.getGameObject(i).getModule<scene::MeshRendererModule>();
+						if (meshMod != nullptr && meshMod->getMesh() != nullptr && meshMod->getMaterial() != nullptr)
+							commandsData[i] = meshMod->getMesh()->getRenderIndirectCommand(i);
+						else // Empty command
+							commandsData[i] = VkDrawIndexedIndirectCommand {};
+					}
+					_indirectCommandsBuffer->unmap();
+				}
+
+
 				beginRenderPass(0);
 					beginRenderSubPass(0);
-						std::string lastMeshName;
-
-						// Fetch every scene materials
-						for (auto& mat : scene.getMaterials()) {
-							// Check if material in correct render pass
-							if (mat->getRenderStage() != std::pair<int, int>(0, 0))
-								continue;
-
-							// Bind global set
-							bind(commandBuffer, mat);
-
-							// Bind material
-							mat->bind(commandBuffer);
-
-							// Fetch every game object with this material
-							for (int goID : mat->getGameObjectsIds()) {
-								// Check if GO has a mesh
-								auto& go = scene.getGameObject(goID);
-								auto& mesh = go.getModule<scene::MeshRendererModule>()->getMesh();
-								if (mesh != nullptr) {
-									// Bind mesh if different from last one
-									if (mesh->getName() != lastMeshName) {
-										mesh->bind(commandBuffer);
-										lastMeshName = mesh->getName();
-									}
-
-									// Render mesh
-									mesh->render(go.getID());
-								}
+						// Render batches
+						std::shared_ptr<scene::Material> lastMaterial = nullptr;
+						for (auto& batch : renderBatches) {
+							// Different material binding
+							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
+								lastMaterial = batch.material;
+								bind(commandBuffer, batch.material);
+								batch.material->bind(commandBuffer);
 							}
+
+							// Mesh binding
+							batch.mesh->bind(commandBuffer);
+
+							// Execute the draw command buffer on each section as defined by the array of draws
+							VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
+							uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
+							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, batch.indexCount, drawStride);
 						}
 					endRenderSubPass();
 

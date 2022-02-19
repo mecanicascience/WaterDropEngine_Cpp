@@ -41,10 +41,25 @@ namespace wde::scene {
 	            WDE_PROFILE_FUNCTION();
                 // Add the draw command to the command buffer
                 vkCmdDrawIndexed(*_commandBuffer, _indices.size(), 1, 0, 0, gameObjectID);
-		   }
+		    }
+
+		    /**
+		     * @param gameObjectID
+		     * @return Return the rendering command for this object
+		     */
+	        VkDrawIndexedIndirectCommand getRenderIndirectCommand(uint32_t gameObjectID) {
+		        VkDrawIndexedIndirectCommand cmd {};
+		        cmd.firstIndex = 0;
+		        cmd.vertexOffset = 0;
+		        cmd.indexCount = _indices.size();
+		        cmd.instanceCount = 1;
+		        cmd.firstInstance = gameObjectID;
+				return cmd;
+			}
 
 		   // Getters and setters
 		   std::string getName() { return _name; }
+		   int getIndexCount() { return static_cast<int>(_indices.size()); }
 
 
 	   private:

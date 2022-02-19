@@ -9,6 +9,8 @@
 #include "pipelines/Pipeline.hpp"
 #include "../WdeScene/gameObjects/materials/Material.hpp"
 #include "../WdeScene/WdeSceneInstance.hpp"
+#include "../WdeScene/gameObjects/modules/CameraModule.hpp"
+#include "../WdeScene/gameObjects/modules/MeshRendererModule.hpp"
 
 namespace wde::render {
 	/**
@@ -16,6 +18,16 @@ namespace wde::render {
 	 */
 	class WdeRenderPipelineInstance {
 		public:
+			/**
+			 * Stores a rendering batch
+			 */
+			struct RenderBatch {
+				std::shared_ptr<scene::Material> material {nullptr};
+				std::shared_ptr<scene::Mesh> mesh {nullptr};
+				int firstIndex {-1};
+				int indexCount {0};
+			};
+
 			WdeRenderPipelineInstance();
 			~WdeRenderPipelineInstance() {
 				// Destroy render passes
@@ -35,7 +47,7 @@ namespace wde::render {
 
 
 			/**
-			 * Create the render passes and subpasses (called by the WdeInstance)
+			 * Create the render passes and sub-passes (called by the WdeInstance)
 			 */
 			virtual void setup() = 0;
 
@@ -56,9 +68,10 @@ namespace wde::render {
 			/**
 			 * Render the pipeline to a command buffer
 			 * @param commandBuffer
-			 * @param scene The scene of objects
+			 * @param scene
+			 * @param renderBatches The scene batches
 			 */
-			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
+			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene, std::vector<RenderBatch> renderBatches) = 0;
 
 
 

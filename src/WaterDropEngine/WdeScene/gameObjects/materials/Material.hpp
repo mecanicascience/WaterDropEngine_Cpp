@@ -8,7 +8,7 @@
 namespace wde::scene {
 	class Material {
 		public:
-			explicit Material(std::string  name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders);
+			explicit Material(std::string name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders);
             ~Material();
 
 
@@ -41,6 +41,8 @@ namespace wde::scene {
 			 */
 			void addGameObject(int goID) {
 				_boundedGoIds.push_back(goID);
+				// Sort game object ids
+				sort(_boundedGoIds.begin(), _boundedGoIds.end());
 			}
 
 			/**
@@ -59,6 +61,7 @@ namespace wde::scene {
 			std::string getName() { return _name; }
 			std::pair<int, int> getRenderStage() { return _renderStage; }
 			render::PipelineGraphics& getPipeline() { return *_pipeline; }
+			int getID() { return _materialID; }
 
 
 		protected:
@@ -68,6 +71,8 @@ namespace wde::scene {
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet;
 
 			// Core data
+			/** Material unique ID */
+			int _materialID;
 			/** Material name */
 			std::string _name;
 			/** Render pass and subpass of the material */
