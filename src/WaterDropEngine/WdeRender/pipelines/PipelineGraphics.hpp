@@ -8,7 +8,6 @@
 #include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 #include "ShaderUtils.hpp"
 #include "../render/RenderPass.hpp"
-#include "../descriptors/Descriptor.hpp"
 #include "../../WdeScene/gameObjects/meshes/Vertex.hpp"
 
 namespace wde::render {
@@ -66,10 +65,10 @@ namespace wde::render {
 			const VkPipeline &getPipeline() const override { return _pipeline; };
 			const VkPipelineBindPoint &getPipelineBindPoint() const override { return _pipelineBindPoint; }
 			/**
-			 * Tells the pipeline that it should except a descriptor of this format to be bound to it (must be called before pipeline initialize())
+			 * Add a descriptor set to the pipeline (must be called in binding order, and called before initialize())
 			 * @param desc
 			 */
-			void addDescriptorStructure(const std::shared_ptr<Descriptor>& desc) { _descriptorList.push_back(desc); }
+			void addDescriptorSet(VkDescriptorSetLayout& desc) { _descriptorSetLayoutsList.push_back(desc); }
 
 
 
@@ -88,8 +87,8 @@ namespace wde::render {
 			// Vulkan parameters
 			/** Type of the pipeline (graphics, compute, ...) */
 			VkPipelineBindPoint _pipelineBindPoint;
-			/** Descriptor list */
-			std::vector<std::shared_ptr<Descriptor>> _descriptorList {};
+			/** Descriptor sets list */
+			std::vector<VkDescriptorSetLayout> _descriptorSetLayoutsList {};
 
 			// Shader modules
 			std::vector<VkShaderModule> _shaderModules;

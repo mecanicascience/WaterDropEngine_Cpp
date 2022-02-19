@@ -1,7 +1,19 @@
 #include "WdeRenderPipelineInstance.hpp"
 #include "../WaterDropEngine.hpp"
+#include "../WdeScene/gameObjects/modules/CameraModule.hpp"
 
 namespace wde::render {
+	WdeRenderPipelineInstance::WdeRenderPipelineInstance() {
+		WDE_PROFILE_FUNCTION();
+
+		// Create camera descriptor set
+		_cameraData = std::make_unique<Buffer>(sizeof(GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		DescriptorBuilder::begin()
+				.bind_buffer(0, &_cameraData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+				.build(_globalSet.first, _globalSet.second);
+	}
+
+
 	void WdeRenderPipelineInstance::tick() {
 		WDE_PROFILE_FUNCTION();
 		render::CoreInstance& renderer = WaterDropEngine::get().getRender().getInstance();
@@ -20,11 +32,33 @@ namespace wde::render {
 		if (!commandBuffer.isRunning())
 			commandBuffer.begin();
 
+
+		auto& scene = WaterDropEngine::get().getInstance().getScene();
 		// Engine recording commands to the current frame command buffer
 		{
 			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::render");
-			render(commandBuffer);
+			// Update camera buffer data
+			if (scene.getActiveCamera() == nullptr)
+				logger::log(LogLevel::WARN, LogChannel::SCENE) << "No camera in scene." << logger::endl;
+			else {
+				auto cameraModule = scene.getActiveCamera()->getModule<scene::CameraModule>();
+
+				// New data
+				GPUCameraData cameraData {};
+				cameraData.proj = cameraModule->getProjection();
+				cameraData.view = cameraModule->getView();
+
+				// Map data
+				void *data = _cameraData->map();
+				memcpy(data, &cameraData, sizeof(GPUCameraData));
+				_cameraData->unmap();
+			}
+
+
+			// ==== RENDER COMMANDS ====
+			render(commandBuffer, scene);
 		}
+
 
 		// Wait for last swapchain image to finish rendering before sending to queue
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Waiting for last swapchain fence to end presentation." << logger::endl;

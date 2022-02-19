@@ -114,6 +114,13 @@ namespace wde::render {
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Selected GPU " << properties.deviceName << " as default graphics device." << logger::endl;
 		}
 
+		// ============ CREATE DESCRIPTOR LAYOUTS CACHE =============
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Descriptor Layout Cache." << logger::endl;
+		{
+			WDE_PROFILE_FUNCTION();
+			_descriptorLayoutCache = std::make_unique<DescriptorLayoutCache>();
+		}
+
 		// ============ CREATE SWAPCHAIN ============
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Swapchain." << logger::endl;
 		{
@@ -127,10 +134,20 @@ namespace wde::render {
 				_commandBuffers[i] = std::make_unique<CommandBuffer>(false);
 			}
 		}
+
+		// ============ CREATE DESCRIPTOR ALLOCATORS ============
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating descriptor allocators." << logger::endl;
+		{
+			for (size_t i = 0; i < _swapchain->getImageCount(); i++)
+				_descriptorAllocators.push_back(std::make_unique<DescriptorAllocator>());
+		}
 	}
 
 	void CoreInstance::cleanUp() {
 		WDE_PROFILE_FUNCTION();
+		// Clear allocators
+		_descriptorAllocators.clear();
+
 		// Cleanup commands
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up command buffers and command pools." << logger::endl;
 		_commandBuffers.clear();
@@ -139,6 +156,10 @@ namespace wde::render {
 		// Cleanup swapchain
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up swapchain." << logger::endl;
 		_swapchain.reset();
+
+		// Cleanup descriptor cache
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up descriptor layouts cache." << logger::endl;
+		_descriptorLayoutCache.reset();
 
 		// Cleanup devices
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up device." << logger::endl;

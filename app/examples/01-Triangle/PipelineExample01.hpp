@@ -42,9 +42,10 @@ namespace examples {
 						VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
 						VK_POLYGON_MODE_FILL,   // Fill drawn shapes
 						VK_CULL_MODE_NONE);   // Disable pipeline culling
+				_trianglePipeline->initialize();
 			}
 
-			void render(CommandBuffer& commandBuffer) override {
+			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance& scene) override {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
 						// Bind the pipeline to the command buffer

@@ -9,7 +9,13 @@ namespace wde::scene {
 			explicit TransformModule(GameObject& gameObject);
 			~TransformModule() override;
 
-			void tick() override {}
+			void tick() override {
+				auto newTransform = getTransform();
+				if (_lastTransform != newTransform) {
+					changed = true;
+					_lastTransform = newTransform;
+				}
+			}
 
 			void drawGUI() override {
 				gui::GUIRenderer::addVec3Button("Position", position);
@@ -75,11 +81,16 @@ namespace wde::scene {
 			/** The game object world scale */
 			glm::vec3 scale {1.0f, 1.0f, 1.0f};
 
+			/** True if the transform module has changed since last tick */
+			bool changed = false;
+
 
 		private:
 			/** Module transform parent */
 			TransformModule* _parent = nullptr;
 			/** Module children IDs */
 			std::vector<int> _childrenIDs {};
+			/** Transform matrix from last tick */
+			glm::mat4 _lastTransform {1.0f};
 	};
 }

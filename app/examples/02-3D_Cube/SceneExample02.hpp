@@ -39,15 +39,8 @@ namespace examples {
 
 				auto meshRenderer_2 = object3D_2->addModule<MeshRendererModule>();
 				meshRenderer_2->setMaterial(colorMat);
+				meshRenderer_2->setMesh(testMesh);
 			}
-		}
-
-		void update() override {
-
-		}
-
-		void cleanUp() override {
-
 		}
 	};
 }

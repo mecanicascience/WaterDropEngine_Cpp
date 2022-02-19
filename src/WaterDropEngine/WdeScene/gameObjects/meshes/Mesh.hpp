@@ -21,6 +21,7 @@ namespace wde::scene {
              * @param commandBuffer
              */
             void bind(render::CommandBuffer& commandBuffer) {
+	            WDE_PROFILE_FUNCTION();
                 _commandBuffer = &commandBuffer;
 
                 // Bind our vertex into the commandBuffer with index of offsets[]
@@ -34,6 +35,7 @@ namespace wde::scene {
 
             /** Render the game object */
             void render() {
+	            WDE_PROFILE_FUNCTION();
                 // Add the draw command to the command buffer
                 vkCmdDrawIndexed(*_commandBuffer, _indices.size(),
                                  1, 0, 0, 0);
@@ -58,6 +60,6 @@ namespace wde::scene {
 
             // Utils
             /** Temporary reference to the render command buffer */
-            render::CommandBuffer* _commandBuffer;
+            render::CommandBuffer* _commandBuffer = nullptr;
     };
 }

@@ -22,4 +22,3 @@ namespace wde::render {
 		vkDestroyDescriptorPool(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _pool, nullptr);
 	}
 }
-

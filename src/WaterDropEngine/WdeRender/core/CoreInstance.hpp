@@ -9,6 +9,7 @@
 #include "../render/Swapchain.hpp"
 #include "../commands/CommandPool.hpp"
 #include "../commands/CommandBuffer.hpp"
+#include "../descriptors/DescriptorLayoutCache.hpp"
 
 namespace wde::render {
 	class CoreInstance {
@@ -38,6 +39,8 @@ namespace wde::render {
 			Swapchain& getSwapchain() { return *_swapchain; }
 			std::size_t& getCurrentFrame() { return _currentFrame; }
 			std::vector<std::unique_ptr<CommandBuffer>>& getCommandBuffers() { return _commandBuffers; }
+			DescriptorLayoutCache& getDescriptorLayoutCache() { return *_descriptorLayoutCache; }
+			DescriptorAllocator& getCurrentDescriptorAllocator() { return *_descriptorAllocators[_currentFrame]; }
 
 			/** @return the corresponding thread's command pool to allocate command buffers from */
 			std::shared_ptr<CommandPool>& getCommandPool(const std::thread::id &threadID = std::this_thread::get_id()) {
@@ -52,7 +55,7 @@ namespace wde::render {
 			void waitForDevicesReady();
 
 
-		private:
+	private:
 			// Vulkan values
 			VkInstance _instance = VK_NULL_HANDLE;
 			VkSurfaceKHR _surface = VK_NULL_HANDLE;
@@ -72,6 +75,12 @@ namespace wde::render {
 			std::map<std::thread::id, std::shared_ptr<CommandPool>> _commandPools;
 			/** Swapchain frames associated command buffers */
 			std::vector<std::unique_ptr<CommandBuffer>> _commandBuffers;
+
+			// Descriptors
+			/** The cache of every game descriptor layouts */
+			std::unique_ptr<DescriptorLayoutCache> _descriptorLayoutCache;
+			/** List of every frame descriptor allocator */
+			std::vector<std::unique_ptr<DescriptorAllocator>> _descriptorAllocators;
 
 
 			// Render Sync objects

@@ -1,11 +1,13 @@
 #include "PipelineGraphics.hpp"
+
+#include <utility>
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::render {
 	PipelineGraphics::PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, std::vector<scene::VertexInput> vertexInputs, Mode pipelineMode, Depth depthMode, VkPrimitiveTopology vertexTopology,
 									   VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation) :
 			_shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _pipelineMode(pipelineMode), _depthMode(depthMode),
-			_polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _renderTarget(renderTarget),
+			_polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _renderTarget(std::move(renderTarget)),
 			_normalOrientation(normalOrientation == VK_FRONT_FACE_CLOCKWISE ? VK_FRONT_FACE_COUNTER_CLOCKWISE : VK_FRONT_FACE_CLOCKWISE), // invert vertex orientation
 			_pipelineBindPoint(VK_PIPELINE_BIND_POINT_GRAPHICS) {
 		WDE_PROFILE_FUNCTION();
@@ -70,22 +72,13 @@ namespace wde::render {
 
 
 			// Descriptors sets
-			// Descriptor sets
-			if (_descriptorList.empty()) {
+			if (_descriptorSetLayoutsList.empty()) {
 				pipelineLayoutCreateInfo.setLayoutCount = 0;
 				pipelineLayoutCreateInfo.pSetLayouts = nullptr;
 			}
 			else {
-				for (auto& desc : _descriptorList) {
-					if (!desc->hasCreatedLayouts())
-						desc->createLayouts();
-					std::vector<VkDescriptorSetLayout>& descriptorVector = desc->getLayouts();
-					for (auto& v : descriptorVector)
-						if (v != VK_NULL_HANDLE)
-							descriptorVec.push_back(v);
-				}
-				pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(descriptorVec.size());
-				pipelineLayoutCreateInfo.pSetLayouts = descriptorVec.data();
+				pipelineLayoutCreateInfo.setLayoutCount = static_cast<uint32_t>(_descriptorSetLayoutsList.size());
+				pipelineLayoutCreateInfo.pSetLayouts = _descriptorSetLayoutsList.data();
 			}
 
 

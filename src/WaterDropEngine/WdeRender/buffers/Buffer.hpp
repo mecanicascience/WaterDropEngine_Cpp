@@ -15,21 +15,20 @@ namespace wde::render {
 			 * @param usage The buffer usage flags
 			 * @param properties The buffer memory property flags (default : host visible, and host coherent)
 			 */
-			explicit Buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)
-					: _bufferSize(size), _bufferUsageFlags(usage), _memoryProperties(properties) {
-				WDE_PROFILE_FUNCTION();
-				// Create the buffer
-				createBuffer();
-			}
-
+			explicit Buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			/** Clean up the buffer */
 			~Buffer();
 
 
 			// Core functions
+			/**
+			 * Copy this buffer to another buffer
+			 * @param destination
+			 */
+			void copyTo(Buffer& destination);
+
 			/** @return the mapped buffer */
 			void* map();
-
 			/** Unmap the buffer memory */
 			void unmap();
 
@@ -38,6 +37,7 @@ namespace wde::render {
 			VkBuffer& getBuffer() { return _buffer; }
 			VkDeviceMemory& getMemory() { return _bufferMemory; }
 			uint32_t getSize() { return _bufferSize; }
+			VkDescriptorBufferInfo& getBufferInfo() { return _bufferInfo; }
 
 
 
@@ -50,10 +50,6 @@ namespace wde::render {
 			// Buffer components
 			VkBuffer _buffer = VK_NULL_HANDLE;
 			VkDeviceMemory _bufferMemory = VK_NULL_HANDLE;
-
-
-			// Core functions
-			/** Create the buffer and it's memory */
-			void createBuffer();
+			VkDescriptorBufferInfo _bufferInfo {};
 	};
 }

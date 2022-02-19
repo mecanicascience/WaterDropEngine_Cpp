@@ -3,31 +3,17 @@
 #include "../../../../wde.hpp"
 #include "../meshes/Vertex.hpp"
 #include "../../../WdeRender/pipelines/PipelineGraphics.hpp"
+#include "../../../WdeRender/buffers/Buffer.hpp"
 
 namespace wde::scene {
 	class Material {
 		public:
-			explicit Material(const std::string& name, std::pair<int, int> renderStage, std::vector<std::string> shaders)
-			    : _name(name),
-			      _renderStage(renderStage),
-			      _pipeline(std::make_unique<render::PipelineGraphics>(
-                            renderStage,
-                            shaders, // Shaders
-                            std::vector<VertexInput>{ Vertex::getDescriptions() }, // Vertices
-                            render::PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
-                            render::PipelineGraphics::Depth::None,    // Do not use depth
-                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
-                            VK_POLYGON_MODE_FILL,   // Fill drawn shapes
-                            VK_CULL_MODE_NONE)) {  // Disable pipeline culling
-			    // Add material descriptors
-                //_pipeline->addDescriptorStructure(_desc); // For now, no descriptor
+			struct GPUMaterialData {
+				// Nothing here yet
+			};
 
-                // Initialize pipeline
-                _pipeline->initialize();
-            }
-            ~Material() {
-			    _pipeline.reset();
-			}
+			explicit Material(std::string  name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders);
+            ~Material();
 
 
 			// Core functions
@@ -36,6 +22,13 @@ namespace wde::scene {
 			 * @param commandBuffer
 			 */
 			void bind(render::CommandBuffer& commandBuffer) {
+				WDE_PROFILE_FUNCTION();
+
+				// Bind material descriptor
+				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+										_pipeline->getLayout(), 1, 1, &_materialSet.first, 0, nullptr);
+
+				// Bind pipeline
                 _pipeline->bind(commandBuffer);
 			}
 
@@ -64,11 +57,16 @@ namespace wde::scene {
 			// Getters and setters
 			std::string getName() { return _name; }
 			std::pair<int, int> getRenderStage() { return _renderStage; }
+			render::PipelineGraphics& getPipeline() { return *_pipeline; }
 
 
 		private:
 			/** IDs of the game objects with materials corresponding to this material */
 			std::vector<int> _boundedGoIds {};
+			/** The material descriptor buffer */
+			std::unique_ptr<render::Buffer> _materialData;
+			/** Material descriptor set */
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet;
 
 			// Core data
 			/** Material name */

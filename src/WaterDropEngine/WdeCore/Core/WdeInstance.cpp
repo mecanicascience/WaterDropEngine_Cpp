@@ -14,16 +14,19 @@ namespace wde {
 
 	void WdeInstance::tickInstance() {
 		WDE_PROFILE_FUNCTION();
+		// Check if there is scene and pipeline
+		if (_scene == nullptr)
+			throw WdeException(LogChannel::CORE, "The engine has no scene.");
+		if (_pipeline == nullptr)
+			throw WdeException(LogChannel::CORE, "The engine has no render pipeline.");
+
 		// Update the engine
 		update();
 
 		// Tick for the engine pipeline
-		if (_pipeline == nullptr)
-			throw WdeException(LogChannel::CORE, "The engine has no render pipeline.");
 		_pipeline->tick();
 
 		// Tick for the scene
-		if (_scene != nullptr)
-			_scene->tick();
+		_scene->tick();
 	}
 }

@@ -4,6 +4,11 @@
 #include "render/RenderAttachment.hpp"
 #include "render/RenderPass.hpp"
 #include "render/RenderPassStructure.hpp"
+#include "descriptors/DescriptorBuilder.hpp"
+#include "buffers/Buffer.hpp"
+#include "pipelines/Pipeline.hpp"
+#include "../WdeScene/gameObjects/materials/Material.hpp"
+#include "../WdeScene/WdeSceneInstance.hpp"
 
 namespace wde::render {
 	/**
@@ -11,7 +16,7 @@ namespace wde::render {
 	 */
 	class WdeRenderPipelineInstance {
 		public:
-			WdeRenderPipelineInstance() = default;
+			WdeRenderPipelineInstance();
 			~WdeRenderPipelineInstance() {
 				// Destroy render passes
 				_passes.clear();
@@ -20,10 +25,9 @@ namespace wde::render {
 			// Core WDE functions
 			/** Tick for pipeline (called by the WdeInstance) */
 			void tick();
-			/**
-			 * Called when the window is resized (called by the WdeInstance)
-			 */
+			/** Called when the window is resized (called by the WdeInstance) */
 			void onWindowResized() {
+				WDE_PROFILE_FUNCTION();
 				// Recreate render passes
 				_passes.clear();
 				setStructure(_structure);
@@ -43,6 +47,7 @@ namespace wde::render {
 
 			// Getters and setters
 			RenderPass& getRenderPass(uint32_t renderPassID) { return *_passes[renderPassID]; }
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
 
 
 
@@ -51,8 +56,9 @@ namespace wde::render {
 			/**
 			 * Render the pipeline to a command buffer
 			 * @param commandBuffer
+			 * @param scene The scene of objects
 			 */
-			virtual void render(CommandBuffer& commandBuffer) = 0;
+			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
 
 
 
@@ -140,6 +146,31 @@ namespace wde::render {
 
 				_passes[_currentRenderPassID]->endSubPass(_currentRenderSubPassID);
 				_currentRenderSubPassID = -1;
+			}
+
+
+
+
+			// ======= SETS DATA =========
+			// Passes common descriptor sets
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _globalSet;
+
+			// Global set
+			/** Camera data */
+			struct GPUCameraData {
+				glm::mat4 view {1.0f};
+				glm::mat4 proj {1.0f};
+			};
+			std::unique_ptr<render::Buffer> _cameraData;
+
+			/**
+			 * Bind the global set to a command buffer
+			 * @param commandBuffer
+			 * @param material
+			 */
+			void bind(CommandBuffer& commandBuffer, std::shared_ptr<scene::Material>& material) {
+				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+				                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
 			}
 
 

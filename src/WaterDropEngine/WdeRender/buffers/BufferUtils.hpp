@@ -18,7 +18,7 @@ namespace wde::render {
 		static void createBuffer(VkPhysicalDevice &physicalDevice, VkDevice &device, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer &buffer, VkDeviceMemory &bufferMemory) {
 			WDE_PROFILE_FUNCTION();
 			// Create buffer infos
-			VkBufferCreateInfo  bufferInfo {};
+			VkBufferCreateInfo bufferInfo {};
 			bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
 			bufferInfo.size = size;
 			bufferInfo.usage = usage;
@@ -32,7 +32,7 @@ namespace wde::render {
 			VkMemoryRequirements memRequirements;
 			vkGetBufferMemoryRequirements(device, buffer, &memRequirements);
 
-			VkMemoryAllocateInfo  allocInfo {};
+			VkMemoryAllocateInfo allocInfo {};
 			allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 			allocInfo.allocationSize = memRequirements.size;
 			allocInfo.memoryTypeIndex = findMemoryType(physicalDevice, memRequirements.memoryTypeBits, properties);

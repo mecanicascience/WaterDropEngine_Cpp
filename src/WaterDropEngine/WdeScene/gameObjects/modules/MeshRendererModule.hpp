@@ -39,17 +39,14 @@ namespace wde::scene {
 			void setMaterial(const std::shared_ptr<Material>& material) {
 				// Remove GO reference
 				if (_material != nullptr)
-					_material->removeGameObject(_gameObject.getID());
+					_material->removeGameObject(static_cast<int>(_gameObject.getID()));
 
 				// Add GO reference
 				_material = material;
-				_material->addGameObject(_gameObject.getID());
+				_material->addGameObject(static_cast<int>(_gameObject.getID()));
 			}
             std::shared_ptr<Material>& getMaterial() { return _material; }
-
-			void setMesh(const std::shared_ptr<Mesh>& mesh) {
-                _mesh = mesh;
-			}
+			void setMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
             std::shared_ptr<Mesh>& getMesh() { return _mesh; }
 
 

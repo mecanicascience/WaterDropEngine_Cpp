@@ -3,6 +3,7 @@
 #include "../../../wde.hpp"
 #include "../core/CoreDevice.hpp"
 #include "../core/CoreWindow.hpp"
+#include "../descriptors/DescriptorAllocator.hpp"
 
 namespace wde::render {
 	/**
@@ -52,7 +53,7 @@ namespace wde::render {
 			/** For each image in the swapchain, we bind it with a basic image view */
 			std::vector<VkImageView> _swapChainImageViews;
 			/** The ID of the current active image index */
-			uint32_t _activeImageIndex = UINT32_MAX;
+			uint32_t _activeImageIndex = 0;
 
 			// Stores swap chain selected configuration
 			VkFormat _swapChainImageFormat;
@@ -69,10 +70,5 @@ namespace wde::render {
 			// Sync objects
 			/** Signals when the corresponding image ends being used by the swapchain */
 			std::vector<VkFence> _imagesInFlight;
-
-
-			// Core functions
-			/** Create swapchain images */
-			void createSwapchain();
 	};
 }

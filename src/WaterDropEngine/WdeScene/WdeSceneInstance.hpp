@@ -12,10 +12,10 @@ namespace wde::scene {
 	 */
 	class WdeSceneInstance : public core::Observer {
 		public:
-			// Scene engine methods
-			virtual void setup() = 0;
-			virtual void update() = 0;
-			virtual void cleanUp() = 0;
+			// Scene engine override methods
+			virtual void setup() {};
+			virtual void update() {};
+			virtual void cleanUp() {};
 
 			// Scene instance methods
 			/** Ticking for scene instance (called by WaterDropEngine) */
@@ -35,6 +35,11 @@ namespace wde::scene {
 			// Getters and setters
 			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
 			GameObject& getGameObject(int goID) { return *_gameObjects[goID]; }
+			std::shared_ptr<GameObject> getActiveCamera() {
+				if (_activeCameraID == -1)
+					return nullptr;
+				return _gameObjects[_activeCameraID];
+			}
 
 
 
