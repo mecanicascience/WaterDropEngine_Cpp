@@ -41,6 +41,7 @@ namespace wde::scene {
 					return nullptr;
 				return _gameObjects[_activeCameraID];
 			}
+			void setActiveCamera(int gameObjectID) { _activeCameraID = gameObjectID; }
 
 
 	protected:
@@ -52,14 +53,6 @@ namespace wde::scene {
 				static uint32_t ID = 0;
 				_gameObjects.push_back(std::make_shared<GameObject>(ID++, name));
 				return _gameObjects[_gameObjects.size() - 1];
-			}
-
-			/**
-			 * Set the active camera ID
-			 * @param go New game object (must have a camera)
-			 */
-			void setActiveCamera(const std::shared_ptr<GameObject>& go) {
-				_activeCameraID = static_cast<int>(go->getID());
 			}
 
 			template<typename T, typename ...Args>

@@ -41,6 +41,9 @@ namespace wde::scene {
 			}
 
 			void tick() {
+				if (!active)
+					return;
+
 				WDE_PROFILE_FUNCTION();
 				// Tick for modules
 				for (auto& mod : _modules)
@@ -49,6 +52,9 @@ namespace wde::scene {
 
 
 			void drawGUI() {
+				if (!active)
+					return;
+
 				WDE_PROFILE_FUNCTION();
 				// Render module top
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
@@ -105,6 +111,8 @@ namespace wde::scene {
 
 
 			// Public GO data
+			/** True if the game object is active */
+			bool active = true;
 			/** Name of the game object */
 			std::string name;
 			/** Transform module of the game object */

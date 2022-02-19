@@ -12,12 +12,22 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample02 : public WdeSceneInstance {
 		void setup() override {
-			// CAMERA
-			auto camera = createGameObject("Main Camera");
-			camera->addModule<CameraModule>();
-			camera->addModule<ControllerModule>();
-			camera->transform->position = glm::vec3 {0.0f, 0.0f, -8.0f};
-			setActiveCamera(camera);
+			// EDITOR CAMERA
+			{
+				auto camera = createGameObject("Editor Camera");
+				auto camModule = camera->addModule<CameraModule>();
+				camModule->setAsActive();
+				camera->addModule<ControllerModule>();
+				camera->transform->position = glm::vec3 {0.0f, 0.0f, -8.0f};
+			}
+
+			// VIEWING CAMERA
+			{
+				auto camera = createGameObject("Viewing Camera");
+				camera->addModule<CameraModule>();
+				camera->addModule<ControllerModule>();
+				camera->transform->position = glm::vec3{-2.0f, 0.0f, -2.0f};
+			}
 
 			// MATERIALS
 			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0});

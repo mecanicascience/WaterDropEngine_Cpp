@@ -22,6 +22,9 @@ namespace wde::scene {
 			void tick() override;
 			void drawGUI() override;
 
+			/** Sets this camera to be the current scene viewing camera */
+			void setAsActive();
+
 
 			// Getters and setters
 			GPUCameraData getCameraData() const {

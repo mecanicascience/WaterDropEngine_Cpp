@@ -70,6 +70,14 @@ namespace wde::scene {
 	}
 
 	void CameraModule::drawGUI() {
+		// == Is selected camera ==
+		auto actCamera = WaterDropEngine::get().getInstance().getScene().getActiveCamera();
+		if (actCamera != nullptr && actCamera->getID() == _gameObject.getID())
+			ImGui::Text("  Currently selected camera.");
+		else if (ImGui::Button("Set as active"))
+			setAsActive();
+		ImGui::Dummy(ImVec2(0.0f, 13.0f));
+
 		// == Projection type GUI ==
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 		ImGui::Text("  Projection configuration");
@@ -124,5 +132,9 @@ namespace wde::scene {
 		_projectionMatrix[3][0] = -(rightVal + leftVal) / (rightVal - leftVal);
 		_projectionMatrix[3][1] = -(bottomVal + topVal) / (bottomVal - topVal);
 		_projectionMatrix[3][2] = -nearVal / (farVal - nearVal);
+	}
+
+	void CameraModule::setAsActive() {
+		WaterDropEngine::get().getInstance().getScene().setActiveCamera(_gameObject.getID());
 	}
 }
