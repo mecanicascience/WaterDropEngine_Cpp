@@ -51,17 +51,14 @@ namespace examples {
 								auto& go = scene.getGameObject(goID);
 								auto& mesh = go.getModule<scene::MeshRendererModule>()->getMesh();
 								if (mesh != nullptr) {
-									// Bind game object set
-									go.bind(commandBuffer, mat);
-
-									// Bind mesh if previous from last one
+									// Bind mesh if different from last one
 									if (mesh->getName() != lastMeshName) {
 										mesh->bind(commandBuffer);
 										lastMeshName = mesh->getName();
 									}
 
 									// Render mesh
-									mesh->render();
+									mesh->render(go.getID());
 								}
 							}
 						}

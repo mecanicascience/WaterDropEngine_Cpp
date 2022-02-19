@@ -6,10 +6,17 @@ namespace wde::render {
 	WdeRenderPipelineInstance::WdeRenderPipelineInstance() {
 		WDE_PROFILE_FUNCTION();
 
-		// Create camera descriptor set
+		// Camera data buffer
 		_cameraData = std::make_unique<Buffer>(sizeof(GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+		// Objects buffer
+		const int MAX_OBJECT_COUNT = 1000;
+		_objectsData = std::make_unique<Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * MAX_OBJECT_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+		// Create global descriptor set
 		DescriptorBuilder::begin()
-				.bind_buffer(0, &_cameraData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(0, &_cameraData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(1, &_objectsData->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(_globalSet.first, _globalSet.second);
 	}
 
@@ -52,6 +59,20 @@ namespace wde::render {
 				void *data = _cameraData->map();
 				memcpy(data, &cameraData, sizeof(GPUCameraData));
 				_cameraData->unmap();
+			}
+
+
+			// Update game objects data
+			{
+				void *data = _objectsData->map();
+				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
+				for (auto& go : scene.getGameObjects()) {
+					if (go->transform->changed) {
+						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
+						go->transform->changed = false;
+					}
+				}
+				_objectsData->unmap();
 			}
 
 

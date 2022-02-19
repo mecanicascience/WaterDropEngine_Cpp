@@ -32,27 +32,6 @@ namespace wde::scene {
 					: _id(id), name(std::move(name)) {
 				// Add default transform module
 				transform = addModule<TransformModule>();
-
-				// Create game object set
-				_gameObjectData = std::make_unique<render::Buffer>(sizeof(GPUGameObjectData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-				render::DescriptorBuilder::begin()
-						.bind_buffer(0, &_gameObjectData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-						.build(_gameObjectSet.first, _gameObjectSet.second);
-			}
-			static VkDescriptorSetLayout* getGeneralGameObjectDescriptorSet() {
-				static std::pair<VkDescriptorSet, VkDescriptorSetLayout> _objectGeneralSet;
-				static bool defined = false;
-				if (defined)
-					return &_objectGeneralSet.second;
-
-				// Create general global game object set
-				render::Buffer generalGameObjectData {sizeof(GPUGameObjectData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT};
-				render::DescriptorBuilder::begin()
-						.bind_buffer(0, &generalGameObjectData.getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-						.build(_objectGeneralSet.first, _objectGeneralSet.second);
-
-				defined = true;
-				return &_objectGeneralSet.second;
 			}
 
 
@@ -65,32 +44,8 @@ namespace wde::scene {
 				// Tick for modules
 				for (auto& mod : _modules)
 					mod->tick();
-
-				// If transform changed, update transform buffer
-				if (transform->changed) {
-					transform->changed = false;
-
-					// New data
-					GPUGameObjectData objData {};
-					objData.transformWorldSpace = transform->getTransform();
-
-					// Map data
-					void *data = _gameObjectData->map();
-					memcpy(data, &objData, sizeof(GPUGameObjectData));
-					_gameObjectData->unmap();
-				}
 			}
 
-			/**
-			 * Bind the game object descriptor to the pipeline
-			 * @param buffer
-			 * @param material
-			 */
-			void bind(render::CommandBuffer &commandBuffer, std::shared_ptr<Material> material) {
-				// Bind mesh set descriptor
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-				                        material->getPipeline().getLayout(), 2, 1, &_gameObjectSet.first, 0, nullptr);
-			}
 
 			void drawGUI() {
 				WDE_PROFILE_FUNCTION();
@@ -171,10 +126,6 @@ namespace wde::scene {
 			uint32_t _id;
 			// GO Modules
 			std::vector<std::unique_ptr<Module>> _modules;
-
-			// GO Descriptor Set
-			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _gameObjectSet;
-			std::unique_ptr<render::Buffer> _gameObjectData;
 	};
 }
 

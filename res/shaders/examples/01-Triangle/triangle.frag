@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 // Output fragment pixel color
 layout (location = 0) out vec4 outColor;

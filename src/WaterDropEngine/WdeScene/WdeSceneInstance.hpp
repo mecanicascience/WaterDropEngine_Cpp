@@ -35,6 +35,7 @@ namespace wde::scene {
 			// Getters and setters
 			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
 			GameObject& getGameObject(int goID) { return *_gameObjects[goID]; }
+			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::shared_ptr<GameObject> getActiveCamera() {
 				if (_activeCameraID == -1)
 					return nullptr;
@@ -42,8 +43,7 @@ namespace wde::scene {
 			}
 
 
-
-		protected:
+	protected:
 			/**
 			 * Create a new GameObject
 			 * @param name Name of the GameObject

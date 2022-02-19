@@ -27,7 +27,6 @@ namespace wde::scene {
 		// Add descriptors
 		_pipeline->addDescriptorSet(pipeline.getGlobalSet().second);
 		_pipeline->addDescriptorSet(_materialSet.second);
-		_pipeline->addDescriptorSet(*GameObject::getGeneralGameObjectDescriptorSet());
 
 		// Initialize pipeline
 		_pipeline->initialize();

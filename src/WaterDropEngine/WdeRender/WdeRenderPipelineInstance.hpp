@@ -163,6 +163,9 @@ namespace wde::render {
 			};
 			std::unique_ptr<render::Buffer> _cameraData;
 
+			/** Game objects data */
+			std::unique_ptr<render::Buffer> _objectsData;
+
 			/**
 			 * Bind the global set to a command buffer
 			 * @param commandBuffer

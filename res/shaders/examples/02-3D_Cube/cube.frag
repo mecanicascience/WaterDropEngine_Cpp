@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 // Output vertex pixel color
 layout (location = 0) in vec3 inColor;

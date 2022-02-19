@@ -33,21 +33,23 @@ namespace wde::scene {
                 vkCmdBindIndexBuffer(commandBuffer, _indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32); // VK_INDEX_TYPE_UINT16 or VK_INDEX_TYPE_UINT32
             }
 
-            /** Render the game object */
-            void render() {
+            /**
+             * Render the given game object using this mesh
+             * @param gameObjectID
+             */
+            void render(uint32_t gameObjectID) {
 	            WDE_PROFILE_FUNCTION();
                 // Add the draw command to the command buffer
-                vkCmdDrawIndexed(*_commandBuffer, _indices.size(),
-                                 1, 0, 0, 0);
-            }
+                vkCmdDrawIndexed(*_commandBuffer, _indices.size(), 1, 0, 0, gameObjectID);
+		   }
 
-            // Getters and setters
-            std::string getName() { return _name; }
+		   // Getters and setters
+		   std::string getName() { return _name; }
 
 
-        private:
-            // Core
-            /** Name of the mesh */
+	   private:
+		   // Core
+		   /** Name of the mesh */
             std::string _name;
             /** List of the mesh vertices */
             std::vector<Vertex> _vertices;

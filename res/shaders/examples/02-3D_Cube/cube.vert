@@ -1,4 +1,4 @@
-#version 450
+#version 460
 
 // Input vertices
 layout (location = 0) in vec3 vPosition;
@@ -15,16 +15,20 @@ layout(set = 0, binding = 0) uniform SceneBuffer {
     mat4 transformProjSpace;    // Matrix from camera space to projection frustum space
 } inSceneData;
 
-// Game object set values
-layout(set = 2, binding = 0) uniform GameObjectBuffer {
-    mat4 transformWorldSpace;   // To world space GO position
-} inGameObjectData;
+// Objects set
+struct ObjectData {
+    mat4 model;
+};
+layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
+    ObjectData objects[];
+} inObjectBuffer;
+
 
 
 // Executed once for each vertex
 void main() {
     // Computes world space position
-    vec4 positionWorldSpace = inGameObjectData.transformWorldSpace * vec4(vPosition, 1.0); // To world space position
+    vec4 positionWorldSpace = inObjectBuffer.objects[gl_BaseInstance].model * vec4(vPosition, 1.0); // To world space position
     gl_Position = inSceneData.transformProjSpace    // To Vulkan frustum position
                 * inSceneData.transformCameraSpace  // To Camera space position
                 * positionWorldSpace;               // Object world space position
