@@ -27,8 +27,9 @@ namespace wde {
 		/** Debug channel messages */ DEBUG,
 		/** The rendering engine */   RENDER,
 		/** The GUI drawing engine */ GUI,
-		/** Common engne classes */   COMMON,
-		/** Scene engine */	          SCENE
+		/** Common engine classes */  COMMON,
+		/** Scene engine */	          SCENE,
+		/** Input manager engine */   INPUT
 	};
 
 

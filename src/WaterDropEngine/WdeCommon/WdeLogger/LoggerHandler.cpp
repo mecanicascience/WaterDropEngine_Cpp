@@ -4,7 +4,7 @@
 namespace wde::logger {
 	// Log config
 	std::string logLevelNames[] = { "ERR", "WARN", "INFO", "DEBUG" };
-	std::string logChannelNames[] = { "CORE", "DEBUG", "RENDER", "GUI", "COMMON", "SCENE" };
+	std::string logChannelNames[] = { "CORE", "DEBUG", "RENDER", "GUI", "COMMON", "SCENE", "INPUT" };
 
 	// Mutex to allow thread-safe writings
 	std::mutex LoggerHandler::_log_mutex;

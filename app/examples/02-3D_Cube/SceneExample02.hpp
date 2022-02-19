@@ -4,6 +4,7 @@
 #include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/CameraModule.hpp"
 #include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/MeshRendererModule.hpp"
 #include "../../../src/WaterDropEngine/WdeScene/gameObjects/materials/ColorMaterial.hpp"
+#include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/ControllerModule.hpp"
 
 using namespace wde;
 using namespace wde::scene;
@@ -14,6 +15,8 @@ namespace examples {
 			// CAMERA
 			auto camera = createGameObject("Main Camera");
 			camera->addModule<CameraModule>();
+			camera->addModule<ControllerModule>();
+			camera->transform->position = glm::vec3 {0.0f, 0.0f, -8.0f};
 			setActiveCamera(camera);
 
 			// MATERIALS

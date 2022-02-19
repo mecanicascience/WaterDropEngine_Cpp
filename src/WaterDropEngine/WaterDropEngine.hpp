@@ -8,6 +8,7 @@
 #include "WdeCore/Core/WdeInstance.hpp"
 #include "WdeCommon/WdeUtils/FPSUtils.hpp"
 #include "WdeScene/WdeScene.hpp"
+#include "WdeInput/InputManager.hpp"
 
 namespace wde {
 	/**
@@ -45,6 +46,9 @@ namespace wde {
 				// GUI core
 				_gui = std::make_shared<gui::WdeGUI>(_subject);
 				_subject->addObserver(_gui);
+
+				// Input manager core
+				_input = std::make_shared<input::InputManager>();
 
 				// Scene core
 				_scene = std::make_shared<scene::WdeScene>(_subject);
@@ -95,6 +99,7 @@ namespace wde {
 						WDE_PROFILE_SCOPE("wde::WaterDropEngine::tick()::tick");
 						// Tick
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for modules." << logger::endl;
+						_input->tick();
 						_render->tick();
 						_gui->tick();
 
@@ -125,6 +130,7 @@ namespace wde {
 				#endif
 				instance.cleanUpInstance();
 
+				_input.reset();
 				_scene->cleanUp();
 				_gui->cleanUp();
 				_render->cleanUp();
@@ -146,6 +152,7 @@ namespace wde {
 			WdeInstance& getInstance() { return *_instance; }
 			core::Subject& getSubject() { return *_subject; }
 			scene::WdeScene& getScene() { return *_scene; }
+			input::InputManager& getInput() { return *_input; }
 
 
 		private:
@@ -153,12 +160,13 @@ namespace wde {
 			std::shared_ptr<render::WdeRender> _render;
 			std::shared_ptr<gui::WdeGUI> _gui;
 			std::shared_ptr<scene::WdeScene> _scene;
+			std::shared_ptr<input::InputManager> _input;
 
 			// Modules communication subject
 			std::shared_ptr<core::Subject> _subject;
 
 			// Engine instance
-			WdeInstance* _instance;
+			WdeInstance* _instance = nullptr;
 
 			// Constructor
 			explicit WaterDropEngine() = default;
