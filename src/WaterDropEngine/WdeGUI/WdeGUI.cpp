@@ -113,6 +113,10 @@ namespace wde::gui {
 	void WdeGUI::render(render::CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
 
+#ifdef WDE_ENGINE_MODE_PRODUCTION
+		return;
+#endif
+
 		// Start the ImGui frame
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Rendering GUI new frame." << logger::endl;
 		ImGui_ImplVulkan_NewFrame();
