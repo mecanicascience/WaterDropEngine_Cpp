@@ -2,6 +2,7 @@
 
 #include "../../../src/WaterDropEngine/WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../../src/WaterDropEngine/WdeGUI/WdeGUI.hpp"
+#include "../../../src/WaterDropEngine/WdeRender/pipelines/PipelineCompute.hpp"
 
 using namespace wde;
 using namespace wde::render;
@@ -9,7 +10,36 @@ using namespace wde::render;
 namespace examples {
 	class PipelineExample04 : public WdeRenderPipelineInstance {
 		public:
+			/** Stores a rendering batch on the CPU */
+			struct RenderBatch {
+				scene::Material* material {nullptr}; // Material of the batch
+				scene::Mesh* mesh {nullptr}; // Mesh of the batch
+				int firstIndex {-1}; // Index of the first object in the batch
+				int indexCount {0}; // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
+				int instanceCount {0}; // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
+			};
+			/** Stores a rendering batch on the GPU */
+			struct GPURenderBatch {
+				int firstIndex {-1}; // Index of the first object in the batch
+				int indexCount {0}; // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
+				int instanceCount {0}; // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
+			};
+			/** Stores the object batches on the GPU */
+			struct GPUObjectBatch {
+				int objectID;
+				int batchID;
+			};
+			/** Describes the compute scene */
+			struct GPUPushConstantCullingData {
+				int objectsCount;
+			};
+
+
 			std::unique_ptr<Buffer> _indirectCommandsBuffer {};
+			std::unique_ptr<Buffer> _objectsBatches {};
+			std::unique_ptr<Buffer> _gpuBatches {};
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _computeSet;
+			std::unique_ptr<PipelineCompute> _cullingPipeline;
 
 			void setup() override {
 				// Create passes attachments
@@ -34,13 +64,46 @@ namespace examples {
 				_indirectCommandsBuffer = std::make_unique<Buffer>(
 						MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
 						VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
+
+				// GPU Objects buffer batches and IDs
+				_objectsBatches = std::make_unique<Buffer>(
+						Config::MAX_SCENE_OBJECTS_COUNT * sizeof(GPUObjectBatch),
+						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+				// GPU Batches
+				_gpuBatches = std::make_unique<Buffer>(
+						MAX_COMMANDS * sizeof(GPURenderBatch),
+						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+				// Create compute shader descriptor set
+				DescriptorBuilder::begin()
+							.bind_buffer(0, &_objectsBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+							.bind_buffer(1, &_gpuBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.build(_computeSet.first, _computeSet.second);
+
+				// Create compute pipeline
+				_cullingPipeline = std::make_unique<PipelineCompute>("res/shaders/common/culling/culling_indirect.comp.spv");
+				_cullingPipeline->addPushConstants(sizeof(GPUPushConstantCullingData));
+				_cullingPipeline->addDescriptorSet(_computeSet.second);
+				_cullingPipeline->initialize();
 			}
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
 				// Create rendering batches
 				std::vector<RenderBatch> renderBatches {};
+				int objectsCount = 0;
 				{
 					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
+					// Render GPU Objects batches
+					void *gpuObjectsBatchesData = _objectsBatches->map();
+					auto* gpuObjectsBatches = (GPUObjectBatch*) gpuObjectsBatchesData;
+					// ------
+
+					// Render GPU Batches
+					void *gpuBatchesData = _gpuBatches->map();
+					auto* gpuBatches = (GPURenderBatch*) gpuBatchesData;
+					// ------
+
 					RenderBatch currentBatch {};
 
 					std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
@@ -78,6 +141,13 @@ namespace examples {
 							currentBatch.mesh = meshModule->getMesh().get();
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
+							// Set this object batch
+							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
+							gpuObjectsBatches[goActiveID].objectID = goActiveID;
+							// Set gpu batch
+							gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
+							gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
+							gpuBatches[renderBatches.size()].instanceCount = 0;
 							goActiveID++;
 							continue;
 						}
@@ -95,6 +165,13 @@ namespace examples {
 							currentBatch.mesh = mesh.get();
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
+							// Set this object batch
+							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
+							gpuObjectsBatches[goActiveID].objectID = goActiveID;
+							// Set gpu batch
+							gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
+							gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
+							gpuBatches[renderBatches.size()].instanceCount = 0;
 							goActiveID++;
 							continue;
 						}
@@ -106,12 +183,46 @@ namespace examples {
 						currentBatch.indexCount++;
 						if (currentBatch.firstIndex == -1)
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
+						// Set this object batch
+						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
+						gpuObjectsBatches[goActiveID].objectID = goActiveID;
+						// Set gpu batch
+						gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
+						gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
+						gpuBatches[renderBatches.size()].instanceCount = 0;
 						goActiveID++;
 					}
 
 					// Push last batch
 					if (currentBatch.indexCount > 0)
 						renderBatches.push_back(currentBatch);
+					objectsCount = goActiveID;
+
+					// Close objects gpu batches
+					_objectsBatches->unmap();
+					// ------------------
+
+					// Close render gpu batches
+					_gpuBatches->unmap();
+					// -------------------
+				}
+
+
+				// Run culling
+				{
+					CommandBuffer cullingCmd {true};
+					// Bind pipeline
+					_cullingPipeline->bind(cullingCmd);
+
+					// Update push constants
+					GPUPushConstantCullingData gpuCulling {};
+					gpuCulling.objectsCount = objectsCount;
+					_cullingPipeline->setPushConstants(&gpuCulling);
+
+					// Run pipeline
+					cullingCmd.end();
+					cullingCmd.submit();
+					cullingCmd.waitForQueueIdle();
 				}
 
 
@@ -132,31 +243,31 @@ namespace examples {
 
 
 				beginRenderPass(0);
-				beginRenderSubPass(0);
-				// Render batches
-				scene::Material* lastMaterial = nullptr;
-				for (auto& batch : renderBatches) {
-					// Different material binding
-					if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
-						lastMaterial = batch.material;
-						bind(commandBuffer, batch.material);
-						batch.material->bind(commandBuffer);
-					}
+					beginRenderSubPass(0);
+						// Render batches
+						scene::Material* lastMaterial = nullptr;
+						for (auto& batch : renderBatches) {
+							// Different material binding
+							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
+								lastMaterial = batch.material;
+								bind(commandBuffer, batch.material);
+								batch.material->bind(commandBuffer);
+							}
 
-					// Mesh binding
-					batch.mesh->bind(commandBuffer);
+							// Mesh binding
+							batch.mesh->bind(commandBuffer);
 
-					// Execute the draw command buffer on each section as defined by the array of draws
-					VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
-					uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
-					vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, batch.indexCount, drawStride);
-				}
-				endRenderSubPass();
+							// Execute the draw command buffer on each section as defined by the array of draws
+							VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
+							uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
+							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, batch.instanceCount, drawStride);
+						}
+					endRenderSubPass();
 
-				beginRenderSubPass(1);
-				// Render GUI
-				gui::WdeGUI::render(commandBuffer);
-				endRenderSubPass();
+					beginRenderSubPass(1);
+						// Render GUI
+						gui::WdeGUI::render(commandBuffer);
+					endRenderSubPass();
 				endRenderPass();
 			}
 

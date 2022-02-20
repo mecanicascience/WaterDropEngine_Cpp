@@ -1,0 +1,41 @@
+#version 450
+
+layout (local_size_x = 256) in;
+
+// Objects render batches
+struct ObjectBatch {
+    int objectID;
+    int batchID;
+};
+layout (set = 0, binding = 0) readonly buffer ObjectBatchesBuffer {
+    ObjectBatch objects[];
+} objectBatches;
+
+
+// Render Batches
+struct RenderBatch {
+    int firstIndex;
+    int indexCount;
+    int instanceCount;
+};
+layout(set = 0, binding = 1) buffer RenderBatchesBuffer {
+    RenderBatch batches[];
+} renderBatches;
+
+
+// Push constants
+layout(push_constant) uniform Push {
+    int objectsCount;
+} inPush;
+
+
+void main() {
+    uint gID = gl_GlobalInvocationID.x;
+    if(gID < inPush.objectsCount) {
+        // Get object batch index
+        uint batchIndex = objectBatches.objects[gID].batchID;
+
+        // If visible
+        atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
+    }
+}

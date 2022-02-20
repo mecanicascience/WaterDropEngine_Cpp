@@ -9,6 +9,15 @@ using namespace wde::render;
 namespace examples {
 	class PipelineExample03 : public WdeRenderPipelineInstance {
 		public:
+			/**
+			 * Stores a rendering batch
+			 */
+			struct RenderBatch {
+				scene::Material* material {nullptr}; // Material of the batch
+				scene::Mesh* mesh {nullptr}; // Mesh of the batch
+				int firstIndex {-1}; // Index of the first object in the batch
+				int indexCount {0}; // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
+			};
 			std::unique_ptr<Buffer> _indirectCommandsBuffer {};
 
 			void setup() override {

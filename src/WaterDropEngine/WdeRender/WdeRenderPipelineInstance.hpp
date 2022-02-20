@@ -18,16 +18,6 @@ namespace wde::render {
 	 */
 	class WdeRenderPipelineInstance {
 		public:
-			/**
-			 * Stores a rendering batch
-			 */
-			struct RenderBatch {
-				scene::Material* material {nullptr};
-				scene::Mesh* mesh {nullptr};
-				int firstIndex {-1};
-				int indexCount {0};
-			};
-
 			WdeRenderPipelineInstance();
 			~WdeRenderPipelineInstance() {
 				// Destroy render passes

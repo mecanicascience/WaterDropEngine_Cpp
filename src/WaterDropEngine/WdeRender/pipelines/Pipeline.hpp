@@ -36,12 +36,11 @@ namespace wde::render {
 			// Push constants
 			/**
 			 * Add push constants to the pipeline
-			 * @param bindingIndex The corresponding push constants binding index
 			 * @param constantsSize The size of the push constant data
 			 * @param shaderStages The shader stages in which the push constants will be accessible (default : vertex and fragment shaders)
 			 * @param offset The offset of the data (default : 0)
 			 */
-			void addPushConstants(int bindingIndex, uint32_t constantsSize, VkShaderStageFlags shaderStages = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT, uint32_t offset = 0) {
+			void addPushConstants(uint32_t constantsSize, VkShaderStageFlags shaderStages = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT, uint32_t offset = 0) {
 				if (_initialized)
 					throw WdeException(LogChannel::RENDER, "Tried to add push constants to pipeline after initialization.");
 
@@ -51,17 +50,16 @@ namespace wde::render {
 				pushConstants.offset = offset;
 				pushConstants.stageFlags = shaderStages;
 				_pushConstantsValues.push_back(pushConstants);
-				_pushConstantsBoundingIndices[bindingIndex] = (int) _pushConstantsValues.size() - 1;
+				_pushConstantsBoundingIndices[0] = (int) _pushConstantsValues.size() - 1;
 			}
 
 			/**
 			 * Set the current push constants
-			 * @param bindingIndex
 			 * @param pushData
 			 */
-			void setPushConstants(int bindingIndex, const void* pushData) {
+			void setPushConstants(const void* pushData) {
 				// Push constants to the command buffer
-				auto data = _pushConstantsValues[_pushConstantsBoundingIndices.at(bindingIndex)];
+				auto data = _pushConstantsValues[_pushConstantsBoundingIndices.at(0)];
 				vkCmdPushConstants(*_commandBuffer, _pipelineLayout, data.stageFlags, data.offset, data.size, pushData);
 			}
 
