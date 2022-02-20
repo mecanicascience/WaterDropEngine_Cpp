@@ -211,15 +211,21 @@ namespace examples {
 				// Run culling
 				{
 					CommandBuffer cullingCmd {true};
+
 					// Bind pipeline
 					_cullingPipeline->bind(cullingCmd);
+
+					// Bind descriptors
+					vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_GRAPHICS,
+					                        _cullingPipeline->getLayout(), 0, 1, &_computeSet.first, 0, nullptr);
 
 					// Update push constants
 					GPUPushConstantCullingData gpuCulling {};
 					gpuCulling.objectsCount = objectsCount;
 					_cullingPipeline->setPushConstants(&gpuCulling);
 
-					// Run pipeline
+					// Run compute shader
+					vkCmdDispatch(cullingCmd, std::ceil(((float) objectsCount) / 256.0), 1, 1);
 					cullingCmd.end();
 					cullingCmd.submit();
 					cullingCmd.waitForQueueIdle();
