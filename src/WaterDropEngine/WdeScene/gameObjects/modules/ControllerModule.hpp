@@ -12,6 +12,9 @@ namespace wde::scene {
 
 			// Core functions
 			void tick() override {
+				if (!_gameObject.isSelected())
+					return;
+
 				auto newTime = std::chrono::steady_clock::now();
 				auto deltaTime =
 						std::chrono::time_point_cast<std::chrono::milliseconds>(newTime).time_since_epoch()

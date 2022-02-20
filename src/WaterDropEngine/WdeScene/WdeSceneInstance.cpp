@@ -41,11 +41,22 @@ namespace wde::scene {
 			ImGui::Begin("Scene Components");
 			ImGui::BeginChild("Scene Components Children");
 			ImGui::Dummy(ImVec2(0.0f, 0.15f));
+
+			// Draw GUI
 			static int selected = -1;
 			for (auto& go : _gameObjects)
 				if (go->transform->getParent() == nullptr)
 					drawGUIForGO(*go, &selected, "");
-			_selectedGameObjectID = selected;
+
+			// Selected game object changed
+			if (selected != _selectedGameObjectID) {
+				if (_selectedGameObjectID >= 0)
+					_gameObjects[_selectedGameObjectID]->setSelected(false);
+				_selectedGameObjectID = selected;
+				if (_selectedGameObjectID >= 0)
+					_gameObjects[_selectedGameObjectID]->setSelected(true);
+			}
+
 			ImGui::EndChild();
 			ImGui::End();
 

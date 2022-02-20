@@ -55,7 +55,7 @@ namespace examples {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
 						// Render batches
-						std::shared_ptr<scene::Material> lastMaterial = nullptr;
+						scene::Material* lastMaterial = nullptr;
 						for (auto& batch : renderBatches) {
 							// Different material binding
 							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {

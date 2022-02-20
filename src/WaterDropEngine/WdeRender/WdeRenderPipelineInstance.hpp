@@ -22,8 +22,8 @@ namespace wde::render {
 			 * Stores a rendering batch
 			 */
 			struct RenderBatch {
-				std::shared_ptr<scene::Material> material {nullptr};
-				std::shared_ptr<scene::Mesh> mesh {nullptr};
+				scene::Material* material {nullptr};
+				scene::Mesh* mesh {nullptr};
 				int firstIndex {-1};
 				int indexCount {0};
 			};
@@ -184,7 +184,7 @@ namespace wde::render {
 			 * @param commandBuffer
 			 * @param material
 			 */
-			void bind(CommandBuffer& commandBuffer, std::shared_ptr<scene::Material>& material) {
+			void bind(CommandBuffer& commandBuffer, scene::Material* material) {
 				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 				                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
 			}

@@ -98,6 +98,8 @@ namespace wde::scene {
 
 			// Getters and setters
 			uint32_t getID() const { return _id; }
+			void setSelected(bool selected) { _isSelected = selected; }
+			bool isSelected() { return _isSelected; }
 
 
 			// Modules handlers
@@ -128,12 +130,14 @@ namespace wde::scene {
 
 
 		private:
-			// GO description data
+			/** GO description data */
 			uint32_t _id;
-			// GO Modules
+			/** GO Modules */
 			std::vector<std::unique_ptr<Module>> _modules;
-			// True if the game object is static (cannot be changed)
+			/** True if the game object is static (cannot be changed) */
 			bool _isStatic;
+			/** If true, this object will record from the input engine if it has a player controller */
+			bool _isSelected;
 	};
 }
 

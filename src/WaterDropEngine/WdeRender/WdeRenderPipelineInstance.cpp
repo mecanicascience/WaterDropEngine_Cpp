@@ -122,8 +122,8 @@ namespace wde::render {
 
 					// Add this object to a new batch
 					currentBatch = RenderBatch {};
-					currentBatch.material = mat;
-					currentBatch.mesh = meshModule->getMesh();
+					currentBatch.material = mat.get();
+					currentBatch.mesh = meshModule->getMesh().get();
 					currentBatch.firstIndex = static_cast<int>(goActiveID);
 					currentBatch.indexCount = 1;
 					goActiveID++;
@@ -139,8 +139,8 @@ namespace wde::render {
 
 					// Add this object to a new batch
 					currentBatch = RenderBatch {};
-					currentBatch.material = mat;
-					currentBatch.mesh = mesh;
+					currentBatch.material = mat.get();
+					currentBatch.mesh = mesh.get();
 					currentBatch.firstIndex = static_cast<int>(goActiveID);
 					currentBatch.indexCount = 1;
 					goActiveID++;
@@ -149,8 +149,8 @@ namespace wde::render {
 				lastGOMeshRef = mesh;
 
 				// Same material and mesh
-				currentBatch.material = mat;
-				currentBatch.mesh = mesh;
+				currentBatch.material = mat.get();
+				currentBatch.mesh = mesh.get();
 				currentBatch.indexCount++;
 				if (currentBatch.firstIndex == -1)
 					currentBatch.firstIndex = static_cast<int>(goActiveID);
