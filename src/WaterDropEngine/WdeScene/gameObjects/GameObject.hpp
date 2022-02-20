@@ -27,9 +27,10 @@ namespace wde::scene {
 			 * Create a new game object with a transform module (default : 0, 0, 0)
 			 * @param id Unique GO ID
 			 * @param name
+			 * @param isStatic
 			 */
-			GameObject(uint32_t id, std::string name)
-					: _id(id), name(std::move(name)) {
+			GameObject(uint32_t id, std::string name, bool isStatic)
+					: _id(id), name(std::move(name)), _isStatic(isStatic) {
 				// Add default transform module
 				transform = addModule<TransformModule>();
 			}
@@ -56,6 +57,13 @@ namespace wde::scene {
 					return;
 
 				WDE_PROFILE_FUNCTION();
+				if (_isStatic) {
+					ImGui::Text("%s", "This game object is static.");
+					ImGui::Dummy(ImVec2(0.0f, 3.0f));
+					ImGui::Separator();
+					ImGui::Dummy(ImVec2(0.0f, 5.0f));
+				}
+
 				// Render module top
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
 				ImGui::Text("%s", (std::to_string(_id) + " - " + name).c_str());
@@ -124,6 +132,8 @@ namespace wde::scene {
 			uint32_t _id;
 			// GO Modules
 			std::vector<std::unique_ptr<Module>> _modules;
+			// True if the game object is static (cannot be changed)
+			bool _isStatic;
 	};
 }
 

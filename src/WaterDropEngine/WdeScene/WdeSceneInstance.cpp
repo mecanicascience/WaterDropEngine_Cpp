@@ -6,24 +6,25 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 
 		// Update game objects
-		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene game objects." << logger::endl;
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene dynamic game objects." << logger::endl;
 		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tickGameObjects");
-			for (auto &go: _gameObjects)
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::dynamicGameObjects");
+			for (auto &go: _gameObjectsDynamic)
 				go->tick();
 		}
 
 		// Update scene
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Updating scene instance." << logger::endl;
 		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::updateScene");
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::updateScene");
 			update();
 		}
 	}
 
 	void WdeSceneInstance::onNotify(core::Event event) {
+#ifdef WDE_GUI_ENABLED
 		if (event.channel == LogChannel::GUI && event.name == "CreateGUI") {
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::createGUI");
 			// Create a game objects list tab
 			ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
 			ImGuiID dockIDLeft = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.19f, nullptr, &dockspaceID);
@@ -35,7 +36,7 @@ namespace wde::scene {
 		}
 
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::drawGUI");
 			// Setup scene components list
 			ImGui::Begin("Scene Components");
 			ImGui::BeginChild("Scene Components Children");
@@ -55,6 +56,7 @@ namespace wde::scene {
 				_gameObjects.at(_selectedGameObjectID)->drawGUI();
 			ImGui::End();
 		}
+#endif
 	}
 
 	void WdeSceneInstance::drawGUIForGO(GameObject& go, int* selected, const std::string& depthIterator) {

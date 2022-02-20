@@ -76,7 +76,9 @@ namespace wde::scene {
 			ImGui::Text("  Currently selected camera.");
 		else if (ImGui::Button("Set as active"))
 			setAsActive();
-		ImGui::Dummy(ImVec2(0.0f, 13.0f));
+		ImGui::Dummy(ImVec2(0.0f, 3.0f));
+		ImGui::Separator();
+		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 
 		// == Projection type GUI ==
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);

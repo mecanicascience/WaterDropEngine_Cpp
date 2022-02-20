@@ -40,12 +40,12 @@ namespace examples {
 				{
 					auto *data = _indirectCommandsBuffer->map();
 					auto* commandsData = (VkDrawIndexedIndirectCommand*) data;
-					for (int i = 0; i < scene.getGameObjects().size(); i++) {
-						auto meshMod = scene.getGameObject(i).getModule<scene::MeshRendererModule>();
+					int goActiveID = 0;
+					for (auto& go : scene.getGameObjects()) {
+						auto meshMod = go->getModule<scene::MeshRendererModule>();
 						if (meshMod != nullptr && meshMod->getMesh() != nullptr && meshMod->getMaterial() != nullptr)
-							commandsData[i] = meshMod->getMesh()->getRenderIndirectCommand(i);
-						else // Empty command
-							commandsData[i] = VkDrawIndexedIndirectCommand {};
+							commandsData[goActiveID] = meshMod->getMesh()->getRenderIndirectCommand(go->getID());
+						goActiveID++;
 					}
 					_indirectCommandsBuffer->unmap();
 				}

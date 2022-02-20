@@ -2,7 +2,7 @@
 #include "../WaterDropEngine.hpp"
 
 namespace wde::gui {
-#ifdef WDE_ENGINE_MODE_DEBUG // Debug
+#ifdef WDE_GUI_ENABLED
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)), Subject("GUI Subject") {
 		// === Create ImGui context ===
@@ -113,10 +113,6 @@ namespace wde::gui {
 	void WdeGUI::render(render::CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
 
-#ifdef WDE_ENGINE_MODE_PRODUCTION
-		return;
-#endif
-
 		// Start the ImGui frame
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Rendering GUI new frame." << logger::endl;
 		ImGui_ImplVulkan_NewFrame();
@@ -221,10 +217,9 @@ namespace wde::gui {
 
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Cleaning Up Done ==" << logger::endl;
 	}
-
 #endif
 
-#ifdef WDE_ENGINE_MODE_PRODUCTION // Production
+#ifndef WDE_GUI_ENABLED
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)), Subject("GUI Subject") {}
 	void WdeGUI::initialize(std::pair<int, int> renderStage) {}
 	void WdeGUI::tick() {}

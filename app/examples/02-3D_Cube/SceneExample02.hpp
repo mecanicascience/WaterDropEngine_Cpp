@@ -56,9 +56,9 @@ namespace examples {
 				meshRenderer->setMesh(testMesh2);
 			}
 
-			auto meshParent = createGameObject("Many 3D Objects Parent");
+			auto meshParent = createGameObject("Many 3D Objects Parent", true);
 			for (int i = 0; i < 1000; i++) {
-				auto object3D = createGameObject("Many 3D Objects " + std::to_string(i));
+				auto object3D = createGameObject("Many 3D Objects " + std::to_string(i), true);
 				object3D->transform->setParent(meshParent->transform);
 				object3D->transform->position += glm::vec3(+5.0 - ((float) i) / 10.0, 0, 0);
 

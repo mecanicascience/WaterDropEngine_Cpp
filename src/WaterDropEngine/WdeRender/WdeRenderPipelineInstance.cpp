@@ -59,11 +59,22 @@ namespace wde::render {
 			}
 
 
+			// On first update, also update every static game objects
+			static bool isFirstTime = true;
+			if (isFirstTime) {
+				isFirstTime = false;
+				void *data = _objectsData->map();
+				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
+				for (auto& go : scene.getStaticGameObjects())
+					objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
+				_objectsData->unmap();
+			}
+
 			// Update game objects data
 			{
 				void *data = _objectsData->map();
 				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
-				for (auto& go : scene.getGameObjects()) {
+				for (auto& go : scene.getDynamicGameObjects()) {
 					if (go->transform->changed) {
 						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
 						go->transform->changed = false;
@@ -84,6 +95,7 @@ namespace wde::render {
 			std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
 
 			// Fetch every game objects
+			int goActiveID = 0;
 			for (auto& go : scene.getGameObjects()) {
 				auto meshModule = go->getModule<scene::MeshRendererModule>();
 
@@ -98,6 +110,7 @@ namespace wde::render {
 
 					// Empty batch (do not draw this object)
 					currentBatch = RenderBatch {};
+					goActiveID++;
 					continue;
 				}
 
@@ -111,8 +124,9 @@ namespace wde::render {
 					currentBatch = RenderBatch {};
 					currentBatch.material = mat;
 					currentBatch.mesh = meshModule->getMesh();
-					currentBatch.firstIndex = static_cast<int>(go->getID());
+					currentBatch.firstIndex = static_cast<int>(goActiveID);
 					currentBatch.indexCount = 1;
+					goActiveID++;
 					continue;
 				}
 				lastGOMaterialRef = mat;
@@ -127,8 +141,9 @@ namespace wde::render {
 					currentBatch = RenderBatch {};
 					currentBatch.material = mat;
 					currentBatch.mesh = mesh;
-					currentBatch.firstIndex = static_cast<int>(go->getID());
+					currentBatch.firstIndex = static_cast<int>(goActiveID);
 					currentBatch.indexCount = 1;
+					goActiveID++;
 					continue;
 				}
 				lastGOMeshRef = mesh;
@@ -138,7 +153,8 @@ namespace wde::render {
 				currentBatch.mesh = mesh;
 				currentBatch.indexCount++;
 				if (currentBatch.firstIndex == -1)
-					currentBatch.firstIndex = static_cast<int>(go->getID());
+					currentBatch.firstIndex = static_cast<int>(goActiveID);
+				goActiveID++;
 			}
 
 			// Push last batch

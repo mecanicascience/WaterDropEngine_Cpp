@@ -25,6 +25,8 @@ namespace wde::scene {
 			void cleanUpInstance() {
 			    _materials.clear();
 			    _meshes.clear();
+				_gameObjectsDynamic.clear();
+				_gameObjectsStatic.clear();
 			    _gameObjects.clear();
 
 			    // Clean up scene
@@ -36,6 +38,8 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
 			GameObject& getGameObject(int goID) { return *_gameObjects[goID]; }
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
+			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
+			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
 			std::shared_ptr<GameObject> getActiveCamera() {
 				if (_activeCameraID == -1)
 					return nullptr;
@@ -48,10 +52,15 @@ namespace wde::scene {
 			/**
 			 * Create a new GameObject
 			 * @param name Name of the GameObject
+			 * @param isStatic True if the game object is a static one (default false)
 			 */
-			std::shared_ptr<GameObject> createGameObject(const std::string& name) {
+			std::shared_ptr<GameObject> createGameObject(const std::string& name, bool isStatic = false) {
 				static uint32_t ID = 0;
-				_gameObjects.push_back(std::make_shared<GameObject>(ID++, name));
+				_gameObjects.push_back(std::make_shared<GameObject>(ID++, name, isStatic));
+				if (isStatic)
+					_gameObjectsStatic.push_back(_gameObjects[_gameObjects.size() - 1]);
+				else
+					_gameObjectsDynamic.push_back(_gameObjects[_gameObjects.size() - 1]);
 				return _gameObjects[_gameObjects.size() - 1];
 			}
 
@@ -69,9 +78,15 @@ namespace wde::scene {
 
 
 		private:
-			// Scene containers
-			/** List of scene game objects */
+			// Scene game objects
+			/** List of all scene game objects */
 			std::vector<std::shared_ptr<GameObject>> _gameObjects;
+			/** List of scene static game objects */
+			std::vector<std::shared_ptr<GameObject>> _gameObjectsStatic;
+			/** List of scene dynamic game objects */
+			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic;
+
+			// Scene containers
 			/** List of scene materials */
 			std::vector<std::shared_ptr<Material>> _materials;
             /** List of scene meshes */
