@@ -60,7 +60,11 @@ namespace wde {
 				#else
 					std::cout << "Initializing engine instance." << std::endl;
 				#endif
-				instance.initialize();
+
+				// Initialize instance on a different thread
+				std::thread t ([](WdeInstance* instanceRef) {instanceRef->initialize();}, &instance);
+				t.join();
+
 				_gui->addObserver(instance.getScenePointer(), true);
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
