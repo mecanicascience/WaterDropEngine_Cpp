@@ -2,7 +2,7 @@
 
 namespace wde {
 	/**
-	 * Class that removes the copy constructor and operator from derived class, and add a default constructor and destructor
+	 * Class that removes the copy constructor and operator from derived class, and add a default protected constructor and destructor
 	 */
 	class NonCopyable {
 		public:
@@ -13,7 +13,7 @@ namespace wde {
 
 
 		protected:
-            explicit NonCopyable() = default;
+			explicit NonCopyable() = default;
 			virtual ~NonCopyable() = default;
 	};
 }

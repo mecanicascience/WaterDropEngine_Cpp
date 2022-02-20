@@ -5,9 +5,9 @@
 ![language](https://img.shields.io/badge/Language-C++-9cf)
 ![license](https://img.shields.io/github/license/mecanicascience/WaterDropEngine)
 
-![Rendering Engine example](imgs/preview_image.png)
-
 <br />
+
+![Demo engine image](imgs/Engine_Demo.png)
 
 ## Presentation
 A 3D rendering engine mainly designed for computer graphics and physics simulations, using Vulkan.
@@ -19,7 +19,6 @@ WaterDropEngine is a free and open-source project, so you can directly support i
 new pull requests or issues.
 We'll be happy to answer your questions and to add your new code implementation ideas.
 
-You will find engine documentation [here](https://codedocs.xyz/mecanicascience/WaterDropEngine/).
 
 <br/>
 
@@ -27,16 +26,15 @@ You will find engine documentation [here](https://codedocs.xyz/mecanicascience/W
 To start creating your own application, the easiest path is the following:
 
 First, fork the project into your own GitHub account, clone the repository using `git clone https://github.com/mecanicascience/WaterDropEngine.git`,
-and open a terminal window inside the `WaterDropEngine` cloned folder.<br/>
-Once this step is done, go to the `lib` folder, and run the command `git clone https://github.com/glfw/glfw` to clone the GLFW library.
-Then, go to `lib` and run the command `git clone https://github.com/g-truc/glm`.
+and open a terminal window inside the `WaterDropEngine` cloned folder. Then run `git submodule init` and `git submodule update`
+to install the engine required submodules.
 
 Once all of these is done, you are ready to start using WaterDropEngine.
 
 <br/>
 
 ## Examples
-You will find the examples on the [app/examples](app/examples) folder.
+You will find the examples list on the [app/examples](app/examples) folder.
 
 <br />
 
@@ -68,23 +66,15 @@ about this for more information).
 
 ## Credits
 WaterDropEngine uses [Vulkan](https://www.vulkan.org/) and the [GLFW library](https://www.glfw.org/) to draw on the screen.
-It also uses [GLM](https://github.com/g-truc/glm) to perform fast computations, and [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) to load objects.  
-The WaterDropEngine rendering structure was highly based on the [Vulkan tutorial](https://vulkan-tutorial.com), the [Vulkan guide](https://vkguide.dev/)
-and on the [Acid Engine structure](https://github.com/EQMG/Acid/).
+It also uses [GLM](https://github.com/g-truc/glm) to perform fast computations, and [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) to load objects. 
+The GUI is drawn using [Dear ImGUI](https://github.com/ocornut/imgui).
+The WaterDropEngine rendering structure was highly based on the [Vulkan tutorial](https://vulkan-tutorial.com), and the [Vulkan guide](https://vkguide.dev/).
 
 WaterDropEngine was created and is currently maintained by [Mecanica Science](https://mecanicascience.fr/).
 You can find further information and library credits down below.
 - If you want to use WaterDropEngine, you need to follow the [license requirements](https://github.com/mecanicascience/WaterDropEngine/blob/master/LICENSE) (to sum up, you can use pSEngine everywhere and for any purpose, as long as there is a copyright notice).
 - You can find all WaterDropEngine versions on [this link](https://github.com/mecanicascience/WaterDropEngine/releases).
-- WaterDropEngine uses [Vulkan](https://www.vulkan.org/), [GLFW](https://www.glfw.org/), [GLM](https://github.com/g-truc/glm)
-and [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader).
+- WaterDropEngine uses [Vulkan](https://www.vulkan.org/), [GLFW](https://www.glfw.org/), [GLM](https://github.com/g-truc/glm),
+[tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) and [Dear ImGUI](https://github.com/ocornut/imgui).
 
 <br />
-
-## Showroom
-Here are some of the most interesting things done using the WaterDropEngine.
-
-### Water Simulation
-This is a project currently being created, which aims to simulate water in a desert-like terrain.
-
-![Water Simulation](imgs/showroom/WaterTerrain.png)

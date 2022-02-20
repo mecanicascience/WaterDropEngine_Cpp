@@ -4,7 +4,7 @@
 #include <ios>
 #include <fstream>
 
-#include "../WdeError/WdeException.hpp"
+#include "../../../wde.hpp"
 
 namespace wde {
 	class WdeFileUtils {

@@ -19,7 +19,7 @@ namespace wde::gui {
 				ImGui::SetColumnWidth(0, columnWidth);
 
 				// Set label
-				ImGui::Text(label.c_str());
+				ImGui::Text("%s", label.c_str());
 				ImGui::NextColumn();
 
 				// Set vector
@@ -38,24 +38,24 @@ namespace wde::gui {
 				// End of array
 				ImGui::PopID();
 				ImGui::Columns(1); // empty column
-		}
+			}
 
 
-		/**
-		 * Add a float drager with a label
-		 * @param label The label next to the button
-		 * @param value A reference to the dragger value
-		 * @param resetValue The reset value (default 0)
-		 * @param columnWidth The label column width (default 120)
-		 */
-		static void addFloatDragger(const std::string& label, float &value, float resetValue = 0.0f, float columnWidth = 120.0f, float cursorSpeed = 0.1f) {
+			/**
+			 * Add a float drager with a label
+			 * @param label The label next to the button
+			 * @param value A reference to the dragger value
+			 * @param resetValue The reset value (default 0)
+			 * @param columnWidth The label column width (default 120)
+			 */
+			static void addFloatDragger(const std::string& label, float &value, float resetValue = 0.0f, float columnWidth = 120.0f, float cursorSpeed = 0.1f) {
 				// Array
 				ImGui::PushID(label.c_str());
 				ImGui::Columns(2);
 				ImGui::SetColumnWidth(0, columnWidth);
 
 				// Label
-				ImGui::Text(label.c_str());
+				ImGui::Text("%s", label.c_str());
 				ImGui::NextColumn();
 
 				// Drag
@@ -66,7 +66,7 @@ namespace wde::gui {
 				// End of array
 				ImGui::PopID();
 				ImGui::Columns(1);
-		}
+			}
 
 
 
@@ -92,4 +92,3 @@ namespace wde::gui {
 			}
 	};
 }
-

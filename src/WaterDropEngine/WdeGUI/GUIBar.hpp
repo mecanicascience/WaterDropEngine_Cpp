@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../wde.hpp"
+#include "../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 
 namespace wde::gui {
 	class GUIBar {
@@ -10,9 +11,8 @@ namespace wde::gui {
 			/** Renders the gui top menu */
 			void renderGUI();
 
-
 			// Getters and setters
-			bool displayGUI() { return _displayGUI; }
+			bool displayGUI() const { return _displayGUI; }
 
 
 		private:

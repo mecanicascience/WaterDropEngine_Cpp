@@ -6,7 +6,14 @@ namespace wde::core {
 	 */
 	class Event {
 		public:
-			std::string msg {};
+			/** Channel provider of the event */
+			LogChannel channel {};
+
+			/** Name of the event */
+			std::string name {};
+
+			/** Data payload of the event */
+			void *data {};
 	};
 }
 

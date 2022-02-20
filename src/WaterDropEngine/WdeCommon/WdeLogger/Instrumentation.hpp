@@ -9,13 +9,15 @@
 #include <mutex>
 #include <sstream>
 
+#include "../WdeUtils/Config.hpp"
 #include "../WdeUtils/NonCopyable.hpp"
 
 
-// Creates logs into logs/ that can be viewed in chrome://tracing/
+// Creates tracing files into logs/ that can be viewed in chrome://tracing/
 namespace wde {
 	using floatingPointMicroseconds = std::chrono::duration<double, std::micro>;
 
+	/** Data file structure */
 	struct ProfileResult {
 		std::string name;
 		floatingPointMicroseconds start;
@@ -23,17 +25,19 @@ namespace wde {
 		std::thread::id threadID;
 	};
 
+	/** Recording session name */
 	struct InstrumentationSession {
 		std::string name;
 	};
 
 
+	/** Current recording session */
 	class Instrumentor : public NonCopyable {
 		public:
 			void beginSession(const std::string& name, const std::string& filepath = "results.json") {
 				std::lock_guard lock(_mutex);
 				if (_currentSession) {
-					Logger::err("Cannot begin Instrumentor session when another is already open.", LoggerChannel::MAIN);
+					logger::log(LogLevel::ERR, LogChannel::CORE) << "Cannot begin Instrumentor session when another is already open." << logger::endl;
 					internalEndSession();
 				}
 				_outputStream.open(filepath);
@@ -42,7 +46,7 @@ namespace wde {
 					writeHeader();
 				}
 				else
-					Logger::err("Error opening profiler results file.", LoggerChannel::MAIN);
+					logger::log(LogLevel::ERR, LogChannel::CORE) << "Error while opening profiler results file." << logger::endl;
 			}
 
 			void endSession() {
@@ -54,6 +58,7 @@ namespace wde {
 			void writeProfile(const ProfileResult& result) {
 				std::stringstream json;
 
+				// Write to be read in chrome://tracing format
 				json << std::setprecision(3) << std::fixed;
 				json << ",{";
 				json << R"("cat":"function",)";
@@ -72,7 +77,6 @@ namespace wde {
 				}
 			}
 
-
 			static Instrumentor& get() {
 				static Instrumentor instance;
 				return instance;
@@ -84,7 +88,7 @@ namespace wde {
 			std::ofstream _outputStream;
 			std::mutex _mutex;
 
-            explicit Instrumentor() : _currentSession(nullptr) { }
+			explicit Instrumentor() : _currentSession(nullptr) { }
 			~Instrumentor() { endSession(); }
 
 			void writeHeader() {
@@ -122,7 +126,7 @@ namespace wde {
 				auto endTime = std::chrono::steady_clock::now();
 				auto highResStart = floatingPointMicroseconds { _startTime.time_since_epoch() };
 				auto elapsedTime =
-						  std::chrono::time_point_cast<std::chrono::microseconds>(endTime).time_since_epoch()
+						std::chrono::time_point_cast<std::chrono::microseconds>(endTime).time_since_epoch()
 						- std::chrono::time_point_cast<std::chrono::microseconds>(_startTime).time_since_epoch();
 
 				Instrumentor::get().writeProfile({ _name, highResStart, elapsedTime, std::this_thread::get_id() });
@@ -144,6 +148,7 @@ namespace wde {
 			char data[N];
 		};
 
+		/** Clear a string from interfering chars */
 		template <size_t N, size_t K>
 		constexpr auto cleanupOutputString(const char(&expr)[N], const char(&remove)[K]) {
 			ChangeResult<N> result = {};
@@ -164,45 +169,51 @@ namespace wde {
 	}
 
 
+	/**
+	 * Define Instrumentation macros only if profiler mode enabled
+	 */
 	class Instrumentation {
 		public:
-            explicit Instrumentation(const char* name) {
-				#ifdef WDE_USE_PROFILING
-					_timerSession = new InstrumentationTimer(name);
-				#endif
+			explicit Instrumentation(const char* name) {
+					#ifdef WDE_USE_PROFILING
+				_timerSession = new InstrumentationTimer(name);
+					#endif
 			}
 
 			~Instrumentation() {
-				#ifdef WDE_USE_PROFILING
-					delete _timerSession;
-					_timerSession = nullptr;
-				#endif
+					#ifdef WDE_USE_PROFILING
+				delete _timerSession;
+				_timerSession = nullptr;
+					#endif
 			}
 
 		private:
-			#ifdef WDE_USE_PROFILING
-				InstrumentationTimer* _timerSession;
-			#endif
+				#ifdef WDE_USE_PROFILING
+			InstrumentationTimer* _timerSession;
+				#endif
 	};
 }
 
 
 
-// Defines profiler options
-#ifdef WDE_USE_PROFILING
+// Defines profiler options whether profiling is enabled
+#ifdef WDE_ENGINE_MODE_DEBUG
 	#define WDE_PROFILE_BEGIN_SESSION(name, filepath) Instrumentor::get().beginSession(name, filepath)
 	#define WDE_PROFILE_END_SESSION() Instrumentor::get().endSession()
 
 	#define WDE_PROFILE_SCOPE_LINE2(name, line) constexpr auto fixedName##line = instrumentorUtils::cleanupOutputString(name, "__cdecl ");\
-												   InstrumentationTimer timer##line(fixedName##line.data)
+		InstrumentationTimer timer##line(fixedName##line.data)
 	#define WDE_PROFILE_SCOPE_LINE(name, line) WDE_PROFILE_SCOPE_LINE2(name, line)
 	#define WDE_PROFILE_SCOPE(name) WDE_PROFILE_SCOPE_LINE(name, __LINE__)
 	#define WDE_PROFILE_FUNCTION() WDE_PROFILE_SCOPE(__PRETTY_FUNCTION__)
-#else
+#endif
+
+#ifdef WDE_ENGINE_MODE_PRODUCTION
 	#define WDE_PROFILE_BEGIN_SESSION(name, filepath)
 	#define WDE_PROFILE_END_SESSION()
 
 	#define WDE_PROFILE_SCOPE(name)
 	#define WDE_PROFILE_FUNCTION()
 #endif
+
 

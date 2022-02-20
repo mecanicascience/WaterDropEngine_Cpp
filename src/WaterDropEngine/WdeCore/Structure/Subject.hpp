@@ -17,12 +17,18 @@ namespace wde::core {
 
 			// Observers handling
 			/**
-			 * Add an observer to the watching list
+			 * Add an observer to the watching list on the back of the stack
 			 * @param observer
+			 * @param pushTop True if the observer should be put on top of the list
 			 */
-			void addObserver(std::shared_ptr<Observer> observer) {
-				_observers.push_back(std::move(observer));
+			void addObserver(std::shared_ptr<Observer> observer, bool pushTop = false) {
+				if (pushTop)
+					_observers.insert(_observers.begin(), std::move(observer));
+				else
+					_observers.push_back(std::move(observer));
 			}
+
+
 
 			/**
 			 * Send a notification to the listening observers
