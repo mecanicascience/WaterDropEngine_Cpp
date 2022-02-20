@@ -85,90 +85,11 @@ namespace wde::render {
 		}
 
 
-		// Create rendering batches
-		std::vector<RenderBatch> renderBatches {};
-		{
-			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
-			RenderBatch currentBatch {};
-
-			std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
-			std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
-
-			// Fetch every game objects
-			int goActiveID = 0;
-			for (auto& go : scene.getGameObjects()) {
-				auto meshModule = go->getModule<scene::MeshRendererModule>();
-
-				// If no renderer, or material, or mesh, push last batch
-				if (meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr) {
-					if (currentBatch.indexCount > 0)
-						renderBatches.push_back(currentBatch);
-
-					// No mesh and material
-					lastGOMeshRef = nullptr;
-					lastGOMaterialRef = nullptr;
-
-					// Empty batch (do not draw this object)
-					currentBatch = RenderBatch {};
-					goActiveID++;
-					continue;
-				}
-
-				// If material different from last one, push last batch
-				auto& mat = meshModule->getMaterial();
-				if (currentBatch.indexCount > 0 && lastGOMaterialRef != mat) {
-					if (currentBatch.indexCount > 0)
-						renderBatches.push_back(currentBatch);
-
-					// Add this object to a new batch
-					currentBatch = RenderBatch {};
-					currentBatch.material = mat.get();
-					currentBatch.mesh = meshModule->getMesh().get();
-					currentBatch.firstIndex = static_cast<int>(goActiveID);
-					currentBatch.indexCount = 1;
-					goActiveID++;
-					continue;
-				}
-				lastGOMaterialRef = mat;
-
-				// If mesh different from last one, push last batch
-				auto& mesh = meshModule->getMesh();
-				if (currentBatch.indexCount > 0 && lastGOMeshRef != mesh) {
-					if (currentBatch.indexCount > 0)
-						renderBatches.push_back(currentBatch);
-
-					// Add this object to a new batch
-					currentBatch = RenderBatch {};
-					currentBatch.material = mat.get();
-					currentBatch.mesh = mesh.get();
-					currentBatch.firstIndex = static_cast<int>(goActiveID);
-					currentBatch.indexCount = 1;
-					goActiveID++;
-					continue;
-				}
-				lastGOMeshRef = mesh;
-
-				// Same material and mesh
-				currentBatch.material = mat.get();
-				currentBatch.mesh = mesh.get();
-				currentBatch.indexCount++;
-				if (currentBatch.firstIndex == -1)
-					currentBatch.firstIndex = static_cast<int>(goActiveID);
-				goActiveID++;
-			}
-
-			// Push last batch
-			if (currentBatch.indexCount > 0)
-				renderBatches.push_back(currentBatch);
-		}
-
-
 		// Engine recording commands to the current frame command buffer
 		{
 			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::render");
-
 			// ==== RENDER COMMANDS ====
-			render(commandBuffer, scene, renderBatches);
+			render(commandBuffer, scene);
 		}
 
 		// Wait for last swapchain image to finish rendering before sending to queue

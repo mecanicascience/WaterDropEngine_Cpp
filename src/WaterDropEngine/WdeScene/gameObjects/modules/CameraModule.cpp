@@ -137,6 +137,6 @@ namespace wde::scene {
 	}
 
 	void CameraModule::setAsActive() {
-		WaterDropEngine::get().getInstance().getScene().setActiveCamera(_gameObject.getID());
+		WaterDropEngine::get().getInstance().getScene()._activeCameraID = static_cast<int>(_gameObject.getID());
 	}
 }

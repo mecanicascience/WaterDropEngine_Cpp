@@ -37,6 +37,9 @@ namespace wde::scene {
 
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::drawGUI");
+			if (_gameObjects.empty())
+				return;
+
 			// Setup scene components list
 			ImGui::Begin("Scene Components");
 			ImGui::BeginChild("Scene Components Children");

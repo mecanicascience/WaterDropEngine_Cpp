@@ -69,9 +69,8 @@ namespace wde::render {
 			 * Render the pipeline to a command buffer
 			 * @param commandBuffer
 			 * @param scene
-			 * @param renderBatches The scene batches
 			 */
-			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene, std::vector<RenderBatch> renderBatches) = 0;
+			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
 
 
 

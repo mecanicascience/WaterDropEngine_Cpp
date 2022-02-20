@@ -36,8 +36,8 @@ void main() {
     // Computes world space position
     vec4 positionWorldSpace = inObjectBuffer.objects[gl_BaseInstance].model * vec4(vPosition, 1.0); // To world space position
     gl_Position = inSceneData.transformProjSpace    // To Vulkan frustum position
-    * inSceneData.transformCameraSpace  // To Camera space position
-    * positionWorldSpace;               // Object world space position
+                * inSceneData.transformCameraSpace  // To Camera space position
+                * positionWorldSpace;               // Object world space position
 
     // Vertex color
     outColor = inMaterialBuffer.color.xyz;

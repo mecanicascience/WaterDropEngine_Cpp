@@ -12,6 +12,9 @@ namespace wde::scene {
 	 */
 	class WdeSceneInstance : public core::Observer {
 		public:
+			/** Active camera ID (none = -1) */
+			int _activeCameraID = -1;
+
 			// Scene engine override methods
 			virtual void setup() {};
 			virtual void update() {};
@@ -45,7 +48,6 @@ namespace wde::scene {
 					return nullptr;
 				return _gameObjects[_activeCameraID];
 			}
-			void setActiveCamera(int gameObjectID) { _activeCameraID = gameObjectID; }
 
 
 	protected:
@@ -93,9 +95,7 @@ namespace wde::scene {
             std::vector<std::shared_ptr<Mesh>> _meshes;
 
 			// Scene utils
-			/** Selected game object ID (none = -1) */
-			int _selectedGameObjectID = -1;
-			/** Active camera ID (none = -1) */
-			int _activeCameraID = -1;
+			/** Selected game object ID for GUI (default : 0) */
+			int _selectedGameObjectID = 0;
 	};
 }
