@@ -14,8 +14,9 @@ namespace wde::scene {
         public:
             explicit Mesh(std::string name);
             ~Mesh();
+			void initialize();
 
-            // Core functions
+			// Render functions
             /**
              * Bind the mesh to the command buffer
              * @param commandBuffer
@@ -62,7 +63,7 @@ namespace wde::scene {
 		   int getIndexCount() { return static_cast<int>(_indices.size()); }
 
 
-	   private:
+	   protected:
 		   // Core
 		   /** Name of the mesh */
             std::string _name;
@@ -78,5 +79,12 @@ namespace wde::scene {
             // Utils
             /** Temporary reference to the render command buffer */
             render::CommandBuffer* _commandBuffer = nullptr;
+
+
+		    // Core functions
+		    /** Initialize the Mesh */
+		    virtual void loadData() {};
+		    /** Recompute the normals of each vertex */
+		    void recalculateNormals();
     };
 }

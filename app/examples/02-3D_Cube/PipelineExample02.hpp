@@ -14,13 +14,14 @@ namespace examples {
 			void setup() override {
 				// Create passes attachments
 				setAttachments({
-					{0, "Swapchain attachment", RenderAttachment::SWAPCHAIN, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)}
+					{0, "Swapchain attachment", RenderAttachment::SWAPCHAIN, VK_FORMAT_UNDEFINED, Color(0.1f, 0.105f, 0.11f)},
+					{1, "Depth texture", RenderAttachment::DEPTH}
 				});
 
 				// Create passes and subpasses structure
 				setStructure({
 					{0, {
-						{0, {}, { 0 }},
+						{0, {}, { 0, 1 }},
 						{1, {}, { 0 }}
 					}}
 				});

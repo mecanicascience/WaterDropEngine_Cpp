@@ -5,6 +5,7 @@
 #include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/MeshRendererModule.hpp"
 #include "../../../src/WaterDropEngine/WdeScene/gameObjects/materials/ColorMaterial.hpp"
 #include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/ControllerModule.hpp"
+#include "../../../src/WaterDropEngine/WdeScene/gameObjects/meshes/MeshLoader.hpp"
 
 using namespace wde;
 using namespace wde::scene;
@@ -34,37 +35,36 @@ namespace examples {
 			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0});
 
 			// MESH OBJECTS
-			auto testMesh = createMesh<Mesh>("Test Mesh");
-			auto testMesh2 = createMesh<Mesh>("Test Mesh 2");
+			auto cubeMesh = createMesh<MeshLoader>("cube.obj");
 
 			{
 				// Game Object 1
-				auto object3D = createGameObject("Test Object 1");
-				object3D->transform->position += glm::vec3(-5, 0, 0);
+				auto object3D = createGameObject("Cube Object 1");
+				object3D->transform->position += glm::vec3(-5, 5, 0);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
 				meshRenderer->setMaterial(colorMatRed);
-				meshRenderer->setMesh(testMesh);
+				meshRenderer->setMesh(cubeMesh);
 			}
 			{
 				// Game Object 2
-				auto object3D = createGameObject("Test Object 2");
-				object3D->transform->position += glm::vec3(0, 0, 0);
+				auto object3D = createGameObject("Cube Object 2");
+				object3D->transform->position += glm::vec3(0, 5, 0);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
-				meshRenderer->setMaterial(colorMatRed);
-				meshRenderer->setMesh(testMesh2);
+				meshRenderer->setMaterial(colorMatGreen);
+				meshRenderer->setMesh(cubeMesh);
 			}
 
 			auto meshParent = createGameObject("Many 3D Objects Parent", true);
-			for (int i = 0; i < 1000; i++) {
-				auto object3D = createGameObject("Many 3D Objects " + std::to_string(i), true);
+			for (int i = 0; i < 10000; i++) {
+				auto object3D = createGameObject("Cube 3D Objects " + std::to_string(i), true);
 				object3D->transform->setParent(meshParent->transform);
-				object3D->transform->position += glm::vec3(+5.0 - ((float) i) / 10.0, 0, 0);
+				object3D->transform->position += glm::vec3(+5.0 - (float) i, 0, 0);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
 				meshRenderer->setMaterial(colorMatRed);
-				meshRenderer->setMesh(testMesh);
+				meshRenderer->setMesh(cubeMesh);
 			}
 		}
 	};
