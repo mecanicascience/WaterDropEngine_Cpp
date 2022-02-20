@@ -4,7 +4,7 @@
 #include "../../../WaterDropEngine.hpp"
 
 namespace wde::scene {
-	Material::Material(std::string name, std::pair<int, int> renderStage, const std::vector<std::string> &shaders)
+	Material::Material(std::string name, std::pair<int, int> renderStage, const std::vector<std::string> &shaders, VkPolygonMode polygonMode)
 			: _name(std::move(name)),
 			  _renderStage(renderStage),
 			  _pipeline(std::make_unique<render::PipelineGraphics>(
@@ -12,10 +12,11 @@ namespace wde::scene {
 					  shaders, // Shaders
 					  std::vector<VertexInput>{ Vertex::getDescriptions() }, // Vertices
 					  render::PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
-					  render::PipelineGraphics::Depth::None,    // Do not use depth
+					  render::PipelineGraphics::Depth::ReadWrite,    // Do not use depth
 					  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
-					  VK_POLYGON_MODE_FILL,   // Fill drawn shapes
-					  VK_CULL_MODE_NONE)) {  // Disable pipeline culling
+					  polygonMode,   // Fill drawn shapes
+					  VK_CULL_MODE_BACK_BIT,
+					  VK_FRONT_FACE_COUNTER_CLOCKWISE)) {  // Disable pipeline culling
 		static int materialID = 0;
 		_materialID = materialID++;
 	}

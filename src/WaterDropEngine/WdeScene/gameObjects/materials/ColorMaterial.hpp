@@ -10,11 +10,17 @@ namespace wde::scene {
 		};
 
 		public:
-			explicit ColorMaterial(std::pair<int, int> renderStage, Color materialColor)
+			/**
+			 * Create a new uniformly colored material
+			 * @param renderStage
+			 * @param materialColor
+			 * @param polygonMode (default : fill)
+			 */
+			explicit ColorMaterial(std::pair<int, int> renderStage, Color materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL)
 			    : Material("Color Material " + materialColor.toString(), renderStage, {
                             "res/shaders/common/color/color.vert.spv",
                             "res/shaders/common/color/color.frag.spv"
-                        }) {
+                        }, polygonMode) {
 				// Create material buffer
 				_materialData = std::make_unique<render::Buffer>(sizeof(GPUMaterialData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 				{

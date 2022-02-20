@@ -11,7 +11,7 @@ namespace wde::render {
 		// ==== Create subpass descriptions ====
 		// Get depth attachment
 		int depthAttachmentID = -1;
-		for (auto &att: attachments) {
+		for (auto &att: _attachments) {
 			if (att.type == RenderAttachment::DEPTH) {
 				depthAttachmentID = static_cast<int>(att.bindingID);
 				break;
@@ -50,7 +50,7 @@ namespace wde::render {
 
 				// Set optional depth attachment
 				bool isDepthAttachment = false;
-				for (auto &att: subpass._readingAttachments) {
+				for (auto &att: subpass._writingAttachments) {
 					if (_attachments[att].type == RenderAttachment::DEPTH) {
 						isDepthAttachment = true;
 						break;

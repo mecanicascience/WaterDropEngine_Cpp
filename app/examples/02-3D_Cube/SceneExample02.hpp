@@ -31,8 +31,8 @@ namespace examples {
 			}
 
 			// MATERIALS
-			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0});
-			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0});
+			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0}, VK_POLYGON_MODE_FILL);
+			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0}, VK_POLYGON_MODE_LINE);
 
 			// MESH OBJECTS
 			auto cubeMesh = createMesh<MeshLoader>("cube.obj");

@@ -8,7 +8,14 @@
 namespace wde::scene {
 	class Material {
 		public:
-			explicit Material(std::string name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders);
+			/**
+			 * Create a new material
+			 * @param name
+			 * @param renderStage
+			 * @param shaders
+			 * @param polygonMode (default : mode fill)
+			 */
+			explicit Material(std::string name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL);
             ~Material();
 
 
