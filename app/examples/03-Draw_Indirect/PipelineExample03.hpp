@@ -55,6 +55,11 @@ namespace examples {
 					std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
 					std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
 
+					// Map Render GO Commands
+					void *renderGOData = _indirectCommandsBuffer->map();
+					auto* commandsGOData = (VkDrawIndexedIndirectCommand*) renderGOData;
+					// ------
+
 					// Fetch every game objects
 					int goActiveID = 0;
 					for (auto& go : scene.getGameObjects()) {
@@ -71,9 +76,11 @@ namespace examples {
 
 							// Empty batch (do not draw this object)
 							currentBatch = RenderBatch {};
-							goActiveID++;
 							continue;
 						}
+
+						// Create game object render command
+						commandsGOData[goActiveID] = meshModule->getMesh()->getRenderIndirectCommand(go->getID());
 
 						// If material different from last one, push last batch
 						auto& mat = meshModule->getMaterial();
@@ -121,51 +128,39 @@ namespace examples {
 					// Push last batch
 					if (currentBatch.indexCount > 0)
 						renderBatches.push_back(currentBatch);
-				}
 
-
-				// Record drawing commands of every game object
-				{
-					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::recordRenderCommands");
-					auto *data = _indirectCommandsBuffer->map();
-					auto* commandsData = (VkDrawIndexedIndirectCommand*) data;
-					int goActiveID = 0;
-					for (auto& go : scene.getGameObjects()) {
-						auto meshMod = go->getModule<scene::MeshRendererModule>();
-						if (meshMod != nullptr && meshMod->getMesh() != nullptr && meshMod->getMaterial() != nullptr)
-							commandsData[goActiveID] = meshMod->getMesh()->getRenderIndirectCommand(go->getID());
-						goActiveID++;
-					}
+					// Unmap Render GO Commands
 					_indirectCommandsBuffer->unmap();
+					// ------
 				}
 
 
 				beginRenderPass(0);
-				beginRenderSubPass(0);
-				// Render batches
-				scene::Material* lastMaterial = nullptr;
-				for (auto& batch : renderBatches) {
-					// Different material binding
-					if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
-						lastMaterial = batch.material;
-						bind(commandBuffer, batch.material);
-						batch.material->bind(commandBuffer);
-					}
+					beginRenderSubPass(0);
+						// Render batches
+						scene::Material* lastMaterial = nullptr;
+						for (auto& batch : renderBatches) {
+							// Different material binding
+							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
+								lastMaterial = batch.material;
+								bind(commandBuffer, batch.material);
+								batch.material->bind(commandBuffer);
+							}
 
-					// Mesh binding
-					batch.mesh->bind(commandBuffer);
+							// Mesh binding
+							batch.mesh->bind(commandBuffer);
 
-					// Execute the draw command buffer on each section as defined by the array of draws
-					VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
-					uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
-					vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, batch.indexCount, drawStride);
-				}
-				endRenderSubPass();
+							// Execute the draw command buffer on each section as defined by the array of draws
+							VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
+							uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
+							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, batch.indexCount, drawStride);
+						}
+					endRenderSubPass();
 
-				beginRenderSubPass(1);
-				// Render GUI
-				gui::WdeGUI::render(commandBuffer);
-				endRenderSubPass();
+					beginRenderSubPass(1);
+						// Render GUI
+						gui::WdeGUI::render(commandBuffer);
+					endRenderSubPass();
 				endRenderPass();
 			}
 

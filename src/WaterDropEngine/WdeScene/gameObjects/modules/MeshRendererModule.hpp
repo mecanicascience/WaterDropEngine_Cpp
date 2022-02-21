@@ -34,15 +34,7 @@ namespace wde::scene {
 
 
 			// Getters and setters
-			void setMaterial(const std::shared_ptr<Material>& material) {
-				// Remove GO reference
-				if (_material != nullptr)
-					_material->removeGameObject(static_cast<int>(_gameObject.getID()));
-
-				// Add GO reference
-				_material = material;
-				_material->addGameObject(static_cast<int>(_gameObject.getID()));
-			}
+			void setMaterial(const std::shared_ptr<Material>& material) { _material = material; }
             std::shared_ptr<Material>& getMaterial() { return _material; }
 			void setMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
             std::shared_ptr<Mesh>& getMesh() { return _mesh; }

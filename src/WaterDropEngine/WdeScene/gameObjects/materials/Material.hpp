@@ -41,29 +41,6 @@ namespace wde::scene {
 			}
 
 
-			// GameObject manager
-			/**
-			 * Assign a new game object to the material
-			 * @param goID GameObject ID
-			 */
-			void addGameObject(int goID) {
-				_boundedGoIds.push_back(goID);
-				// Sort game object ids
-				sort(_boundedGoIds.begin(), _boundedGoIds.end());
-			}
-
-			/**
-			 * Remove a game object to the material
-			 * @param goID GameObject ID
-			 */
-			void removeGameObject(int goID) {
-				_boundedGoIds.erase(std::remove(_boundedGoIds.begin(), _boundedGoIds.end(), goID), _boundedGoIds.end());
-			}
-
-			/** @return the list of every game object ids with this material */
-			std::vector<int> getGameObjectsIds() { return _boundedGoIds; }
-
-
 			// Getters and setters
 			std::string getName() { return _name; }
 			std::pair<int, int> getRenderStage() { return _renderStage; }
@@ -72,8 +49,6 @@ namespace wde::scene {
 
 
 		protected:
-			/** IDs of the game objects with materials corresponding to this material */
-			std::vector<int> _boundedGoIds {};
 			/** Material descriptor set */
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet;
 

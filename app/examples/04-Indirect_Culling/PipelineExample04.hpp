@@ -91,9 +91,14 @@ namespace examples {
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
 				// Create rendering batches
 				std::vector<RenderBatch> renderBatches {};
-				int objectsCount = 0;
+				int objectsCount;
 				{
 					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
+					RenderBatch currentBatch {};
+
+					std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
+					std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
+
 					// Render GPU Objects batches
 					void *gpuObjectsBatchesData = _objectsBatches->map();
 					auto* gpuObjectsBatches = (GPUObjectBatch*) gpuObjectsBatchesData;
@@ -104,10 +109,10 @@ namespace examples {
 					auto* gpuBatches = (GPURenderBatch*) gpuBatchesData;
 					// ------
 
-					RenderBatch currentBatch {};
-
-					std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
-					std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
+					// Map Render GO Commands
+					void *renderGOData = _indirectCommandsBuffer->map();
+					auto* commandsGOData = (VkDrawIndexedIndirectCommand*) renderGOData;
+					// ------
 
 					// Fetch every game objects
 					int goActiveID = 0;
@@ -125,9 +130,11 @@ namespace examples {
 
 							// Empty batch (do not draw this object)
 							currentBatch = RenderBatch {};
-							goActiveID++;
 							continue;
 						}
+
+						// Create game object render command
+						commandsGOData[goActiveID] = meshModule->getMesh()->getRenderIndirectCommand(go->getID());
 
 						// If material different from last one, push last batch
 						auto& mat = meshModule->getMaterial();
@@ -141,13 +148,16 @@ namespace examples {
 							currentBatch.mesh = meshModule->getMesh().get();
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
-							// Set this object batch
-							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
-							gpuObjectsBatches[goActiveID].objectID = goActiveID;
+							currentBatch.instanceCount = 0;
+
 							// Set gpu batch
 							gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
 							gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
 							gpuBatches[renderBatches.size()].instanceCount = 0;
+
+							// Set this object batch
+							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
+							gpuObjectsBatches[goActiveID].objectID = goActiveID;
 							goActiveID++;
 							continue;
 						}
@@ -165,13 +175,16 @@ namespace examples {
 							currentBatch.mesh = mesh.get();
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
-							// Set this object batch
-							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
-							gpuObjectsBatches[goActiveID].objectID = goActiveID;
+							currentBatch.instanceCount = 0;
+
 							// Set gpu batch
 							gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
 							gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
 							gpuBatches[renderBatches.size()].instanceCount = 0;
+
+							// Set this object batch
+							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
+							gpuObjectsBatches[goActiveID].objectID = goActiveID;
 							goActiveID++;
 							continue;
 						}
@@ -183,13 +196,17 @@ namespace examples {
 						currentBatch.indexCount++;
 						if (currentBatch.firstIndex == -1)
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
+
+						// Set gpu batch
+						gpuBatches[renderBatches.size()].indexCount++;
+						gpuBatches[renderBatches.size()].instanceCount = 0;
+						if (gpuBatches[renderBatches.size()].firstIndex == -1)
+							gpuBatches[renderBatches.size()].firstIndex = static_cast<int>(goActiveID);
+
 						// Set this object batch
 						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 						gpuObjectsBatches[goActiveID].objectID = goActiveID;
-						// Set gpu batch
-						gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
-						gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
-						gpuBatches[renderBatches.size()].instanceCount = 0;
+
 						goActiveID++;
 					}
 
@@ -198,13 +215,18 @@ namespace examples {
 						renderBatches.push_back(currentBatch);
 					objectsCount = goActiveID;
 
-					// Close objects gpu batches
-					_objectsBatches->unmap();
-					// ------------------
+
+					// Unmap Render GO Commands
+					_indirectCommandsBuffer->unmap();
+					// ------
 
 					// Close render gpu batches
 					_gpuBatches->unmap();
-					// -------------------
+					// ------
+
+					// Close objects gpu batches
+					_objectsBatches->unmap();
+					// ------
 				}
 
 
@@ -216,7 +238,7 @@ namespace examples {
 					_cullingPipeline->bind(cullingCmd);
 
 					// Bind descriptors
-					vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_GRAPHICS,
+					vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_COMPUTE,
 					                        _cullingPipeline->getLayout(), 0, 1, &_computeSet.first, 0, nullptr);
 
 					// Update push constants
@@ -232,26 +254,16 @@ namespace examples {
 				}
 
 
-				// Record drawing commands of every game object
-				{
-					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::recordRenderCommands");
-					auto *data = _indirectCommandsBuffer->map();
-					auto* commandsData = (VkDrawIndexedIndirectCommand*) data;
-					int goActiveID = 0;
-					for (auto& go : scene.getGameObjects()) {
-						auto meshMod = go->getModule<scene::MeshRendererModule>();
-						if (meshMod != nullptr && meshMod->getMesh() != nullptr && meshMod->getMaterial() != nullptr)
-							commandsData[goActiveID] = meshMod->getMesh()->getRenderIndirectCommand(go->getID());
-						goActiveID++;
-					}
-					_indirectCommandsBuffer->unmap();
-				}
-
-
 				beginRenderPass(0);
 					beginRenderSubPass(0);
+						// Read GPU Batches
+						void *gpuBatchesData = _gpuBatches->map();
+						auto* gpuBatches = (GPURenderBatch*) gpuBatchesData;
+						// ------
+
 						// Render batches
 						scene::Material* lastMaterial = nullptr;
+						int goActiveID = 0;
 						for (auto& batch : renderBatches) {
 							// Different material binding
 							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
@@ -266,8 +278,12 @@ namespace examples {
 							// Execute the draw command buffer on each section as defined by the array of draws
 							VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
 							uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
-							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, batch.instanceCount, drawStride);
+							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, gpuBatches[goActiveID++].instanceCount, drawStride);
 						}
+
+						// Unmap GPU Batches
+						_gpuBatches->unmap();
+						// ------
 					endRenderSubPass();
 
 					beginRenderSubPass(1);
