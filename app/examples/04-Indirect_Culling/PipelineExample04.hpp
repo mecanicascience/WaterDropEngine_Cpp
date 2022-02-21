@@ -38,6 +38,7 @@ namespace examples {
 			std::unique_ptr<Buffer> _indirectCommandsBuffer {};
 			std::unique_ptr<Buffer> _objectsBatches {};
 			std::unique_ptr<Buffer> _gpuBatches {};
+			std::unique_ptr<Buffer> _gpuObjectIDs {};
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _computeSet;
 			std::unique_ptr<PipelineCompute> _cullingPipeline;
 
@@ -75,10 +76,16 @@ namespace examples {
 						MAX_COMMANDS * sizeof(GPURenderBatch),
 						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
+				// Objects ID (will match to gl_instanceID)
+				_gpuObjectIDs = std::make_unique<Buffer>(
+						Config::MAX_SCENE_OBJECTS_COUNT * sizeof(int),
+						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+
 				// Create compute shader descriptor set
 				DescriptorBuilder::begin()
 							.bind_buffer(0, &_objectsBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 							.bind_buffer(1, &_gpuBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+							.bind_buffer(2, &_gpuObjectIDs->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 						.build(_computeSet.first, _computeSet.second);
 
 				// Create compute pipeline
@@ -109,11 +116,6 @@ namespace examples {
 					auto* gpuBatches = (GPURenderBatch*) gpuBatchesData;
 					// ------
 
-					// Map Render GO Commands
-					void *renderGOData = _indirectCommandsBuffer->map();
-					auto* commandsGOData = (VkDrawIndexedIndirectCommand*) renderGOData;
-					// ------
-
 					// Fetch every game objects
 					int goActiveID = 0;
 					for (auto& go : scene.getGameObjects()) {
@@ -137,9 +139,6 @@ namespace examples {
 							currentBatch = RenderBatch {};
 							continue;
 						}
-
-						// Create game object render command
-						commandsGOData[goActiveID] = meshModule->getMesh()->getRenderIndirectCommand(go->getID());
 
 						// If material different from last one, push last batch
 						auto& mat = meshModule->getMaterial();
@@ -219,11 +218,6 @@ namespace examples {
 					}
 					objectsCount = goActiveID;
 
-
-					// Unmap Render GO Commands
-					_indirectCommandsBuffer->unmap();
-					// ------
-
 					// Close render gpu batches
 					_gpuBatches->unmap();
 					// ------
@@ -237,6 +231,9 @@ namespace examples {
 				// Run culling
 				{
 					CommandBuffer cullingCmd {true};
+
+					// Clear go id buffer
+					vkCmdFillBuffer(cullingCmd, _gpuObjectIDs->getBuffer(), 0, VK_WHOLE_SIZE, -1);
 
 					// Bind pipeline
 					_cullingPipeline->bind(cullingCmd);
@@ -255,6 +252,40 @@ namespace examples {
 					cullingCmd.end();
 					cullingCmd.submit();
 					cullingCmd.waitForQueueIdle();
+				}
+
+
+				// Create render commands
+				{
+					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::recordRenderCommands");
+					// Read GPU GO Batches
+					void *gpuBatchesGOData = _gpuObjectIDs->map();
+					auto* gpuBatchesGO = (int*) gpuBatchesGOData;
+					// ------
+
+					// Map Render GO Commands
+					void *renderGOData = _indirectCommandsBuffer->map();
+					auto* commandsGOData = (VkDrawIndexedIndirectCommand*) renderGOData;
+					// ------
+
+					// Create game object render command
+					int goActiveID = 0;
+					for (const auto& go : scene.getGameObjects()) {
+						auto meshMod = go->getModule<scene::MeshRendererModule>();
+						if (meshMod == nullptr || meshMod->getMesh() == nullptr || meshMod->getMaterial() == nullptr) // Culled object
+							continue;
+						if (gpuBatchesGO[goActiveID] != -1)
+							commandsGOData[goActiveID] = meshMod->getMesh()->getRenderIndirectCommand(gpuBatchesGO[goActiveID]);
+						goActiveID++;
+					}
+
+					// Unmap Render GO Commands
+					_indirectCommandsBuffer->unmap();
+					// ------
+
+					// Unmap GPU GO Batches
+					_gpuObjectIDs->unmap();
+					// ------
 				}
 
 
@@ -280,9 +311,12 @@ namespace examples {
 							batch.mesh->bind(commandBuffer);
 
 							// Execute the draw command buffer on each section as defined by the array of draws
-							VkDeviceSize indirectOffset = batch.firstIndex * sizeof(VkDrawIndexedIndirectCommand);
+							VkDeviceSize indirectOffset = gpuBatches[goActiveID].firstIndex * sizeof(VkDrawIndexedIndirectCommand);
 							uint32_t drawStride = sizeof(VkDrawIndexedIndirectCommand);
-							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, gpuBatches[goActiveID++].instanceCount, drawStride);
+							vkCmdDrawIndexedIndirect(commandBuffer, _indirectCommandsBuffer->getBuffer(), indirectOffset, gpuBatches[goActiveID].instanceCount, drawStride);
+
+							// Iterate through game objects
+							goActiveID++;
 						}
 
 						// Unmap GPU Batches

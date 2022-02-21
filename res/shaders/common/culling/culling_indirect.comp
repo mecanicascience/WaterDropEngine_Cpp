@@ -23,6 +23,12 @@ layout(set = 0, binding = 1) buffer RenderBatchesBuffer {
 } renderBatches;
 
 
+// Objects ID (will match to gl_instanceID)
+layout(set = 0, binding = 2) buffer ObjectsID {
+    int ids[];
+} objectsIDs;
+
+
 // Push constants
 layout(push_constant) uniform Push {
     int objectsCount;
@@ -34,8 +40,20 @@ void main() {
     if(gID < inPush.objectsCount) {
         // Get object batch index
         uint batchIndex = objectBatches.objects[gID].batchID;
+        uint objectIndex = objectBatches.objects[gID].objectID;
 
-        // If visible
-        atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
+        // If visible, add object to the render list
+        bool visible = true;
+        if (objectIndex % 2 == 1) {
+            visible = false;
+        }
+        if (visible) {
+            // Add a drawing count to the gameobject batch
+            uint countIndex = atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
+
+            // Write the object ID into the instance buffer that will map gl_instanceID
+            int instanceIndex = renderBatches.batches[batchIndex].firstIndex + int(countIndex);
+            objectsIDs.ids[instanceIndex] = int(objectIndex);
+        }
     }
 }

@@ -74,6 +74,27 @@ namespace examples {
 					meshRenderer->setMesh(cubeMesh);
 				}
 			}
+
+			{
+				WDE_PROFILE_SCOPE("examples::SceneExample02::gameObject3");
+				// Game Object 3
+				auto object3D = createGameObject("Cube Object 3");
+				object3D->transform->position += glm::vec3(0, 0, 20);
+
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(colorMatGreen);
+				meshRenderer->setMesh(cubeMesh);
+			}
+			{
+				WDE_PROFILE_SCOPE("examples::SceneExample02::gameObject4");
+				// Game Object 4
+				auto object3D = createGameObject("Cube Object 4");
+				object3D->transform->position += glm::vec3(0, 0, 20);
+
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(colorMatGreen);
+				meshRenderer->setMesh(cubeMesh);
+			}
 		}
 	};
 }
