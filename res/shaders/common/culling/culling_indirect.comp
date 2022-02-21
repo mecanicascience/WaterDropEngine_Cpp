@@ -2,12 +2,32 @@
 
 layout (local_size_x = 256) in;
 
+
+// ====== GLOBAL SCENE DATA ======
+// Camera set
+layout(set = 0, binding = 0) uniform SceneBuffer {
+    mat4 transformCameraSpace;  // Matrix from world space to camera space
+    mat4 transformProjSpace;    // Matrix from camera space to projection frustum space
+} inSceneData;
+
+// Objects set
+struct ObjectData {
+    mat4 model;
+};
+layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
+    ObjectData objects[];
+} inObjectBuffer;
+// ===============================
+
+
+// ======== OBJECTS DATA =========
 // Objects render batches
 struct ObjectBatch {
     int objectID;
     int batchID;
+    int objectSceneIndex;
 };
-layout (set = 0, binding = 0) readonly buffer ObjectBatchesBuffer {
+layout (set = 1, binding = 0) readonly buffer ObjectBatchesBuffer {
     ObjectBatch objects[];
 } objectBatches;
 
@@ -18,21 +38,33 @@ struct RenderBatch {
     int indexCount;
     int instanceCount;
 };
-layout(set = 0, binding = 1) buffer RenderBatchesBuffer {
+layout(set = 1, binding = 1) buffer RenderBatchesBuffer {
     RenderBatch batches[];
 } renderBatches;
 
 
 // Objects ID (will match to gl_instanceID)
-layout(set = 0, binding = 2) buffer ObjectsID {
+layout(set = 1, binding = 2) buffer ObjectsID {
     int ids[];
 } objectsIDs;
+// ===============================
 
 
-// Push constants
+
+// ======== PUSH CONSTANTS ========
 layout(push_constant) uniform Push {
     int objectsCount;
 } inPush;
+// ===============================
+
+
+
+// Return true if the object is visible on the screen
+bool isVisible(uint objectIndex) {
+    bool visible = true;
+
+    return visible;
+}
 
 
 void main() {
@@ -41,13 +73,10 @@ void main() {
         // Get object batch index
         uint batchIndex = objectBatches.objects[gID].batchID;
         uint objectIndex = objectBatches.objects[gID].objectID;
+        uint objectSceneIndex = objectBatches.objects[gID].objectSceneIndex;
 
         // If visible, add object to the render list
-        bool visible = true;
-        if (objectIndex % 2 == 1) {
-            visible = false;
-        }
-        if (visible) {
+        if (isVisible(objectIndex)) {
             // Add a drawing count to the gameobject batch
             uint countIndex = atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
 

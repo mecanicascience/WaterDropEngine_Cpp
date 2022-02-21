@@ -28,6 +28,7 @@ namespace examples {
 			struct GPUObjectBatch {
 				int objectID;
 				int batchID;
+				int objectSceneIndex;
 			};
 			/** Describes the compute scene */
 			struct GPUPushConstantCullingData {
@@ -39,6 +40,9 @@ namespace examples {
 			std::unique_ptr<Buffer> _objectsBatches {};
 			std::unique_ptr<Buffer> _gpuBatches {};
 			std::unique_ptr<Buffer> _gpuObjectIDs {};
+			std::unique_ptr<Buffer> _cullingCameraData {};
+
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _generalComputeSet;
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _computeSet;
 			std::unique_ptr<PipelineCompute> _cullingPipeline;
 
@@ -60,39 +64,57 @@ namespace examples {
 				// Initialize GUI
 				gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
 
-				// Indirect drawing buffer
-				int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
-				_indirectCommandsBuffer = std::make_unique<Buffer>(
-						MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
-						VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
+				// Create buffers
+				{
+					// Indirect drawing buffer
+					int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
+					_indirectCommandsBuffer = std::make_unique<Buffer>(
+							MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
+							VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 
-				// GPU Objects buffer batches and IDs
-				_objectsBatches = std::make_unique<Buffer>(
-						Config::MAX_SCENE_OBJECTS_COUNT * sizeof(GPUObjectBatch),
-						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+					// GPU Objects buffer batches and IDs
+					_objectsBatches = std::make_unique<Buffer>(
+							Config::MAX_SCENE_OBJECTS_COUNT * sizeof(GPUObjectBatch),
+							VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-				// GPU Batches
-				_gpuBatches = std::make_unique<Buffer>(
-						MAX_COMMANDS * sizeof(GPURenderBatch),
-						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+					// GPU Batches
+					_gpuBatches = std::make_unique<Buffer>(
+							MAX_COMMANDS * sizeof(GPURenderBatch),
+							VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
-				// Objects ID (will match to gl_instanceID)
-				_gpuObjectIDs = std::make_unique<Buffer>(
-						Config::MAX_SCENE_OBJECTS_COUNT * sizeof(int),
-						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+					// Objects ID (will match to gl_instanceID)
+					_gpuObjectIDs = std::make_unique<Buffer>(
+							Config::MAX_SCENE_OBJECTS_COUNT * sizeof(int),
+							VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
-				// Create compute shader descriptor set
-				DescriptorBuilder::begin()
+					// Buffer that holds the data of the culling camera
+					_cullingCameraData = std::make_unique<Buffer>(
+							sizeof(GPUCameraData),
+							VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+				}
+
+				// Create culling pipeline
+				{
+					// Create compute shader scene descriptor set
+					DescriptorBuilder::begin()
+							.bind_buffer(0, &_cullingCameraData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+							.bind_buffer(1, &_objectsData->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+							.build(_generalComputeSet.first, _generalComputeSet.second);
+
+					// Create compute shader resources descriptor set
+					DescriptorBuilder::begin()
 							.bind_buffer(0, &_objectsBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 							.bind_buffer(1, &_gpuBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 							.bind_buffer(2, &_gpuObjectIDs->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-						.build(_computeSet.first, _computeSet.second);
+							.build(_computeSet.first, _computeSet.second);
 
-				// Create compute pipeline
-				_cullingPipeline = std::make_unique<PipelineCompute>("res/shaders/common/culling/culling_indirect.comp.spv");
-				_cullingPipeline->addPushConstants(sizeof(GPUPushConstantCullingData));
-				_cullingPipeline->addDescriptorSet(_computeSet.second);
-				_cullingPipeline->initialize();
+					// Create compute pipeline
+					_cullingPipeline = std::make_unique<PipelineCompute>("res/shaders/common/culling/culling_indirect.comp.spv");
+					_cullingPipeline->addPushConstants(sizeof(GPUPushConstantCullingData));
+					_cullingPipeline->addDescriptorSet(_generalComputeSet.second);
+					_cullingPipeline->addDescriptorSet(_computeSet.second);
+					_cullingPipeline->initialize();
+				}
 			}
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
@@ -162,6 +184,7 @@ namespace examples {
 							// Set this object batch
 							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 							gpuObjectsBatches[goActiveID].objectID = goActiveID;
+							gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
 							goActiveID++;
 							continue;
 						}
@@ -189,6 +212,7 @@ namespace examples {
 							// Set this object batch
 							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 							gpuObjectsBatches[goActiveID].objectID = goActiveID;
+							gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
 							goActiveID++;
 							continue;
 						}
@@ -204,6 +228,7 @@ namespace examples {
 						// Set this object batch
 						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 						gpuObjectsBatches[goActiveID].objectID = goActiveID;
+						gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
 
 						goActiveID++;
 					}
@@ -228,6 +253,22 @@ namespace examples {
 				}
 
 
+				// Set culling camera
+				auto& cameraGO = scene.getGameObject(1); // scene.getActiveCamera();
+				{
+					auto cameraModule = cameraGO.getModule<scene::CameraModule>();
+
+					GPUCameraData cameraData {};
+					cameraData.proj = cameraModule->getProjection();
+					cameraData.view = cameraModule->getView();
+
+					// Map data
+					void *data = _cullingCameraData->map();
+					memcpy(data, &cameraData, sizeof(GPUCameraData));
+					_cullingCameraData->unmap();
+				}
+
+
 				// Run culling
 				{
 					CommandBuffer cullingCmd {true};
@@ -238,9 +279,13 @@ namespace examples {
 					// Bind pipeline
 					_cullingPipeline->bind(cullingCmd);
 
-					// Bind descriptors
+					// Bind general descriptor set at binding 0
 					vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_COMPUTE,
-					                        _cullingPipeline->getLayout(), 0, 1, &_computeSet.first, 0, nullptr);
+					                        _cullingPipeline->getLayout(), 0, 1, &_generalComputeSet.first, 0, nullptr);
+
+					// Bind objects descriptor set at binding 1
+					vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_COMPUTE,
+					                        _cullingPipeline->getLayout(), 1, 1, &_computeSet.first, 0, nullptr);
 
 					// Update push constants
 					GPUPushConstantCullingData gpuCulling {};
