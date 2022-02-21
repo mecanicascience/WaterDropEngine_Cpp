@@ -34,6 +34,17 @@ namespace examples {
 			struct GPUPushConstantCullingData {
 				int objectsCount;
 			};
+			/** Describes the scene data sent to the compute shader */
+			struct GPUComputeSceneData {
+				glm::mat4 view;
+				float frustumL; // Data for left frustum planes
+				float frustumR; // Data for right frustum planes
+				float frustumT; // Data for top frustum planes
+				float frustumB; // Data for bottom frustum planes
+				float znear;
+				float zfar;
+				int distCull;
+			};
 
 
 			std::unique_ptr<Buffer> _indirectCommandsBuffer {};
@@ -89,7 +100,7 @@ namespace examples {
 
 					// Buffer that holds the data of the culling camera
 					_cullingCameraData = std::make_unique<Buffer>(
-							sizeof(GPUCameraData),
+							sizeof(GPUComputeSceneData),
 							VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 				}
 
@@ -258,9 +269,23 @@ namespace examples {
 				{
 					auto cameraModule = cameraGO.getModule<scene::CameraModule>();
 
-					GPUCameraData cameraData {};
-					cameraData.proj = cameraModule->getProjection();
+					GPUComputeSceneData cameraData {};
 					cameraData.view = cameraModule->getView();
+					cameraData.distCull = cameraModule->getCullingDistance();
+
+					// Frustum
+					glm::mat4 projection = cameraModule->getProjection();
+					glm::mat4 projectionT = glm::transpose(projection);
+					glm::vec4 frustumX = normalizePlane(projectionT[3] + projectionT[0]); // x + w < 0
+					glm::vec4 frustumY = normalizePlane(projectionT[3] + projectionT[1]); // y + w < 0
+
+					cameraData.frustumL = frustumX.x;
+					cameraData.frustumR = frustumX.z;
+					cameraData.frustumT = frustumY.y;
+					cameraData.frustumB = frustumY.z;
+
+					cameraData.znear = cameraModule->getNear();
+					cameraData.zfar = cameraModule->getFar();
 
 					// Map data
 					void *data = _cullingCameraData->map();
@@ -345,6 +370,11 @@ namespace examples {
 						scene::Material* lastMaterial = nullptr;
 						int goActiveID = 0;
 						for (auto& batch : renderBatches) {
+							if (gpuBatches[goActiveID].instanceCount == 0) {
+								goActiveID++;
+								continue;
+							}
+
 							// Different material binding
 							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
 								lastMaterial = batch.material;
@@ -377,5 +407,11 @@ namespace examples {
 			}
 
 			void cleanUp() override { }
+
+
+			// Helper
+			glm::vec4 normalizePlane(glm::vec4 p) {
+				return p / glm::length(glm::vec3(p));
+			}
 	};
 }

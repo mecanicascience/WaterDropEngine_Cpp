@@ -146,6 +146,9 @@ namespace wde::scene {
 			// Getters and setters
 			const glm::mat4& getProjection() const { return _projectionMatrix; }
 			const glm::mat4& getView() const { return _viewMatrix; }
+			float getNear() const { return _nearPlane; }
+			float getFar() const { return _farPlane; }
+			int getCullingDistance() const { return static_cast<int>(_cullingDistance); }
 
 
 
@@ -169,5 +172,8 @@ namespace wde::scene {
 			float _fov = 60.0f;
 			float _nearPlane = 0.1f;
 			float _farPlane = 100.0f;
+
+			// Culling
+			float _cullingDistance = 100.0;
 	};
 }

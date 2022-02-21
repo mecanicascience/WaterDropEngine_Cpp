@@ -6,8 +6,14 @@ layout (local_size_x = 256) in;
 // ====== GLOBAL SCENE DATA ======
 // Camera set
 layout(set = 0, binding = 0) uniform SceneBuffer {
-    mat4 transformCameraSpace;  // Matrix from world space to camera space
-    mat4 transformProjSpace;    // Matrix from camera space to projection frustum space
+    mat4 view;
+    float frustumL; // Data for left frustum planes
+    float frustumR; // Data for right frustum planes
+    float frustumT; // Data for top frustum planes
+    float frustumB; // Data for bottom frustum planes
+    float znear;
+    float zfar;
+    int distCull;
 } inSceneData;
 
 // Objects set
@@ -60,9 +66,24 @@ layout(push_constant) uniform Push {
 
 
 // Return true if the object is visible on the screen
-bool isVisible(uint objectIndex) {
-    bool visible = true;
+bool isVisible(uint objectSceneIndex) {
+    // Grep object data
+    vec3 center = vec3(inObjectBuffer.objects[objectSceneIndex].model[3][0], inObjectBuffer.objects[objectSceneIndex].model[3][1], inObjectBuffer.objects[objectSceneIndex].model[3][2]);
+    float radius = 0.5;
 
+    // Frustrum culling
+    bool visible = true;
+    if (inSceneData.distCull <= 0) {
+        return false;
+    }
+
+    visible = visible && center.z * inSceneData.frustumR - abs(center.x) * inSceneData.frustumL > -radius;
+    visible = visible && center.z * inSceneData.frustumB - abs(center.y) * inSceneData.frustumT > -radius;
+
+    if(inSceneData.distCull != 0) { // The near/far plane culling uses camera space Z directly
+        visible = visible && center.z + radius > inSceneData.znear && center.z - radius < inSceneData.zfar;
+    }
+    return true;
     return visible;
 }
 
@@ -76,13 +97,13 @@ void main() {
         uint objectSceneIndex = objectBatches.objects[gID].objectSceneIndex;
 
         // If visible, add object to the render list
-        if (isVisible(objectIndex)) {
+        if (isVisible(objectSceneIndex)) {
             // Add a drawing count to the gameobject batch
             uint countIndex = atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
 
             // Write the object ID into the instance buffer that will map gl_instanceID
             int instanceIndex = renderBatches.batches[batchIndex].firstIndex + int(countIndex);
-            objectsIDs.ids[instanceIndex] = int(objectIndex);
+            objectsIDs.ids[instanceIndex] = int(objectSceneIndex);
         }
     }
 }

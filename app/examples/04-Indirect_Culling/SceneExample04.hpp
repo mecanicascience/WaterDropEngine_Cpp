@@ -62,8 +62,8 @@ namespace examples {
 			}
 
 			auto meshParent = createGameObject("Many 3D Objects Parent", true);
-			for (int i = 0; i < 100; i++) {
-				for (int j = 0; j < 100; j++) {
+			for (int i = 0; i < 3; i++) {
+				for (int j = 0; j < 3; j++) {
 					WDE_PROFILE_SCOPE("examples::SceneExample02::gameObject-i");
 					auto object3D = createGameObject("Cube 3D Objects " + std::to_string(i), true);
 					object3D->transform->setParent(meshParent->transform);
@@ -89,7 +89,7 @@ namespace examples {
 				WDE_PROFILE_SCOPE("examples::SceneExample02::gameObject4");
 				// Game Object 4
 				auto object3D = createGameObject("Cube Object 4");
-				object3D->transform->position += glm::vec3(0, 0, 20);
+				object3D->transform->position += glm::vec3(0, 0, -20);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
 				meshRenderer->setMaterial(colorMatGreen);
