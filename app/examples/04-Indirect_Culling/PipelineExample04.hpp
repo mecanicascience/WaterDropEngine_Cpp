@@ -121,8 +121,13 @@ namespace examples {
 
 						// If no renderer, or material, or mesh, push last batch
 						if (meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr) {
-							if (currentBatch.indexCount > 0)
+							if (currentBatch.indexCount > 0) {
 								renderBatches.push_back(currentBatch);
+								// Set gpu batch
+								gpuBatches[renderBatches.size()-1].indexCount = renderBatches[renderBatches.size()-1].indexCount;
+								gpuBatches[renderBatches.size()-1].firstIndex = renderBatches[renderBatches.size()-1].firstIndex;
+								gpuBatches[renderBatches.size()-1].instanceCount = renderBatches[renderBatches.size()-1].instanceCount;
+							}
 
 							// No mesh and material
 							lastGOMeshRef = nullptr;
@@ -139,8 +144,13 @@ namespace examples {
 						// If material different from last one, push last batch
 						auto& mat = meshModule->getMaterial();
 						if (currentBatch.indexCount > 0 && lastGOMaterialRef != mat) {
-							if (currentBatch.indexCount > 0)
+							if (currentBatch.indexCount > 0) {
 								renderBatches.push_back(currentBatch);
+								// Set gpu batch
+								gpuBatches[renderBatches.size()-1].indexCount = renderBatches[renderBatches.size()-1].indexCount;
+								gpuBatches[renderBatches.size()-1].firstIndex = renderBatches[renderBatches.size()-1].firstIndex;
+								gpuBatches[renderBatches.size()-1].instanceCount = renderBatches[renderBatches.size()-1].instanceCount;
+							}
 
 							// Add this object to a new batch
 							currentBatch = RenderBatch {};
@@ -149,11 +159,6 @@ namespace examples {
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
 							currentBatch.instanceCount = 0;
-
-							// Set gpu batch
-							gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
-							gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
-							gpuBatches[renderBatches.size()].instanceCount = 0;
 
 							// Set this object batch
 							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
@@ -166,8 +171,13 @@ namespace examples {
 						// If mesh different from last one, push last batch
 						auto& mesh = meshModule->getMesh();
 						if (currentBatch.indexCount > 0 && lastGOMeshRef != mesh) {
-							if (currentBatch.indexCount > 0)
+							if (currentBatch.indexCount > 0) {
 								renderBatches.push_back(currentBatch);
+								// Set gpu batch
+								gpuBatches[renderBatches.size()-1].indexCount = renderBatches[renderBatches.size()-1].indexCount;
+								gpuBatches[renderBatches.size()-1].firstIndex = renderBatches[renderBatches.size()-1].firstIndex;
+								gpuBatches[renderBatches.size()-1].instanceCount = renderBatches[renderBatches.size()-1].instanceCount;
+							}
 
 							// Add this object to a new batch
 							currentBatch = RenderBatch {};
@@ -176,11 +186,6 @@ namespace examples {
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
 							currentBatch.instanceCount = 0;
-
-							// Set gpu batch
-							gpuBatches[renderBatches.size()].indexCount = currentBatch.indexCount;
-							gpuBatches[renderBatches.size()].firstIndex = currentBatch.firstIndex;
-							gpuBatches[renderBatches.size()].instanceCount = 0;
 
 							// Set this object batch
 							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
@@ -197,12 +202,6 @@ namespace examples {
 						if (currentBatch.firstIndex == -1)
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 
-						// Set gpu batch
-						gpuBatches[renderBatches.size()].indexCount++;
-						gpuBatches[renderBatches.size()].instanceCount = 0;
-						if (gpuBatches[renderBatches.size()].firstIndex == -1)
-							gpuBatches[renderBatches.size()].firstIndex = static_cast<int>(goActiveID);
-
 						// Set this object batch
 						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 						gpuObjectsBatches[goActiveID].objectID = goActiveID;
@@ -211,8 +210,13 @@ namespace examples {
 					}
 
 					// Push last batch
-					if (currentBatch.indexCount > 0)
+					if (currentBatch.indexCount > 0) {
 						renderBatches.push_back(currentBatch);
+						// Set gpu batch
+						gpuBatches[renderBatches.size()-1].indexCount = renderBatches[renderBatches.size()-1].indexCount;
+						gpuBatches[renderBatches.size()-1].firstIndex = renderBatches[renderBatches.size()-1].firstIndex;
+						gpuBatches[renderBatches.size()-1].instanceCount = renderBatches[renderBatches.size()-1].instanceCount;
+					}
 					objectsCount = goActiveID;
 
 
