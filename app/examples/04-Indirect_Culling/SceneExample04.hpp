@@ -19,18 +19,21 @@ namespace examples {
 				auto camera = createGameObject("Editor Camera");
 				auto camModule = camera->addModule<CameraModule>();
 				camModule->setAsActive();
+				camModule->setFarPlane(822.5f);
 				camera->addModule<ControllerModule>();
-				camera->transform->position = glm::vec3 {0.0f, 0.0f, -8.0f};
+				camera->transform->position = glm::vec3 {-32.67f, 45.34f, -150.79f};
+				camera->transform->rotation = glm::vec3 {0.43f, 4.29f, 0.0f};
 			}
 
 			// VIEWING CAMERA
 			{
 				WDE_PROFILE_SCOPE("examples::SceneExample02::viewingCamera");
 				auto camera = createGameObject("Viewing Camera");
-				camera->addModule<CameraModule>();
+				auto cameraModule = camera->addModule<CameraModule>();
+				cameraModule->setFarPlane(822.5f);
 				camera->addModule<ControllerModule>();
-				camera->transform->position = glm::vec3 {-26.0f, 9.0f, -28.0f};
-				camera->transform->rotation = glm::vec3 {0.0f, 4.37f, 0.0f};
+				camera->transform->position = glm::vec3 {-201.0f, 27.95f, -299.61f};
+				camera->transform->rotation = glm::vec3 {0.51f, 5.11f, 0.0f};
 			}
 
 			// MATERIALS
@@ -62,8 +65,8 @@ namespace examples {
 			}
 
 			auto meshParent = createGameObject("Many 3D Objects Parent", true);
-			for (int i = 0; i < 3; i++) {
-				for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < 100; i++) {
+				for (int j = 0; j < 100; j++) {
 					WDE_PROFILE_SCOPE("examples::SceneExample02::gameObject-i");
 					auto object3D = createGameObject("Cube 3D Objects " + std::to_string(i), true);
 					object3D->transform->setParent(meshParent->transform);

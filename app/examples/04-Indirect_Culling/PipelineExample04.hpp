@@ -338,13 +338,13 @@ namespace examples {
 					auto* commandsGOData = (VkDrawIndexedIndirectCommand*) renderGOData;
 					// ------
 
-					// Create game object render command
+					// Create game object render commands
 					int goActiveID = 0;
 					for (const auto& go : scene.getGameObjects()) {
 						auto meshMod = go->getModule<scene::MeshRendererModule>();
-						if (meshMod == nullptr || meshMod->getMesh() == nullptr || meshMod->getMaterial() == nullptr) // Culled object
+						if (meshMod == nullptr || meshMod->getMesh() == nullptr || meshMod->getMaterial() == nullptr) // No mesh object
 							continue;
-						if (gpuBatchesGO[goActiveID] != -1)
+						if (gpuBatchesGO[goActiveID] != -1) // If not culled => create render command
 							commandsGOData[goActiveID] = meshMod->getMesh()->getRenderIndirectCommand(gpuBatchesGO[goActiveID]);
 						goActiveID++;
 					}
@@ -370,6 +370,7 @@ namespace examples {
 						scene::Material* lastMaterial = nullptr;
 						int goActiveID = 0;
 						for (auto& batch : renderBatches) {
+							// If batch entirely culled, continue
 							if (gpuBatches[goActiveID].instanceCount == 0) {
 								goActiveID++;
 								continue;
