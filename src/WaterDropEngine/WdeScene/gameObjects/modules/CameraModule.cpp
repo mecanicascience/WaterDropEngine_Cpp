@@ -152,4 +152,10 @@ namespace wde::scene {
 	void CameraModule::setAsActive() {
 		WaterDropEngine::get().getInstance().getScene()._activeCameraID = static_cast<int>(_gameObject.getID());
 	}
+
+	void CameraModule::setFarPlane(float farPlane) {
+		_farPlane = farPlane;
+		auto aspect = WaterDropEngine::get().getRender().getInstance().getSwapchain().getAspectRatio();
+		setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+	}
 }

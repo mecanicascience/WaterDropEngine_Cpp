@@ -149,7 +149,7 @@ namespace wde::scene {
 			float getNear() const { return _nearPlane; }
 			float getFar() const { return _farPlane; }
 			int getCullingDistance() const { return static_cast<int>(_cullingDistance); }
-			void setFarPlane(float farPlane) { _farPlane = farPlane; }
+			void setFarPlane(float farPlane);
 
 
 
