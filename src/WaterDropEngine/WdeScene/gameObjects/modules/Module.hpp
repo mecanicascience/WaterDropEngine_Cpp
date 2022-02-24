@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../../../wde.hpp"
+#include "../../gizmo/Gizmo.hpp"
 
 namespace wde::scene {
 	class GameObject;
@@ -14,8 +15,15 @@ namespace wde::scene {
 			virtual ~Module() = default;
 
 			// Inherited methods
+			/** Tick for the module */
 			virtual void tick() {};
-			virtual void drawGUI() = 0;
+			/** Draw the module GUI */
+			virtual void drawGUI() {};
+			/**
+			 * Draw the gizmo elements to the scene
+			 * @param gizmo The gizmo drawing instance
+			 */
+			virtual void drawGizmo(Gizmo gizmo) {};
 
 
 			// Getters and setters

@@ -9,6 +9,8 @@
 #include "WdeCommon/WdeUtils/FPSUtils.hpp"
 #include "WdeScene/WdeScene.hpp"
 #include "WdeInput/InputManager.hpp"
+#include "WdeRender/descriptors/DescriptorBuilder.hpp"
+#include "WdeScene/gizmo/GizmoManager.hpp"
 
 namespace wde {
 	/**
@@ -137,6 +139,7 @@ namespace wde {
 				_input.reset();
 				_scene->cleanUp();
 				_gui->cleanUp();
+				scene::GizmoManager::cleanUp();
 				_render->cleanUp();
 
 				// ==== DELETE MODULE COMMUNICATION SERVICE ==

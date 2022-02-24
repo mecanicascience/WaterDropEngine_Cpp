@@ -100,6 +100,7 @@ namespace wde::scene {
 			uint32_t getID() const { return _id; }
 			void setSelected(bool selected) { _isSelected = selected; }
 			bool isSelected() { return _isSelected; }
+			std::vector<std::unique_ptr<Module>>& getModules() { return _modules; }
 
 
 			// Modules handlers

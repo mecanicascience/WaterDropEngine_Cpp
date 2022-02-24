@@ -46,11 +46,13 @@ namespace wde::scene {
 			std::pair<int, int> getRenderStage() { return _renderStage; }
 			render::PipelineGraphics& getPipeline() { return *_pipeline; }
 			int getID() { return _materialID; }
+			void addDescriptorSet(std::pair<VkDescriptorSet, VkDescriptorSetLayout>& set) { _descriptorsSetsOther.push_back(set); }
 
 
 		protected:
 			/** Material descriptor set */
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet;
+			std::vector<std::pair<VkDescriptorSet, VkDescriptorSetLayout>> _descriptorsSetsOther {};
 
 			// Core data
 			/** Material unique ID */

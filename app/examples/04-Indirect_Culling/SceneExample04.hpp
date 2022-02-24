@@ -37,8 +37,8 @@ namespace examples {
 			}
 
 			// MATERIALS
-			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0}, VK_POLYGON_MODE_FILL);
-			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0}, VK_POLYGON_MODE_LINE);
+			auto colorMatRed  = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0}, VK_POLYGON_MODE_FILL);
+			auto colorMatBlue = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 0.0f, 1.0}, VK_POLYGON_MODE_FILL);
 
 			// MESH OBJECTS
 			auto cubeMesh = createMesh<MeshLoader>("cube.obj");
@@ -60,7 +60,7 @@ namespace examples {
 				object3D->transform->position += glm::vec3(0, 5, 0);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
-				meshRenderer->setMaterial(colorMatGreen);
+				meshRenderer->setMaterial(colorMatBlue);
 				meshRenderer->setMesh(cubeMesh);
 			}
 
@@ -85,7 +85,7 @@ namespace examples {
 				object3D->transform->position += glm::vec3(0, 0, 20);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
-				meshRenderer->setMaterial(colorMatGreen);
+				meshRenderer->setMaterial(colorMatBlue);
 				meshRenderer->setMesh(cubeMesh);
 			}
 			{
@@ -95,7 +95,7 @@ namespace examples {
 				object3D->transform->position += glm::vec3(0, 0, -20);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
-				meshRenderer->setMaterial(colorMatGreen);
+				meshRenderer->setMaterial(colorMatBlue);
 				meshRenderer->setMesh(cubeMesh);
 			}
 		}

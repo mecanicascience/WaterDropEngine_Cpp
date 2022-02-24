@@ -3,6 +3,7 @@
 #include "../../../src/WaterDropEngine/WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../../src/WaterDropEngine/WdeGUI/WdeGUI.hpp"
 #include "../../../src/WaterDropEngine/WdeRender/pipelines/PipelineCompute.hpp"
+#include "../../../src/WaterDropEngine/WdeScene/gizmo/GizmoManager.hpp"
 
 using namespace wde;
 using namespace wde::render;
@@ -67,13 +68,17 @@ namespace examples {
 				// Create passes and subpasses structure
 				setStructure({
 					{0, {
-						{0, {}, { 0, 1 }},
-						{1, {}, { 1 }}
+						{0, {}, { 0, 1 }}, // Scene
+						{1, {}, { 0, 1 }}, // Gizmo
+						{2, {}, { 1 }} // GUI
 					}}
 				});
 
+				// Initialize Gizmo
+				scene::GizmoManager::initialize(std::pair<int, int>{0, 1});
+
 				// Initialize GUI
-				gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
+				gui::WdeGUI::initialize(std::pair<int, int>{0, 2});
 
 				// Create buffers
 				{
@@ -401,6 +406,15 @@ namespace examples {
 					endRenderSubPass();
 
 					beginRenderSubPass(1);
+						// Render Gizmo
+						scene::GizmoManager::render(commandBuffer);
+
+						// Test gizmo
+						scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
+						scene::GizmoManager::_gizmoInstance->drawCube(glm::vec3(5.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 5.0f), glm::vec3(2.0f, 2.0f, 5.0f));
+					endRenderSubPass();
+
+					beginRenderSubPass(2);
 						// Render GUI
 						gui::WdeGUI::render(commandBuffer);
 					endRenderSubPass();

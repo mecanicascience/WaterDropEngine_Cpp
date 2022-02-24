@@ -36,9 +36,9 @@ namespace wde::scene {
 
             /**
              * Render the given game object using this mesh
-             * @param gameObjectID
+             * @param gameObjectID (default = 0)
              */
-            void render(uint32_t gameObjectID) {
+            void render(uint32_t gameObjectID = 0) {
 	            WDE_PROFILE_FUNCTION();
                 // Add the draw command to the command buffer
                 vkCmdDrawIndexed(*_commandBuffer, _indices.size(), 1, 0, 0, gameObjectID);

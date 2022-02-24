@@ -47,6 +47,18 @@ namespace wde::render {
 			virtual void cleanUp() = 0;
 
 
+			// Draw commands
+			/**
+			 * Bind the global set to a command buffer
+			 * @param commandBuffer
+			 * @param material
+			 */
+			void bind(CommandBuffer& commandBuffer, scene::Material* material) {
+				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+				                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
+			}
+
+
 			// Getters and setters
 			RenderPass& getRenderPass(uint32_t renderPassID) { return *_passes[renderPassID]; }
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
@@ -168,15 +180,6 @@ namespace wde::render {
 			/** Game objects data */
 			std::unique_ptr<render::Buffer> _objectsData;
 
-			/**
-			 * Bind the global set to a command buffer
-			 * @param commandBuffer
-			 * @param material
-			 */
-			void bind(CommandBuffer& commandBuffer, scene::Material* material) {
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-				                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
-			}
 
 
 		private:
