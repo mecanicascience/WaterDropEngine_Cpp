@@ -68,23 +68,22 @@ layout(push_constant) uniform Push {
 // Return true if the object is visible on the screen
 bool isVisible(uint objectSceneIndex) {
     // Grep object data
-    /*vec3 center = vec3(inObjectBuffer.objects[objectSceneIndex].model[3][0], inObjectBuffer.objects[objectSceneIndex].model[3][1], inObjectBuffer.objects[objectSceneIndex].model[3][2]);
-    float radius = 0.5;
+    vec3 center = vec3(inObjectBuffer.objects[objectSceneIndex].model[3][0], inObjectBuffer.objects[objectSceneIndex].model[3][1], inObjectBuffer.objects[objectSceneIndex].model[3][2]);
+    center = (inSceneData.view * vec4(center, 1.0f)).xyz;
+    float radius = 2; // TODO
 
     // Frustrum culling
     bool visible = true;
     if (inSceneData.distCull <= 0) {
         return false;
     }
-
     visible = visible && center.z * inSceneData.frustumR - abs(center.x) * inSceneData.frustumL > -radius;
     visible = visible && center.z * inSceneData.frustumB - abs(center.y) * inSceneData.frustumT > -radius;
 
     if(inSceneData.distCull != 0) { // The near/far plane culling uses camera space Z directly
         visible = visible && center.z + radius > inSceneData.znear && center.z - radius < inSceneData.zfar;
     }
-    return visible;*/
-    return true;
+    return visible;
 }
 
 

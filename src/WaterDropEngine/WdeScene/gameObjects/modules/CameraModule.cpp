@@ -149,15 +149,15 @@ namespace wde::scene {
 		gizmo.drawCube(_gameObject.transform->position, _gameObject.transform->rotation, _gameObject.transform->scale);
 
 		// Compute points
-		auto topNearLeft  = t * glm::vec4 {-wNear/2.0, _nearPlane * thetaDiv2, _nearPlane, 1};
-		auto topNearRight = t * glm::vec4 { wNear/2.0, _nearPlane * thetaDiv2, _nearPlane, 1};
-		auto topFarLeft   = t * glm::vec4 {-wFar/2.0, _farPlane * thetaDiv2, _farPlane, 1};
-		auto topFarRight  = t * glm::vec4 { wFar/2.0, _farPlane * thetaDiv2, _farPlane, 1};
+		auto topNearLeft  = t * glm::vec4 {-wNear, _nearPlane * thetaDiv2, _nearPlane, 1};
+		auto topNearRight = t * glm::vec4 { wNear, _nearPlane * thetaDiv2, _nearPlane, 1};
+		auto topFarLeft   = t * glm::vec4 {-wFar, _farPlane * thetaDiv2, _farPlane, 1};
+		auto topFarRight  = t * glm::vec4 { wFar, _farPlane * thetaDiv2, _farPlane, 1};
 
-		auto bottomNearLeft  = t * glm::vec4 {-wNear/2.0, -_nearPlane * thetaDiv2, _nearPlane, 1};
-		auto bottomNearRight = t * glm::vec4 { wNear/2.0, -_nearPlane * thetaDiv2, _nearPlane, 1};
-		auto bottomFarLeft   = t * glm::vec4 {-wFar/2.0, -_farPlane * thetaDiv2, _farPlane, 1};
-		auto bottomFarRight  = t * glm::vec4 { wFar/2.0, -_farPlane * thetaDiv2, _farPlane, 1};
+		auto bottomNearLeft  = t * glm::vec4 {-wNear, -_nearPlane * thetaDiv2, _nearPlane, 1};
+		auto bottomNearRight = t * glm::vec4 { wNear, -_nearPlane * thetaDiv2, _nearPlane, 1};
+		auto bottomFarLeft   = t * glm::vec4 {-wFar, -_farPlane * thetaDiv2, _farPlane, 1};
+		auto bottomFarRight  = t * glm::vec4 { wFar, -_farPlane * thetaDiv2, _farPlane, 1};
 
 		gizmo.linesManager(Color::GREEN)
 			// Between planes lines
