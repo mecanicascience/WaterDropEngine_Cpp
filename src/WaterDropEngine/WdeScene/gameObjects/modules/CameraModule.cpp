@@ -133,6 +133,17 @@ namespace wde::scene {
 		gui::GUIRenderer::addFloatDragger("Culling Distance", _cullingDistance, 100.0f);
 	}
 
+	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {
+		// Active camera, do not draw gizmo
+		if (WaterDropEngine::get().getInstance().getScene()._activeCameraID == static_cast<int>(_gameObject.getID()))
+			return;
+
+		// Draw camera frustum gizmo
+		gizmo.linesManager(Color::GREEN)
+					->addLine({0, 0, 0}, {5, 5, 5})
+				->drawLines(commandBuffer);
+	}
+
 
 	void CameraModule::setOrthographicProjection(float leftVal, float rightVal, float topVal, float bottomVal, float nearVal, float farVal)  {
 		// Update class values

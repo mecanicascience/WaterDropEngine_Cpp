@@ -43,7 +43,7 @@ namespace wde::scene {
 		// Render Gizmo for modules
 		for (auto& go : gameObjects)
 			for (auto& mod : go->getModules())
-				mod->drawGizmo(*GizmoManager::_gizmoInstance);
+				mod->drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
 	}
 
 	void GizmoManager::cleanUp() {

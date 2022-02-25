@@ -19,11 +19,8 @@ namespace wde::scene {
 			virtual void tick() {};
 			/** Draw the module GUI */
 			virtual void drawGUI() {};
-			/**
-			 * Draw the gizmo elements to the scene
-			 * @param gizmo The gizmo drawing instance
-			 */
-			virtual void drawGizmo(Gizmo gizmo) {};
+			/** Draw the gizmo elements to the scene */
+			virtual void drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {};
 
 
 			// Getters and setters

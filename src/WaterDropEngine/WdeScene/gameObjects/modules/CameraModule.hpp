@@ -21,6 +21,7 @@ namespace wde::scene {
 			explicit CameraModule(GameObject& gameObject);
 			void tick() override;
 			void drawGUI() override;
+			void drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) override;
 
 			/** Sets this camera to be the current scene viewing camera */
 			void setAsActive();

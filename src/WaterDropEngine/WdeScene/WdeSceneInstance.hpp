@@ -43,6 +43,11 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
 			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
+			std::shared_ptr<GameObject> getActiveGameObject() {
+				if (_selectedGameObjectID == -1)
+					return nullptr;
+				return _gameObjects[_selectedGameObjectID];
+			}
 			std::shared_ptr<GameObject> getActiveCamera() {
 				if (_activeCameraID == -1)
 					return nullptr;

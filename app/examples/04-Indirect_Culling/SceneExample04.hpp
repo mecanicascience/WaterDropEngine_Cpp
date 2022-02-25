@@ -68,7 +68,7 @@ namespace examples {
 			for (int i = 0; i < 100; i++) {
 				for (int j = 0; j < 100; j++) {
 					WDE_PROFILE_SCOPE("examples::SceneExample02::gameObject-i");
-					auto object3D = createGameObject("Cube 3D Objects " + std::to_string(i), true);
+					auto object3D = createGameObject("Cube 3D Objects " + std::to_string(j + i * 100), true);
 					object3D->transform->setParent(meshParent->transform);
 					object3D->transform->position += glm::vec3(+5.0 - (float) i * 5.0f, 0, 5.0f - (float) j * 5.0f);
 

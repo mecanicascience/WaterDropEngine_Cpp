@@ -409,14 +409,12 @@ namespace examples {
 						// Render Gizmo
 						scene::GizmoManager::render(commandBuffer);
 
-						// Test gizmo
-						scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
-						scene::GizmoManager::_gizmoInstance->drawCube(glm::vec3(5.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 5.0f), glm::vec3(2.0f, 2.0f, 5.0f));
-						scene::GizmoManager::_gizmoInstance
-									->linesManager(Color::YELLOW)
-										->addLine(glm::vec3 {0, 0, 0}, glm::vec3 {15, 15, 15})
-										->addLine(glm::vec3 {0, 0, 0}, glm::vec3 {-15, 15, -15})
-									->drawLines(commandBuffer);
+						// Draw gizmo on active game object
+						auto activeGO = scene.getActiveGameObject();
+						if (activeGO != nullptr && scene.getActiveCamera() != nullptr && activeGO->getID() != scene.getActiveCamera()->getID()) {
+							scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
+							scene::GizmoManager::_gizmoInstance->drawCube(activeGO->transform->position, activeGO->transform->rotation, activeGO->transform->scale);
+						}
 					endRenderSubPass();
 
 					beginRenderSubPass(2);
@@ -430,7 +428,7 @@ namespace examples {
 
 
 			// Helper
-			glm::vec4 normalizePlane(glm::vec4 p) {
+			static glm::vec4 normalizePlane(glm::vec4 p) {
 				return p / glm::length(glm::vec3(p));
 			}
 	};
