@@ -139,15 +139,52 @@ namespace wde::scene {
 			return;
 
 		// Draw camera frustum gizmo
+		auto t = _gameObject.transform->getTransform();
+		auto thetaDiv2 = std::tan(glm::radians(_fov) / 2.0f);
+		auto wNear = _aspect * _nearPlane * thetaDiv2;
+		auto wFar  = _aspect * _farPlane  * thetaDiv2;
+
+		// Draw cube
+		gizmo.setColor(Color::GREEN);
+		gizmo.drawCube(_gameObject.transform->position, _gameObject.transform->rotation, _gameObject.transform->scale);
+
+		// Compute points
+		auto topNearLeft  = t * glm::vec4 {-wNear/2.0, _nearPlane * thetaDiv2, _nearPlane, 1};
+		auto topNearRight = t * glm::vec4 { wNear/2.0, _nearPlane * thetaDiv2, _nearPlane, 1};
+		auto topFarLeft   = t * glm::vec4 {-wFar/2.0, _farPlane * thetaDiv2, _farPlane, 1};
+		auto topFarRight  = t * glm::vec4 { wFar/2.0, _farPlane * thetaDiv2, _farPlane, 1};
+
+		auto bottomNearLeft  = t * glm::vec4 {-wNear/2.0, -_nearPlane * thetaDiv2, _nearPlane, 1};
+		auto bottomNearRight = t * glm::vec4 { wNear/2.0, -_nearPlane * thetaDiv2, _nearPlane, 1};
+		auto bottomFarLeft   = t * glm::vec4 {-wFar/2.0, -_farPlane * thetaDiv2, _farPlane, 1};
+		auto bottomFarRight  = t * glm::vec4 { wFar/2.0, -_farPlane * thetaDiv2, _farPlane, 1};
+
 		gizmo.linesManager(Color::GREEN)
-					->addLine({0, 0, 0}, {5, 5, 5})
-				->drawLines(commandBuffer);
+			// Between planes lines
+			->addLine(topNearLeft, topFarLeft)
+			->addLine(topNearRight, topFarRight)
+			->addLine(bottomNearLeft , bottomFarLeft)
+			->addLine(bottomNearRight, bottomFarRight)
+
+			// Near plane
+			->addLine(bottomNearLeft, bottomNearRight)
+			->addLine(bottomNearRight, topNearRight)
+			->addLine(topNearRight, topNearLeft)
+			->addLine(topNearLeft, bottomNearLeft)
+
+			// Far plane
+			->addLine(bottomFarLeft, bottomFarRight)
+			->addLine(bottomFarRight, topFarRight)
+			->addLine(topFarRight, topFarLeft)
+			->addLine(topFarLeft, bottomFarLeft)
+		->drawLines(commandBuffer);
 	}
 
 
 	void CameraModule::setOrthographicProjection(float leftVal, float rightVal, float topVal, float bottomVal, float nearVal, float farVal)  {
 		// Update class values
 		auto aspect = WaterDropEngine::get().getRender().getInstance().getSwapchain().getAspectRatio();
+		_aspect = aspect;
 		_bottomCorner = {leftVal / aspect, topVal, nearVal};
 		_topCorner = {rightVal / aspect, bottomVal, farVal};
 

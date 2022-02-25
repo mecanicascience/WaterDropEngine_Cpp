@@ -54,6 +54,12 @@ namespace wde::scene {
 			 * @param to
 			 */
 			Gizmo* addLine(glm::vec3 from, glm::vec3 to);
+			/**
+			 * Adds a new line to the drawing session
+			 * @param from
+			 * @param to
+			 */
+			Gizmo* addLine(glm::vec4 from, glm::vec4 to);
 
 			/** Draw every lines in the current drawing session */
 			void drawLines(render::CommandBuffer& commandBuffer);

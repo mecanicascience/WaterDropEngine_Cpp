@@ -411,7 +411,7 @@ namespace examples {
 
 						// Draw gizmo on active game object
 						auto activeGO = scene.getActiveGameObject();
-						if (activeGO != nullptr && scene.getActiveCamera() != nullptr && activeGO->getID() != scene.getActiveCamera()->getID()) {
+						if (activeGO != nullptr && scene.getActiveGameObject() != nullptr && scene.getActiveGameObject()->getModule<CameraModule>() == nullptr) {
 							scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
 							scene::GizmoManager::_gizmoInstance->drawCube(activeGO->transform->position, activeGO->transform->rotation, activeGO->transform->scale);
 						}

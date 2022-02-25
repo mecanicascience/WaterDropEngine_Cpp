@@ -66,6 +66,7 @@ namespace wde::scene {
 				_nearPlane = nearVal;
 				_farPlane = farVal;
 				_fov = fovY;
+				_aspect = aspect;
 
 				const float tanHalfFovy = std::tan(glm::radians(fovY) / 2.0f);
 				_projectionMatrix = glm::mat4{0.0f};
@@ -174,6 +175,7 @@ namespace wde::scene {
 			float _fov = 60.0f;
 			float _nearPlane = 0.1f;
 			float _farPlane = 100.0f;
+			float _aspect = 4.0 / 3.0;
 
 			// Culling
 			float _cullingDistance = 100.0;

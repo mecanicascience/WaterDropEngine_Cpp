@@ -81,6 +81,17 @@ namespace wde::scene {
 		return this;
 	}
 
+	Gizmo* Gizmo::addLine(glm::vec4 from, glm::vec4 to) {
+		// Add line to vertex buffer
+		_linesSetData[_lines.size() * 2 + 0] = Vertex {glm::vec3{from.x, from.y, from.z}};
+		_linesSetData[_lines.size() * 2 + 1] = Vertex {glm::vec3{to.x, to.y, to.z}};
+
+		// Add lines to list
+		_lines.emplace_back(from, to);
+
+		return this;
+	}
+
 	void Gizmo::drawLines(render::CommandBuffer& commandBuffer) {
 		WDE_PROFILE_FUNCTION();
 
