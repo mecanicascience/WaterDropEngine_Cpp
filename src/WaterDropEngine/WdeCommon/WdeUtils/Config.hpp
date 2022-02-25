@@ -40,6 +40,7 @@ namespace wde::Config {
 
 	// Scene data
 	extern int MAX_SCENE_OBJECTS_COUNT;
+	extern int MAX_GIZMO_OBJECTS_COUNT;
 }
 #endif
 

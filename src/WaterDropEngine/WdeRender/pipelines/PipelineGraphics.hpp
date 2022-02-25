@@ -30,6 +30,7 @@ namespace wde::render {
 			 * Creates a new graphics pipeline
 			 * @param renderTarget ID of the render pass and subpass
 			 * @param shaderStages Paths of the pipeline shaders
+			 * @param vertexInputs
 			 * @param pipelineMode The mode this pipeline will run in (Polygon (default) or MRT = Multiple render target)
 			 * @param depthMode The depth mode
 			 * @param vertexTopology The pipeline graphics topology (VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST by default, VK_PRIMITIVE_TOPOLOGY_LINE_STRIP, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, ...)

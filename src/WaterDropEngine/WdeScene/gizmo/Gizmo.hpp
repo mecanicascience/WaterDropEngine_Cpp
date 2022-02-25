@@ -17,6 +17,12 @@ namespace wde::scene {
 				glm::mat4 transformWorldSpace;
 			};
 
+			struct GPUGizmoLineDescriptor {
+				glm::mat4 camView {1.0f};
+				glm::mat4 camProj {1.0f};
+				glm::vec4 matColor {0.0f};
+			};
+
 			~Gizmo() {
 				_commandBuffer = nullptr;
 				_pipelines.clear();
@@ -28,6 +34,8 @@ namespace wde::scene {
 			 */
 			void setColor(const Color& color);
 
+
+			// Shapes
 			/**
 			 * Draw a cube
 			 * @param center (X, Y, Z) Center cube position
@@ -36,6 +44,19 @@ namespace wde::scene {
 			 */
 			void drawCube(const glm::vec3& center, const glm::vec3& rotation = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& size = glm::vec3 {1.0f, 1.0f, 1.0f});
 
+
+			// Lines
+			/** Create a new line drawing session */
+			Gizmo* linesManager(Color color);
+			/**
+			 * Adds a new line to the drawing session
+			 * @param from
+			 * @param to
+			 */
+			Gizmo* addLine(glm::vec3 from, glm::vec3 to);
+
+			/** Draw every lines in the current drawing session */
+			void drawLines(render::CommandBuffer& commandBuffer);
 
 
 			// Parameters
@@ -49,13 +70,21 @@ namespace wde::scene {
 			// Render values
 			/** Gizmo instance color pipelines */
 			std::unordered_map<std::string, std::shared_ptr<Material>> _pipelines {};
-			/** Gizmo mesh objects */
 			std::unordered_map<std::string, std::shared_ptr<Mesh>> _meshes {};
+			/** The current session lines */
+			std::vector<std::pair<glm::vec3, glm::vec3>> _lines {};
+			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _linesPipelines {};
 
 			// Descriptors
 			/** Game Objects descriptor set */
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _positionsSet {};
 			std::shared_ptr<render::Buffer> _positionsSetBuffer {};
+
+			/** Lines Game Objects descriptor set */
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _positionsLinesSet {};
+			std::shared_ptr<render::Buffer> _positionsLinesSetBuffer {};
+			std::shared_ptr<render::Buffer> _positionsLinesSetBufferVertices {};
+			Vertex* _linesSetData = nullptr;
 
 
 		private:

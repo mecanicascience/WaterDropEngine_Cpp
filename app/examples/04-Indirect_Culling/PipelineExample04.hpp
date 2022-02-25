@@ -412,6 +412,11 @@ namespace examples {
 						// Test gizmo
 						scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
 						scene::GizmoManager::_gizmoInstance->drawCube(glm::vec3(5.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 5.0f), glm::vec3(2.0f, 2.0f, 5.0f));
+						scene::GizmoManager::_gizmoInstance
+									->linesManager(Color::YELLOW)
+										->addLine(glm::vec3 {0, 0, 0}, glm::vec3 {15, 15, 15})
+										->addLine(glm::vec3 {0, 0, 0}, glm::vec3 {-15, 15, -15})
+									->drawLines(commandBuffer);
 					endRenderSubPass();
 
 					beginRenderSubPass(2);

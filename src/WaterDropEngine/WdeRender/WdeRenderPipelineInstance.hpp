@@ -62,6 +62,7 @@ namespace wde::render {
 			// Getters and setters
 			RenderPass& getRenderPass(uint32_t renderPassID) { return *_passes[renderPassID]; }
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
+			render::Buffer& getCameraBuffer() { return *_cameraData; }
 
 
 

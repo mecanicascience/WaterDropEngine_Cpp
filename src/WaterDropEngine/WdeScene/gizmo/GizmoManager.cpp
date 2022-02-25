@@ -19,6 +19,11 @@ namespace wde::scene {
 		render::DescriptorBuilder::begin()
 					.bind_buffer(0, &inst->_positionsSetBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(inst->_positionsSet.first, inst->_positionsSet.second);
+		inst->_positionsLinesSetBuffer = std::make_shared<render::Buffer>(sizeof(Gizmo::GPUGizmoLineDescriptor), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		inst->_positionsLinesSetBufferVertices = std::make_shared<render::Buffer>(sizeof(Vertex) * Config::MAX_GIZMO_OBJECTS_COUNT, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+		render::DescriptorBuilder::begin()
+					.bind_buffer(0, &inst->_positionsLinesSetBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+				.build(inst->_positionsLinesSet.first, inst->_positionsLinesSet.second);
 
 		// Create gizmo meshes
 		inst->_meshes.emplace("CUBE", std::make_shared<MeshLoader>("cube.obj"));

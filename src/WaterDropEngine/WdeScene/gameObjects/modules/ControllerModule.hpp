@@ -38,7 +38,7 @@ namespace wde::scene {
 			std::chrono::time_point<std::chrono::steady_clock> _lastTime = std::chrono::steady_clock::now();
 
 			// Movement speed
-			float _moveSpeed {5.0f};
+			float _moveSpeed {20.0f};
 			float _lookSpeed {1.5f};
 	};
 }
