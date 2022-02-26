@@ -55,7 +55,7 @@ namespace wde::scene {
 			}
 
 
-	protected:
+		protected:
 			/**
 			 * Create a new GameObject
 			 * @param name Name of the GameObject

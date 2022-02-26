@@ -58,6 +58,7 @@ namespace examples {
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _generalComputeSet;
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _computeSet;
 			std::unique_ptr<PipelineCompute> _cullingPipeline;
+			int _staticObjectsCount;
 
 			void setup() override {
 				// Create passes attachments
@@ -261,7 +262,7 @@ namespace examples {
 						gpuBatches[renderBatches.size()-1].firstIndex = renderBatches[renderBatches.size()-1].firstIndex;
 						gpuBatches[renderBatches.size()-1].instanceCount = renderBatches[renderBatches.size()-1].instanceCount;
 					}
-					objectsCount = goActiveID;
+					objectsCount = goActiveID + _staticObjectsCount;
 
 					// Close render gpu batches
 					_gpuBatches->unmap();

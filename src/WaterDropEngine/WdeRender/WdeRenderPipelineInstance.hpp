@@ -36,11 +36,17 @@ namespace wde::render {
 			}
 
 
+			// Inherited rendering methods
 			/**
 			 * Create the render passes and sub-passes (called by the WdeInstance)
 			 */
 			virtual void setup() = 0;
-
+			/**
+			 * Render the pipeline to a command buffer
+			 * @param commandBuffer
+			 * @param scene
+			 */
+			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
 			/**
 			 * Clean up the pipeline resources
 			 */
@@ -67,16 +73,6 @@ namespace wde::render {
 
 
 		protected:
-			// Inherited rendering methods
-			/**
-			 * Render the pipeline to a command buffer
-			 * @param commandBuffer
-			 * @param scene
-			 */
-			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
-
-
-
 			// Pass command manager
 			/** Set the engine rendering attachments */
 			 void setAttachments(const std::vector<RenderAttachment>& attachments) {
