@@ -103,6 +103,10 @@ namespace wde::scene {
 		public:
 			void setColor(const Color& color) {}
 			void drawCube(const glm::vec3& center, const glm::vec3& rotation = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& size = glm::vec3 {1.0f, 1.0f, 1.0f}) {}
+			Gizmo* linesManager(Color color) { return this; }
+			Gizmo* addLine(glm::vec3 from, glm::vec3 to) { return this; }
+			Gizmo* addLine(glm::vec4 from, glm::vec4 to) { return this; }
+			void drawLines(render::CommandBuffer& commandBuffer) {}
 	};
 #endif
 }

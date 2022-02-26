@@ -30,6 +30,7 @@ namespace examples {
 				int objectID;
 				int batchID;
 				int objectSceneIndex;
+				int indicesCount;
 			};
 			/** Describes the compute scene */
 			struct GPUPushConstantCullingData {
@@ -86,7 +87,7 @@ namespace examples {
 					int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
 					_indirectCommandsBuffer = std::make_unique<Buffer>(
 							MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
-							VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
+							VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);
 
 					// GPU Objects buffer batches and IDs
 					_objectsBatches = std::make_unique<Buffer>(
@@ -122,6 +123,7 @@ namespace examples {
 							.bind_buffer(0, &_objectsBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 							.bind_buffer(1, &_gpuBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 							.bind_buffer(2, &_gpuObjectIDs->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+							.bind_buffer(3, &_indirectCommandsBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 							.build(_computeSet.first, _computeSet.second);
 
 					// Create compute pipeline
@@ -201,6 +203,7 @@ namespace examples {
 							gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 							gpuObjectsBatches[goActiveID].objectID = goActiveID;
 							gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
+							gpuObjectsBatches[goActiveID].indicesCount = meshModule->getMesh()->getIndexCount();
 							goActiveID++;
 							continue;
 						}
@@ -245,6 +248,7 @@ namespace examples {
 						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(renderBatches.size());
 						gpuObjectsBatches[goActiveID].objectID = goActiveID;
 						gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
+						gpuObjectsBatches[goActiveID].indicesCount = meshModule->getMesh()->getIndexCount();
 
 						goActiveID++;
 					}
@@ -327,40 +331,6 @@ namespace examples {
 					cullingCmd.end();
 					cullingCmd.submit();
 					cullingCmd.waitForQueueIdle();
-				}
-
-
-				// Create render commands
-				{
-					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::recordRenderCommands");
-					// Read GPU GO Batches
-					void *gpuBatchesGOData = _gpuObjectIDs->map();
-					auto* gpuBatchesGO = (int*) gpuBatchesGOData;
-					// ------
-
-					// Map Render GO Commands
-					void *renderGOData = _indirectCommandsBuffer->map();
-					auto* commandsGOData = (VkDrawIndexedIndirectCommand*) renderGOData;
-					// ------
-
-					// Create game object render commands
-					int goActiveID = 0;
-					for (const auto& go : scene.getGameObjects()) {
-						auto meshMod = go->getModule<scene::MeshRendererModule>();
-						if (meshMod == nullptr || meshMod->getMesh() == nullptr || meshMod->getMaterial() == nullptr) // No mesh object
-							continue;
-						if (gpuBatchesGO[goActiveID] != -1) // If not culled => create render command
-							commandsGOData[goActiveID] = meshMod->getMesh()->getRenderIndirectCommand(gpuBatchesGO[goActiveID]);
-						goActiveID++;
-					}
-
-					// Unmap Render GO Commands
-					_indirectCommandsBuffer->unmap();
-					// ------
-
-					// Unmap GPU GO Batches
-					_gpuObjectIDs->unmap();
-					// ------
 				}
 
 

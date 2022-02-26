@@ -32,6 +32,7 @@ struct ObjectBatch {
     int objectID;
     int batchID;
     int objectSceneIndex;
+    int indicesCount;
 };
 layout (set = 1, binding = 0) readonly buffer ObjectBatchesBuffer {
     ObjectBatch objects[];
@@ -53,6 +54,19 @@ layout(set = 1, binding = 1) buffer RenderBatchesBuffer {
 layout(set = 1, binding = 2) buffer ObjectsID {
     int ids[];
 } objectsIDs;
+
+
+// Objects ID (will match to gl_instanceID)
+struct VkDrawIndexedIndirectCommand {
+    uint indexCount;
+    uint instanceCount;
+    uint firstIndex;
+    uint vertexOffset;
+    uint firstInstance;
+};
+layout(set = 1, binding = 3) buffer CommandsBuffer {
+    VkDrawIndexedIndirectCommand commands[];
+} renderCommands;
 // ===============================
 
 
@@ -103,6 +117,13 @@ void main() {
             // Write the object ID into the instance buffer that will map gl_instanceID
             int instanceIndex = renderBatches.batches[batchIndex].firstIndex + int(countIndex);
             objectsIDs.ids[instanceIndex] = int(objectSceneIndex);
+
+            // Create render command
+            renderCommands.commands[instanceIndex].firstIndex = 0;
+            renderCommands.commands[instanceIndex].vertexOffset = 0;
+            renderCommands.commands[instanceIndex].indexCount = objectBatches.objects[gID].indicesCount;
+            renderCommands.commands[instanceIndex].instanceCount = 1;
+            renderCommands.commands[instanceIndex].firstInstance = objectSceneIndex;
         }
     }
 }
