@@ -14,6 +14,8 @@ namespace wde::Config {
 	int WIDTH = 1280;
 	/** Fixed initial CoreWindow height */
 	int HEIGHT = 720;
+	/** True if the windows is in fullscreen mode */
+	bool IS_FULLSCREEN = false;
 
 	/** Vulkan API version */
 	uint32_t VULKAN_VERSION = VK_API_VERSION_1_2;

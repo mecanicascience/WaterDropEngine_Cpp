@@ -35,6 +35,7 @@ namespace wde::Config {
 
 	extern int WIDTH;
 	extern int HEIGHT;
+	extern bool IS_FULLSCREEN;
 
 	extern uint32_t VULKAN_VERSION;
 

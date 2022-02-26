@@ -16,7 +16,14 @@ namespace wde::render {
 		// Create window
 		{
 			WDE_PROFILE_FUNCTION();
-			_window = glfwCreateWindow(_windowSize.first, _windowSize.second, _windowName.c_str(), nullptr, nullptr);
+			if (Config::IS_FULLSCREEN) {
+				auto monitor = glfwGetPrimaryMonitor();
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+				_window = glfwCreateWindow(mode->width, mode->height, _windowName.c_str(), monitor, nullptr);
+			}
+			else {
+				_window = glfwCreateWindow(_windowSize.first, _windowSize.second, _windowName.c_str(), nullptr, nullptr);
+			}
 		}
 
 		// Add callbacks
