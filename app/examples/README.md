@@ -14,3 +14,6 @@ Here below is a list and image of each examples and their results.
 
 ## 03 - Draw the objects as instanced
 ![Shape loading example](../../imgs/examples/03-Draw_Indirect.png)
+
+## 04 - Draw the objects using indirect drawing and culling
+![Shapes culling](../../imgs/examples/04-Indirect_Cullin.gif)
