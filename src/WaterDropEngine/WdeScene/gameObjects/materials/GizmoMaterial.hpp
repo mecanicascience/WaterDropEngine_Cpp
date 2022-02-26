@@ -19,8 +19,8 @@ namespace wde::scene {
 			 */
 			explicit GizmoMaterial(std::pair<int, int> renderStage, Color materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_LINE)
 					: Material("Gizmo Material " + materialColor.toString(), renderStage, {
-					"res/shaders/common/gizmo/gizmo.vert.spv",
-					"res/shaders/common/gizmo/gizmo.frag.spv"
+					"res/shaders/common/gizmo/gizmo.vert",
+					"res/shaders/common/gizmo/gizmo.frag"
 			}, polygonMode) {
 				// Create material buffer
 				_materialData = std::make_unique<render::Buffer>(sizeof(GPUMaterialData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);

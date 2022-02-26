@@ -18,8 +18,8 @@ namespace wde::scene {
 			 */
 			explicit ColorMaterial(std::pair<int, int> renderStage, Color materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL)
 			    : Material("Color Material " + materialColor.toString(), renderStage, {
-                            "res/shaders/common/color/color.vert.spv",
-                            "res/shaders/common/color/color.frag.spv"
+                            "res/shaders/common/color/color.vert",
+                            "res/shaders/common/color/color.frag"
                         }, polygonMode) {
 				// Create material buffer
 				_materialData = std::make_unique<render::Buffer>(sizeof(GPUMaterialData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);

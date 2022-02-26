@@ -23,7 +23,7 @@ namespace wde::render {
 			WDE_PROFILE_FUNCTION();
 			for (const std::string &shaderStage : _shaderStages) {
 				// Create shader module
-				std::vector<char> shaderContent = WdeFileUtils::readFile(shaderStage);
+				std::vector<char> shaderContent = WdeFileUtils::readFile(shaderStage + ".spv");
 				auto shaderModule = ShaderUtils::createShaderModule(shaderContent);
 				auto shaderStageType = ShaderUtils::getShaderStage(shaderStage);
 

@@ -33,8 +33,8 @@ namespace examples {
 				_trianglePipeline = std::make_unique<PipelineGraphics>(
 						std::pair<int, int>{0, 0},
 						std::vector<std::string>{
-							"res/shaders/examples/01-Triangle/triangle.vert.spv",
-							"res/shaders/examples/01-Triangle/triangle.frag.spv"
+							"res/shaders/examples/01-Triangle/triangle.vert",
+							"res/shaders/examples/01-Triangle/triangle.frag"
 						}, // Shaders
                         std::vector<scene::VertexInput>{}, // No vertices provided
 						PipelineGraphics::Mode::Polygon, // Draw one polygon at a time

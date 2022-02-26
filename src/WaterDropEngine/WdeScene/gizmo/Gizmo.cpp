@@ -54,7 +54,7 @@ namespace wde::scene {
 		if (!_linesPipelines.contains(color.toString())) {
 			// Create corresponding pipeline
 			_linesPipelines.emplace(color.toString(),
-                   std::make_shared<render::PipelineGraphics>(_renderStage, std::vector<std::string>{"res/shaders/common/gizmo/gizmoLines.vert.spv", "res/shaders/common/gizmo/gizmoLines.frag.spv"},
+                   std::make_shared<render::PipelineGraphics>(_renderStage, std::vector<std::string>{"res/shaders/common/gizmo/gizmoLines.vert", "res/shaders/common/gizmo/gizmoLines.frag"},
 															  std::vector<scene::VertexInput>{ Vertex::getDescriptions() },
 															  render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
 															  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
