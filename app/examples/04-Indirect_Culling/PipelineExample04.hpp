@@ -299,7 +299,7 @@ namespace examples {
 
 					// Map data
 					void *data = _cullingCameraData->map();
-					memcpy(data, &cameraData, sizeof(GPUCameraData));
+					memcpy(data, &cameraData, sizeof(GPUComputeSceneData));
 					_cullingCameraData->unmap();
 				}
 
