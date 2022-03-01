@@ -41,7 +41,7 @@ namespace wde::scene {
             void render(uint32_t gameObjectID = 0) {
 	            WDE_PROFILE_FUNCTION();
                 // Add the draw command to the command buffer
-                vkCmdDrawIndexed(*_commandBuffer, _indices.size(), 1, 0, 0, gameObjectID);
+                vkCmdDrawIndexed(*_commandBuffer, _indexCount, 1, 0, 0, gameObjectID);
 		    }
 
 		    /**
@@ -52,15 +52,20 @@ namespace wde::scene {
 		        VkDrawIndexedIndirectCommand cmd {};
 		        cmd.firstIndex = 0;
 		        cmd.vertexOffset = 0;
-		        cmd.indexCount = _indices.size();
+		        cmd.indexCount = _indexCount;
 		        cmd.instanceCount = 1;
 		        cmd.firstInstance = gameObjectID;
 				return cmd;
 			}
 
-		   // Getters and setters
-		   std::string getName() { return _name; }
-		   int getIndexCount() { return static_cast<int>(_indices.size()); }
+		    // Getters and setters
+		    std::string getName() { return _name; }
+		    int getIndexCount() { return static_cast<int>(_indexCount); }
+	        void setIndexCount(uint32_t count) { _indexCount = count; }
+	        std::vector<Vertex>& getVertices() { return _vertices; }
+	        std::vector<uint32_t>& getIndices() { return _indices; }
+	        std::shared_ptr<render::Buffer>& getVertexBuffer() { return _vertexBuffer; }
+	        std::shared_ptr<render::Buffer>& getIndexBuffer() { return _indexBuffer; }
 
 
 	   protected:
@@ -71,10 +76,12 @@ namespace wde::scene {
             std::vector<Vertex> _vertices;
             /** List of the mesh indices */
             std::vector<uint32_t> _indices;
+			/** Number of indices */
+			uint32_t _indexCount;
 
             // Model buffers
-            std::unique_ptr<render::Buffer> _indexBuffer;
-            std::unique_ptr<render::Buffer> _vertexBuffer;
+            std::shared_ptr<render::Buffer> _indexBuffer;
+            std::shared_ptr<render::Buffer> _vertexBuffer;
 
             // Utils
             /** Temporary reference to the render command buffer */

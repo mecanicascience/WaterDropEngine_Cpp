@@ -1,0 +1,83 @@
+#version 450
+
+layout (local_size_x = 32, local_size_y = 32) in;
+
+// Texture
+layout(set = 0, binding = 0) uniform sampler2D inTexture;
+
+// Vertices
+struct Vertex {
+    vec3 position;
+    vec3 normal;
+    vec2 uv;
+};
+layout(set = 0, binding = 1) buffer VertexBuffer {
+    Vertex vertex[];
+} inVertexBuffer;
+
+// Indices
+layout(set = 0, binding = 2) buffer ObjectBuffer {
+    uint index[];
+} inIndexBuffer;
+
+// Push constants
+layout(push_constant) uniform Push {
+    vec4 readingBounds; // From w,h -> To w,h
+    uint readingPointsCount; // Number of points in the mesh
+    float terrainHeight; // Height of the terrain in world units
+} inPush;
+
+
+void main() {
+    uint gIDx = gl_GlobalInvocationID.x;
+    uint gIDy = gl_GlobalInvocationID.y;
+    uint gID = gIDx + gIDy * inPush.readingPointsCount;
+
+    if(gIDx < inPush.readingPointsCount && gIDy < inPush.readingPointsCount) {
+        // Heightmap value
+        vec2 posUnitary = vec2(
+            float(gIDx) / (float(inPush.readingPointsCount) - 1.0),
+            float(gIDy) / (float(inPush.readingPointsCount) - 1.0)
+        );
+
+        // Avoid looking at texture uv (0, 0) and (1, 1)
+        if (posUnitary.x == 0.0) {
+            posUnitary.x = 0.001;
+        }
+        else if (posUnitary.x == 1.0) {
+            posUnitary.x = 0.999;
+        }
+
+        // World terrain position value
+        vec3 worldPos = vec3(
+            posUnitary.x * inPush.readingBounds.z - inPush.readingBounds.x,
+            texture(inTexture, vec2(posUnitary.x, posUnitary.y)).x * inPush.terrainHeight,
+            posUnitary.y * inPush.readingBounds.w - inPush.readingBounds.y
+        );
+
+        // Set vertex
+        inVertexBuffer.vertex[gID].position = worldPos;
+        inVertexBuffer.vertex[gID].normal = vec3(0, 1, 0);
+        inVertexBuffer.vertex[gID].uv = vec2(0, 0);
+
+        // Set index
+        if (gIDx > 0 && gIDy > 0) {
+            // Compute triangle array index
+            uint iID = gID - inPush.readingPointsCount - gIDy;
+            uint iMin = 0;
+            if (iID != 0) {
+                iMin = 2 * (gIDx - 1) + 8 * (gIDy - 1) + 2 * (gIDy - 1) * (inPush.readingPointsCount - 5);
+            }
+
+            // First triangle
+            inIndexBuffer.index[8*iID + 0 - iMin] = gID;
+            inIndexBuffer.index[8*iID + 1 - iMin] = gID - inPush.readingPointsCount;
+            inIndexBuffer.index[8*iID + 2 - iMin] = gID - inPush.readingPointsCount - 1;
+
+            // Second triangle
+            inIndexBuffer.index[8*iID + 3 - iMin] = gID;
+            inIndexBuffer.index[8*iID + 4 - iMin] = gID - inPush.readingPointsCount - 1;
+            inIndexBuffer.index[8*iID + 5 - iMin] = gID - 1;
+        }
+    }
+}

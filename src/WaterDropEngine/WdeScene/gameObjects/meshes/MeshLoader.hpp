@@ -51,19 +51,18 @@ namespace wde::scene {
 							// Get vertex
 							Vertex v {
 									{
-											attrib.vertices[3 * index.vertex_index + 0],
-											  attrib.vertices[3 * index.vertex_index + 1],
-											          attrib.vertices[3 * index.vertex_index + 2]
+										attrib.vertices[3 * index.vertex_index + 0],
+										attrib.vertices[3 * index.vertex_index + 1],
+										attrib.vertices[3 * index.vertex_index + 2]
 									},
 									{
-											attrib.normals[3 * index.normal_index + 0],
-											  attrib.normals[3 * index.normal_index + 1],
-											          attrib.normals[3 * index.normal_index + 2]
+										attrib.normals[3 * index.normal_index + 0],
+										attrib.normals[3 * index.normal_index + 1],
+										attrib.normals[3 * index.normal_index + 2]
 									},
-									{ 0.898f, 0.149f, 1.0f }, // Undefined texture (pink color)
 									{
-											attrib.texcoords[2 * index.texcoord_index + 0],
-											  attrib.texcoords[2 * index.texcoord_index + 1]
+										attrib.texcoords[2 * index.texcoord_index + 0],
+										attrib.texcoords[2 * index.texcoord_index + 1]
 									}
 							};
 							// v._color = v._normal; // Use normals as color

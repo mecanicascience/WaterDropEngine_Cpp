@@ -37,10 +37,9 @@ namespace wde::scene {
      */
     struct Vertex {
         // Vertex data
-        glm::vec3 position;
-        glm::vec3 normal;
-        glm::vec3 color;
-		glm::vec2 uv;
+        alignas(16) glm::vec3 position;
+	    alignas(16) glm::vec3 normal;
+	    glm::vec2 uv;
 
         /**
          * Convert this vertex to a vulkan-compatible shader description format
@@ -54,8 +53,7 @@ namespace wde::scene {
             std::vector<VkVertexInputAttributeDescription> attributeDescriptions = {
                     {0, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, position)}, // Vertex position values (index 0)
                     {1, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, normal)}, // Normals position values (index 1)
-                    {2, baseBinding, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color)},  // Vertex color values (index 2)
-                    {3, baseBinding, VK_FORMAT_R32G32_SFLOAT   , offsetof(Vertex, uv)}     // UV texture coords (index 3)
+		            {2, baseBinding, VK_FORMAT_R32G32_SFLOAT   , offsetof(Vertex, uv)}    // UV texture coords (index 2)
             };
             return { bindingDescriptions, attributeDescriptions };
         }
@@ -68,8 +66,7 @@ namespace std {
 	 */
 	template<> struct hash<wde::scene::Vertex> {
 		size_t operator()(wde::scene::Vertex const& vertex) const {
-			return    (((hash<glm::vec3>()(vertex.position)
-			             ^ (hash<glm::vec3>()(vertex.color) << 1) >> 1)
+			return    ((hash<glm::vec3>()(vertex.position)
 			            ^ (hash<glm::vec2>()(vertex.uv) << 1)) >> 1)
 			          ^ (hash<glm::vec3>()(vertex.normal) << 1);
 		}

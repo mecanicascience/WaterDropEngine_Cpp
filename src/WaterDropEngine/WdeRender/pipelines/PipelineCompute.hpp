@@ -7,7 +7,7 @@ namespace wde::render {
 		public:
 			// Core functions
 			explicit PipelineCompute(std::string shaderStage)
-					: _shaderStage(std::move(shaderStage)), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_COMPUTE) {}
+					: _shaderStage(std::move(shaderStage + ".spv")), _pipelineBindPoint(VK_PIPELINE_BIND_POINT_COMPUTE) {}
 			~PipelineCompute() override;
 
 			/** Initialize the pipeline */

@@ -47,8 +47,12 @@ namespace wde::render {
 			int texWidth;
 			int texHeight;
 
+			// Load image
 			stbi_uc* pixels = stbi_load(_filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 			VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+			// Set image extent
+			_imageExtent = VkExtent2D {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
 
 			if (!pixels)
 				throw WdeException(LogChannel::RENDER, "Failed to load texture image.");

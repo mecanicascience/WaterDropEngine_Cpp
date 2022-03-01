@@ -9,7 +9,7 @@ namespace wde::scene {
 		    WDE_PROFILE_SCOPE("wde::scene::Mesh::createVerticesBuffer");
 		    // Assert that vertices count >= 3
 		    if (_vertices.size() < 3)
-			    throw WdeException(LogChannel::SCENE, "Vertex count must be at least 3.");
+			    return;
 
 		    // Create vertex transfer buffer
 		    VkDeviceSize bufferSize = sizeof(_vertices[0]) * _vertices.size();
@@ -24,7 +24,7 @@ namespace wde::scene {
 		    stagingBuffer.unmap();
 
 		    // Create vertex buffer
-		    _vertexBuffer = std::make_unique<render::Buffer>(
+		    _vertexBuffer = std::make_shared<render::Buffer>(
 				    bufferSize,
 				    VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Use this buffer as a destination on the GPU
 				    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); // Use most efficient memory possible
@@ -34,12 +34,16 @@ namespace wde::scene {
 	    }
 	    {
 		    WDE_PROFILE_SCOPE("wde::scene::Mesh::createIndicesBuffer");
+		    // Set indices count
+		    if (!_indices.empty())
+			    _indexCount = _indices.size();
+
 		    // Assert that indices count >= 3
-		    if (_indices.size() < 3)
-			    throw WdeException(LogChannel::SCENE, "Index count must be at least 3.");
+		    if (_indexCount < 3)
+			    return;
 
 		    // Create index transfer buffer
-		    VkDeviceSize bufferSize = sizeof(_indices[0]) * _indices.size();
+		    VkDeviceSize bufferSize = sizeof(_indices[0]) * _indexCount;
 		    render::Buffer stagingBuffer {
 				    bufferSize,
 				    VK_BUFFER_USAGE_TRANSFER_SRC_BIT, // Transfer buffer from CPU to GPU
@@ -51,7 +55,7 @@ namespace wde::scene {
 		    stagingBuffer.unmap();
 
 		    // Create index buffer
-		    _indexBuffer = std::make_unique<render::Buffer>(
+		    _indexBuffer = std::make_shared<render::Buffer>(
 				    bufferSize,
 				    VK_BUFFER_USAGE_INDEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT, // Use this buffer as a destination on the GPU
 				    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT); // Use most efficient memory possible
@@ -75,7 +79,7 @@ namespace wde::scene {
 			vertex.normal = glm::vec3 {0.0f, 0.0f, 0.0f};
 
 		// For each triangle, add the triangle normal to the binding vertices
-		for (int i = 0; i < _indices.size(); i += 3) {
+		for (int i = 0; i < _indexCount; i += 3) {
 			// Triangle A,B,C
 			Vertex& a = _vertices[_indices[i + 0]];
 			Vertex& b = _vertices[_indices[i + 1]];

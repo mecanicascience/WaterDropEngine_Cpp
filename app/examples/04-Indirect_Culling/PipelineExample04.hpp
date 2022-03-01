@@ -128,7 +128,7 @@ namespace examples {
 							.build(_computeSet.first, _computeSet.second);
 
 					// Create compute pipeline
-					_cullingPipeline = std::make_unique<PipelineCompute>("res/shaders/common/culling/culling_indirect.comp.spv");
+					_cullingPipeline = std::make_unique<PipelineCompute>("res/shaders/common/culling/culling_indirect.comp");
 					_cullingPipeline->addPushConstants(sizeof(GPUPushConstantCullingData));
 					_cullingPipeline->addDescriptorSet(_generalComputeSet.second);
 					_cullingPipeline->addDescriptorSet(_computeSet.second);

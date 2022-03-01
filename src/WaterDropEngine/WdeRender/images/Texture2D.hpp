@@ -47,6 +47,7 @@ namespace wde::render {
 
 			// Getters and setters
 			std::string getFilePath() const { return _filepath; }
+			VkExtent2D getExtent() const { return _imageExtent; }
 			VkDescriptorImageInfo createDescriptor(VkImageLayout layout) const {
 				VkDescriptorImageInfo imageInfo {};
 				imageInfo.imageLayout = layout;
