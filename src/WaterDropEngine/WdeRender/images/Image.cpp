@@ -3,8 +3,11 @@
 #include "../buffers/BufferUtils.hpp"
 
 namespace wde::render {
-	Image::Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format, VkExtent3D extent, uint32_t mipLevels, VkSampleCountFlagBits samplesCount, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel, uint32_t baseArrayLayer, uint32_t layerCount, bool initialize)
-			: _type(type), _viewType(viewType), _arrayLayers(arrayLayers), _format(format), _extent(extent), _mipLevels(mipLevels), _samplesCount(samplesCount), _tiling(tiling), _usage(usage), _memoryProperties(memoryProperties), _imageAspect(imageAspect), _baseMipLevel(baseMipLevel), _baseArrayLayer(baseArrayLayer), _layerCount(layerCount) {
+	Image::Image(VkExtent3D extent, VkImageType type, VkImageViewType viewType, VkImageAspectFlags imageAspect,
+	             VkImageUsageFlags usage, VkFormat format, VkImageTiling tiling, VkSampleCountFlagBits samplesCount,
+	             uint32_t mipLevels, uint32_t arrayLayers, uint32_t layerCount, bool initialize)
+			: _type(type), _viewType(viewType), _arrayLayers(arrayLayers), _format(format), _extent(extent), _mipLevels(mipLevels),
+			  _samplesCount(samplesCount), _tiling(tiling), _usage(usage), _imageAspect(imageAspect), _layerCount(layerCount) {
 		if (format == VK_FORMAT_UNDEFINED)
 			throw WdeException(LogChannel::RENDER, "The specified image format is undefined.");
 
@@ -62,7 +65,7 @@ namespace wde::render {
 		memoryAllocateInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
 		memoryAllocateInfo.allocationSize = memoryRequirements.size;
 		memoryAllocateInfo.memoryTypeIndex = BufferUtils::findMemoryType(
-				WaterDropEngine::get().getRender().getInstance().getDevice().getPhysicalDevice(), memoryRequirements.memoryTypeBits, _memoryProperties);
+				WaterDropEngine::get().getRender().getInstance().getDevice().getPhysicalDevice(), memoryRequirements.memoryTypeBits, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		if (vkAllocateMemory(device, &memoryAllocateInfo, nullptr, &_memory) != VK_SUCCESS)
 			throw WdeException(LogChannel::RENDER, "Failed to allocate image memory.");
 
@@ -81,9 +84,9 @@ namespace wde::render {
 		viewInfo.format = _format;
 		viewInfo.components = {VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A};
 		viewInfo.subresourceRange.aspectMask = _imageAspect;
-		viewInfo.subresourceRange.baseMipLevel = _baseMipLevel;
+		viewInfo.subresourceRange.baseMipLevel = 0;
 		viewInfo.subresourceRange.levelCount = _mipLevels;
-		viewInfo.subresourceRange.baseArrayLayer = _baseArrayLayer;
+		viewInfo.subresourceRange.baseArrayLayer = 0;
 		viewInfo.subresourceRange.layerCount = _layerCount;
 
 		if (vkCreateImageView(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), &viewInfo, nullptr, &_view) != VK_SUCCESS)

@@ -7,7 +7,8 @@
 namespace wde::render {
 
 	Texture2D::Texture2D(glm::vec2 imageExtent, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAddressMode)
-		: _filepath(), _textureFormat(textureFormat), _imageExtent(VkExtent2D {static_cast<uint32_t>(imageExtent.x), static_cast<uint32_t>(imageExtent.y)}), _textureUsage(textureUsage) {
+			: _filepath(), _textureFormat(textureFormat), _imageExtent(VkExtent2D {static_cast<uint32_t>(imageExtent.x), static_cast<uint32_t>(imageExtent.y)}), _textureUsage(textureUsage) {
+		WDE_PROFILE_FUNCTION();
 		// Create the texture image
 		createTextureImage();
 
@@ -19,7 +20,8 @@ namespace wde::render {
 	}
 
 	Texture2D::Texture2D(std::string filepath, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAddressMode)
-		: _filepath(std::move(filepath)), _textureFormat(textureFormat), _imageExtent(VkExtent2D {0, 0}), _textureUsage(textureUsage) {
+			: _filepath(std::move(filepath)), _textureFormat(textureFormat), _imageExtent(VkExtent2D {0, 0}), _textureUsage(textureUsage) {
+		WDE_PROFILE_FUNCTION();
 		// Create the texture image
 		createTextureImage();
 
@@ -31,6 +33,7 @@ namespace wde::render {
 	}
 
 	Texture2D::~Texture2D() {
+		WDE_PROFILE_FUNCTION();
 		// Destroy texture sampler
 		vkDestroySampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _textureSampler, nullptr);
 	};
@@ -38,6 +41,7 @@ namespace wde::render {
 
 	// Core functions
 	void Texture2D::createTextureImage() {
+		WDE_PROFILE_FUNCTION();
 		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice();
 
 		// Load the texture
@@ -48,48 +52,152 @@ namespace wde::render {
 			int texHeight;
 
 			// Load image
-			stbi_uc* pixels = stbi_load(_filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-			VkDeviceSize imageSize = texWidth * texHeight * 4;
-
-			// Set image extent
-			_imageExtent = VkExtent2D {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
-
-			if (!pixels)
-				throw WdeException(LogChannel::RENDER, "Failed to load texture image.");
-
-			// Create staging buffer
 			VkBuffer stagingBuffer;
 			VkDeviceMemory stagingBufferMemory;
-			BufferUtils::createBuffer(device.getPhysicalDevice(), device.getDevice(), imageSize,
-			                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
-			                          stagingBuffer, stagingBufferMemory);
+			{
+				stbi_uc* pixels = stbi_load(_filepath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+				VkDeviceSize imageSize = texWidth * texHeight * 4;
 
-			void* data;
-			vkMapMemory(device.getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
-			memcpy(data, pixels, static_cast<size_t>(imageSize));
-			vkUnmapMemory(device.getDevice(), stagingBufferMemory);
+				// Set image extent
+				_imageExtent = VkExtent2D {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
 
-			stbi_image_free(pixels); // clean-up pixel array
+				if (!pixels)
+					throw WdeException(LogChannel::RENDER, "Failed to load texture image.");
+
+				// Create staging buffer
+				BufferUtils::createBuffer(device.getPhysicalDevice(), device.getDevice(), imageSize,
+				                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+				                          stagingBuffer, stagingBufferMemory);
+
+				void* data;
+				vkMapMemory(device.getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
+				memcpy(data, pixels, static_cast<size_t>(imageSize));
+				vkUnmapMemory(device.getDevice(), stagingBufferMemory);
+
+				stbi_image_free(pixels); // clean-up pixel array
+			}
+
 
 			// Create image
-			VkExtent2D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
-			_textureImage = std::make_unique<Image2D>(_textureFormat, extent, VK_IMAGE_USAGE_TRANSFER_DST_BIT | _textureUsage, VK_SAMPLE_COUNT_1_BIT, false);
-			_textureImage->createImage();
+			{
+				VkExtent2D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
+				_mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+				_textureImage = std::make_unique<Image2D>(_textureFormat, extent, VK_IMAGE_USAGE_TRANSFER_DST_BIT | _textureUsage | VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
+				                                          VK_SAMPLE_COUNT_1_BIT, _mipLevels, false);
+				_textureImage->createImage();
 
-			// Transition layouts and copy image buffer to texture image
-			transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-			BufferUtils::copyBufferToImage(stagingBuffer, _textureImage->getImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-
-			if ((_textureUsage & VK_IMAGE_USAGE_STORAGE_BIT) == VK_IMAGE_USAGE_STORAGE_BIT) // Transition to image storage usage
-				transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);
-				// Default (transition to image sampled and other)
-			else
-				transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				// Transition layouts and copy image buffer to texture image
+				transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+				BufferUtils::copyBufferToImage(stagingBuffer, _textureImage->getImage(), static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 
 
-			// Free staging buffers
-			vkDestroyBuffer(device.getDevice(), stagingBuffer, nullptr);
-			vkFreeMemory(device.getDevice(), stagingBufferMemory, nullptr);
+				// Free staging buffers
+				vkDestroyBuffer(device.getDevice(), stagingBuffer, nullptr);
+				vkFreeMemory(device.getDevice(), stagingBufferMemory, nullptr);
+			}
+
+
+			// Generate image mipmaps
+			{
+				// Check if image format supports linear blitting
+				VkFormatProperties formatProperties;
+				vkGetPhysicalDeviceFormatProperties(WaterDropEngine::get().getRender().getInstance().getDevice().getPhysicalDevice(), _textureFormat, &formatProperties);
+				if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
+					throw WdeException(LogChannel::RENDER, "Texture image format does not support linear blitting.");
+				}
+
+				// Recording commands command buffer
+				CommandBuffer cmd {true};
+
+				// Create memory barrier
+				VkImageMemoryBarrier barrier {};
+				barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				barrier.image = _textureImage->getImage();
+				barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+				barrier.subresourceRange.baseArrayLayer = 0;
+				barrier.subresourceRange.layerCount = 1;
+				barrier.subresourceRange.levelCount = 1;
+
+
+				// Create image mipmaps levels using blit commands
+				int32_t mipWidth = texWidth;
+				int32_t mipHeight = texHeight;
+
+				for (uint32_t i = 1; i < _mipLevels; i++) {
+					barrier.subresourceRange.baseMipLevel = i - 1;
+					barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+					barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+					barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+					barrier.dstAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+
+					// Wait for last mipmap to be generated
+					vkCmdPipelineBarrier(cmd,
+					                     VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT, 0,
+					                     0, nullptr,
+					                     0, nullptr,
+					                     1, &barrier);
+
+
+					// Blit for current mipmap level
+					VkImageBlit blit {};
+					blit.srcOffsets[0] = { 0, 0, 0 };
+					blit.srcOffsets[1] = { mipWidth, mipHeight, 1 };
+					blit.srcSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					blit.srcSubresource.mipLevel = i - 1;
+					blit.srcSubresource.baseArrayLayer = 0;
+					blit.srcSubresource.layerCount = 1;
+					blit.dstOffsets[0] = { 0, 0, 0 };
+					blit.dstOffsets[1] = { mipWidth > 1 ? mipWidth / 2 : 1, mipHeight > 1 ? mipHeight / 2 : 1, 1 };
+					blit.dstSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+					blit.dstSubresource.mipLevel = i;
+					blit.dstSubresource.baseArrayLayer = 0;
+					blit.dstSubresource.layerCount = 1;
+
+					vkCmdBlitImage(cmd,
+					               _textureImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
+					               _textureImage->getImage(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+					               1, &blit,
+					               VK_FILTER_LINEAR);
+
+
+					// Barrier for current mimap
+					barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+					barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+					barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
+					barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+					vkCmdPipelineBarrier(cmd,
+					                     VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+					                     0, nullptr,
+					                     0, nullptr,
+					                     1, &barrier);
+
+					if (mipWidth > 1) mipWidth /= 2;
+					if (mipHeight > 1) mipHeight /= 2;
+				}
+
+				// Transition layout from transfer dst to shader read only optimal
+				barrier.subresourceRange.baseMipLevel = _mipLevels - 1;
+				barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+				barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+				if ((_textureUsage & VK_IMAGE_USAGE_STORAGE_BIT) == VK_IMAGE_USAGE_STORAGE_BIT) { // Transition to image storage usage
+					barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+					barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+				}
+
+				vkCmdPipelineBarrier(cmd,
+				                     VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT, 0,
+				                     0, nullptr,
+				                     0, nullptr,
+				                     1, &barrier);
+
+				// Submit command buffer
+				cmd.submitIdle();
+			}
 		}
 
 			// Create a new empty texture
@@ -97,7 +205,7 @@ namespace wde::render {
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating an empty texture." << logger::endl;
 
 			// Create image
-			_textureImage = std::make_unique<Image2D>(_textureFormat, _imageExtent, _textureUsage, device.getMaxUsableSampleCount(), false);
+			_textureImage = std::make_unique<Image2D>(_textureFormat, _imageExtent, _textureUsage, device.getMaxUsableSampleCount(), _mipLevels, false);
 			_textureImage->createImage();
 
 			// Transition image to used layout
@@ -109,6 +217,7 @@ namespace wde::render {
 	}
 
 	void Texture2D::createTextureSampler(VkFilter sampler, VkSamplerAddressMode addressMode) {
+		WDE_PROFILE_FUNCTION();
 		// Create samples
 		VkSamplerCreateInfo samplerInfo {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -137,10 +246,10 @@ namespace wde::render {
 		samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
 		// Mipmapping
-		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR; // Suppose linear mode active on device
 		samplerInfo.mipLodBias = 0.0f;
 		samplerInfo.minLod = 0.0f;
-		samplerInfo.maxLod = 0.0f;
+		samplerInfo.maxLod = static_cast<float>(_mipLevels);
 
 		// Create sampler
 		if (vkCreateSampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
@@ -175,7 +284,7 @@ namespace wde::render {
 
 		// Not an array and doesn't have mip levels
 		barrier.subresourceRange.baseMipLevel = 0;
-		barrier.subresourceRange.levelCount = 1;
+		barrier.subresourceRange.levelCount = image.getMipLevelsCount();
 		barrier.subresourceRange.baseArrayLayer = 0;
 		barrier.subresourceRange.layerCount = 1;
 

@@ -64,6 +64,7 @@ namespace wde::render {
 			VkFormat _textureFormat;
 			VkExtent2D _imageExtent;
 			VkImageUsageFlags _textureUsage;
+			uint32_t _mipLevels = 1;
 
 			// Texture data
 			std::unique_ptr<Image2D> _textureImage;

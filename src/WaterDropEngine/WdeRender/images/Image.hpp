@@ -12,26 +12,22 @@ namespace wde::render {
 			// Constructor
 			/**
 			 * Create a new image
+			 * @param extent Size of the image
 			 * @param type Type of the image (2D, 3D, ...)
-			 * @param viewType
-			 * @param arrayLayers
-			 * @param format
-			 * @param extent Storage format of the image (rgb, rgba, ...)
-			 * @param mipLevels
-			 * @param samplesCount
-			 * @param tiling
+			 * @param viewType View type of the image (2D, 3D, ...)
+			 * @param imageAspect Aspect of the image (color image, depth image, ...)
 			 * @param usage The usage of the image (stencil image, color attachment, ...)
-			 * @param memoryProperties
-			 * @param imageAspect
-			 * @param baseMipLevel
-			 * @param baseArrayLayer
-			 * @param layer
-			 * @param initialize (default true)
+			 * @param format Storage format of the image (rgb, rgba, ...)
+			 * @param tiling Can be VK_IMAGE_TILING_LINEAR or VK_IMAGE_TILING_OPTIMAL
+			 * @param samplesCount Number of image samples (MSAA Sampling)
+			 * @param mipLevels Number of mipmaps image levels
+			 * @param arrayLayers List of array layers
+			 * @param layerCount Number of array layers
+			 * @param initialize Should initialize the image directly on it's creation (default true)
 			 */
-			explicit Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format,
-			               VkExtent3D extent, uint32_t mipLevels, VkSampleCountFlagBits samplesCount, VkImageTiling tiling, VkImageUsageFlags usage,
-			               VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel,
-			               uint32_t baseArrayLayer, uint32_t layerCount, bool initialize = true);
+			explicit Image(VkExtent3D extent, VkImageType type, VkImageViewType viewType, VkImageAspectFlags imageAspect,
+			               VkImageUsageFlags usage, VkFormat format, VkImageTiling tiling, VkSampleCountFlagBits samplesCount,
+			               uint32_t mipLevels, uint32_t arrayLayers, uint32_t layerCount, bool initialize = true);
 			~Image();
 
 
@@ -46,6 +42,7 @@ namespace wde::render {
 			VkDeviceMemory& getMemory() { return _memory; }
 			void setLayout(VkImageLayout layout) { _layout = layout; }
 			VkImageLayout& getLayout() { return _layout; }
+			uint32_t getMipLevelsCount() { return _mipLevels; }
 
 
 			// Helper functions
@@ -76,10 +73,7 @@ namespace wde::render {
 			VkSampleCountFlagBits _samplesCount;
 			VkImageTiling _tiling;
 			VkImageUsageFlags _usage;
-			VkMemoryPropertyFlags _memoryProperties;
 			VkImageAspectFlags _imageAspect;
-			uint32_t _baseMipLevel;
-			uint32_t _baseArrayLayer;
 			uint32_t _layerCount;
 
 

@@ -21,11 +21,9 @@ namespace wde::render {
 			 * @param usage The usage of the image (default VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
 			 */
 			explicit ImageDepth(VkExtent2D imageExtent, VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
-					: Image(VK_IMAGE_TYPE_2D, VK_IMAGE_VIEW_TYPE_2D, 1,
+					: Image({imageExtent.width, imageExtent.height, 1}, VK_IMAGE_TYPE_2D, VK_IMAGE_VIEW_TYPE_2D, VK_IMAGE_ASPECT_DEPTH_BIT, usage,
 					        findSupportedFormat(DEPTH_TRY_FORMATS, VK_IMAGE_TILING_OPTIMAL, VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT),
-					        {imageExtent.width, imageExtent.height, 1}, 1, VK_SAMPLE_COUNT_1_BIT, VK_IMAGE_TILING_OPTIMAL,
-					        usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
-					        VK_IMAGE_ASPECT_DEPTH_BIT, 0, 0, 1) { }
+							VK_IMAGE_TILING_OPTIMAL, VK_SAMPLE_COUNT_1_BIT, 1, 1, 1) {}
 	};
 }
 
