@@ -3,8 +3,8 @@
 #include "../buffers/BufferUtils.hpp"
 
 namespace wde::render {
-	Image::Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format, VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel, uint32_t baseArrayLayer, uint32_t layerCount, bool initialize)
-			: _type(type), _viewType(viewType), _arrayLayers(arrayLayers), _format(format), _extent(extent), _mipLevels(mipLevels), _tiling(tiling), _usage(usage), _memoryProperties(memoryProperties), _imageAspect(imageAspect), _baseMipLevel(baseMipLevel), _baseArrayLayer(baseArrayLayer), _layerCount(layerCount) {
+	Image::Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format, VkExtent3D extent, uint32_t mipLevels, VkSampleCountFlagBits samplesCount, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel, uint32_t baseArrayLayer, uint32_t layerCount, bool initialize)
+			: _type(type), _viewType(viewType), _arrayLayers(arrayLayers), _format(format), _extent(extent), _mipLevels(mipLevels), _samplesCount(samplesCount), _tiling(tiling), _usage(usage), _memoryProperties(memoryProperties), _imageAspect(imageAspect), _baseMipLevel(baseMipLevel), _baseArrayLayer(baseArrayLayer), _layerCount(layerCount) {
 		if (format == VK_FORMAT_UNDEFINED)
 			throw WdeException(LogChannel::RENDER, "The specified image format is undefined.");
 
@@ -43,7 +43,7 @@ namespace wde::render {
 		imageCreateInfo.extent = _extent;
 		imageCreateInfo.mipLevels = _mipLevels;
 		imageCreateInfo.arrayLayers = _arrayLayers;
-		imageCreateInfo.samples = VK_SAMPLE_COUNT_1_BIT;
+		imageCreateInfo.samples = _samplesCount;
 		imageCreateInfo.tiling = _tiling;
 		imageCreateInfo.usage = _usage;
 		imageCreateInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;

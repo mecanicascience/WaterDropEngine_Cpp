@@ -65,6 +65,11 @@ namespace wde::render {
 			 * @return The details of the swap chain of the device
 			 */
 			SwapChainSupportDetails querySwapChainSupport();
+			/**
+			 * Query the maximum samples count available on the physical device
+			 * @return The max vulkan samples count
+			 */
+			VkSampleCountFlagBits getMaxUsableSampleCount();
 
 
 

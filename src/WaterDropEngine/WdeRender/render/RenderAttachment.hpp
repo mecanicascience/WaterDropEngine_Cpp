@@ -35,7 +35,9 @@ namespace wde::render {
 			 */
 			RenderAttachment(uint32_t bindingID, const std::string& name, Type type, VkFormat format = VK_FORMAT_UNDEFINED, const Color& clearColor = Color(0, 0, 0))
 					: bindingID(bindingID), type(type), clearColor(clearColor) {
-				description.samples = VK_SAMPLE_COUNT_1_BIT; // should match the swap chain images
+				description.samples = VK_SAMPLE_COUNT_1_BIT;
+				if (type == Type::IMAGE)
+					description.samples = VK_SAMPLE_COUNT_64_BIT; // should match the swap chain images
 
 				// Load operation
 				description.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR; // Clear to black before new frame

@@ -10,12 +10,17 @@ namespace wde::render {
 
 		// ==== Create subpass descriptions ====
 		// Get depth attachment
+		auto maxSamplesCount = renderInstance.getDevice().getMaxUsableSampleCount();
 		int depthAttachmentID = -1;
 		for (auto &att: _attachments) {
 			if (att.type == RenderAttachment::DEPTH) {
 				depthAttachmentID = static_cast<int>(att.bindingID);
 				break;
 			}
+
+			if (att.description.samples > maxSamplesCount)
+				att.description.samples = maxSamplesCount;
+
 		}
 
 		std::vector<VkSubpassDescription> subpassDescriptions;

@@ -4,7 +4,8 @@
 namespace wde::render {
 	FrameBuffers::FrameBuffers(std::vector<RenderAttachment>& attachments, std::vector<RenderSubPassStructure>& subpassesStructure,
 	                           std::vector<uint32_t>& inputAttachments, VkRenderPass renderPass, ImageDepth& depthStencil) {
-		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
+		auto& deviceEn = WaterDropEngine::get().getRender().getInstance().getDevice();
+		auto& device = deviceEn.getDevice();
 		auto& swapchain = WaterDropEngine::get().getRender().getInstance().getSwapchain();
 
 		// Create image attachments
@@ -24,7 +25,7 @@ namespace wde::render {
 						usage |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;  // Used as an input in a subpass
 
 					// Create attachment
-					_imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.description.format, swapchain.getExtent(), usage));
+					_imageAttachments.emplace_back(std::make_unique<Image2D>(attachment.description.format, swapchain.getExtent(), usage, deviceEn.getMaxUsableSampleCount()));
 					break;
 			}
 		}

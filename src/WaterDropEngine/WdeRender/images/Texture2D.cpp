@@ -73,7 +73,7 @@ namespace wde::render {
 
 			// Create image
 			VkExtent2D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight)};
-			_textureImage = std::make_unique<Image2D>(_textureFormat, extent, VK_IMAGE_USAGE_TRANSFER_DST_BIT | _textureUsage, false);
+			_textureImage = std::make_unique<Image2D>(_textureFormat, extent, VK_IMAGE_USAGE_TRANSFER_DST_BIT | _textureUsage, VK_SAMPLE_COUNT_1_BIT, false);
 			_textureImage->createImage();
 
 			// Transition layouts and copy image buffer to texture image
@@ -97,7 +97,7 @@ namespace wde::render {
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating an empty texture." << logger::endl;
 
 			// Create image
-			_textureImage = std::make_unique<Image2D>(_textureFormat, _imageExtent, _textureUsage, false);
+			_textureImage = std::make_unique<Image2D>(_textureFormat, _imageExtent, _textureUsage, device.getMaxUsableSampleCount(), false);
 			_textureImage->createImage();
 
 			// Transition image to used layout

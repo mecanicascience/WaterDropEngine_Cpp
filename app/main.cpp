@@ -20,12 +20,12 @@ int main() {
 		//instance03.startInstance();
 
 		// 04 - Indirect Culling
-		//examples::EngineInstanceExample04 instance04 {};
-		//instance04.startInstance();
+		examples::EngineInstanceExample04 instance04 {};
+		instance04.startInstance();
 
 		// 05 - Terrain
-		examples::EngineInstanceExample05 instance05 {};
-		instance05.startInstance();
+		//examples::EngineInstanceExample05 instance05 {};
+		//instance05.startInstance();
 	}
 
 	return 0;

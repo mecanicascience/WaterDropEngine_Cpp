@@ -12,14 +12,15 @@ namespace wde::render {
 			// Constructor
 			/**
 			 * Create a new image
-			 * @param type
+			 * @param type Type of the image (2D, 3D, ...)
 			 * @param viewType
 			 * @param arrayLayers
 			 * @param format
-			 * @param extent
+			 * @param extent Storage format of the image (rgb, rgba, ...)
 			 * @param mipLevels
+			 * @param samplesCount
 			 * @param tiling
-			 * @param usage
+			 * @param usage The usage of the image (stencil image, color attachment, ...)
 			 * @param memoryProperties
 			 * @param imageAspect
 			 * @param baseMipLevel
@@ -28,7 +29,7 @@ namespace wde::render {
 			 * @param initialize (default true)
 			 */
 			explicit Image(VkImageType type, VkImageViewType viewType, uint32_t arrayLayers, VkFormat format,
-			               VkExtent3D extent, uint32_t mipLevels, VkImageTiling tiling, VkImageUsageFlags usage,
+			               VkExtent3D extent, uint32_t mipLevels, VkSampleCountFlagBits samplesCount, VkImageTiling tiling, VkImageUsageFlags usage,
 			               VkMemoryPropertyFlags memoryProperties, VkImageAspectFlags imageAspect, uint32_t baseMipLevel,
 			               uint32_t baseArrayLayer, uint32_t layerCount, bool initialize = true);
 			~Image();
@@ -72,6 +73,7 @@ namespace wde::render {
 			VkFormat _format;
 			VkExtent3D _extent;
 			uint32_t _mipLevels;
+			VkSampleCountFlagBits _samplesCount;
 			VkImageTiling _tiling;
 			VkImageUsageFlags _usage;
 			VkMemoryPropertyFlags _memoryProperties;
