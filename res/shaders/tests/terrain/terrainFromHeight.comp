@@ -28,6 +28,30 @@ layout(push_constant) uniform Push {
 } inPush;
 
 
+
+
+
+/**
+  * Returns a normal vector from a grid of heights
+  * + A +
+  * D N B
+  * + C +
+  */
+vec3 computeNormals(float h_A, float h_B, float h_C, float h_D, float h_N, float heightScale) {
+    // To make it easier we offset the points such that n is "0" height
+    vec3 va = vec3( 0,  1, (h_A - h_N) * heightScale);
+    vec3 vb = vec3( 1,  0, (h_B - h_N) * heightScale);
+    vec3 vc = vec3( 0, -1, (h_C - h_N) * heightScale);
+    vec3 vd = vec3(-1,  0, (h_D - h_N) * heightScale);
+
+    // Cross products of each vector yields the normal of each tri - return the average normal of all 4 tris
+    vec3 average_n = (cross(va, vb) + cross(vb, vc) + cross(vc, vd) + cross(vd, va)) / -4.0;
+    return normalize(average_n);
+}
+
+/**
+ * Generates a 3D quad mesh with dimensions readingBounds, with readingPointsCount points, and a height of terrainHeight.
+ */
 void main() {
     uint gIDx = gl_GlobalInvocationID.x;
     uint gIDy = gl_GlobalInvocationID.y;
@@ -42,10 +66,10 @@ void main() {
 
         // Avoid looking at texture uv (0, 0) and (1, 1)
         if (posUnitary.x == 0.0) {
-            posUnitary.x = 0.001;
+            posUnitary.x = 0.00001;
         }
         else if (posUnitary.x == 1.0) {
-            posUnitary.x = 0.999;
+            posUnitary.x = 0.99999;
         }
 
         // World terrain position value
@@ -55,13 +79,24 @@ void main() {
             posUnitary.y * inPush.readingBounds.w - inPush.readingBounds.y
         );
 
+        // Compute vertex normal
+        float deltaPos = 1.0 / (float(inPush.readingPointsCount) - 1.0) * 0.999;
+        vec3 normal = computeNormals(
+            texture(inTexture, vec2(posUnitary.x + deltaPos, posUnitary.y)).x,
+            texture(inTexture, vec2(posUnitary.x           , posUnitary.y + deltaPos)).x,
+            texture(inTexture, vec2(posUnitary.x - deltaPos, posUnitary.y)).x,
+            texture(inTexture, vec2(posUnitary.x           , posUnitary.y - deltaPos)).x,
+            texture(inTexture, vec2(posUnitary.x, posUnitary.y)).x,
+            inPush.terrainHeight
+        );
+
         // Set vertex
         inVertexBuffer.vertex[gID].position = worldPos;
-        inVertexBuffer.vertex[gID].normal = vec3(0, 1, 0);
+        inVertexBuffer.vertex[gID].normal = vec3(normal.x, -normal.y, normal.z);
         inVertexBuffer.vertex[gID].uv = vec2(0, 0);
 
         // Set index
-        if (gIDx > 0 && gIDy > 0) {
+        if (gIDx > 0 && gIDy > 0 && gIDx < inPush.readingPointsCount - 1 && gIDy < inPush.readingPointsCount - 1) {
             // Compute triangle array index
             uint iID = gID - inPush.readingPointsCount - gIDy;
             uint iMin = 0;

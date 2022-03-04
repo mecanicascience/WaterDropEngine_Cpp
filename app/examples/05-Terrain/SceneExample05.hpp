@@ -23,7 +23,8 @@ namespace examples {
 
 			// Terrain game object
 			auto terrainGO = createGameObject("Test Terrain");
-			terrainGO->addModule<TerrainModule>();
+			terrainGO->transform->position -= glm::vec3 {500, 0, 500};
+			terrainGO->addModule<TerrainModule>("res/terrain/testTerrain/heightmap.png", 50, 1000, glm::vec4 {0, 0, 1000, 1000});
 		}
 	};
 }

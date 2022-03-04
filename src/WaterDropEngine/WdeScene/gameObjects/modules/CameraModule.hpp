@@ -174,7 +174,7 @@ namespace wde::scene {
 			// Perspective
 			float _fov = 60.0f;
 			float _nearPlane = 0.1f;
-			float _farPlane = 100.0f;
+			float _farPlane = 500.0f;
 			float _aspect = 4.0 / 3.0;
 
 			// Culling

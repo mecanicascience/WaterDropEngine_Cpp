@@ -85,12 +85,12 @@ namespace wde::scene {
 					}
 				}
 
+				// Initialize model
+				initialize();
+
 				// Recalculate model normals
 				if (recalculateNormalsBool)
 					recalculateNormals();
-
-				// Initialize model
-				initialize();
 			}
 	};
 }
