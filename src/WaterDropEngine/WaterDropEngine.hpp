@@ -89,7 +89,14 @@ namespace wde {
 						fpsManager.update();
 
 						#ifdef WDE_ENGINE_MODE_DEBUG
+							// Log FPS
 							logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking FPS : " << fpsManager.getFPS() << "." << logger::endl;
+
+							// Display FPS on window title
+							if (fpsManager.hasNewValue()) {
+								auto windowTitle = Config::APPLICATION_NAME + " - FPS : " + std::to_string(fpsManager.getFPS());
+								glfwSetWindowTitle(&_render->getWindow().getWindow(), windowTitle.c_str());
+							}
 						#else
 							if (fpsManager.hasNewValue()) {
 								std::cout << "Ticking FPS : " << fpsManager.getFPS() << "." << std::endl;
