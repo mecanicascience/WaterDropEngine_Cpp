@@ -19,7 +19,6 @@ namespace wde::input {
 
 
 	void InputManager::setDefaultKeyMapping() {
-		// TODO : Load from file too
 		// For now, set manually every required keys
 		addKey("moveForward", GLFW_KEY_W);
 		addKey("moveBackward", GLFW_KEY_S);

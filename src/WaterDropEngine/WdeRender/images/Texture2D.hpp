@@ -37,12 +37,14 @@ namespace wde::render {
 			~Texture2D();
 
 
-			// Utils
+			// Helper functions
 			/**
-			 * Transition the texture from it's actual layout to a given layout
-			 * @param layout New texture layout
+			 * Transition between from one layout to another
+			 * @param image The image that will transition formats
+			 * @param oldLayout Old layout of the image
+			 * @param newLayout New layout of the image
 			 */
-			void toLayout(VkImageLayout layout);
+			static void transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
 
 			// Getters and setters
@@ -81,16 +83,5 @@ namespace wde::render {
 			 * VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE take the nearest color, VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER return a solid color outside)
 			 */
 			void createTextureSampler(VkFilter sampler = VK_FILTER_LINEAR, VkSamplerAddressMode addressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
-
-
-
-			// Helper functions
-			/**
-			 * Transition between from one layout to another
-			 * @param image The image that will transition formats
-			 * @param oldLayout Old layout of the image
-			 * @param newLayout New layout of the image
-			 */
-			static void transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout);
 	};
 }

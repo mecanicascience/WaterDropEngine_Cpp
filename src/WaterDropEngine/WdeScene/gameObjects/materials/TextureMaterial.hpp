@@ -33,7 +33,7 @@ namespace wde::scene {
 
 
 		private:
-			std::shared_ptr<Texture2D> _texture {};
+			std::unique_ptr<Texture2D> _texture {};
 			VkDescriptorImageInfo _imageDescriptor {};
 	};
 }

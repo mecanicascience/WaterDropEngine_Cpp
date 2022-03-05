@@ -200,7 +200,7 @@ namespace wde::render {
 			}
 		}
 
-			// Create a new empty texture
+		// Create a new empty texture
 		else {
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating an empty texture." << logger::endl;
 
@@ -260,13 +260,6 @@ namespace wde::render {
 
 
 	// Helper
-	void Texture2D::toLayout(VkImageLayout layout) {
-		if (layout == _textureImage->getLayout())
-			return;
-
-		transitionImageLayout(*_textureImage, _textureImage->getLayout(), layout);
-	}
-
 	void Texture2D::transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout) {
 		// Create a temporary command buffer
 		CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};

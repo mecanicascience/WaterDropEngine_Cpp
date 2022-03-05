@@ -77,7 +77,7 @@ namespace wde::render {
 		 * @param width
 		 * @param height
 		 */
-		static void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+		static void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, uint32_t currentLayer = 0) {
 			// Create a temporary command buffer
 			CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
 			commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -89,7 +89,7 @@ namespace wde::render {
 			region.bufferImageHeight = 0;
 			region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
 			region.imageSubresource.mipLevel = 0;
-			region.imageSubresource.baseArrayLayer = 0;
+			region.imageSubresource.baseArrayLayer = currentLayer;
 			region.imageSubresource.layerCount = 1;
 			region.imageOffset = {0, 0, 0};
 			region.imageExtent = {width, height, 1}; // Use the full image size
