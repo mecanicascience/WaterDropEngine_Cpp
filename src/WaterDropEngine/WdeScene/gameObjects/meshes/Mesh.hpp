@@ -69,6 +69,7 @@ namespace wde::scene {
 	        std::vector<uint32_t>& getIndices() { return _indices; }
 	        std::shared_ptr<render::Buffer>& getVertexBuffer() { return _vertexBuffer; }
 	        std::shared_ptr<render::Buffer>& getIndexBuffer() { return _indexBuffer; }
+		    glm::vec4 getCollisionSphere() const { return _occlusionSphere; }
 
 
 	   protected:
@@ -86,8 +87,11 @@ namespace wde::scene {
             std::shared_ptr<render::Buffer> _indexBuffer;
             std::shared_ptr<render::Buffer> _vertexBuffer;
 
+
             // Utils
             /** Temporary reference to the render command buffer */
             render::CommandBuffer* _commandBuffer = nullptr;
+		    /** Sphere visual collision sphere */
+		    glm::vec4 _occlusionSphere {0.0f, 0.0f, 0.0f, 0.0f};
     };
 }

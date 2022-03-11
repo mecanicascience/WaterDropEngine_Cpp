@@ -15,6 +15,7 @@ layout(set = 0, binding = 0) uniform SceneBuffer {
 // Objects set
 struct ObjectData {
     mat4 model;
+    vec4 collisionSphere;
 };
 layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
     ObjectData objects[];

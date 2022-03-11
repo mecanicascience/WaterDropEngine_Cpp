@@ -19,6 +19,7 @@ layout(set = 0, binding = 0) uniform SceneBuffer {
 // Objects set
 struct ObjectData {
     mat4 model;
+    vec4 collisionSphere;
 };
 layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
     ObjectData objects[];
@@ -82,9 +83,13 @@ layout(push_constant) uniform Push {
 // Return true if the object is visible on the screen
 bool isVisible(uint objectSceneIndex) {
     // Grep object data
-    vec3 center = vec3(inObjectBuffer.objects[objectSceneIndex].model[3][0], inObjectBuffer.objects[objectSceneIndex].model[3][1], inObjectBuffer.objects[objectSceneIndex].model[3][2]);
+    vec3 center = vec3(
+        inObjectBuffer.objects[objectSceneIndex].model[3][0] + inObjectBuffer.objects[objectSceneIndex].collisionSphere.x,
+        inObjectBuffer.objects[objectSceneIndex].model[3][1] + inObjectBuffer.objects[objectSceneIndex].collisionSphere.y,
+        inObjectBuffer.objects[objectSceneIndex].model[3][2] + inObjectBuffer.objects[objectSceneIndex].collisionSphere.z
+    );
     center = (inSceneData.view * vec4(center, 1.0f)).xyz;
-    float radius = 2; // TODO
+    float radius = inObjectBuffer.objects[objectSceneIndex].collisionSphere.w;
 
     // Frustrum culling
     bool visible = true;

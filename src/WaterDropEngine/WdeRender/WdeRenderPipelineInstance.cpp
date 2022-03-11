@@ -63,10 +63,29 @@ namespace wde::render {
 			static bool isFirstTime = true;
 			if (isFirstTime) {
 				isFirstTime = false;
+
+				// Update static objects
 				void *data = _objectsData->map();
 				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
-				for (auto& go : scene.getStaticGameObjects())
+				for (auto& go : scene.getStaticGameObjects()) {
 					objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
+
+					auto mesh = go->getModule<scene::MeshRendererModule>();
+					if (mesh != nullptr && mesh->getMesh() != nullptr)
+						objectsData[go->getID()].collisionSphere = mesh->getMesh()->getCollisionSphere();
+				}
+
+				// Update dynamic game objects
+				for (auto& go : scene.getDynamicGameObjects()) {
+					if (go->transform->changed) {
+						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
+						go->transform->changed = false;
+
+						auto mesh = go->getModule<scene::MeshRendererModule>();
+						if (mesh != nullptr && mesh->getMesh() != nullptr)
+							objectsData[go->getID()].collisionSphere = mesh->getMesh()->getCollisionSphere();
+					}
+				}
 				_objectsData->unmap();
 			}
 

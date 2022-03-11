@@ -19,6 +19,8 @@ namespace wde::scene {
 			struct GPUGameObjectData {
 				/** Game object world space position */
 				glm::mat4 transformWorldSpace {1.0f};
+				/** Game object collision sphere */
+				glm::vec4 collisionSphere {1.0f};
 			};
 
 

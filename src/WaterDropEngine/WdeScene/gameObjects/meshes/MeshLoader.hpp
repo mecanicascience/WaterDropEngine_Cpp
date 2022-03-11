@@ -36,6 +36,7 @@ namespace wde::scene {
 				std::hash<Vertex> hasher;
 
 				// Loop over shapes
+				_occlusionSphere.w = 0.0;
 				for (const auto& shape : shapes) {
 					size_t faceTriangleOffset = 0; // Offset of the current triangle in the shape
 
@@ -47,6 +48,14 @@ namespace wde::scene {
 						for (size_t vertexID = 0; vertexID < faceSize; vertexID++) {
 							// Access to vertex
 							tinyobj::index_t index = shape.mesh.indices[faceTriangleOffset + vertexID];
+
+							// Set occlusion box bounds
+							auto vLength = std::sqrt(
+									  attrib.vertices[3 * index.vertex_index + 0] * attrib.vertices[3 * index.vertex_index + 0]
+									+ attrib.vertices[3 * index.vertex_index + 1] * attrib.vertices[3 * index.vertex_index + 1]
+									+ attrib.vertices[3 * index.vertex_index + 2] * attrib.vertices[3 * index.vertex_index + 2]);
+							if (vLength * 2.0 > _occlusionSphere.w)
+								_occlusionSphere.w = vLength * 2;
 
 							// Get vertex
 							Vertex v {
