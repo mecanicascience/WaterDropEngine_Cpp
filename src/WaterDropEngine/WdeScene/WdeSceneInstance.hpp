@@ -39,7 +39,7 @@ namespace wde::scene {
 
 			// Getters and setters
 			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
-			GameObject& getGameObject(int goID) { return *_gameObjects[goID]; }
+			std::shared_ptr<GameObject> getGameObject(int goID) { return _gameObjects[goID]; }
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
 			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }

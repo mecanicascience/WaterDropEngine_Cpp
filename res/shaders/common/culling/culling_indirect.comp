@@ -7,13 +7,10 @@ layout (local_size_x = 256) in;
 // Camera set
 layout(set = 0, binding = 0) uniform SceneBuffer {
     mat4 view;
-    float frustumL; // Data for left frustum planes
-    float frustumR; // Data for right frustum planes
-    float frustumT; // Data for top frustum planes
-    float frustumB; // Data for bottom frustum planes
-    float znear;
-    float zfar;
+    vec4 frustum;
+    vec2 zPlanes;
     int distCull;
+    int objectsCount;
 } inSceneData;
 
 // Objects set
@@ -72,14 +69,6 @@ layout(set = 1, binding = 3) buffer CommandsBuffer {
 
 
 
-// ======== PUSH CONSTANTS ========
-layout(push_constant) uniform Push {
-    int objectsCount;
-} inPush;
-// ===============================
-
-
-
 // Return true if the object is visible on the screen
 bool isVisible(uint objectSceneIndex) {
     // Grep object data
@@ -96,11 +85,11 @@ bool isVisible(uint objectSceneIndex) {
     if (inSceneData.distCull <= 0) {
         return false;
     }
-    visible = visible && center.z * inSceneData.frustumR - abs(center.x) * inSceneData.frustumL > -radius;
-    visible = visible && center.z * inSceneData.frustumB - abs(center.y) * inSceneData.frustumT > -radius;
+    visible = visible && center.z * inSceneData.frustum.y - abs(center.x) * inSceneData.frustum.x > -radius;
+    visible = visible && center.z * inSceneData.frustum.w - abs(center.y) * inSceneData.frustum.z > -radius;
 
     if(inSceneData.distCull != 0) { // The near/far plane culling uses camera space Z directly
-        visible = visible && center.z + radius > inSceneData.znear && center.z - radius < inSceneData.zfar;
+        visible = visible && center.z + radius > inSceneData.zPlanes.x && center.z - radius < inSceneData.zPlanes.y;
     }
     return visible;
 }
@@ -108,7 +97,7 @@ bool isVisible(uint objectSceneIndex) {
 
 void main() {
     uint gID = gl_GlobalInvocationID.x;
-    if(gID < inPush.objectsCount) {
+    if(gID < inSceneData.objectsCount) {
         // Get object batch index
         uint batchIndex = objectBatches.objects[gID].batchID;
         uint objectIndex = objectBatches.objects[gID].objectID;
