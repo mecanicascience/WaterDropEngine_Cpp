@@ -1,5 +1,5 @@
 #include "CullingInstance.hpp"
-#include "../../../src/WaterDropEngine/WaterDropEngine.hpp"
+#include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	// Core functions

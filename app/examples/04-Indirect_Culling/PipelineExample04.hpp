@@ -4,7 +4,7 @@
 #include "../../../src/WaterDropEngine/WdeGUI/WdeGUI.hpp"
 #include "../../../src/WaterDropEngine/WdeRender/pipelines/PipelineCompute.hpp"
 #include "../../../src/WaterDropEngine/WdeScene/gizmo/GizmoManager.hpp"
-#include "CullingInstance.hpp"
+#include "../../../src/WaterDropEngine/WdeScene/culling/CullingInstance.hpp"
 
 using namespace wde;
 using namespace wde::render;

@@ -2,12 +2,12 @@
 
 #include <utility>
 
-#include "../../src/wde.hpp"
-#include "../../../src/WaterDropEngine/WdeScene/gameObjects/materials/Material.hpp"
-#include "../../../src/WaterDropEngine/WdeScene/gameObjects/meshes/Mesh.hpp"
-#include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/MeshRendererModule.hpp"
-#include "../../../src/WaterDropEngine/WdeRender/pipelines/PipelineCompute.hpp"
-#include "../../../src/WaterDropEngine/WdeScene/gameObjects/modules/CameraModule.hpp"
+#include "../../../wde.hpp"
+#include "../gameObjects/materials/Material.hpp"
+#include "../gameObjects/meshes/Mesh.hpp"
+#include "../gameObjects/modules/MeshRendererModule.hpp"
+#include "../../WdeRender/pipelines/PipelineCompute.hpp"
+#include "../gameObjects/modules/CameraModule.hpp"
 
 namespace wde::scene {
 	/**
