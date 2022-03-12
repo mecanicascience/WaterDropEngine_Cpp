@@ -27,10 +27,10 @@ layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
 // ======== OBJECTS DATA =========
 // Objects render batches
 struct ObjectBatch {
-    int objectID;
-    int batchID;
-    int objectSceneIndex;
-    int indicesCount;
+    uint objectID;
+    uint batchID;
+    uint objectSceneIndex;
+    uint indicesCount;
 };
 layout (set = 1, binding = 0) readonly buffer ObjectBatchesBuffer {
     ObjectBatch objects[];
@@ -39,9 +39,9 @@ layout (set = 1, binding = 0) readonly buffer ObjectBatchesBuffer {
 
 // Render Batches
 struct RenderBatch {
-    int firstIndex;
-    int indexCount;
-    int instanceCount;
+    uint firstIndex;
+    uint indexCount;
+    uint instanceCount;
 };
 layout(set = 1, binding = 1) buffer RenderBatchesBuffer {
     RenderBatch batches[];
@@ -50,7 +50,7 @@ layout(set = 1, binding = 1) buffer RenderBatchesBuffer {
 
 // Objects ID (will match to gl_instanceID)
 layout(set = 1, binding = 2) buffer ObjectsID {
-    int ids[];
+    uint ids[];
 } objectsIDs;
 
 
@@ -109,8 +109,8 @@ void main() {
             uint countIndex = atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
 
             // Write the object ID into the instance buffer that will map gl_instanceID
-            int instanceIndex = renderBatches.batches[batchIndex].firstIndex + int(countIndex);
-            objectsIDs.ids[instanceIndex] = int(objectSceneIndex);
+            uint instanceIndex = renderBatches.batches[batchIndex].firstIndex + countIndex;
+            objectsIDs.ids[instanceIndex] = objectSceneIndex;
 
             // Create render command
             renderCommands.commands[instanceIndex].firstIndex = 0;

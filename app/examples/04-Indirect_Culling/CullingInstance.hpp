@@ -14,26 +14,26 @@ namespace wde::scene {
 			// Render batches
 			/** Stores a rendering batch on the CPU */
 			struct CPURenderBatch {
-				Material *material {nullptr};   // Material of the batch
-				Mesh *mesh {nullptr};           // Mesh of the batch
-				int firstIndex {-1};            // Index of the first object in the batch
-				int indexCount {0};             // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
-				int instanceCount { 0};         // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
+				Material *material;     // Material of the batch
+				Mesh *mesh;             // Mesh of the batch
+				uint32_t firstIndex ;   // Index of the first object in the batch
+				uint32_t indexCount;    // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
+				uint32_t instanceCount; // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
 			};
 
 			/** Stores a rendering batch on the GPU */
 			struct GPURenderBatch {
-				int firstIndex {-1};    // Index of the first object in the batch
-				int indexCount {0};     // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
-				int instanceCount {0};   // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
+				uint32_t firstIndex;    // Index of the first object in the batch
+				uint32_t indexCount;    // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
+				uint32_t instanceCount; // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
 			};
 
 			/** Describes a scene game object corresponding batch data */
 			struct GPUObjectBatch {
-				int objectID;           // Objects ID in the batch
-				int batchID;            // ID of the object batch
-				int objectSceneIndex;   // Object UUID
-				int indicesCount;       // Number of indices in the object mesh (used to create object render commands)
+				uint32_t objectID;           // Objects ID in the batch
+				uint32_t batchID;            // ID of the object batch
+				uint32_t objectSceneIndex;   // Object UUID
+				uint32_t indicesCount;       // Number of indices in the object mesh (used to create object render commands)
 			};
 
 			/** Describes the scene data sent to the compute shader */
@@ -48,6 +48,11 @@ namespace wde::scene {
 
 
 			// Constructors and destructors
+			/**
+			 * Creates a new scene culling instance
+			 * @param sceneObjects
+			 * @param sceneSet The scene des
+			 */
 			explicit CullingInstance(std::unique_ptr<render::Buffer>& sceneObjects, std::pair<VkDescriptorSet, VkDescriptorSetLayout>& sceneSet) : _sceneRenderSet(sceneSet) {
 				WDE_PROFILE_FUNCTION();
 				// === Create buffers ===
@@ -71,7 +76,7 @@ namespace wde::scene {
 
 					// List of game objects IDs in the batches (will match to gl_instanceID, filled by the compute shader)
 					_gpuObjectsIDs = std::make_unique<Buffer>(
-							Config::MAX_SCENE_OBJECTS_COUNT * sizeof(int),
+							Config::MAX_SCENE_OBJECTS_COUNT * sizeof(uint32_t),
 							VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
 					// GPU buffer that holds the scene data to describe to the compute shader
@@ -173,14 +178,14 @@ namespace wde::scene {
 						currentBatch = CPURenderBatch {};
 						currentBatch.material = mat.get();
 						currentBatch.mesh = meshModule->getMesh().get();
-						currentBatch.firstIndex = static_cast<int>(goActiveID);
+						currentBatch.firstIndex = goActiveID;
 						currentBatch.indexCount = 1;
 						currentBatch.instanceCount = 0;
 
 						// Set this object batch
-						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(_renderBatches.size());
+						gpuObjectsBatches[goActiveID].batchID = _renderBatches.size();
 						gpuObjectsBatches[goActiveID].objectID = goActiveID;
-						gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
+						gpuObjectsBatches[goActiveID].objectSceneIndex = go->getID();
 						gpuObjectsBatches[goActiveID].indicesCount = meshModule->getMesh()->getIndexCount();
 						goActiveID++;
 						continue;
@@ -202,14 +207,14 @@ namespace wde::scene {
 						currentBatch = CPURenderBatch {};
 						currentBatch.material = mat.get();
 						currentBatch.mesh = mesh.get();
-						currentBatch.firstIndex = static_cast<int>(goActiveID);
+						currentBatch.firstIndex = goActiveID;
 						currentBatch.indexCount = 1;
 						currentBatch.instanceCount = 0;
 
 						// Set this object batch
-						gpuObjectsBatches[goActiveID].batchID = static_cast<int>(_renderBatches.size());
+						gpuObjectsBatches[goActiveID].batchID = _renderBatches.size();
 						gpuObjectsBatches[goActiveID].objectID = goActiveID;
-						gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
+						gpuObjectsBatches[goActiveID].objectSceneIndex = go->getID();
 						goActiveID++;
 						continue;
 					}
@@ -219,13 +224,13 @@ namespace wde::scene {
 					currentBatch.material = mat.get();
 					currentBatch.mesh = mesh.get();
 					currentBatch.indexCount++;
-					if (currentBatch.firstIndex == -1)
-						currentBatch.firstIndex = static_cast<int>(goActiveID);
+					if (currentBatch.firstIndex == 0 && goActiveID != 0)
+						currentBatch.firstIndex = goActiveID;
 
 					// Set this object batch
-					gpuObjectsBatches[goActiveID].batchID = static_cast<int>(_renderBatches.size());
+					gpuObjectsBatches[goActiveID].batchID = _renderBatches.size();
 					gpuObjectsBatches[goActiveID].objectID = goActiveID;
-					gpuObjectsBatches[goActiveID].objectSceneIndex = static_cast<int>(go->getID());
+					gpuObjectsBatches[goActiveID].objectSceneIndex = go->getID();
 					gpuObjectsBatches[goActiveID].indicesCount = meshModule->getMesh()->getIndexCount();
 
 					goActiveID++;
