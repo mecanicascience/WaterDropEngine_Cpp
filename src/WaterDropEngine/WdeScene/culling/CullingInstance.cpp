@@ -1,9 +1,11 @@
 #include "CullingInstance.hpp"
+
+#include <utility>
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	// Core functions
-	CullingInstance::CullingInstance(std::pair<int, int> renderStage, std::unique_ptr<render::Buffer> &sceneObjectsBuffer) : _renderStage(renderStage) {
+	CullingInstance::CullingInstance(std::pair<int, int> renderStage, std::unique_ptr<render::Buffer> &sceneObjectsBuffer) : _renderStage(std::move(renderStage)) {
 		WDE_PROFILE_FUNCTION();
 		// === Create buffers ===
 		int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;

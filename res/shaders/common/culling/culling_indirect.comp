@@ -78,6 +78,8 @@ bool isVisible(uint objectSceneIndex) {
     );
     center = (inSceneData.view * vec4(center, 1.0f)).xyz;
     float radius = inObjectBuffer.objects[objectSceneIndex].collisionSphere.w;
+    if (radius <= 0.0)
+        return true;
 
     // Frustrum culling
     bool visible = true;
