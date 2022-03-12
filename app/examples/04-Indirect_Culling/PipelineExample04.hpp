@@ -30,14 +30,14 @@ namespace examples {
 					}}
 				});
 
+				// Create culling manager
+				_cullingManager = std::make_unique<CullingInstance>(std::pair<int, int>{0, 0}, _objectsData);
+
 				// Initialize Gizmo
 				scene::GizmoManager::initialize(std::pair<int, int>{0, 1});
 
 				// Initialize GUI
 				gui::WdeGUI::initialize(std::pair<int, int>{0, 2});
-
-				// Create culling manager
-				_cullingManager = std::make_unique<CullingInstance>(_objectsData, _globalSet);
 			}
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
