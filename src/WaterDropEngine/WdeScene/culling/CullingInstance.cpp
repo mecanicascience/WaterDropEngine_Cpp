@@ -282,7 +282,6 @@ namespace wde::scene {
 		// Camera data
 		auto cameraModule = cullingCamera->getModule<scene::CameraModule>();
 		sceneData.view = cameraModule->getView();
-		sceneData.distCull = cameraModule->getCullingDistance();
 
 		glm::mat4 projection = cameraModule->getProjection();
 		glm::mat4 projectionT = glm::transpose(projection);

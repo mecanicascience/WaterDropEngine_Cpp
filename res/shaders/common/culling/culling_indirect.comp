@@ -9,7 +9,6 @@ layout(set = 0, binding = 0) uniform SceneBuffer {
     mat4 view;
     vec4 frustum;
     vec2 zPlanes;
-    int distCull;
     int objectsCount;
 } inSceneData;
 
@@ -82,15 +81,11 @@ bool isVisible(uint objectSceneIndex) {
 
     // Frustrum culling
     bool visible = true;
-    if (inSceneData.distCull <= 0) {
-        return false;
-    }
     visible = visible && center.z * inSceneData.frustum.y - abs(center.x) * inSceneData.frustum.x > -radius;
     visible = visible && center.z * inSceneData.frustum.w - abs(center.y) * inSceneData.frustum.z > -radius;
 
-    if(inSceneData.distCull != 0) { // The near/far plane culling uses camera space Z directly
-        visible = visible && center.z + radius > inSceneData.zPlanes.x && center.z - radius < inSceneData.zPlanes.y;
-    }
+    // The near/far plane culling uses camera space Z directly
+    visible = visible && center.z + radius > inSceneData.zPlanes.x && center.z - radius < inSceneData.zPlanes.y;
     return visible;
 }
 

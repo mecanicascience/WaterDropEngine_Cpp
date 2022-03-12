@@ -150,7 +150,6 @@ namespace wde::scene {
 			const glm::mat4& getView() const { return _viewMatrix; }
 			float getNear() const { return _nearPlane; }
 			float getFar() const { return _farPlane; }
-			int getCullingDistance() const { return static_cast<int>(_cullingDistance); }
 			void setFarPlane(float farPlane);
 
 
@@ -176,8 +175,5 @@ namespace wde::scene {
 			float _nearPlane = 0.1f;
 			float _farPlane = 500.0f;
 			float _aspect = 4.0 / 3.0;
-
-			// Culling
-			float _cullingDistance = 100.0;
 	};
 }

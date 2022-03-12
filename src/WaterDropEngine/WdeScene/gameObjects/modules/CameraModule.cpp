@@ -121,16 +121,6 @@ namespace wde::scene {
 		ImGui::Dummy(ImVec2(0.0f, 3.0f));
 		ImGui::Separator();
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-
-		// == Culling ==
-		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
-		ImGui::Text("  Culling configuration");
-		ImGui::Dummy(ImVec2(0.0f, 1.0f));
-		ImGui::PopFont();
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-		gui::GUIRenderer::addFloatDragger("Culling Distance", _cullingDistance, 100.0f);
 	}
 
 	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {

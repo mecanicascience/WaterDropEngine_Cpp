@@ -46,7 +46,6 @@ namespace wde::scene {
 				glm::mat4 view;
 				glm::vec4 frustum;
 				glm::vec2 zPlanes;
-				int distCull;
 				int objectsCount;
 			};
 
