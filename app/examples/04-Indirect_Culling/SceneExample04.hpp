@@ -40,8 +40,8 @@ namespace examples {
 
 			// MATERIALS
 			// Viking room
-			auto vikingMat  = createMaterial<TextureMaterial>(std::pair<int, int>{0, 0}, "res/models/viking_room/viking_room.png", VK_POLYGON_MODE_FILL);
-			auto vikingMesh = createMesh<MeshLoader>("viking_room/viking_room.obj");
+			auto vikingMat  = createMaterial<TextureMaterial>(std::pair<int, int>{0, 0}, "res/models/fougere/fougere.png", VK_POLYGON_MODE_FILL);
+			auto vikingMesh = createMesh<MeshLoader>("fougere/fougere.obj");
 
 			// Uniform material
 			auto colorMatBlue = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 0.0f, 1.0}, VK_POLYGON_MODE_FILL);
@@ -64,8 +64,8 @@ namespace examples {
 				for (int j = 0; j < 100; j++) {
 					auto object3D = createGameObject("Viking 3D Objects " + std::to_string(j + i * 100), true);
 					object3D->transform->setParent(meshParent->transform);
-					object3D->transform->position += glm::vec3(+5.0 - (float) i * 5.0f, 0, 5.0f - (float) j * 5.0f);
-					object3D->transform->rotation = {3 * glm::half_pi<float>(), 0.5f, 0.0f};
+					object3D->transform->position += glm::vec3((float) i*5.0f, 0, 5.0f - (float) j*5.0f);
+					object3D->transform->rotation = {-1.5f, 0.5f, 0.0f};
 					object3D->transform->scale *= 3.0f;
 
 					auto meshRenderer = object3D->addModule<MeshRendererModule>();

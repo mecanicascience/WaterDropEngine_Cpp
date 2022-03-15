@@ -55,9 +55,6 @@ namespace wde::scene {
 
 
 			void drawGUI() {
-				if (!active)
-					return;
-
 				WDE_PROFILE_FUNCTION();
 				if (_isStatic) {
 					ImGui::Text("%s", "This game object is static.");
@@ -102,6 +99,7 @@ namespace wde::scene {
 			uint32_t getID() const { return _id; }
 			void setSelected(bool selected) { _isSelected = selected; }
 			bool isSelected() { return _isSelected; }
+			bool isStatic() { return _isStatic; }
 			std::vector<std::unique_ptr<Module>>& getModules() { return _modules; }
 
 

@@ -23,7 +23,7 @@ namespace examples {
 
 				camModule->setAsActive();
 				camera->addModule<ControllerModule>();
-				camModule->setFarPlane(900.0f);
+				camModule->setFarPlane(900000.0f);
 				camera->transform->position = glm::vec3 {0.0f, 0.0f, -6.0f};
 			}
 
@@ -31,9 +31,32 @@ namespace examples {
 			// Terrain game object
 			{
 				auto terrainGO = createGameObject("Test Terrain");
+				terrainGO->transform->scale = {1.0f, 21.0f, 1.0f};
+				terrainGO->addModule<TerrainModule>("res/terrain/testTerrain/heightmap.png", 50*2.0, 1000, glm::vec4 {0, 0, 12000, 12000});
+			}
 
-				terrainGO->transform->position -= glm::vec3 {500, 0, 500};
-				terrainGO->addModule<TerrainModule>("res/terrain/testTerrain/heightmap.png", 50, 1000, glm::vec4 {0, 0, 1000, 1000});
+			// Robot
+			{
+				auto robotMat  = createMaterial<TextureMaterial>(std::pair<int, int>{0, 0}, "res/models/robot/model_robot.png", VK_POLYGON_MODE_FILL);
+				auto robotMesh = createMesh<MeshLoader>("robot/model_robot.obj");
+				auto object3D = createGameObject("Robot");
+				object3D->transform->position += glm::vec3(0, 5, 0);
+
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(robotMat);
+				meshRenderer->setMesh(robotMesh);
+			}
+
+			// Fougere
+			{
+				auto fougereMat  = createMaterial<TextureMaterial>(std::pair<int, int>{0, 0}, "res/models/fougere/fougere.png", VK_POLYGON_MODE_FILL);
+				auto fougereMesh = createMesh<MeshLoader>("fougere/fougere.obj");
+				auto object3D = createGameObject("Fougere");
+				object3D->transform->position += glm::vec3(10, 5, 0);
+
+				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				meshRenderer->setMaterial(fougereMat);
+				meshRenderer->setMesh(fougereMesh);
 			}
 
 

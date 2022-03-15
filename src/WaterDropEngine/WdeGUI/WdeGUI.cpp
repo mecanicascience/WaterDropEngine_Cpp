@@ -23,9 +23,12 @@ namespace wde::gui {
 		/*io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Bold.ttf", 15.0f);
 		 * io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-SemiBold.ttf", 15.0f);
 		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/opensans/OpenSans-Regular.ttf", 15.0f);*/
-		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 16.0f);
-		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-SemiBold.ttf", 16.0f);
-		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 16.0f);
+		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Bold.ttf", 15.0f);
+		io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-SemiBold.ttf", 15.0f);
+		static const ImWchar icons_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };
+		ImFontConfig icons_config; icons_config.MergeMode = true; icons_config.PixelSnapH = true;
+		io.Fonts->AddFontFromFileTTF("res/fonts/fontawesome/" FONT_ICON_FILE_NAME_FAS, 15.0f, &icons_config, icons_ranges );
+		io.FontDefault = io.Fonts->AddFontFromFileTTF("res/fonts/raleway/static/Raleway-Regular.ttf", 15.0f);
 
 		// Dark mode
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Setting up gui color scheme." << logger::endl;

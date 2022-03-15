@@ -96,7 +96,7 @@ namespace wde::scene {
 			auto meshModule = go->getModule<scene::MeshRendererModule>();
 
 			// If no renderer, or material, or mesh, or if render stage different from culling stage, discard object, push last batch
-			if (meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr || meshModule->getMaterial()->getRenderStage() != _renderStage) {
+			if (!go->active || meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr || meshModule->getMaterial()->getRenderStage() != _renderStage) {
 				if (currentBatch.indexCount > 0) {
 					_renderBatches.push_back(currentBatch);
 					// Set gpu batch

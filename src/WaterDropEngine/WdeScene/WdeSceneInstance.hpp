@@ -24,7 +24,6 @@ namespace wde::scene {
 			/** Ticking for scene instance (called by WaterDropEngine) */
 			void tick();
 			void onNotify(core::Event event) override;
-			void drawGUIForGO(GameObject& go, int* selected, const std::string& depthIterator);
 			void cleanUpInstance() {
 			    _materials.clear();
 			    _meshes.clear();
@@ -101,5 +100,8 @@ namespace wde::scene {
 			// Scene utils
 			/** Selected game object ID for GUI (default : 0) */
 			int _selectedGameObjectID = 0;
+
+			// Helper functions
+			void drawGUIForGo(const std::shared_ptr<GameObject> &go, int* selected);
 	};
 }

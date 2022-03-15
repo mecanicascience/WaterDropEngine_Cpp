@@ -11,11 +11,7 @@ namespace wde::gui {
 		const inline static ImVec4 colorMinor {0.17f, 0.17f, 0.17f, 1.0f}; // Background content color
 		const inline static ImVec4 colorMinorLight {0.25f, 0.25f, 0.25f, 1.0f};
 		const inline static ImVec4 colorMinorLightLight {0.35f, 0.35f, 0.35f, 1.0f};
-
-
-		// Main Wde colors
-		const inline static ImVec4 colorWdeMajor {0.69f, 0.92f, 0.99f, 1.0f};
-		const inline static ImVec4 colorWdeMinor {0.83f, 0.92f, 0.96f, 1.0f};
+		const inline static ImVec4 colorMinorLightLightLight {0.45f, 0.45f, 0.45f, 1.0f};
 
 
 		// Black and white colors
@@ -55,6 +51,7 @@ namespace wde::gui {
 			auto& colors = ImGui::GetStyle().Colors;
 
 			// Background color
+			colors[ImGuiCol_Text] = ImVec4(0.823, 0.823, 0.823, 1.0f);
 			colors[ImGuiCol_WindowBg] = colorMinor;
 			colors[ImGuiCol_ChildBg] = colorMinor;
 
@@ -84,9 +81,9 @@ namespace wde::gui {
 			colors[ImGuiCol_FrameBgActive] = colorMinorLight;
 
 			// Headers (window children titles and select color)
-			colors[ImGuiCol_Header] = colorMinorLight;
-			colors[ImGuiCol_HeaderHovered] = colorMinorLightLight;
-			colors[ImGuiCol_HeaderActive] = colorMinorLightLight;
+			colors[ImGuiCol_Header] = colorMinorLightLight;
+			colors[ImGuiCol_HeaderHovered] = colorMinorLightLightLight;
+			colors[ImGuiCol_HeaderActive] = colorMinorLightLightLight;
 		}
 
 

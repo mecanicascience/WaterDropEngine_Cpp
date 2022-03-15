@@ -35,7 +35,7 @@ namespace examples {
 						for (auto& go : scene.getGameObjects()) {
 							// If no mesh or material, continue
 							auto mesh = go->getModule<scene::MeshRendererModule>();
-							if (mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
+							if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
 								continue;
 
 							// Bind sets

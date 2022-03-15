@@ -66,7 +66,7 @@ namespace examples {
 						auto meshModule = go->getModule<scene::MeshRendererModule>();
 
 						// If no renderer, or material, or mesh, push last batch
-						if (meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr) {
+						if (!go->active || meshModule == nullptr || meshModule->getMaterial() == nullptr || meshModule->getMesh() == nullptr) {
 							if (currentBatch.indexCount > 0)
 								renderBatches.push_back(currentBatch);
 
