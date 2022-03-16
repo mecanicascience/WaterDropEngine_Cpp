@@ -6,6 +6,21 @@
 namespace wde::gui {
 	class GUIRenderer {
 		public:
+			// Windows rendering
+			/** Push the window tab size style */
+			static void pushWindowTabStyle() {
+				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
+				ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorWhiteMajor);
+			}
+
+			/** Pop the window tab size style */
+			static void popWindowTabStyle() {
+				ImGui::PopStyleColor();
+				ImGui::PopFont();
+			}
+
+
+			// Drawing components
 			/**
 			 * Create a button describing a 3D Vector
 			 * @param label The label of the button

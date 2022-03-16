@@ -41,6 +41,7 @@ namespace wde::gui {
 			style.WindowRounding = 0.0f;
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
+		style.TabRounding = 0;
 
 		// === Initialize ImGui for GLFW ===
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Configuring ImGUI with GLFW." << logger::endl;

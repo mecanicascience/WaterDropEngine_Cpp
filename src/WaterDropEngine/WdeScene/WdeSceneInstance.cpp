@@ -27,12 +27,11 @@ namespace wde::scene {
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::createGUI");
 			// Create a game objects list tab
 			ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
-			ImGuiID dockIDLeft = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Left, 0.19f, nullptr, &dockspaceID);
-			ImGui::DockBuilderDockWindow("Scene Components", dockIDLeft);
+			ImGuiID dockIDRight = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.19f, nullptr, &dockspaceID);
+			ImGui::DockBuilderDockWindow("Scene Components", dockIDRight);
 
 			// Create a properties list
-			ImGuiID dockIDProperties = ImGui::DockBuilderSplitNode(dockIDLeft, ImGuiDir_Down, 0.75f, nullptr,
-			                                                       &dockIDLeft);
+			ImGuiID dockIDProperties = ImGui::DockBuilderSplitNode(dockIDRight, ImGuiDir_Down, 0.75f, nullptr, &dockIDRight);
 			ImGui::DockBuilderDockWindow("Properties", dockIDProperties);
 		}
 
@@ -42,7 +41,9 @@ namespace wde::scene {
 				return;
 
 			// Setup scene components list
+			gui::GUIRenderer::pushWindowTabStyle();
 			ImGui::Begin("Scene Components");
+			gui::GUIRenderer::popWindowTabStyle();
 			ImGui::BeginChild("Scene Components Children");
 			ImGui::Dummy(ImVec2(0.0f, 0.15f));
 
@@ -76,11 +77,15 @@ namespace wde::scene {
 
 
 			// Render selected game object properties in properties component
+			gui::GUIRenderer::pushWindowTabStyle();
 			ImGui::Begin("Properties");
+			gui::GUIRenderer::popWindowTabStyle();
+			ImGui::PushFont(ImGui::GetIO().FontDefault);
 			ImGui::Dummy(ImVec2(0.0f, 0.15f));
 			if (_selectedGameObjectID != -1)
 				_gameObjects.at(_selectedGameObjectID)->drawGUI();
 			ImGui::End();
+			ImGui::PopFont();
 		}
 	}
 
@@ -100,7 +105,7 @@ namespace wde::scene {
 			notAct = true;
 		}
 		ImGui::PushID(static_cast<int>(go->getID()) + 216846351);
-		if (ImGui::Selectable(" " ICON_FA_CHECK " "))
+		if ((go->active && ImGui::Selectable(" " ICON_FA_EYE "   ")) || (!go->active && ImGui::Selectable(" " ICON_FA_EYE_SLASH "   ")))
 			go->active = !go->active;
 		ImGui::PopID();
 		if (notAct)
@@ -144,7 +149,7 @@ namespace wde::scene {
 			ImGui::TableSetColumnIndex(2);
 			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
 			if (typeName.size() > 3)
-				ImGui::Text("%s", ((go->isStatic() ? "Static " : "") + typeName).c_str());
+				ImGui::Text("%s", ((go->isStatic() ? "Static " : "") + typeName + "   ").c_str());
 			ImGui::PopStyleColor();
 
 			// Draw for children
