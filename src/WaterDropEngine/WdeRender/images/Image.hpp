@@ -7,7 +7,7 @@ namespace wde::render {
 	/**
 	 * Class that represents a Vulkan image
 	 */
-	class Image {
+	class Image : public NonCopyable {
 		public:
 			// Constructor
 			/**
@@ -28,7 +28,7 @@ namespace wde::render {
 			explicit Image(VkExtent3D extent, VkImageType type, VkImageViewType viewType, VkImageAspectFlags imageAspect,
 			               VkImageUsageFlags usage, VkFormat format, VkImageTiling tiling, VkSampleCountFlagBits samplesCount,
 			               uint32_t mipLevels, uint32_t arrayLayers, uint32_t layerCount, bool initialize = true);
-			~Image();
+			~Image() override;
 
 
 			// Core functions
@@ -42,7 +42,7 @@ namespace wde::render {
 			VkDeviceMemory& getMemory() { return _memory; }
 			void setLayout(VkImageLayout layout) { _layout = layout; }
 			VkImageLayout& getLayout() { return _layout; }
-			uint32_t getMipLevelsCount() { return _mipLevels; }
+			uint32_t getMipLevelsCount() const { return _mipLevels; }
 
 
 			// Helper functions
@@ -75,30 +75,5 @@ namespace wde::render {
 			VkImageUsageFlags _usage;
 			VkImageAspectFlags _imageAspect;
 			uint32_t _layerCount;
-
-
-			// Helper functions
-			/**
-			 * Transition the image from one layout to another
-			 * @param commandBuffer
-			 * @param image
-			 * @param srcAccessMasks
-			 * @param dstAccessMasks
-			 * @param oldImageLayout
-			 * @param newImageLayout
-			 * @param srcStageMask
-			 * @param dstStageMask
-			 * @param imageAspect
-			 * @param mipLevels
-			 * @param baseMipLevel
-			 * @param layerCount
-			 * @param baseArrayLayer
-			 */
-			static void insertImageMemoryBarrier(CommandBuffer& commandBuffer, VkImage &image, VkAccessFlags srcAccessMasks,
-			                                     VkAccessFlags dstAccessMasks, VkImageLayout oldImageLayout,
-			                                     VkImageLayout newImageLayout, VkPipelineStageFlagBits srcStageMask,
-			                                     VkPipelineStageFlagBits dstStageMask, VkImageAspectFlagBits imageAspect,
-			                                     int mipLevels,
-			                                     int baseMipLevel, int layerCount, int baseArrayLayer);
 	};
 }

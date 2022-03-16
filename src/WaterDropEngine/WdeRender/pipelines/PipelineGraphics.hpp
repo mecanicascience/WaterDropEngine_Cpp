@@ -110,7 +110,7 @@ namespace wde::render {
 				VkPipelineTessellationStateCreateInfo tessellationState {};
 				std::vector<VkDynamicState> dynamicStateEnables;
 			};
-			std::array<VkPipelineColorBlendAttachmentState, 1> _blendAttachmentStates;
+			std::array<VkPipelineColorBlendAttachmentState, 1> _blendAttachmentStates {};
 			PipelineConfigInfo _configInfo {};
 		};
 }

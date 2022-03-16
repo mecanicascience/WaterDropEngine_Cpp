@@ -12,7 +12,7 @@ namespace wde::render {
 	/**
 	 * Represents a render pass
 	 */
-	class RenderPass {
+	class RenderPass : public NonCopyable {
 		public:
 			/**
 			 * Create a new render pass given the arguments
@@ -20,11 +20,11 @@ namespace wde::render {
 			 * @param subpassesStructure Render subpasses structures in order
 			 */
 			explicit RenderPass(std::vector<RenderAttachment>& attachments, std::vector<RenderSubPassStructure> subpassesStructure);
-			~RenderPass();
+			~RenderPass() override;
 
 
 			// Render commands
-			void start();
+			void start() const;
 			static void end();
 
 			static void startSubPass(uint32_t subPassIndex);
@@ -34,10 +34,7 @@ namespace wde::render {
 			// Getters and setters
 			uint32_t getSubPassesCount() const { return _subpassesStructure.size(); }
 			VkRenderPass& getRenderPass() { return _renderPass; }
-			int getAttachmentColorCount(int subpassID) { return _attachmentsColorCount[subpassID]; }
-			ImageDepth& getDepthStencil() { return *_depthStencil; }
-			FrameBuffers& getFrameBuffers() { return *_framebuffers; }
-			RenderAttachment& getAttachment(uint32_t index) { return _attachments[index]; }
+			int getAttachmentColorCount(int subpassID) const { return _attachmentsColorCount[subpassID]; }
 
 
 		private:

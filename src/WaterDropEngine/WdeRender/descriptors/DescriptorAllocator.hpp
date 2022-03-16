@@ -6,7 +6,7 @@ namespace wde::render {
 	/**
 	 * Class that handle descriptor pools and allocate new pool when the last one is full.
 	 */
-	class DescriptorAllocator {
+	class DescriptorAllocator : public NonCopyable {
 		public:
 			/**
 			 * Repartition of descriptor types in a pool.<br />
@@ -31,7 +31,7 @@ namespace wde::render {
 
 			// Constructors
 			explicit DescriptorAllocator() = default;
-			~DescriptorAllocator();
+			~DescriptorAllocator() override;
 
 			// Core functions
 			/**

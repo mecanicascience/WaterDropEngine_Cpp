@@ -7,11 +7,11 @@ namespace wde::render {
 	/**
 	 * A command pool to allocate commands buffers from.
 	 */
-	class CommandPool {
+	class CommandPool : public NonCopyable {
 		public:
 			// Core functions
 			explicit CommandPool(const std::thread::id &threadID);
-			~CommandPool();
+			~CommandPool() override;
 
 			// Getters and setters
 			VkCommandPool& getCommandPool() { return _commandPool; }

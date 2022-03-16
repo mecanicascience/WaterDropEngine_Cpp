@@ -32,7 +32,7 @@ namespace wde::render {
 		}
 
 		// Check if window should close
-		if (glfwWindowShouldClose(&_window->getWindow()))
+		if (glfwWindowShouldClose(_window->getWindow()))
 			_moduleSubject->notify({LogChannel::RENDER, "WINDOW_SHOULD_CLOSE"});
 	}
 
@@ -49,7 +49,7 @@ namespace wde::render {
 
 
 	// On message from another module
-	void WdeRender::onNotify(core::Event event) {
+	void WdeRender::onNotify(const core::Event& event) {
 		// Check if window should close
 		if (event.channel == LogChannel::RENDER && event.name == "WINDOW_SHOULD_CLOSE")
 			_shouldRun = false;

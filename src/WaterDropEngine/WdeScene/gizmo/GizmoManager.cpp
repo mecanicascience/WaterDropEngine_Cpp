@@ -17,12 +17,12 @@ namespace wde::scene {
 		// Create gizmo descriptors
 		inst->_positionsSetBuffer = std::make_shared<render::Buffer>(sizeof(Gizmo::GPUGizmoObjectDescriptor), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		render::DescriptorBuilder::begin()
-					.bind_buffer(0, &inst->_positionsSetBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(0, *inst->_positionsSetBuffer, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(inst->_positionsSet.first, inst->_positionsSet.second);
 		inst->_positionsLinesSetBuffer = std::make_shared<render::Buffer>(sizeof(Gizmo::GPUGizmoLineDescriptor), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		inst->_positionsLinesSetBufferVertices = std::make_shared<render::Buffer>(sizeof(Vertex) * Config::MAX_GIZMO_OBJECTS_COUNT, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 		render::DescriptorBuilder::begin()
-					.bind_buffer(0, &inst->_positionsLinesSetBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(0, *inst->_positionsLinesSetBuffer, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(inst->_positionsLinesSet.first, inst->_positionsLinesSet.second);
 
 		// Create gizmo meshes

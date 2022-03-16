@@ -7,14 +7,14 @@ namespace wde::render {
 	/**
 	 * Holds an instance of the GLFW game window
 	 */
-	class CoreWindow {
+	class CoreWindow : public NonCopyable {
 		public:
 			explicit CoreWindow(std::shared_ptr<core::Subject> moduleSubject, std::pair<int, int> windowSize, std::string windowName);
-			~CoreWindow();
+			~CoreWindow() override;
 
 
 			// Getters and setters
-			GLFWwindow& getWindow() { return *_window; }
+			GLFWwindow* getWindow() { return _window; }
 
 
 		private:

@@ -102,4 +102,23 @@ namespace wde::scene {
 		for (auto& vertex : _vertices)
 			vertex.normal = glm::normalize(vertex.normal);
 	}
+
+	void Mesh::bind(render::CommandBuffer &commandBuffer)  {
+		WDE_PROFILE_FUNCTION();
+		_commandBuffer = &commandBuffer;
+
+		// Bind our vertex into the commandBuffer with index of offsets[]
+		VkBuffer vertexBuffers[] = { _vertexBuffer->getBuffer() };
+		VkDeviceSize offsets[] = { 0 };
+		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
+
+		// Bind index buffers into the commandBuffer with index of offsets[]
+		vkCmdBindIndexBuffer(commandBuffer, _indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32); // VK_INDEX_TYPE_UINT16 or VK_INDEX_TYPE_UINT32
+	}
+
+	void Mesh::render(uint32_t gameObjectID) {
+		WDE_PROFILE_FUNCTION();
+		// Add the draw command to the command buffer
+		vkCmdDrawIndexed(*_commandBuffer, _indexCount, 1, 0, 0, gameObjectID);
+	}
 }

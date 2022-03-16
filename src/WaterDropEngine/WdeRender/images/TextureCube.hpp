@@ -8,7 +8,7 @@ namespace wde::render {
 	/**
 	 * Represents a Cube Texture
 	 */
-	class TextureCube {
+	class TextureCube : public NonCopyable {
 		public:
 			/**
 			 * Creates a new Cube texture
@@ -16,7 +16,7 @@ namespace wde::render {
 			 * @param textureExtension Extension of the images (jpg, png, ...)
 			 */
 			explicit TextureCube(const std::string& textureFolder, const std::string& textureExtension);
-			~TextureCube();
+			~TextureCube() override;
 
 
 			// Getters and setters

@@ -3,6 +3,7 @@
 #include "../../../wde.hpp"
 #include "DescriptorLayoutCache.hpp"
 #include "DescriptorAllocator.hpp"
+#include "../buffers/Buffer.hpp"
 
 namespace wde::render {
 	/**
@@ -17,12 +18,12 @@ namespace wde::render {
 			/**
 			 * Bind a buffer to the set
 			 * @param binding Index of the bounded buffer in the set
-			 * @param bufferInfo
+			 * @param buffer
 			 * @param type
 			 * @param stageFlags
 			 * @return The descriptor builder instance
 			 */
-			DescriptorBuilder& bind_buffer(uint32_t binding, VkDescriptorBufferInfo* bufferInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
+			DescriptorBuilder& bind_buffer(uint32_t binding, const Buffer& buffer, VkDescriptorType type, VkShaderStageFlags stageFlags);
 
 			/**
 			 * Bind an image to the set
@@ -32,7 +33,7 @@ namespace wde::render {
 			 * @param stageFlags
 			 * @return The descriptor builder instance
 			 */
-			DescriptorBuilder& bind_image(uint32_t binding, VkDescriptorImageInfo* imageInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
+			DescriptorBuilder& bind_image(uint32_t binding, const VkDescriptorImageInfo* imageInfo, VkDescriptorType type, VkShaderStageFlags stageFlags);
 
 
 			// Builder functions

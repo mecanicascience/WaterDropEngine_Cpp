@@ -17,7 +17,7 @@ namespace wde::scene {
 			 * @param materialColor
 			 * @param polygonMode (default : lines)
 			 */
-			explicit GizmoMaterial(std::pair<int, int> renderStage, Color materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_LINE)
+			explicit GizmoMaterial(std::pair<int, int> renderStage, const Color& materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_LINE)
 					: Material("Gizmo Material " + materialColor.toString(), renderStage, {
 					"res/shaders/common/gizmo/gizmo.vert",
 					"res/shaders/common/gizmo/gizmo.frag"
@@ -35,7 +35,7 @@ namespace wde::scene {
 
 				// Create descriptor set
 				render::DescriptorBuilder::begin()
-							.bind_buffer(0, &_materialData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+							.bind_buffer(0, *_materialData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 						.build(_materialSet.first, _materialSet.second);
 			}
 

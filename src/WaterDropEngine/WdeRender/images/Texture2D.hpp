@@ -8,7 +8,7 @@ namespace wde::render {
 	/**
 	 * Describes and stores a 2D Texture
 	 */
-	class Texture2D {
+	class Texture2D : public NonCopyable {
 		public:
 			// Constructors
 			/**
@@ -34,7 +34,7 @@ namespace wde::render {
 			explicit Texture2D(std::string filepath, VkFormat textureFormat = VK_FORMAT_R8G8B8A8_SRGB, VkImageUsageFlags textureUsage = VK_IMAGE_USAGE_SAMPLED_BIT,
 			                   VkFilter textureFilter = VK_FILTER_LINEAR, VkSamplerAddressMode textureAddressMode = VK_SAMPLER_ADDRESS_MODE_REPEAT);
 
-			~Texture2D();
+			~Texture2D() override;
 
 
 			// Helper functions
@@ -48,7 +48,6 @@ namespace wde::render {
 
 
 			// Getters and setters
-			std::string getFilePath() const { return _filepath; }
 			VkExtent2D getExtent() const { return _imageExtent; }
 			VkDescriptorImageInfo createDescriptor(VkImageLayout layout) const {
 				VkDescriptorImageInfo imageInfo {};

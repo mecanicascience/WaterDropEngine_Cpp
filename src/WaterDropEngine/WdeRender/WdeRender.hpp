@@ -14,7 +14,7 @@ namespace wde::render {
 			void cleanUp() override;
 
 			// Notifications
-			void onNotify(core::Event event) override;
+			void onNotify(const core::Event& event) override;
 
 			// Getters and setters
 			/** @return true if the simulation should continue to run */

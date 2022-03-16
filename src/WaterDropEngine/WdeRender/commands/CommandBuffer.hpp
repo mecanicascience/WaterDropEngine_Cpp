@@ -6,7 +6,7 @@ namespace wde::render {
 	/**
 	 * Class that represents a command buffer.
 	 */
-	class CommandBuffer {
+	class CommandBuffer : public NonCopyable {
 		public:
 			// Core functions
 			/**
@@ -15,7 +15,7 @@ namespace wde::render {
 			 * @param bufferLevel The level of the command buffer (Primary or Secondary) - Default is primary
 			 */
 			explicit CommandBuffer(bool begin, VkCommandBufferLevel bufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY);
-			~CommandBuffer();
+			~CommandBuffer() override;
 
 
 			// Command buffer functions

@@ -6,7 +6,7 @@ namespace wde::render {
 	/**
 	 * Stores every descriptor created layouts as a hashmap to avoid duplicating them.
 	 */
-	class DescriptorLayoutCache {
+	class DescriptorLayoutCache : public NonCopyable {
 		public:
 			/**
 			 * Stores infos of a descriptor set layout
@@ -20,7 +20,7 @@ namespace wde::render {
 
 			// Constructors
 			explicit DescriptorLayoutCache() = default;
-			~DescriptorLayoutCache();
+			~DescriptorLayoutCache() override;
 
 			// Core functions
 			/**

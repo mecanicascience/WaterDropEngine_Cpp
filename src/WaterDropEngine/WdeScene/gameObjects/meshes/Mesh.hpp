@@ -10,10 +10,10 @@ namespace wde::scene {
     /**
      * Handles a game mesh
      */
-    class Mesh {
+    class Mesh : public NonCopyable {
         public:
             explicit Mesh(std::string name);
-            ~Mesh();
+            ~Mesh() override;
 			void initialize();
 
 			// Render functions
@@ -21,34 +21,19 @@ namespace wde::scene {
              * Bind the mesh to the command buffer
              * @param commandBuffer
              */
-            void bind(render::CommandBuffer& commandBuffer) {
-	            WDE_PROFILE_FUNCTION();
-                _commandBuffer = &commandBuffer;
-
-                // Bind our vertex into the commandBuffer with index of offsets[]
-                VkBuffer vertexBuffers[] = { _vertexBuffer->getBuffer() };
-                VkDeviceSize offsets[] = { 0 };
-                vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-                // Bind index buffers into the commandBuffer with index of offsets[]
-                vkCmdBindIndexBuffer(commandBuffer, _indexBuffer->getBuffer(), 0, VK_INDEX_TYPE_UINT32); // VK_INDEX_TYPE_UINT16 or VK_INDEX_TYPE_UINT32
-            }
+            void bind(render::CommandBuffer& commandBuffer);
 
             /**
              * Render the given game object using this mesh
              * @param gameObjectID (default = 0)
              */
-            void render(uint32_t gameObjectID = 0) {
-	            WDE_PROFILE_FUNCTION();
-                // Add the draw command to the command buffer
-                vkCmdDrawIndexed(*_commandBuffer, _indexCount, 1, 0, 0, gameObjectID);
-		    }
+            void render(uint32_t gameObjectID = 0);
 
 		    /**
 		     * @param gameObjectID
 		     * @return Return the rendering command for this object
 		     */
-	        VkDrawIndexedIndirectCommand getRenderIndirectCommand(uint32_t gameObjectID) {
+	        VkDrawIndexedIndirectCommand getRenderIndirectCommand(uint32_t gameObjectID) const {
 		        VkDrawIndexedIndirectCommand cmd {};
 		        cmd.firstIndex = 0;
 		        cmd.vertexOffset = 0;
@@ -62,8 +47,8 @@ namespace wde::scene {
 		    void recalculateNormals();
 
 		    // Getters and setters
-		    std::string getName() { return _name; }
-		    int getIndexCount() { return static_cast<int>(_indexCount); }
+		    std::string getName() const { return _name; }
+		    int getIndexCount() const { return static_cast<int>(_indexCount); }
 	        void setIndexCount(uint32_t count) { _indexCount = count; }
 	        std::vector<Vertex>& getVertices() { return _vertices; }
 	        std::vector<uint32_t>& getIndices() { return _indices; }

@@ -29,4 +29,19 @@ namespace wde {
 		// Tick for the scene
 		_scene->tick();
 	}
+
+	void WdeInstance::cleanUpInstance() {
+		// Destroy render scene
+		if (_scene != nullptr) {
+			_scene->cleanUpInstance();
+			_scene.reset();
+		}
+
+		// Destroy render pipeline
+		_pipeline->cleanUp();
+		_pipeline.reset();
+
+		// Clean up instance
+		cleanUp();
+	}
 }

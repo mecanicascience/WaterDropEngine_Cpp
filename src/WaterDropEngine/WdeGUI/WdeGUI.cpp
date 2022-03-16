@@ -46,7 +46,7 @@ namespace wde::gui {
 		// === Initialize ImGui for GLFW ===
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Configuring ImGUI with GLFW." << logger::endl;
 		auto& renderInstance = WaterDropEngine::get().getRender();
-		ImGui_ImplGlfw_InitForVulkan(&renderInstance.getWindow().getWindow(), true);
+		ImGui_ImplGlfw_InitForVulkan(renderInstance.getWindow().getWindow(), true);
 
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initialization Done ==" << logger::endl;
 	}

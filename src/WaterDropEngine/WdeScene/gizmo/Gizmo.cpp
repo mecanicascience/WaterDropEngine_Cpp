@@ -41,7 +41,7 @@ namespace wde::scene {
 
 
 	// Lines manager
-	Gizmo* Gizmo::linesManager(Color color) {
+	Gizmo* Gizmo::linesManager(const Color& color) {
 		WDE_PROFILE_FUNCTION();
 		// Delete last session
 		_lines.clear();
@@ -70,7 +70,7 @@ namespace wde::scene {
 		return this;
 	}
 
-	Gizmo* Gizmo::addLine(glm::vec3 from, glm::vec3 to) {
+	Gizmo* Gizmo::addLine(const glm::vec3& from, const glm::vec3& to) {
 		// Add line to vertex buffer
 		_linesSetData[_lines.size() * 2 + 0] = Vertex {from};
 		_linesSetData[_lines.size() * 2 + 1] = Vertex {to};
@@ -81,7 +81,7 @@ namespace wde::scene {
 		return this;
 	}
 
-	Gizmo* Gizmo::addLine(glm::vec4 from, glm::vec4 to) {
+	Gizmo* Gizmo::addLine(const glm::vec4& from, const glm::vec4& to) {
 		// Add line to vertex buffer
 		_linesSetData[_lines.size() * 2 + 0] = Vertex {glm::vec3{from.x, from.y, from.z}};
 		_linesSetData[_lines.size() * 2 + 1] = Vertex {glm::vec3{to.x, to.y, to.z}};
@@ -156,6 +156,11 @@ namespace wde::scene {
 				{position.x, position.y, position.z, 1.0f}
 		};
 		return mat;
+	}
+
+	Gizmo::~Gizmo()  {
+		_commandBuffer = nullptr;
+		_pipelines.clear();
 	}
 }
 #endif

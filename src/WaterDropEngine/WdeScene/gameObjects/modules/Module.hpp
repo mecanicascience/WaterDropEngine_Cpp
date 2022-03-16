@@ -9,10 +9,10 @@ namespace wde::scene {
 	/**
 	 * A class that represents a GameObject module
 	 */
-	class Module {
+	class Module : public NonCopyable {
 		public:
 			explicit Module(GameObject& gameObject, std::string name) : _gameObject(gameObject), _name(std::move(name)) {}
-			virtual ~Module() = default;
+			~Module() override = default;
 
 			// Inherited methods
 			/** Tick for the module */
@@ -24,7 +24,7 @@ namespace wde::scene {
 
 
 			// Getters and setters
-			std::string getName() { return _name; }
+			std::string getName() const { return _name; }
 
 
 		protected:

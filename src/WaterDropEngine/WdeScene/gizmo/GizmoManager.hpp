@@ -9,7 +9,7 @@ namespace wde::scene {
 	/**
 	 * Update every gizmo game objects and render them to the screen
 	 */
-	class GizmoManager {
+	class GizmoManager : public NonCopyable {
 		public:
 			/** Create the different gizmo rendering pipelines */
 			static void initialize(std::pair<int, int> renderStage);

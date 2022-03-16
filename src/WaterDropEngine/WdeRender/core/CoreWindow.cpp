@@ -1,5 +1,7 @@
 #include "CoreWindow.hpp"
 
+#include <utility>
+
 namespace wde::render {
 	CoreWindow::CoreWindow(std::shared_ptr<core::Subject> moduleSubject, std::pair<int, int> windowSize, std::string windowName)
 			: _moduleSubject(std::move(moduleSubject)), _windowSize(std::move(windowSize)), _windowName(std::move(windowName)) {

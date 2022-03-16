@@ -8,13 +8,13 @@ namespace wde::render {
 		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
 
 		// Delete every descriptor
-		for (auto pair : _layoutCache)
+		for (const auto& pair : _layoutCache)
 			vkDestroyDescriptorSetLayout(device, pair.second, nullptr);
 	}
 
 
 	// Core functions
-	VkDescriptorSetLayout DescriptorLayoutCache::createDescriptorLayout(VkDescriptorSetLayoutCreateInfo *info) {
+	VkDescriptorSetLayout DescriptorLayoutCache::createDescriptorLayout(VkDescriptorSetLayoutCreateInfo* info) {
 		WDE_PROFILE_FUNCTION();
 		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
 

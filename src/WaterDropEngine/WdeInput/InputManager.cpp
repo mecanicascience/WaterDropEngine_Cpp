@@ -36,9 +36,13 @@ namespace wde::input {
 			throw WdeException(LogChannel::INPUT, "The default key mapping misses " + std::to_string(glm::abs(KEY_COUNT - _userKeyMapping.size())) + " key binding(s).");
 	}
 
+	void InputManager::addKey(const std::string &keyName, int keyID) {
+		if (_userKeyMapping.contains(keyName))
+			throw WdeException(LogChannel::INPUT, "Two key strokes have the same name (" + keyName + ").");
+		_userKeyMapping.emplace(keyName, keyID);
+	}
 
-	bool InputManager::isKeyDown(const std::string &keyName) {
-		auto& glfwWindow = WaterDropEngine::get().getRender().getWindow().getWindow();
-		return glfwGetKey(&glfwWindow, _userKeyMapping.at(keyName)) == GLFW_PRESS;
+	bool InputManager::isKeyDown(const std::string &keyName) const {
+		return glfwGetKey(WaterDropEngine::get().getRender().getWindow().getWindow(), _userKeyMapping.at(keyName)) == GLFW_PRESS;
 	}
 }

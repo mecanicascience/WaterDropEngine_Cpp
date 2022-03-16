@@ -4,7 +4,7 @@
 #include "../WdeScene/gameObjects/GameObject.hpp"
 
 namespace wde::input {
-	class InputController {
+	class InputController : public NonCopyable {
 		public:
 			/**
 			 * Move the game object in the XZ plane

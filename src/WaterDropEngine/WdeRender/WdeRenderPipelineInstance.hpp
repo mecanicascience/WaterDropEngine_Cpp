@@ -16,24 +16,16 @@ namespace wde::render {
 	/**
 	 * Represents an instance of the engine rendering pipeline
 	 */
-	class WdeRenderPipelineInstance {
+	class WdeRenderPipelineInstance : public NonCopyable {
 		public:
 			WdeRenderPipelineInstance();
-			~WdeRenderPipelineInstance() {
-				// Destroy render passes
-				_passes.clear();
-			}
+			~WdeRenderPipelineInstance() override;
 
 			// Core WDE functions
 			/** Tick for pipeline (called by the WdeInstance) */
 			void tick();
 			/** Called when the window is resized (called by the WdeInstance) */
-			void onWindowResized() {
-				WDE_PROFILE_FUNCTION();
-				// Recreate render passes
-				_passes.clear();
-				setStructure(_structure);
-			}
+			void onWindowResized();
 
 
 			// Inherited rendering methods
@@ -55,14 +47,11 @@ namespace wde::render {
 
 			// Draw commands
 			/**
-			 * Bind the global set to a command buffer
+			 * Bind the global set to a command buffer and a material
 			 * @param commandBuffer
 			 * @param material
 			 */
-			void bind(CommandBuffer& commandBuffer, scene::Material* material) {
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-				                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
-			}
+			void bind(CommandBuffer& commandBuffer, scene::Material* material) const;
 
 
 			// Getters and setters
@@ -80,84 +69,16 @@ namespace wde::render {
 			 }
 
 			/** Set the engine rendering structure */
-			void setStructure(const std::vector<RenderPassStructure>& structure) {
-				WDE_PROFILE_FUNCTION();
-				_structure = structure;
-
-				// Check if attachments setup
-				if (_attachments.empty())
-					throw WdeException(LogChannel::RENDER, "Tried to create render passes before creating attachments in the render pipeline.");
-
-				// Create passes
-				uint32_t iterator = 0;
-				for (auto& str : structure) {
-					// Check if passes IDs are in order
-					if (iterator != str._passID)
-						throw WdeException(LogChannel::RENDER, "Missing render pass with ID = " + std::to_string(iterator) + ".");
-
-					// Check if subpasses IDs are in order
-					uint32_t iterator2 = 0;
-					for (auto& sub : str._subPasses) {
-						if (iterator2 != sub._subpassID)
-							throw WdeException(LogChannel::RENDER,
-							                   "Missing render subpass with ID = " + std::to_string(iterator2) +
-							                   " in render pass with ID = " + std::to_string(iterator) + ".");
-						iterator2++;
-					}
-
-					// Create subpass
-					_passes.push_back(std::make_unique<RenderPass>(_attachments, str._subPasses));
-					iterator++;
-				}
-			}
+			void setStructure(const std::vector<RenderPassStructure>& structure);
 
 
 
 			// Render passes commands
-			void beginRenderPass(uint32_t index) {
-				WDE_PROFILE_FUNCTION();
-				if (_currentRenderPassID != -1)
-					throw WdeException(LogChannel::RENDER, "Trying to begin pass " + std::to_string(index) + " while pass " + std::to_string(_currentRenderPassID) + " has already began.");
-				if (index >= _passes.size())
-					throw WdeException(LogChannel::RENDER, "Trying to begin pass " + std::to_string(index) + " which wasn't created.");
+			void beginRenderPass(uint32_t index);
+			void endRenderPass();
 
-				_currentRenderPassID = index;
-				_passes[_currentRenderPassID]->start();
-			}
-
-			void endRenderPass() {
-				WDE_PROFILE_FUNCTION();
-				if (_currentRenderSubPassID != -1)
-					throw WdeException(LogChannel::RENDER, "Trying to end render pass " + std::to_string(_currentRenderPassID) + " while subpass " + std::to_string(_currentRenderSubPassID) + " has already began.");
-
-				_passes[_currentRenderPassID]->end();
-				_currentRenderPassID = -1;
-			}
-
-
-
-			void beginRenderSubPass(uint32_t index) {
-				WDE_PROFILE_FUNCTION();
-				if (_currentRenderPassID == -1)
-					throw WdeException(LogChannel::RENDER, "Trying to begin subpass " + std::to_string(index) + " outside of a render pass.");
-				if (_currentRenderSubPassID != -1)
-					throw WdeException(LogChannel::RENDER, "Trying to begin subpass " + std::to_string(index) + " while subpass " + std::to_string(_currentRenderSubPassID)
-						+ " has already began in render pass " + std::to_string(_currentRenderPassID));
-				if (index >= _passes[_currentRenderPassID]->getSubPassesCount())
-					throw WdeException(LogChannel::RENDER, "Trying to begin pass " + std::to_string(index) + " which wasn't created.");
-
-				_currentRenderSubPassID = index;
-				_passes[_currentRenderPassID]->startSubPass(index);
-			}
-
-			void endRenderSubPass() {
-				WDE_PROFILE_FUNCTION();
-				if (_currentRenderPassID == -1)
-					throw WdeException(LogChannel::RENDER, "Trying to end subpass " + std::to_string(_currentRenderSubPassID) + " outside of a render pass.");
-
-				_passes[_currentRenderPassID]->endSubPass(_currentRenderSubPassID);
-				_currentRenderSubPassID = -1;
-			}
+			void beginRenderSubPass(uint32_t index);
+			void endRenderSubPass();
 
 
 

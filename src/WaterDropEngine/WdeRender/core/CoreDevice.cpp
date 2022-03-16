@@ -99,7 +99,7 @@ namespace wde::render {
 
 
 	// DEVICE HELPER FUNCTIONS
-	bool CoreDevice::isSuitable() {
+	bool CoreDevice::isSuitable() const {
 		QueueFamilyIndices indices = findQueueFamilies();
 		bool isCompleteIndicesQueues = indices.isComplete(); // Required queues supported
 		bool extensionsSupported = checkDeviceExtensionSupport(); // Required extensions supported
@@ -119,7 +119,7 @@ namespace wde::render {
 
 
 
-	QueueFamilyIndices CoreDevice::findQueueFamilies() {
+	QueueFamilyIndices CoreDevice::findQueueFamilies() const {
 		QueueFamilyIndices indices;
 
 		// Count queue family indices
@@ -155,7 +155,7 @@ namespace wde::render {
 		return indices;
 	}
 
-	bool CoreDevice::checkDeviceExtensionSupport() {
+	bool CoreDevice::checkDeviceExtensionSupport() const {
 		// List every extensions available on the device
 		uint32_t extensionCount;
 		vkEnumerateDeviceExtensionProperties(_physicalDevice, nullptr, &extensionCount, nullptr);
@@ -173,7 +173,7 @@ namespace wde::render {
 		return requiredExtensions.empty();
 	}
 
-	SwapChainSupportDetails CoreDevice::querySwapChainSupport() {
+	SwapChainSupportDetails CoreDevice::querySwapChainSupport() const {
 		SwapChainSupportDetails details;
 
 		// Get basic surface capabilities
@@ -200,7 +200,7 @@ namespace wde::render {
 		return details;
 	}
 
-	VkSampleCountFlagBits CoreDevice::getMaxUsableSampleCount() {
+	VkSampleCountFlagBits CoreDevice::getMaxUsableSampleCount() const {
 		static VkSampleCountFlagBits maxSamples = VK_SAMPLE_COUNT_1_BIT;
 		static bool initialized = false;
 		if (initialized)

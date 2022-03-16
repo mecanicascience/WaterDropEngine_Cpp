@@ -6,7 +6,7 @@
 #include "../../../WdeRender/buffers/Buffer.hpp"
 
 namespace wde::scene {
-	class Material {
+	class Material : public NonCopyable {
 		public:
 			/**
 			 * Create a new material
@@ -16,7 +16,7 @@ namespace wde::scene {
 			 * @param polygonMode (default : mode fill)
 			 */
 			explicit Material(std::string name, std::pair<int, int> renderStage, const std::vector<std::string>& shaders, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL);
-            ~Material();
+            ~Material() override;
 
 
 			// Core functions
@@ -29,23 +29,14 @@ namespace wde::scene {
 			 * Binds the material to the command buffer
 			 * @param commandBuffer
 			 */
-			void bind(render::CommandBuffer& commandBuffer) {
-				WDE_PROFILE_FUNCTION();
-
-				// Bind material descriptor
-				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-										_pipeline->getLayout(), 1, 1, &_materialSet.first, 0, nullptr);
-
-				// Bind pipeline
-                _pipeline->bind(commandBuffer);
-			}
+			void bind(render::CommandBuffer& commandBuffer);
 
 
 			// Getters and setters
-			std::string getName() { return _name; }
-			std::pair<int, int> getRenderStage() { return _renderStage; }
+			std::string getName() const { return _name; }
+			std::pair<int, int> getRenderStage() const { return _renderStage; }
 			render::PipelineGraphics& getPipeline() { return *_pipeline; }
-			int getID() { return _materialID; }
+			int getID() const { return _materialID; }
 			void addDescriptorSet(std::pair<VkDescriptorSet, VkDescriptorSetLayout>& set) { _descriptorsSetsOther.push_back(set); }
 
 

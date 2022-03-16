@@ -28,7 +28,7 @@ namespace wde::gui {
 			void cleanUp() override;
 
 			// Notifications
-			void onNotify(core::Event event) override {};
+			void onNotify(const core::Event& event) override {};
 
 
 			/** Main root dockspace ID */

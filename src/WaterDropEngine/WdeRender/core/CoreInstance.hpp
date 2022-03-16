@@ -12,7 +12,7 @@
 #include "../descriptors/DescriptorLayoutCache.hpp"
 
 namespace wde::render {
-	class CoreInstance {
+	class CoreInstance : public NonCopyable {
 		public:
 			// Core functions
 			explicit CoreInstance(CoreWindow& window);
@@ -34,7 +34,7 @@ namespace wde::render {
 				#endif
 			}
 			std::vector<const char *>& getValidationLayers() { return _validationLayers; }
-			const int getMaxFramesInFlight() const { return _currentFramesInFlightCount; }
+			int getMaxFramesInFlight() const { return _currentFramesInFlightCount; }
 			void setFramesInFlightCount(int count) { _currentFramesInFlightCount = count; }
 			Swapchain& getSwapchain() { return *_swapchain; }
 			std::size_t& getCurrentFrame() { return _currentFrame; }
@@ -100,7 +100,7 @@ namespace wde::render {
 
 			// Debug messages support
 			/** @return true if every required validation (= debug) layer are available */
-			bool checkValidationLayerSupport();
+			bool checkValidationLayerSupport() const;
 			/**
 			 * Update the debug messenger layers struct
 			 * @param createInfo The struct that needs to be updated

@@ -5,7 +5,7 @@
 
 namespace wde::scene {
 	// Core functions
-	CullingInstance::CullingInstance(std::pair<int, int> renderStage, std::unique_ptr<render::Buffer> &sceneObjectsBuffer) : _renderStage(std::move(renderStage)) {
+	CullingInstance::CullingInstance(std::pair<int, int> renderStage, const std::unique_ptr<render::Buffer> &sceneObjectsBuffer) : _renderStage(std::move(renderStage)) {
 		WDE_PROFILE_FUNCTION();
 		// === Create buffers ===
 		int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
@@ -42,16 +42,16 @@ namespace wde::scene {
 		{
 			// Create compute shader scene descriptor set
 			render::DescriptorBuilder::begin()
-						.bind_buffer(0, &_gpuSceneData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-						.bind_buffer(1, &sceneObjectsBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(0, *_gpuSceneData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(1, *sceneObjectsBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 					.build(_generalComputeSet.first, _generalComputeSet.second);
 
 			// Create compute shader resources descriptor set
 			render::DescriptorBuilder::begin()
-						.bind_buffer(0, &_gpuObjectsBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-						.bind_buffer(1, &_gpuRenderBatches->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-						.bind_buffer(2, &_gpuObjectsIDs->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-						.bind_buffer(3, &_indirectCommandsBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(0, *_gpuObjectsBatches, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(1, *_gpuRenderBatches, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(2, *_gpuObjectsIDs, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(3, *_indirectCommandsBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 					.build(_computeSet.first, _computeSet.second);
 
 			// Create compute pipeline
@@ -63,13 +63,13 @@ namespace wde::scene {
 
 			// Create drawing descriptor set
 			render::DescriptorBuilder::begin()
-						.bind_buffer(0, &WaterDropEngine::get().getInstance().getPipeline().getCameraBuffer().getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-						.bind_buffer(1, &sceneObjectsBuffer->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+						.bind_buffer(0, WaterDropEngine::get().getInstance().getPipeline().getCameraBuffer(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+						.bind_buffer(1, *sceneObjectsBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 					.build(_drawingDescriptorSet.first, _drawingDescriptorSet.second);
 		}
 	}
 
-	void CullingInstance::createBatches(std::vector<std::shared_ptr<GameObject>> &gameObjects) {
+	void CullingInstance::createBatches(const std::vector<std::shared_ptr<GameObject>> &gameObjects) {
 		WDE_PROFILE_FUNCTION();
 
 		// Clear previous batches
@@ -92,7 +92,7 @@ namespace wde::scene {
 
 		// Fetch every game objects
 		int goActiveID = 0;
-		for (auto& go : gameObjects) {
+		for (const auto& go : gameObjects) {
 			auto meshModule = go->getModule<scene::MeshRendererModule>();
 
 			// If no renderer, or material, or mesh, or if render stage different from culling stage, discard object, push last batch

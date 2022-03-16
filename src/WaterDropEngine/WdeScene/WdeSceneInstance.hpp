@@ -23,31 +23,22 @@ namespace wde::scene {
 			// Scene instance methods
 			/** Ticking for scene instance (called by WaterDropEngine) */
 			void tick();
-			void onNotify(core::Event event) override;
-			void cleanUpInstance() {
-			    _materials.clear();
-			    _meshes.clear();
-				_gameObjectsDynamic.clear();
-				_gameObjectsStatic.clear();
-			    _gameObjects.clear();
-
-			    // Clean up scene
-                cleanUp();
-			}
+			void onNotify(const core::Event& event) override;
+			void cleanUpInstance();
 
 
 			// Getters and setters
 			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
-			std::shared_ptr<GameObject> getGameObject(int goID) { return _gameObjects[goID]; }
+			const std::shared_ptr<GameObject>& getGameObject(int goID) { return _gameObjects[goID]; }
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
 			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
-			std::shared_ptr<GameObject> getActiveGameObject() {
+			std::shared_ptr<GameObject> getActiveGameObject() const {
 				if (_selectedGameObjectID == -1)
 					return nullptr;
 				return _gameObjects[_selectedGameObjectID];
 			}
-			std::shared_ptr<GameObject> getActiveCamera() {
+			std::shared_ptr<GameObject> getActiveCamera() const {
 				if (_activeCameraID == -1)
 					return nullptr;
 				return _gameObjects[_activeCameraID];
@@ -102,6 +93,6 @@ namespace wde::scene {
 			int _selectedGameObjectID = 0;
 
 			// Helper functions
-			void drawGUIForGo(const std::shared_ptr<GameObject> &go, int* selected);
+			void drawGUIForGo(const std::shared_ptr<GameObject>& go, int* selected) const;
 	};
 }

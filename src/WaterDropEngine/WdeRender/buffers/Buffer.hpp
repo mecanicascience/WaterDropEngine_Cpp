@@ -6,7 +6,7 @@ namespace wde::render {
 	/**
 	 * Class that stores a buffer and it's different components
 	 */
-	class Buffer {
+	class Buffer : public NonCopyable {
 		public:
 			// Constructors
 			/**
@@ -17,7 +17,7 @@ namespace wde::render {
 			 */
 			explicit Buffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT);
 			/** Clean up the buffer */
-			~Buffer();
+			~Buffer() override;
 
 
 			// Core functions
@@ -36,8 +36,8 @@ namespace wde::render {
 			// Getters and setters
 			VkBuffer& getBuffer() { return _buffer; }
 			VkDeviceMemory& getMemory() { return _bufferMemory; }
-			uint32_t getSize() { return _bufferSize; }
-			VkDescriptorBufferInfo& getBufferInfo() { return _bufferInfo; }
+			uint32_t getSize() const { return _bufferSize; }
+			const VkDescriptorBufferInfo* getBufferInfo() const { return &_bufferInfo; }
 
 
 

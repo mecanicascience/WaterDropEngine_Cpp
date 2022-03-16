@@ -4,7 +4,7 @@
 #include "GUITheme.hpp"
 
 namespace wde::gui {
-	class GUIRenderer {
+	class GUIRenderer : public NonCopyable {
 		public:
 			// Windows rendering
 			/** Push the window tab size style */

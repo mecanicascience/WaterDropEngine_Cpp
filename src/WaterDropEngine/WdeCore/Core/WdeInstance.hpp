@@ -8,7 +8,7 @@ namespace wde {
 	/**
 	 * Represents an engine instance
 	 */
-	class WdeInstance {
+	class WdeInstance : public NonCopyable {
 		public:
 			explicit WdeInstance();
 
@@ -23,24 +23,9 @@ namespace wde {
 			/** Tick for the engine instance (called by WaterDropEngine) */
 			void tickInstance();
 			/** Clean up the engine instance (called by WaterDropEngine) */
-			void cleanUpInstance() {
-				// Destroy render scene
-				if (_scene != nullptr) {
-				    _scene->cleanUpInstance();
-					_scene.reset();
-				}
-
-				// Destroy render pipeline
-				_pipeline->cleanUp();
-				_pipeline.reset();
-
-				// Clean up instance
-				cleanUp();
-			}
+			void cleanUpInstance();
 			/** Called when window format changes (called by WaterDropEngine) */
-			void onWindowResizedInstance() {
-				_pipeline->onWindowResized();
-			}
+			void onWindowResizedInstance() const { _pipeline->onWindowResized(); }
 
 
 			// Getters and setters
@@ -56,8 +41,6 @@ namespace wde {
 			void setRenderPipeline(std::shared_ptr<render::WdeRenderPipelineInstance> pipeline) {
 				WDE_PROFILE_FUNCTION();
 				_pipeline = std::move(pipeline);
-
-				// Create pipeline
 				_pipeline->setup();
 			}
 
@@ -65,8 +48,6 @@ namespace wde {
 			void setScene(std::shared_ptr<scene::WdeSceneInstance> scene) {
 				WDE_PROFILE_FUNCTION();
 				_scene = std::move(scene);
-
-				// Create scene
 				_scene->setup();
 			}
 

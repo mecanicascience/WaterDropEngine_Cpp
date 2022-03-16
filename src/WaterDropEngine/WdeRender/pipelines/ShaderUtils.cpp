@@ -2,7 +2,7 @@
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::render {
-	VkShaderModule ShaderUtils::createShaderModule(std::vector<char> shaderCode) {
+	VkShaderModule ShaderUtils::createShaderModule(const std::vector<char>& shaderCode) {
 		WDE_PROFILE_FUNCTION();
 		// Create infos
 		VkShaderModuleCreateInfo createInfo{};

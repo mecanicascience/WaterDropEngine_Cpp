@@ -29,8 +29,8 @@ namespace wde::scene {
 		std::pair<VkDescriptorSet, VkDescriptorSetLayout> descriptorSet;
 		render::DescriptorBuilder::begin()
 				.bind_image(0, &imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_COMPUTE_BIT)
-				.bind_buffer(1, &terrainMesh->getVertexBuffer()->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-				.bind_buffer(2, &terrainMesh->getIndexBuffer()->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+				.bind_buffer(1, *terrainMesh->getVertexBuffer(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+				.bind_buffer(2, *terrainMesh->getIndexBuffer(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 			.build(descriptorSet.first, descriptorSet.second);
 
 

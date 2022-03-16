@@ -21,7 +21,19 @@ namespace wde::scene {
 		}
 	}
 
-	void WdeSceneInstance::onNotify(core::Event event) {
+	void WdeSceneInstance::cleanUpInstance() {
+		_materials.clear();
+		_meshes.clear();
+		_gameObjectsDynamic.clear();
+		_gameObjectsStatic.clear();
+		_gameObjects.clear();
+
+		// Clean up scene
+		cleanUp();
+	}
+
+
+	void WdeSceneInstance::onNotify(const core::Event& event) {
 #ifdef WDE_GUI_ENABLED
 		if (event.channel == LogChannel::GUI && event.name == "CreateGUI") {
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::createGUI");
@@ -87,9 +99,11 @@ namespace wde::scene {
 			ImGui::End();
 			ImGui::PopFont();
 		}
+#endif
 	}
 
-	void WdeSceneInstance::drawGUIForGo(const std::shared_ptr<GameObject> &go, int* selected) {
+	void WdeSceneInstance::drawGUIForGo(const std::shared_ptr<GameObject> &go, int* selected) const {
+#ifdef WDE_GUI_ENABLED
 		std::string typeName;
 		if (go->getModule<MeshRendererModule>())
 			typeName = "Mesh Entity";
@@ -177,6 +191,6 @@ namespace wde::scene {
 				ImGui::Text("%s", ((go->isStatic() ? "Static " : "") + typeName).c_str());
 			ImGui::PopStyleColor();
 		}
-	}
 #endif
+	}
 }

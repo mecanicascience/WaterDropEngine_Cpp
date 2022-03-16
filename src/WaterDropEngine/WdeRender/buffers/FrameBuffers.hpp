@@ -10,7 +10,7 @@ namespace wde::render {
 	/**
 	 * Holds frame buffers for a render pass, one for each frame in the swapchain
 	 */
-	class FrameBuffers {
+	class FrameBuffers : public NonCopyable {
 		public:
 			// Constructors
 			/**
@@ -21,16 +21,15 @@ namespace wde::render {
 			 * @param renderPass
 			 * @param depthStencil
 			 */
-			FrameBuffers(std::vector<RenderAttachment>& attachments,
-			             std::vector<RenderSubPassStructure>& subpassesStructure,
-			             std::vector<uint32_t>& inputAttachments,
-						 VkRenderPass renderPass,
-			             ImageDepth& depthStencil);
-			~FrameBuffers();
+			FrameBuffers(const std::vector<RenderAttachment>& attachments,
+			             const std::vector<RenderSubPassStructure>& subpassesStructure,
+			             const std::vector<uint32_t>& inputAttachments,
+						 VkRenderPass& renderPass,
+						 ImageDepth& depthStencil);
+			~FrameBuffers() override;
 
 			// Getters and setters
 			VkFramebuffer& get(uint32_t index) { return _framebuffers[index]; }
-			Image2D& getImageAttachment(uint32_t index) { return *_imageAttachments[index]; }
 
 
 		private:

@@ -31,7 +31,7 @@ namespace wde {
 			}
 
 			/** @return the actual average FPS */
-			int getFPS() { return _lastFPSValue; }
+			int getFPS() const { return _lastFPSValue; }
 			bool hasNewValue() {
 				if (_newValue) {
 					_newValue = false;

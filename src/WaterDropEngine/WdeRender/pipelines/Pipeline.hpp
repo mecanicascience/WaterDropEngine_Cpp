@@ -9,11 +9,11 @@ namespace wde::render {
 	/**
 	 * Class that represents a pipeline
 	 */
-	class Pipeline : NonCopyable {
+	class Pipeline : public NonCopyable {
 		public:
 			// Constructors
 			explicit Pipeline() = default;
-			virtual ~Pipeline() = default;
+			~Pipeline() override = default;
 
 
 			// Core functions
@@ -21,15 +21,7 @@ namespace wde::render {
 			 * Binds the specified command buffer to the pipeline
 			 * @param commandBuffer
 			 */
-			void bind(CommandBuffer &commandBuffer) {
-				WDE_PROFILE_FUNCTION();
-
-				if (!_initialized)
-					throw WdeException(LogChannel::RENDER, "Pipeline was bound to command buffer but has not been initialized.");
-
-				_commandBuffer = &commandBuffer;
-				vkCmdBindPipeline(commandBuffer, getPipelineBindPoint(), getPipeline());
-			}
+			void bind(CommandBuffer &commandBuffer);
 
 
 
@@ -40,34 +32,21 @@ namespace wde::render {
 			 * @param shaderStages The shader stages in which the push constants will be accessible (default : vertex and fragment shaders)
 			 * @param offset The offset of the data (default : 0)
 			 */
-			void addPushConstants(uint32_t constantsSize, VkShaderStageFlags shaderStages = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT, uint32_t offset = 0) {
-				if (_initialized)
-					throw WdeException(LogChannel::RENDER, "Tried to add push constants to pipeline after initialization.");
-
-				// Add push constants config
-				VkPushConstantRange pushConstants {};
-				pushConstants.size = constantsSize;
-				pushConstants.offset = offset;
-				pushConstants.stageFlags = shaderStages;
-				_pushConstantsValues.push_back(pushConstants);
-				_pushConstantsBoundingIndices[0] = (int) _pushConstantsValues.size() - 1;
-			}
+			void addPushConstants(uint32_t constantsSize,
+								  VkShaderStageFlags shaderStages = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT,
+								  uint32_t offset = 0);
 
 			/**
 			 * Set the current push constants
 			 * @param pushData
 			 */
-			void setPushConstants(const void* pushData) {
-				// Push constants to the command buffer
-				auto data = _pushConstantsValues[_pushConstantsBoundingIndices.at(0)];
-				vkCmdPushConstants(*_commandBuffer, _pipelineLayout, data.stageFlags, data.offset, data.size, pushData);
-			}
+			void setPushConstants(const void* pushData);
 
 
 			// Getters and setters
 			virtual const VkPipeline &getPipeline() const = 0;
 			virtual const VkPipelineBindPoint &getPipelineBindPoint() const = 0;
-			VkPipelineLayout const &getLayout() const { return _pipelineLayout; }
+			const VkPipelineLayout &getLayout() const { return _pipelineLayout; }
 
 
 		protected:

@@ -41,4 +41,15 @@ namespace wde::scene {
 		// Initialize pipeline
 		_pipeline->initialize();
 	}
+
+	void Material::bind(render::CommandBuffer &commandBuffer)  {
+		WDE_PROFILE_FUNCTION();
+
+		// Bind material descriptor
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+		                        _pipeline->getLayout(), 1, 1, &_materialSet.first, 0, nullptr);
+
+		// Bind pipeline
+		_pipeline->bind(commandBuffer);
+	}
 }

@@ -19,5 +19,5 @@ namespace wde::scene {
 	}
 
 
-	void WdeScene::onNotify(core::Event event) { }
+	void WdeScene::onNotify(const core::Event& event) { }
 }

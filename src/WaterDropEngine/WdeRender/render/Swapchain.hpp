@@ -9,22 +9,21 @@ namespace wde::render {
 	/**
 	 * Displaying swapchain to the screen
 	 */
-	class Swapchain {
+	class Swapchain : public NonCopyable {
 		public:
 			explicit Swapchain();
-			~Swapchain();
+			~Swapchain() override;
 
 			// Getters and setters
-			int getImageCount() { return (int) _swapChainImageViews.size(); }
-			VkFormat getImageFormat() { return _swapChainImageFormat; }
+			int getImageCount() const { return (int) _swapChainImageViews.size(); }
+			VkFormat getImageFormat() const { return _swapChainImageFormat; }
 			uint32_t getActiveImageIndex() const { return _activeImageIndex; }
 			std::vector<VkImageView> &getImageViews() { return _swapChainImageViews; }
-			VkImage& getActiveImage() { return _swapChainImages[_activeImageIndex]; }
-			VkExtent2D& getExtent() { return _swapChainExtent; }
+			const VkExtent2D& getExtent() const { return _swapChainExtent; }
 			float getAspectRatio() const { return static_cast<float>(_swapChainExtent.width) / static_cast<float>(_swapChainExtent.height); }
-			std::vector<VkSemaphore>& getImageAvailableSemaphores() { return _imageAvailableSemaphores; }
-			std::vector<VkSemaphore>& getRenderFinishedSemaphores() { return _renderFinishedSemaphores; }
-			std::vector<VkFence>& getInFlightFences() { return _inFlightFences; }
+			const std::vector<VkSemaphore>& getImageAvailableSemaphores() const { return _imageAvailableSemaphores; }
+			const std::vector<VkSemaphore>& getRenderFinishedSemaphores() const { return _renderFinishedSemaphores; }
+			const std::vector<VkFence>& getInFlightFences() const { return _inFlightFences; }
 
 
 

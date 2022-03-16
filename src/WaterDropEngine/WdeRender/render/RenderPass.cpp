@@ -1,4 +1,6 @@
 #include "RenderPass.hpp"
+
+#include <utility>
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::render {
@@ -196,7 +198,7 @@ namespace wde::render {
 
 
 	// Handle render passes
-	void RenderPass::start() {
+	void RenderPass::start() const {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "= Starting render pass =" << logger::endl;
 		auto &commandBuffer = WaterDropEngine::get().getRender().getInstance().getCommandBuffers()[WaterDropEngine::get().getRender().getInstance().getSwapchain().getActiveImageIndex()];

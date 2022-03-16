@@ -16,7 +16,7 @@ namespace wde {
 	/**
 	 * Main WDE Game Instance
 	 */
-	class WaterDropEngine {
+	class WaterDropEngine : public NonCopyable {
 		public:
 			/** Create a WDE main engine instance */
 			static WaterDropEngine& get() {
@@ -95,7 +95,7 @@ namespace wde {
 							// Display FPS on window title
 							if (fpsManager.hasNewValue()) {
 								auto windowTitle = Config::APPLICATION_NAME + " - FPS : " + std::to_string(fpsManager.getFPS());
-								glfwSetWindowTitle(&_render->getWindow().getWindow(), windowTitle.c_str());
+								glfwSetWindowTitle(_render->getWindow().getWindow(), windowTitle.c_str());
 							}
 						#else
 							if (fpsManager.hasNewValue()) {

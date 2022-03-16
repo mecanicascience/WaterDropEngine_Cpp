@@ -2,8 +2,8 @@
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::render {
-	FrameBuffers::FrameBuffers(std::vector<RenderAttachment>& attachments, std::vector<RenderSubPassStructure>& subpassesStructure,
-	                           std::vector<uint32_t>& inputAttachments, VkRenderPass renderPass, ImageDepth& depthStencil) {
+	FrameBuffers::FrameBuffers(const std::vector<RenderAttachment>& attachments, const std::vector<RenderSubPassStructure>& subpassesStructure,
+	                           const std::vector<uint32_t>& inputAttachments, VkRenderPass& renderPass, ImageDepth& depthStencil) {
 		auto& deviceEn = WaterDropEngine::get().getRender().getInstance().getDevice();
 		auto& device = deviceEn.getDevice();
 		auto& swapchain = WaterDropEngine::get().getRender().getInstance().getSwapchain();
@@ -12,9 +12,6 @@ namespace wde::render {
 		for (const auto &attachment : attachments) {
 			switch (attachment.type) {
 				case RenderAttachment::Type::SWAPCHAIN:
-					_imageAttachments.emplace_back(nullptr);
-					break;
-
 				case RenderAttachment::Type::DEPTH:
 					_imageAttachments.emplace_back(nullptr);
 					break;

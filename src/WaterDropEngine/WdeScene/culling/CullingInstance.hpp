@@ -13,7 +13,7 @@ namespace wde::scene {
 	/**
 	 * Describes a set of culling objects.
 	 */
-	class CullingInstance {
+	class CullingInstance : public NonCopyable {
 		public:
 			// ==== Data describing structures =====
 			// Render batches
@@ -57,7 +57,7 @@ namespace wde::scene {
 			 * @param renderStage The allowed material of the render stage
 			 * @param sceneObjectsBuffer The culling instance objects buffer
 			 */
-			explicit CullingInstance(std::pair<int, int> renderStage, std::unique_ptr<render::Buffer>& sceneObjectsBuffer);
+			explicit CullingInstance(std::pair<int, int> renderStage, const std::unique_ptr<render::Buffer>& sceneObjectsBuffer);
 
 
 
@@ -68,7 +68,7 @@ namespace wde::scene {
 			 * @param gameObjects The list of culled game objects
 			 * @return The render batches vector
 			 */
-			void createBatches(std::vector<std::shared_ptr<GameObject>>& gameObjects);
+			void createBatches(const std::vector<std::shared_ptr<GameObject>>& gameObjects);
 
 			/**
 			 * Do culling based on it's batches for a specific scene camera
@@ -115,7 +115,7 @@ namespace wde::scene {
 			/** Update the culling scene parameters based on the scene and on it's configured camera */
 			void updateScene(const std::shared_ptr<GameObject>& cullingCamera);
 
-			static glm::vec4 normalizePlane(glm::vec4 p) {
+			inline static glm::vec4 normalizePlane(glm::vec4 p) {
 				return p / glm::length(glm::vec3(p));
 			}
 	};

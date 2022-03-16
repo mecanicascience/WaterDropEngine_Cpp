@@ -16,7 +16,7 @@ namespace wde::scene {
 			 * @param materialColor
 			 * @param polygonMode (default : fill)
 			 */
-			explicit ColorMaterial(std::pair<int, int> renderStage, Color materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL)
+			explicit ColorMaterial(std::pair<int, int> renderStage, const Color& materialColor, VkPolygonMode polygonMode = VK_POLYGON_MODE_FILL)
 			    : Material("Color Material " + materialColor.toString(), renderStage, {
                             "res/shaders/common/color/color.vert",
                             "res/shaders/common/color/color.frag"
@@ -34,7 +34,7 @@ namespace wde::scene {
 
 				// Create descriptor set
 				render::DescriptorBuilder::begin()
-							.bind_buffer(0, &_materialData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+							.bind_buffer(0, *_materialData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 						.build(_materialSet.first, _materialSet.second);
 
 				// Create material

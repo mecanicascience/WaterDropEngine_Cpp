@@ -35,9 +35,9 @@ namespace wde::scene {
 
 			// Getters and setters
 			void setMaterial(const std::shared_ptr<Material>& material) { _material = material; }
-            std::shared_ptr<Material>& getMaterial() { return _material; }
+			const std::shared_ptr<Material>& getMaterial() const { return _material; }
 			void setMesh(const std::shared_ptr<Mesh>& mesh) { _mesh = mesh; }
-            std::shared_ptr<Mesh>& getMesh() { return _mesh; }
+            const std::shared_ptr<Mesh>& getMesh() const { return _mesh; }
 
 
 		private:

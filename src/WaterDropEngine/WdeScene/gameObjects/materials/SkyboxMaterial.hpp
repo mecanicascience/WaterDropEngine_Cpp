@@ -24,9 +24,9 @@ namespace wde::scene {
 
 
 				// Create descriptor set
-				_imageDescriptor = _texture->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+				const VkDescriptorImageInfo imageDescriptor = _texture->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 				render::DescriptorBuilder::begin()
-							.bind_image(0, &_imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
+							.bind_image(0, &imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT)
 						.build(_materialSet.first, _materialSet.second);
 
 				// Create material
@@ -36,7 +36,6 @@ namespace wde::scene {
 
 		private:
 			std::unique_ptr<TextureCube> _texture {};
-			VkDescriptorImageInfo _imageDescriptor {};
 	};
 }
 

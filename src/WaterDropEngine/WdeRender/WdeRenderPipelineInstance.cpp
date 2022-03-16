@@ -13,9 +13,14 @@ namespace wde::render {
 
 		// Create global descriptor set
 		DescriptorBuilder::begin()
-					.bind_buffer(0, &_cameraData->getBufferInfo(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-					.bind_buffer(1, &_objectsData->getBufferInfo(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(0, *_cameraData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(1, *_objectsData, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(_globalSet.first, _globalSet.second);
+	}
+
+	WdeRenderPipelineInstance::~WdeRenderPipelineInstance() {
+		// Destroy render passes
+		_passes.clear();
 	}
 
 
@@ -140,6 +145,97 @@ namespace wde::render {
 
 		// Increase rendered frame ID
 		renderer.getCurrentFrame() = (renderer.getCurrentFrame() + 1) % renderer.getMaxFramesInFlight();
+	}
+
+	void WdeRenderPipelineInstance::onWindowResized() {
+		WDE_PROFILE_FUNCTION();
+		// Recreate render passes
+		_passes.clear();
+		setStructure(_structure);
+	}
+
+	void WdeRenderPipelineInstance::bind(CommandBuffer &commandBuffer, scene::Material *material) const {
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+		                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
+	}
+
+
+
+	// Pass command manager
+	void WdeRenderPipelineInstance::setStructure(const std::vector<RenderPassStructure> &structure) {
+		WDE_PROFILE_FUNCTION();
+		_structure = structure;
+
+		// Check if attachments setup
+		if (_attachments.empty())
+			throw WdeException(LogChannel::RENDER, "Tried to create render passes before creating attachments in the render pipeline.");
+
+		// Create passes
+		uint32_t iterator = 0;
+		for (auto& str : structure) {
+			// Check if passes IDs are in order
+			if (iterator != str._passID)
+				throw WdeException(LogChannel::RENDER, "Missing render pass with ID = " + std::to_string(iterator) + ".");
+
+			// Check if subpasses IDs are in order
+			uint32_t iterator2 = 0;
+			for (auto& sub : str._subPasses) {
+				if (iterator2 != sub._subpassID)
+					throw WdeException(LogChannel::RENDER,
+					                   "Missing render subpass with ID = " + std::to_string(iterator2) +
+					                   " in render pass with ID = " + std::to_string(iterator) + ".");
+				iterator2++;
+			}
+
+			// Create subpass
+			_passes.push_back(std::make_unique<RenderPass>(_attachments, str._subPasses));
+			iterator++;
+		}
+	}
+
+
+	// Render passes commands
+	void WdeRenderPipelineInstance::beginRenderPass(uint32_t index) {
+		WDE_PROFILE_FUNCTION();
+		if (_currentRenderPassID != -1)
+			throw WdeException(LogChannel::RENDER, "Trying to begin pass " + std::to_string(index) + " while pass " + std::to_string(_currentRenderPassID) + " has already began.");
+		if (index >= _passes.size())
+			throw WdeException(LogChannel::RENDER, "Trying to begin pass " + std::to_string(index) + " which wasn't created.");
+
+		_currentRenderPassID = index;
+		_passes[_currentRenderPassID]->start();
+	}
+
+	void WdeRenderPipelineInstance::endRenderPass()  {
+		WDE_PROFILE_FUNCTION();
+		if (_currentRenderSubPassID != -1)
+			throw WdeException(LogChannel::RENDER, "Trying to end render pass " + std::to_string(_currentRenderPassID) + " while subpass " + std::to_string(_currentRenderSubPassID) + " has already began.");
+
+		_passes[_currentRenderPassID]->end();
+		_currentRenderPassID = -1;
+	}
+
+	void WdeRenderPipelineInstance::beginRenderSubPass(uint32_t index) {
+		WDE_PROFILE_FUNCTION();
+		if (_currentRenderPassID == -1)
+			throw WdeException(LogChannel::RENDER, "Trying to begin subpass " + std::to_string(index) + " outside of a render pass.");
+		if (_currentRenderSubPassID != -1)
+			throw WdeException(LogChannel::RENDER, "Trying to begin subpass " + std::to_string(index) + " while subpass " + std::to_string(_currentRenderSubPassID)
+			                                       + " has already began in render pass " + std::to_string(_currentRenderPassID));
+		if (index >= _passes[_currentRenderPassID]->getSubPassesCount())
+			throw WdeException(LogChannel::RENDER, "Trying to begin pass " + std::to_string(index) + " which wasn't created.");
+
+		_currentRenderSubPassID = index;
+		_passes[_currentRenderPassID]->startSubPass(index);
+	}
+
+	void WdeRenderPipelineInstance::endRenderSubPass() {
+		WDE_PROFILE_FUNCTION();
+		if (_currentRenderPassID == -1)
+			throw WdeException(LogChannel::RENDER, "Trying to end subpass " + std::to_string(_currentRenderSubPassID) + " outside of a render pass.");
+
+		_passes[_currentRenderPassID]->endSubPass(_currentRenderSubPassID);
+		_currentRenderSubPassID = -1;
 	}
 }
 

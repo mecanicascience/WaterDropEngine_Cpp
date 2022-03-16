@@ -66,7 +66,7 @@ namespace wde::render {
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Vulkan surface." << logger::endl;
 		{
 			WDE_PROFILE_FUNCTION();
-			if (glfwCreateWindowSurface(_instance, &_window.getWindow(), nullptr, &_surface) != VK_SUCCESS)
+			if (glfwCreateWindowSurface(_instance, _window.getWindow(), nullptr, &_surface) != VK_SUCCESS)
 				throw WdeException(LogChannel::RENDER, "Failed to create window surface.");
 		}
 
@@ -186,9 +186,9 @@ namespace wde::render {
 		{
 			WDE_PROFILE_FUNCTION();
 			int width = 0, height = 0;
-			glfwGetFramebufferSize(&_window.getWindow(), &width, &height);
+			glfwGetFramebufferSize(_window.getWindow(), &width, &height);
 			while (width == 0 || height == 0) {
-				glfwGetFramebufferSize(&_window.getWindow(), &width, &height);
+				glfwGetFramebufferSize(_window.getWindow(), &width, &height);
 				glfwWaitEvents();
 			}
 		}
@@ -278,7 +278,7 @@ namespace wde::render {
 	}
 
 
-	bool CoreInstance::checkValidationLayerSupport() {
+	bool CoreInstance::checkValidationLayerSupport() const {
 		// List validations layers
 		uint32_t layerCount;
 		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);

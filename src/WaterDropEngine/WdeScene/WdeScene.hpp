@@ -15,6 +15,6 @@ namespace wde::scene {
 			void cleanUp() override;
 
 			// Notifications
-			void onNotify(core::Event event) override;
+			void onNotify(const core::Event& event) override;
 	};
 }

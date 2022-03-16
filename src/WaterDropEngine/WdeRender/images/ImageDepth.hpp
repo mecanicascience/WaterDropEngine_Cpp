@@ -13,7 +13,7 @@ namespace wde::render {
 	/**
 	 * An image representing a depth texture
 	 */
-	class ImageDepth : public Image, NonCopyable {
+	class ImageDepth : public Image {
 		public:
 			/**
 			 * Create a new image view

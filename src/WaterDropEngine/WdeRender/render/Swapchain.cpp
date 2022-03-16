@@ -12,7 +12,7 @@ namespace wde::render {
 			SwapChainSupportDetails swapChainSupport = render.getDevice().querySwapChainSupport();
 			VkSurfaceFormatKHR surfaceFormat = CoreDevice::chooseBestSwapSurfaceFormat(swapChainSupport.formats);
 			VkPresentModeKHR presentMode = CoreDevice::chooseBestSwapPresentMode(swapChainSupport.presentModes);
-			VkExtent2D extent = CoreDevice::chooseBestSwapExtent(&WaterDropEngine::get().getRender().getWindow().getWindow(), swapChainSupport.capabilities);
+			VkExtent2D extent = CoreDevice::chooseBestSwapExtent(WaterDropEngine::get().getRender().getWindow().getWindow(), swapChainSupport.capabilities);
 
 			// Log output format
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Selected a surface format of VkFormat(" << surfaceFormat.format << ") with a color space of VkColorSpaceKHR(" << surfaceFormat.colorSpace << ")." << logger::endl;

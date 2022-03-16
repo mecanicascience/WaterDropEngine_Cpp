@@ -11,7 +11,7 @@ namespace wde::scene {
 	/**
 	 * Stores debug drawing functions
 	 */
-	class Gizmo {
+	class Gizmo : public NonCopyable {
 		public:
 			struct GPUGizmoObjectDescriptor {
 				glm::mat4 transformWorldSpace;
@@ -23,10 +23,7 @@ namespace wde::scene {
 				glm::vec4 matColor {0.0f};
 			};
 
-			~Gizmo() {
-				_commandBuffer = nullptr;
-				_pipelines.clear();
-			}
+			~Gizmo() override;
 
 			/**
 			 * Sets the next gizmo shape color
@@ -47,19 +44,19 @@ namespace wde::scene {
 
 			// Lines
 			/** Create a new line drawing session */
-			Gizmo* linesManager(Color color);
+			Gizmo* linesManager(const Color& color);
 			/**
 			 * Adds a new line to the drawing session
 			 * @param from
 			 * @param to
 			 */
-			Gizmo* addLine(glm::vec3 from, glm::vec3 to);
+			Gizmo* addLine(const glm::vec3& from, const glm::vec3& to);
 			/**
 			 * Adds a new line to the drawing session
 			 * @param from
 			 * @param to
 			 */
-			Gizmo* addLine(glm::vec4 from, glm::vec4 to);
+			Gizmo* addLine(const glm::vec4& from, const glm::vec4& to);
 
 			/** Draw every lines in the current drawing session */
 			void drawLines(render::CommandBuffer& commandBuffer);

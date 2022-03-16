@@ -6,7 +6,7 @@
 #include "Observer.hpp"
 
 namespace wde::core {
-	class Subject {
+	class Subject : public NonCopyable {
 		public:
 			/**
 			 * Create a new observers subject
@@ -34,7 +34,7 @@ namespace wde::core {
 			 * Send a notification to the listening observers
 			 * @param event Payload
 			 */
-			void notify(const Event& event) {
+			void notify(const Event& event) const {
 				for (auto& obs : _observers)
 					obs->onNotify(event);
 			}
@@ -42,7 +42,7 @@ namespace wde::core {
 
 			// Utils
 			/** @return The identification label of the subject used for debug */
-			std::string getLabel() {
+			std::string getLabel() const {
 				return _label;
 			}
 

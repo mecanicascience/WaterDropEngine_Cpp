@@ -4,7 +4,7 @@
 #include <map>
 
 namespace wde::input {
-	class InputManager {
+	class InputManager : public NonCopyable {
 		public:
 			/** <"Key name", Corresponding key id> */
 			typedef std::map<std::string, int> KeyMapping;
@@ -12,7 +12,7 @@ namespace wde::input {
 
 			// Core functions
 			explicit InputManager();
-			~InputManager();
+			~InputManager() override;
 			void tick() {};
 
 
@@ -21,7 +21,7 @@ namespace wde::input {
 			 * @param keyName Name of the key preset in the file
 			 * @return True if the key is being pressed
 			 */
-			bool isKeyDown(const std::string& keyName);
+			bool isKeyDown(const std::string& keyName) const;
 
 
 		private:
@@ -33,11 +33,7 @@ namespace wde::input {
 
 			// Helpers
 			/** Add key to the keymap list */
-			void addKey(std::string keyName, int keyID) {
-				if (_userKeyMapping.contains(keyName))
-					throw WdeException(LogChannel::INPUT, "Two key strokes have the same name (" + keyName + ").");
-				_userKeyMapping.emplace(keyName, keyID);
-			}
+			void addKey(const std::string& keyName, int keyID);
 
 			// Core functions
 			/** Sets the key binding to the default key binding */

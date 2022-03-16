@@ -110,28 +110,4 @@ namespace wde::render {
 		logger::log(LogLevel::WARN, LogChannel::RENDER) << "Didn't found required image format." << logger::endl;
 		return VK_FORMAT_UNDEFINED;
 	}
-
-	void Image::insertImageMemoryBarrier(CommandBuffer& commandBuffer, VkImage &image, VkAccessFlags srcAccessMasks,
-	                                     VkAccessFlags dstAccessMasks, VkImageLayout oldImageLayout,
-	                                     VkImageLayout newImageLayout, VkPipelineStageFlagBits srcStageMask,
-	                                     VkPipelineStageFlagBits dstStageMask, VkImageAspectFlagBits imageAspect,
-	                                     int mipLevels, int baseMipLevel, int layerCount, int baseArrayLayer) {
-		VkImageMemoryBarrier imageMemoryBarrier = {};
-		imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-		imageMemoryBarrier.srcAccessMask = srcAccessMasks;
-		imageMemoryBarrier.dstAccessMask = dstAccessMasks;
-		imageMemoryBarrier.oldLayout = oldImageLayout;
-		imageMemoryBarrier.newLayout = newImageLayout;
-		imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-		imageMemoryBarrier.image = image;
-		imageMemoryBarrier.subresourceRange.aspectMask = imageAspect;
-		imageMemoryBarrier.subresourceRange.baseMipLevel = baseMipLevel;
-		imageMemoryBarrier.subresourceRange.levelCount = mipLevels;
-		imageMemoryBarrier.subresourceRange.baseArrayLayer = baseArrayLayer;
-		imageMemoryBarrier.subresourceRange.layerCount = layerCount;
-
-		// Transition layouts
-		vkCmdPipelineBarrier(commandBuffer, srcStageMask, dstStageMask, 0, 0, nullptr, 0, nullptr, 1, &imageMemoryBarrier);
-	}
 }

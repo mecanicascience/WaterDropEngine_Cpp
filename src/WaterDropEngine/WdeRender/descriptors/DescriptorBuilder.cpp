@@ -11,7 +11,7 @@ namespace wde::render {
 		return builder;
 	}
 
-	DescriptorBuilder& DescriptorBuilder::bind_buffer(uint32_t binding, VkDescriptorBufferInfo *bufferInfo, VkDescriptorType type, VkShaderStageFlags stageFlags) {
+	DescriptorBuilder& DescriptorBuilder::bind_buffer(uint32_t binding, const Buffer& buffer, VkDescriptorType type, VkShaderStageFlags stageFlags) {
 		WDE_PROFILE_FUNCTION();
 
 		// Create the descriptor binding for the layout
@@ -31,7 +31,7 @@ namespace wde::render {
 		newWrite.pNext = nullptr;
 		newWrite.descriptorCount = 1;
 		newWrite.descriptorType = type;
-		newWrite.pBufferInfo = bufferInfo;
+		newWrite.pBufferInfo = buffer.getBufferInfo();
 		newWrite.dstBinding = binding;
 
 		_writes.push_back(newWrite);
@@ -40,7 +40,7 @@ namespace wde::render {
 		return *this;
 	}
 
-	DescriptorBuilder& DescriptorBuilder::bind_image(uint32_t binding, VkDescriptorImageInfo *imageInfo, VkDescriptorType type, VkShaderStageFlags stageFlags) {
+	DescriptorBuilder& DescriptorBuilder::bind_image(uint32_t binding, const VkDescriptorImageInfo* imageInfo, VkDescriptorType type, VkShaderStageFlags stageFlags) {
 		WDE_PROFILE_FUNCTION();
 
 		// Create the descriptor binding for the layout

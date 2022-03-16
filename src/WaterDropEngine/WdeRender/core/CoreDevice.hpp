@@ -30,7 +30,7 @@ namespace wde::render {
 	/**
 	 * Represents the GPU instance
 	 */
-	class CoreDevice {
+	class CoreDevice : public NonCopyable {
 		public:
 			/**
 			 * Creates the device
@@ -40,7 +40,7 @@ namespace wde::render {
 			 * @param surface
 			 */
 			explicit CoreDevice(int deviceID, CoreWindow &window, VkInstance &instance, VkSurfaceKHR &surface);
-			~CoreDevice();
+			~CoreDevice() override;
 
 
 			// Getters and setters
@@ -52,24 +52,24 @@ namespace wde::render {
 
 			// Helper functions
 			/** @return true if the device is compatible */
-			bool isSuitable();
+			bool isSuitable() const;
 			/** @return the queues supported by the physical device */
-			QueueFamilyIndices findQueueFamilies();
+			QueueFamilyIndices findQueueFamilies() const;
 
 
 			// Helper functions
 			/** @return true if the physical device supports required extensions */
-			bool checkDeviceExtensionSupport();
+			bool checkDeviceExtensionSupport() const;
 			/**
 			 * Get the swap chain details of the given device
 			 * @return The details of the swap chain of the device
 			 */
-			SwapChainSupportDetails querySwapChainSupport();
+			SwapChainSupportDetails querySwapChainSupport() const;
 			/**
 			 * Query the maximum samples count available on the physical device
 			 * @return The max vulkan samples count
 			 */
-			VkSampleCountFlagBits getMaxUsableSampleCount();
+			VkSampleCountFlagBits getMaxUsableSampleCount() const;
 
 
 
