@@ -64,7 +64,7 @@ namespace wde {
 					// Check if log level enabled
 					if (_level > _logLevel) {
 						_log_mutex.lock();
-						message.str();
+						_logFile << message.str();
 						message.flush();
 						_log_mutex.unlock();
 						return;

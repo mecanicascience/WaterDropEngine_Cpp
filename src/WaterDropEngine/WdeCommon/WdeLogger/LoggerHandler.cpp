@@ -29,10 +29,10 @@ namespace wde::logger {
 		char buffer [80];
 		std::time(&rawtime);
 		timeinfo = std::localtime(&rawtime);
-		std::strftime(buffer,80,"%Y.%m.%d-%H.%M.%S", timeinfo);
+		std::strftime(buffer, 80, "%Y.%m.%d-%H.%M.%S", timeinfo);
 
 		// Initialize log file
-		_logFile.open(filepath + "logs_" + buffer + ".txt");
+		_logFile.open(filepath + "logs.txt");
 		if (!_logFile.is_open())
 			throw std::runtime_error("Couldn't open log file.");
 

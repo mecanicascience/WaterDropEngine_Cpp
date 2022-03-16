@@ -34,7 +34,7 @@ namespace wde {
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "Initializing program." << logger::endl;
 
 				// Setup
-				WDE_PROFILE_BEGIN_SESSION("Initialization", "profiler/profiler_init.json");
+				WDE_PROFILE_BEGIN_SESSION("Initialization", "logs/profiler_init.json");
 				// ===== CREATE MODULE SUBJECT =====
 				_subject = std::make_shared<core::Subject>("core Subject");
 
@@ -73,7 +73,7 @@ namespace wde {
 				WDE_PROFILE_END_SESSION();
 
 				// Start
-				WDE_PROFILE_BEGIN_SESSION("Running", "profiler/profiler_run.json");
+				WDE_PROFILE_BEGIN_SESSION("Running", "logs/profiler_run.json");
 				#ifdef WDE_ENGINE_MODE_DEBUG
 					logger::log(LogLevel::INFO, LogChannel::CORE) << "Starting engine." << logger::endl;
 				#else
@@ -132,7 +132,7 @@ namespace wde {
 
 
 				// Clean up WaterDropEngine
-				WDE_PROFILE_BEGIN_SESSION("Cleaning Up", "profiler/profiler_cleanup.json");
+				WDE_PROFILE_BEGIN_SESSION("Cleaning Up", "logs/profiler_cleanup.json");
 				// ===== DELETE MODULES IN REVERSE ORDER =====
 				// Clear engine instance
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Cleaning up modules ========" << logger::endl;

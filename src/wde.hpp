@@ -27,10 +27,8 @@
 #include "WaterDropEngine/WdeCommon/WdeLogger/Instrumentation.hpp"
 
 // ImGUI includes
-#ifdef WDE_GUI_ENABLED
-	#include "../lib/imgui/imgui.h"
-	#include "../lib/imgui/backends/imgui_impl_glfw.h"
-	#include "../lib/imgui/backends/imgui_impl_vulkan.h"
-	#include "../lib/imgui/imgui_internal.h"
-	#include "../lib/IconFontCppHeaders/IconsFontAwesome5.h"
-#endif
+#include "../lib/imgui/imgui.h"
+#include "../lib/imgui/backends/imgui_impl_glfw.h"
+#include "../lib/imgui/backends/imgui_impl_vulkan.h"
+#include "../lib/imgui/imgui_internal.h"
+#include "../lib/IconFontCppHeaders/IconsFontAwesome5.h"
