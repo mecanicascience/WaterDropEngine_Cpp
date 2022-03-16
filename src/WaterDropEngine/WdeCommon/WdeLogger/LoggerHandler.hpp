@@ -61,10 +61,18 @@ namespace wde {
 				 */
 				template <typename T>
 				void logMsg(T& message) {
+					std::string msg =
+							" [WDE]\t[" + logLevelNames[_level] + "]"
+							+ "\t[" + logChannelNames[_channel] + "-ENGINE]\t"
+							+ message.str();
+
 					// Check if log level enabled
 					if (_level > _logLevel) {
 						_log_mutex.lock();
-						_logFile << message.str();
+						if (_logFileInitialized) {
+							_logFile << msg;
+							_logFile.flush();
+						}
 						message.flush();
 						_log_mutex.unlock();
 						return;
@@ -74,10 +82,6 @@ namespace wde {
 					_log_mutex.lock();
 
 					// Format message
-					std::string msg =
-							" [WDE]\t[" + logLevelNames[_level] + "]"
-							+ "\t[" + logChannelNames[_channel] + "-ENGINE]\t"
-							+ message.str();
 					std::cout << msg;
 					message.flush();
 
