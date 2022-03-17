@@ -119,7 +119,8 @@ namespace wde::scene {
 			notAct = true;
 		}
 		ImGui::PushID(static_cast<int>(go->getID()) + 216846351);
-		if ((go->active && ImGui::Selectable(" " ICON_FA_EYE "   ")) || (!go->active && ImGui::Selectable(" " ICON_FA_EYE_SLASH "   ")))
+		auto textS = ImGui::CalcTextSize("      ");
+		if ((go->active && ImGui::Selectable(" " ICON_FA_EYE, false, 0, textS)) || (!go->active && ImGui::Selectable(" " ICON_FA_EYE_SLASH, false, 0, textS)))
 			go->active = !go->active;
 		ImGui::PopID();
 		if (notAct)
@@ -129,14 +130,6 @@ namespace wde::scene {
 
 		// Content
 		ImGui::TableSetColumnIndex(1);
-		char buf2[4 + go->name.size() + 5];
-		if (typeName == "Mesh Entity")
-			sprintf(buf2, ICON_FA_GHOST "  %s", go->name.c_str());
-		else if (typeName == "Camera")
-			sprintf(buf2, ICON_FA_CAMERA "  %s", go->name.c_str());
-		else
-			sprintf(buf2, "    %s", go->name.c_str());
-
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 		ImGui::PushID(static_cast<int>(go->getID()) + 216846352);
 		bool hasNode = false;
@@ -145,11 +138,11 @@ namespace wde::scene {
 			// Compute buffer without offset
 			char buf3[4 + go->name.size() + 5];
 			if (typeName == "Mesh Entity")
-				sprintf(buf3, ICON_FA_GHOST "%s", go->name.c_str());
+				sprintf(buf3, ICON_FA_GHOST "  %s", go->name.c_str());
 			else if (typeName == "Camera")
-				sprintf(buf3, ICON_FA_CAMERA "%s", go->name.c_str());
+				sprintf(buf3, ICON_FA_CAMERA "  %s", go->name.c_str());
 			else
-				sprintf(buf3, " %s", go->name.c_str());
+				sprintf(buf3, ICON_FA_FOLDER_OPEN "  %s", go->name.c_str());
 
 			// Draw tree node
 			ImGui::SameLine();
@@ -177,6 +170,18 @@ namespace wde::scene {
 		ImGui::PopID();
 
 		if (!hasNode) {
+			char buf2[4 + go->name.size() + 5];
+			std::string extraSpace;
+			if (go->transform->getChildrenIDs().empty())
+				extraSpace = "     ";
+
+			if (typeName == "Mesh Entity")
+				sprintf(buf2, (extraSpace + " " + ICON_FA_GHOST "   %s").c_str(), go->name.c_str());
+			else if (typeName == "Camera")
+				sprintf(buf2, (extraSpace + " " + ICON_FA_CAMERA "   %s").c_str(), go->name.c_str());
+			else
+				sprintf(buf2, (extraSpace + " " + ICON_FA_FOLDER "   %s").c_str(), go->name.c_str());
+
 			ImGui::SameLine();
 			ImGui::PushID(static_cast<int>(go->getID()) + 216846354);
 			if (ImGui::Selectable(buf2, *selected == go->getID(), ImGuiSelectableFlags_SpanAllColumns))

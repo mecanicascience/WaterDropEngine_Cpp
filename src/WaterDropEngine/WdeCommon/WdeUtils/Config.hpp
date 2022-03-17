@@ -6,8 +6,8 @@
 
 #ifndef DEBUG
 	// Engine mode production / debug
-	#define WDE_ENGINE_MODE_PRODUCTION
-	// #define WDE_ENGINE_MODE_DEBUG
+	// #define WDE_ENGINE_MODE_PRODUCTION
+	#define WDE_ENGINE_MODE_DEBUG
 
 	// GUI Status (auto-disabled if engine is in production mode)
 	#define WDE_ACTIVATE_GUI

@@ -49,12 +49,12 @@ namespace examples {
 
 
 			// GAME OBJECTS
+			auto object3D1 = createGameObject("Cube Object 1");
 			{
 				// Game Object 1
-				auto object3D = createGameObject("Cube Object 1");
-				object3D->transform->position += glm::vec3(-5, 5, 0);
+				object3D1->transform->position += glm::vec3(-5, 5, 0);
 
-				auto meshRenderer = object3D->addModule<MeshRendererModule>();
+				auto meshRenderer = object3D1->addModule<MeshRendererModule>();
 				meshRenderer->setMaterial(colorMatBlue);
 				meshRenderer->setMesh(cubeMesh);
 			}
@@ -78,6 +78,7 @@ namespace examples {
 				// Game Object 3
 				auto object3D = createGameObject("Cube Object 2");
 				object3D->transform->position += glm::vec3(0, 0, 20);
+				object3D->transform->setParent(object3D1->transform);
 
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
 				meshRenderer->setMaterial(colorMatBlue);

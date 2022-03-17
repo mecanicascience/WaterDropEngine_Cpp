@@ -1,4 +1,6 @@
 #include "GameObject.hpp"
+#include "modules/MeshRendererModule.hpp"
+#include "modules/CameraModule.hpp"
 
 namespace wde::scene {
 	GameObject::GameObject(uint32_t id, std::string name, bool isStatic) : _id(id), name(std::move(name)), _isStatic(isStatic) {
@@ -23,20 +25,61 @@ namespace wde::scene {
 
 	void GameObject::drawGUI() {
 		WDE_PROFILE_FUNCTION();
-		if (_isStatic) {
-			ImGui::Text("%s", "This game object is static.");
-			ImGui::Dummy(ImVec2(0.0f, 3.0f));
-			ImGui::Separator();
-			ImGui::Dummy(ImVec2(0.0f, 5.0f));
-		}
 
-		// Render module top
-		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
-		ImGui::Text("%s", (std::to_string(_id) + " - " + name).c_str());
+		// Type of the object
+		std::string typeName;
+		if (getModule<MeshRendererModule>())
+			typeName = "Mesh Entity";
+		else if (getModule<CameraModule>())
+			typeName = "Camera";
+		else
+			typeName = "Entity";
+
+
+		// Left icons
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+		ImGui::PushID(static_cast<int>(_id) + 266312951);
+		bool notAct = false;
+		if (!active) {
+			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+			notAct = true;
+		}
+		auto textS = ImGui::CalcTextSize("     ");
+		if (active && ImGui::Selectable(ICON_FA_EYE, false, 0, textS) || (!active && ImGui::Selectable(ICON_FA_EYE_SLASH, false, 0, textS)))
+			active = !active;
+		if (notAct)
+			ImGui::PopStyleColor();
+		ImGui::PopID();
 		ImGui::PopFont();
+
+
+		// Display object name
+		ImGui::SameLine();
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+		char buf[4 + name.size() + 5];
+		if (typeName == "Mesh Entity")
+			sprintf(buf, ICON_FA_GHOST "   %s", name.c_str());
+		else if (typeName == "Camera")
+			sprintf(buf, ICON_FA_CAMERA "   %s", name.c_str());
+		else
+			sprintf(buf, ICON_FA_FOLDER "   %s", name.c_str());
+		gui::GUIRenderer::textCentered(buf);
+		ImGui::PopFont();
+
+		// Object type
+		ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+		ImGui::PushFont(ImGui::GetIO().FontDefault);
+		ImGui::Dummy(ImVec2(0.0f, ImGui::CalcTextSize("test").y));
+		if (_isStatic)
+			gui::GUIRenderer::textCentered("Static " + typeName + "");
+		else
+			gui::GUIRenderer::textCentered("" + typeName + "");
+		ImGui::PopFont();
+		ImGui::PopStyleColor();
+
 		ImGui::Dummy(ImVec2(0.0f, 3.0f));
 		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
+
 
 		// Render Modules GUI
 		int count = 0;
