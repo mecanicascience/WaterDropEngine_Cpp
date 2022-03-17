@@ -1,5 +1,6 @@
 #pragma once
 
+#include <limits>
 #include "../../WdeRender/commands/CommandBuffer.hpp"
 #include "../../WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../WdeScene/WdeSceneInstance.hpp"

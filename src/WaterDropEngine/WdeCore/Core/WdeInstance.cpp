@@ -65,7 +65,7 @@ namespace wde {
 			auto camera = _scene->createGameObject("Editor Camera");
 			auto camModule = camera->addModule<scene::CameraModule>();
 			camModule->setAsActive();
-			camModule->setFarPlane(1000.0f);
+			camModule->setFarPlane(std::numeric_limits<float>::max());
 			_scene->_activeCameraID = static_cast<int>(camera->getID());
 			camera->addModule<scene::ControllerModule>();
 			camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
