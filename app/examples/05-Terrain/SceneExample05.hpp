@@ -16,18 +16,6 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample05 : public WdeSceneInstance {
 		void setup() override {
-			// Viewing camera
-			{
-				auto camera = createGameObject("Viewing Camera");
-				auto camModule = camera->addModule<CameraModule>();
-
-				camModule->setAsActive();
-				camera->addModule<ControllerModule>();
-				camModule->setFarPlane(900000.0f);
-				camera->transform->position = glm::vec3 {0.0f, 0.0f, -6.0f};
-			}
-
-
 			// Terrain game object
 			{
 				auto terrainGO = createGameObject("Test Terrain");

@@ -13,17 +13,6 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample03 : public WdeSceneInstance {
 		void setup() override {
-			// VIEWING CAMERA
-			{
-				WDE_PROFILE_SCOPE("examples::SceneExample02::viewingCamera");
-				auto camera = createGameObject("Viewing Camera");
-				auto camModule = camera->addModule<CameraModule>();
-				camModule->setAsActive();
-				camera->addModule<ControllerModule>();
-				camera->transform->position = glm::vec3 {-26.0f, 9.0f, -28.0f};
-				camera->transform->rotation = glm::vec3 {0.0f, 4.37f, 0.0f};
-			}
-
 			// MATERIALS
 			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0}, VK_POLYGON_MODE_FILL);
 			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0}, VK_POLYGON_MODE_LINE);

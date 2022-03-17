@@ -14,6 +14,10 @@ namespace wde::gui {
 			const inline static ImVec4 colorMinorLightLightLight {0.45f, 0.45f, 0.45f, 1.0f};
 			const inline static ImVec4 colorMinorDark {0.12f, 0.12f, 0.12f, 1.0f};
 
+			// Text color
+			const inline static ImVec4 colorTextMajor {0.823, 0.823, 0.823, 1.0f};
+			const inline static ImVec4 colorTextMinor {0.78, 0.78, 0.78, 1.0f};
+
 
 			// Black and white colors
 			const inline static ImVec4 colorWhiteMajor {1.0f, 1.0f, 1.0f, 1.0f};
@@ -52,7 +56,7 @@ namespace wde::gui {
 				auto& colors = ImGui::GetStyle().Colors;
 
 				// Background color
-				colors[ImGuiCol_Text] = ImVec4(0.823, 0.823, 0.823, 1.0f);
+				colors[ImGuiCol_Text] = colorTextMajor;
 				colors[ImGuiCol_WindowBg] = colorMinor;
 				colors[ImGuiCol_ChildBg] = colorMinor;
 

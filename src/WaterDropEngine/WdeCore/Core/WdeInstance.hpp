@@ -3,6 +3,7 @@
 #include "../../WdeRender/commands/CommandBuffer.hpp"
 #include "../../WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../WdeScene/WdeSceneInstance.hpp"
+#include "../../WdeScene/gameObjects/modules/ControllerModule.hpp"
 
 namespace wde {
 	/**
@@ -38,18 +39,9 @@ namespace wde {
 
 		protected:
 			/** Change the engine rendering pipeline instance */
-			void setRenderPipeline(std::shared_ptr<render::WdeRenderPipelineInstance> pipeline) {
-				WDE_PROFILE_FUNCTION();
-				_pipeline = std::move(pipeline);
-				_pipeline->setup();
-			}
-
+			void setRenderPipeline(std::shared_ptr<render::WdeRenderPipelineInstance> pipeline);
 			/** Change the engine rendering scene instance */
-			void setScene(std::shared_ptr<scene::WdeSceneInstance> scene) {
-				WDE_PROFILE_FUNCTION();
-				_scene = std::move(scene);
-				_scene->setup();
-			}
+			void setScene(std::shared_ptr<scene::WdeSceneInstance> scene);
 
 
 		private:

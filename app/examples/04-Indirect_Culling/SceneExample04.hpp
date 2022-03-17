@@ -14,18 +14,6 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample04 : public WdeSceneInstance {
 		void setup() override {
-			// EDITOR CAMERA
-			{
-				WDE_PROFILE_SCOPE("examples::SceneExample02::editorCamera");
-				auto camera = createGameObject("Editor Camera");
-				auto camModule = camera->addModule<CameraModule>();
-				camModule->setAsActive();
-				camModule->setFarPlane(822.5f);
-				camera->addModule<ControllerModule>();
-				camera->transform->position = glm::vec3 {-32.67f, 45.34f, -150.79f};
-				camera->transform->rotation = glm::vec3 {0.43f, 4.29f, 0.0f};
-			}
-
 			// VIEWING CAMERA
 			{
 				WDE_PROFILE_SCOPE("examples::SceneExample02::viewingCamera");

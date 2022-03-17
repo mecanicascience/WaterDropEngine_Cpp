@@ -44,4 +44,36 @@ namespace wde {
 		// Clean up instance
 		cleanUp();
 	}
+
+
+
+
+
+	void WdeInstance::setRenderPipeline(std::shared_ptr<render::WdeRenderPipelineInstance> pipeline) {
+		WDE_PROFILE_FUNCTION();
+		_pipeline = std::move(pipeline);
+		_pipeline->setup();
+	}
+
+	void WdeInstance::setScene(std::shared_ptr<scene::WdeSceneInstance> scene) {
+		WDE_PROFILE_FUNCTION();
+		_scene = std::move(scene);
+
+		// Add editor camera
+#ifdef WDE_ENGINE_MODE_DEBUG
+		{
+			auto camera = _scene->createGameObject("Editor Camera");
+			auto camModule = camera->addModule<scene::CameraModule>();
+			camModule->setAsActive();
+			camModule->setFarPlane(1000.0f);
+			_scene->_activeCameraID = static_cast<int>(camera->getID());
+			camera->addModule<scene::ControllerModule>();
+			camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
+			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
+		}
+#endif
+
+		// Setup scene
+		_scene->setup();
+	}
 }

@@ -1,6 +1,7 @@
 #include "GameObject.hpp"
 #include "modules/MeshRendererModule.hpp"
 #include "modules/CameraModule.hpp"
+#include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	GameObject::GameObject(uint32_t id, std::string name, bool isStatic) : _id(id), name(std::move(name)), _isStatic(isStatic) {
@@ -36,22 +37,26 @@ namespace wde::scene {
 			typeName = "Entity";
 
 
-		// Left icons
+		// Left view icon
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
-		ImGui::PushID(static_cast<int>(_id) + 266312951);
-		bool notAct = false;
-		if (!active) {
+		ImGui::PushID(static_cast<int>(_id) + 2312951);
+		if (active)
+			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorTextMinor);
+		else
 			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
-			notAct = true;
-		}
 		auto textS = ImGui::CalcTextSize("     ");
 		if (active && ImGui::Selectable(ICON_FA_EYE, false, 0, textS) || (!active && ImGui::Selectable(ICON_FA_EYE_SLASH, false, 0, textS)))
 			active = !active;
-		if (notAct)
-			ImGui::PopStyleColor();
+		ImGui::SameLine();
+		ImGui::PopStyleColor();
 		ImGui::PopID();
+		if (active)
+			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorTextMinor);
+		else
+			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+		ImGui::Text("Display");
+		ImGui::PopStyleColor();
 		ImGui::PopFont();
-
 
 		// Display object name
 		ImGui::SameLine();
@@ -65,6 +70,37 @@ namespace wde::scene {
 			sprintf(buf, ICON_FA_FOLDER "   %s", name.c_str());
 		gui::GUIRenderer::textCentered(buf);
 		ImGui::PopFont();
+
+		// Left camera icon
+		auto cameraMod = getModule<CameraModule>();
+		if (cameraMod != nullptr) {
+			// Icon
+			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+			auto& scene = WaterDropEngine::get().getInstance().getScene();
+			ImGui::PushID(static_cast<int>(_id) + 6496321);
+			if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->getID() == _id) { // Current selected camera
+				ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorTextMinor);
+				if (ImGui::Selectable(ICON_FA_CAMERA, false, 0, textS)) {}
+			}
+			else { // Camera not selected
+				ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+				if (ImGui::Selectable(ICON_FA_CAMERA, false, 0, textS))
+					cameraMod->setAsActive();
+			}
+			ImGui::PopStyleColor();
+			ImGui::PopID();
+
+			// Label
+			ImGui::SameLine();
+			if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->getID() == _id)
+				ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorTextMinor);
+			else
+				ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+			ImGui::Text("Select");
+			ImGui::PopStyleColor();
+			ImGui::PopFont();
+			ImGui::SameLine();
+		}
 
 		// Object type
 		ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
