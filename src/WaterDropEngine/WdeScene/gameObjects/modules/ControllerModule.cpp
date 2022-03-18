@@ -2,7 +2,7 @@
 #include "../../../WaterDropEngine.hpp"
 
 namespace wde::scene {
-	ControllerModule::ControllerModule(GameObject &gameObject) : Module(gameObject, "Keyboard Controller") {}
+	ControllerModule::ControllerModule(GameObject &gameObject) : Module(gameObject, "Keyboard Controller", ICON_FA_KEYBOARD) {}
 
 	void ControllerModule::tick()  {
 		// Only active if this game object has a camera, and the camera is selected

@@ -11,7 +11,8 @@ namespace wde::scene {
 	 */
 	class Module : public NonCopyable {
 		public:
-			explicit Module(GameObject& gameObject, std::string name) : _gameObject(gameObject), _name(std::move(name)) {}
+			explicit Module(GameObject& gameObject, std::string name) : _gameObject(gameObject), _name(std::move(name)), _icon("") {}
+			explicit Module(GameObject& gameObject, std::string name, std::string icon) : _gameObject(gameObject), _name(std::move(name)), _icon(std::move(icon)) {}
 			~Module() override = default;
 
 			// Inherited methods
@@ -25,6 +26,7 @@ namespace wde::scene {
 
 			// Getters and setters
 			std::string getName() const { return _name; }
+			std::string getIcon() const { return _icon; }
 
 
 		protected:
@@ -32,5 +34,7 @@ namespace wde::scene {
 			GameObject& _gameObject;
 			/** The module unique name */
 			std::string _name;
+			/** The module icon */
+			std::string _icon;
 	};
 }

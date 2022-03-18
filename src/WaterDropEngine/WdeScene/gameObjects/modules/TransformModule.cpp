@@ -2,7 +2,7 @@
 #include "../GameObject.hpp"
 
 namespace wde::scene {
-	TransformModule::TransformModule(GameObject &gameObject) : Module(gameObject, "Transform") {}
+	TransformModule::TransformModule(GameObject &gameObject) : Module(gameObject, "Transform", ICON_FA_GLOBE) {}
 
 	TransformModule::~TransformModule() {
 		_parent = nullptr;

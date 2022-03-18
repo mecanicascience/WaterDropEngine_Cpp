@@ -13,22 +13,21 @@ namespace wde::scene {
 	 */
 	class MeshRendererModule : public Module {
 		public:
-			explicit MeshRendererModule(GameObject& gameObject) : Module(gameObject, "Mesh Renderer") {}
+			explicit MeshRendererModule(GameObject& gameObject) : Module(gameObject, "Mesh Renderer", ICON_FA_GHOST) {}
 
 			void drawGUI() override {
-				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+				ImGui::PushFont(ImGui::GetIO().FontDefault);
 				// Mesh
                 if (_mesh == nullptr)
                     ImGui::Text(" No mesh selected.");
                 else
-                    ImGui::Text(" Mesh name : '%s'.", _mesh->getName().c_str());
-                ImGui::Separator();
+                    ImGui::Text(" Mesh name : \"%s\".", _mesh->getName().c_str());
 
 				// Material
 				if (_material == nullptr)
 					ImGui::Text(" No material selected.");
 				else
-					ImGui::Text(" Material name : '%s'.", _material->getName().c_str());
+					ImGui::Text(" Material name : \"%s\".", _material->getName().c_str());
 				ImGui::PopFont();
 			}
 

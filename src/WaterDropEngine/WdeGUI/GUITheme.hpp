@@ -12,7 +12,6 @@ namespace wde::gui {
 			const inline static ImVec4 colorMinorLight {0.25f, 0.25f, 0.25f, 1.0f};
 			const inline static ImVec4 colorMinorLightLight {0.35f, 0.35f, 0.35f, 1.0f};
 			const inline static ImVec4 colorMinorLightLightLight {0.45f, 0.45f, 0.45f, 1.0f};
-			const inline static ImVec4 colorMinorDark {0.12f, 0.12f, 0.12f, 1.0f};
 
 			// Text color
 			const inline static ImVec4 colorTextMajor {0.823, 0.823, 0.823, 1.0f};
@@ -59,6 +58,8 @@ namespace wde::gui {
 				colors[ImGuiCol_Text] = colorTextMajor;
 				colors[ImGuiCol_WindowBg] = colorMinor;
 				colors[ImGuiCol_ChildBg] = colorMinor;
+				colors[ImGuiCol_SeparatorActive] = colorMinorLightLightLight;
+				colors[ImGuiCol_SeparatorHovered] = colorMinorLightLight;
 
 				// CoreWindow headers
 				colors[ImGuiCol_TitleBg] = colorMajor;
@@ -69,10 +70,10 @@ namespace wde::gui {
 				colors[ImGuiCol_MenuBarBg] = colorMajor;
 
 				// Tabs (window header components)
-				colors[ImGuiCol_Tab] = colorMinorDark;
+				colors[ImGuiCol_Tab] = colorMajorLight;
 				colors[ImGuiCol_TabHovered] = colorMinorLight;
 				colors[ImGuiCol_TabActive] = colorMinor;
-				colors[ImGuiCol_TabUnfocused] = colorMinorDark;
+				colors[ImGuiCol_TabUnfocused] = colorMajorLight;
 				colors[ImGuiCol_TabUnfocusedActive] = colorMinor;
 
 				// Buttons

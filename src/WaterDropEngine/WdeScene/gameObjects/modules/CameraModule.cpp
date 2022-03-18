@@ -2,7 +2,7 @@
 #include "../../../WaterDropEngine.hpp"
 
 namespace wde::scene {
-	CameraModule::CameraModule(GameObject &gameObject) : Module(gameObject, "Camera") {
+	CameraModule::CameraModule(GameObject &gameObject) : Module(gameObject, "Camera", ICON_FA_CAMERA) {
 		// Setup initial projection type
 		auto aspect = WaterDropEngine::get().getRender().getInstance().getSwapchain().getAspectRatio();
 		if (_projectionType == 0)
@@ -70,28 +70,10 @@ namespace wde::scene {
 	}
 
 	void CameraModule::drawGUI() {
-		// == Is selected camera ==
-		auto actCamera = WaterDropEngine::get().getInstance().getScene().getActiveCamera();
-		if (actCamera != nullptr && actCamera->getID() == _gameObject.getID())
-			ImGui::Text("  Currently selected camera.");
-		else if (ImGui::Button("Set as active"))
-			setAsActive();
-		ImGui::Dummy(ImVec2(0.0f, 3.0f));
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
-		// == Projection type GUI ==
-		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
-		ImGui::Text("  Projection configuration");
-		ImGui::Dummy(ImVec2(0.0f, 1.0f));
-		ImGui::PopFont();
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
-
+		// Selected projection
 		ImGui::Columns(2);
 		ImGui::SetColumnWidth(0, 140.0f);
-
-		// Selected projection
+		ImGui::Dummy(ImVec2(0.0, 1.0f));
 		ImGui::Text("Selected projection");
 
 		ImGui::NextColumn();
@@ -99,6 +81,7 @@ namespace wde::scene {
 		ImGui::Combo("", &_projectionType, "Orthographic\0Perspective\0");
 		ImGui::PopID();
 		ImGui::Columns(1);
+		ImGui::Separator();
 
 		// Orthographic configuration
 		ImGui::Dummy(ImVec2(0.0f, 5.0f));
@@ -118,9 +101,6 @@ namespace wde::scene {
 			gui::GUIRenderer::addFloatDragger("Far Plane", _farPlane, 10.0f);
 			ImGui::TreePop();
 		}
-		ImGui::Dummy(ImVec2(0.0f, 3.0f));
-		ImGui::Separator();
-		ImGui::Dummy(ImVec2(0.0f, 5.0f));
 	}
 
 	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {

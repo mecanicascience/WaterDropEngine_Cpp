@@ -8,16 +8,6 @@ namespace wde::scene {
 	 */
 	class CameraModule : public Module {
 		public:
-			/**
-			 * Matrix that describes camera projection matrices
-			 */
-			struct GPUCameraData {
-				alignas(16) glm::mat4 transformCameraSpace {1.0f};
-				alignas(16) glm::mat4 transformProjSpace   {1.0f};
-				float nearPlane {0.0f};
-				float farPlane {1.0f};
-			};
-
 			explicit CameraModule(GameObject& gameObject);
 			void tick() override;
 			void drawGUI() override;
@@ -25,17 +15,6 @@ namespace wde::scene {
 
 			/** Sets this camera to be the current scene viewing camera */
 			void setAsActive();
-
-
-			// Getters and setters
-			GPUCameraData getCameraData() const {
-				GPUCameraData data {};
-				data.transformCameraSpace = getView();
-				data.transformProjSpace   = getProjection();
-				data.nearPlane = _nearPlane;
-				data.farPlane  = _farPlane;
-				return data;
-			}
 
 
 
