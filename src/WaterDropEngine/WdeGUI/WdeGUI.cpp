@@ -108,11 +108,7 @@ namespace wde::gui {
 	}
 
 
-	void WdeGUI::tick() {
-		WDE_PROFILE_FUNCTION();
-		// Update gui bar
-		_guiBar.updateGUI();
-	}
+	void WdeGUI::tick() { }
 
 	void WdeGUI::render(render::CommandBuffer &commandBuffer) {
 		WDE_PROFILE_FUNCTION();
@@ -171,7 +167,7 @@ namespace wde::gui {
 
 		// Setup GUI bar every frame
 		ImGui::BeginMenuBar();
-		WaterDropEngine::get().getGUI()._guiBar.renderGUI();
+		WaterDropEngine::get().getGUI()._guiBar.renderMenu();
 		ImGui::EndMenuBar();
 		// ==== END BUILD GUI ====
 
@@ -185,6 +181,8 @@ namespace wde::gui {
 		ImGui::End();
 
 		// ==== RENDER ELEMENTS HERE ====
+		WaterDropEngine::get().getGUI()._guiBar.renderGUI();
+
 		if (WaterDropEngine::get().getGUI()._guiBar.displayGUI()) {
 			// Notify GUI drawing
 			WaterDropEngine::get().getGUI().notify({LogChannel::GUI, "DrawGUI"});

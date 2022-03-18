@@ -6,9 +6,9 @@
 namespace wde::gui {
 	class GUIBar : public NonCopyable {
 		public:
-			/** Updates the gui top menu */
-			void updateGUI();
 			/** Renders the gui top menu */
+			void renderMenu();
+			/** Renders the menu elements */
 			void renderGUI();
 
 			// Getters and setters

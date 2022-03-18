@@ -2,27 +2,62 @@
 #include "../WaterDropEngine.hpp"
 
 namespace wde::gui {
-	void GUIBar::updateGUI() {
+	void GUIBar::renderMenu() {
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12.0f, 4.0f));
 
+		// Main file menu
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Exit"))
+				WaterDropEngine::get().getSubject().notify({LogChannel::RENDER, "WINDOW_SHOULD_CLOSE"});
+
+			ImGui::EndMenu();
+		}
+
+
+		// Window menu
+		if (ImGui::BeginMenu("Window")) {
+			ImGui::Checkbox("Enable GUI", &_displayGUI);
+
+			ImGui::EndMenu();
+		}
+
+
+		// Help menu
+		if (ImGui::BeginMenu("Help")) {
+			if (ImGui::MenuItem("See on Github")) {
+				// Note : only works in Windows
+				system(std::string("start ").append("https://github.com/mecanicascience/WaterDropEngine").c_str());
+			}
+
+			ImGui::Dummy(ImVec2(0.0, 2.0));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0, 2.0));
+
+			// About
+			ImGui::Text("About");
+			ImGui::Dummy(ImVec2(0.0, 0.5));
+			ImGui::PushFont(ImGui::GetIO().FontDefault);
+			ImGui::Text("WaterDropEngine is a 3D rendering"
+						"\nengine mainly designed for"
+						"\ncomputer graphics and physics"
+						"\nsimulations using Vulkan.");
+			ImGui::Dummy(ImVec2(0.0, 0.5));
+			ImGui::PopFont();
+
+			if (ImGui::MenuItem("Made by MecanicaScience")) {
+				// Note : only works in Windows
+				system(std::string("start ").append("https://www.mecanicascience.fr/").c_str());
+			}
+
+			ImGui::EndMenu();
+		}
+
+		ImGui::PopStyleVar();
+		ImGui::PopFont();
 	}
 
 	void GUIBar::renderGUI() {
-		// Main file menu
-		if (ImGui::BeginMenu("File")) {
-			// Closing window menu
-			if (ImGui::MenuItem("Close"))
-				WaterDropEngine::get().getSubject().notify({LogChannel::RENDER, "WINDOW_SHOULD_CLOSE"});
-			// End of menu
-			ImGui::EndMenu();
-		}
 
-
-		// GUI menu
-		if (ImGui::BeginMenu("GUI")) {
-			// Switch gui open and close
-			ImGui::Checkbox("Display GUI elements", &_displayGUI);
-			// End of menu
-			ImGui::EndMenu();
-		}
 	}
 }

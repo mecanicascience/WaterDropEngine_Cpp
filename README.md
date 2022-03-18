@@ -10,12 +10,8 @@
 ![Demo engine image](imgs/Engine_Demo.png)
 
 ## Presentation
-A 3D rendering engine mainly designed for computer graphics and physics simulations, using Vulkan.
-
-The main goal of this library is to allow you to only focus on building the simulation or the animation, without worrying
-about the technical program requirements (like handling drawing buffers, an update loop, directly drawing shapes in color, ...).
-
-WaterDropEngine is a free and open-source project, so you can directly support it by submitting improvements and by creating
+WaterDropEngine (<i>WDE</i>) is a 3D rendering engine mainly designed for computer graphics and physics simulations, using Vulkan.
+WDE is a free and open-source project, so you can directly support it by submitting improvements and by creating
 new pull requests or issues.
 We'll be happy to answer your questions and to add your new code implementation ideas.
 
