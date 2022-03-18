@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="imgs/logo.png" height="400" alt="logo"/>
+</p>
+
 # WaterDropEngine
 
 ![downloads](https://img.shields.io/github/downloads/MecanicaScience/WaterDropEngine/total)
@@ -6,8 +10,6 @@
 ![license](https://img.shields.io/github/license/mecanicascience/WaterDropEngine)
 
 <br />
-
-![Demo engine image](imgs/Engine_Demo.png)
 
 ## Presentation
 WaterDropEngine (<i>WDE</i>) is a 3D rendering engine mainly designed for computer graphics and physics simulations, using Vulkan.
@@ -31,6 +33,10 @@ Once all of these is done, you are ready to start using WaterDropEngine.
 
 ## Examples
 You will find the examples list on the [app/examples](app/examples) folder.
+
+Here below is an engine scene example.
+
+![Engine demo](imgs/engine.png)
 
 <br />
 

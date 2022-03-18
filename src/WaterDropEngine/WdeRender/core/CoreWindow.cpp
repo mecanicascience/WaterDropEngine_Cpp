@@ -1,7 +1,5 @@
 #include "CoreWindow.hpp"
 
-#include <utility>
-
 namespace wde::render {
 	CoreWindow::CoreWindow(std::shared_ptr<core::Subject> moduleSubject, std::pair<int, int> windowSize, std::string windowName)
 			: _moduleSubject(std::move(moduleSubject)), _windowSize(std::move(windowSize)), _windowName(std::move(windowName)) {
@@ -26,6 +24,20 @@ namespace wde::render {
 			else {
 				_window = glfwCreateWindow(_windowSize.first, _windowSize.second, _windowName.c_str(), nullptr, nullptr);
 			}
+		}
+
+		// Set icon
+		{
+			GLFWimage images[4];
+			images[3].pixels = render::Texture2D::getImagePixels("res/textures/icon/logo_16x16.png", images[3].width, images[3].height, 4);
+			images[2].pixels = render::Texture2D::getImagePixels("res/textures/icon/logo_32x32.png", images[2].width, images[2].height, 4);
+			images[1].pixels = render::Texture2D::getImagePixels("res/textures/icon/logo_48x48.png", images[1].width, images[1].height, 4);
+			images[0].pixels = render::Texture2D::getImagePixels("res/textures/icon/logo_256x256.png", images[0].width, images[0].height, 4);
+			glfwSetWindowIcon(_window, 1, images);
+			render::Texture2D::freeImagePixels(images[0].pixels);
+			render::Texture2D::freeImagePixels(images[1].pixels);
+			render::Texture2D::freeImagePixels(images[2].pixels);
+			render::Texture2D::freeImagePixels(images[3].pixels);
 		}
 
 		// Add callbacks

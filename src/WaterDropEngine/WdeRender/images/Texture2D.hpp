@@ -45,6 +45,20 @@ namespace wde::render {
 			 * @param newLayout New layout of the image
 			 */
 			static void transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout);
+			/**
+			 * Loads an image given a link
+			 * @param image Link to the image
+			 * @param width Width of the image that will be set
+			 * @param height Height of the image that will be set
+			 * @param channelsCount Number of channels in the image
+			 * @return The image pixels
+			 */
+			static unsigned char *getImagePixels(const std::string& image, int& width, int& height, int channelsCount);
+			/**
+			 * Free the pixels of a given imageq
+			 * @param pixels
+			 */
+			static void freeImagePixels(unsigned char* pixels);
 
 
 			// Getters and setters

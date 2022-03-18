@@ -2,6 +2,8 @@
 
 #include "../../../wde.hpp"
 #include "../../WdeCore/Structure/Subject.hpp"
+#include "../images/Texture2D.hpp"
+#include <utility>
 
 namespace wde::render {
 	/**

@@ -5,7 +5,6 @@
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::render {
-
 	Texture2D::Texture2D(glm::vec2 imageExtent, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAddressMode)
 			: _filepath(), _textureFormat(textureFormat), _imageExtent(VkExtent2D {static_cast<uint32_t>(imageExtent.x), static_cast<uint32_t>(imageExtent.y)}), _textureUsage(textureUsage) {
 		WDE_PROFILE_FUNCTION();
@@ -349,5 +348,13 @@ namespace wde::render {
 
 		// Set new layout info
 		image.setLayout(newLayout);
+	}
+
+	unsigned char* Texture2D::getImagePixels(const std::string& image, int& width, int& height, int channelsCount) {
+		return stbi_load(image.c_str(), &width, &height, nullptr, channelsCount);
+	}
+
+	void Texture2D::freeImagePixels(unsigned char* pixels) {
+		stbi_image_free(pixels);
 	}
 }
