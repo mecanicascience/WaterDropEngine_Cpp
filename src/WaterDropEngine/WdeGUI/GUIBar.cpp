@@ -17,7 +17,30 @@ namespace wde::gui {
 
 		// Window menu
 		if (ImGui::BeginMenu("Window")) {
-			ImGui::Checkbox("Enable GUI", &_displayGUI);
+			{
+				ImGui::Text("Panels");
+				ImGui::Dummy(ImVec2(0.0, 2.0));
+				ImGui::PushFont(ImGui::GetIO().FontDefault);
+
+				bool gameObjectsList = true;
+				ImGui::Checkbox("Scene Components", &gameObjectsList);
+
+				bool propertiesBool = true;
+				ImGui::Checkbox("Properties", &propertiesBool);
+				ImGui::PopFont();
+			}
+
+			ImGui::Dummy(ImVec2(0.0, 2.5));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0, 0.5));
+
+			{
+				ImGui::Text("GUI");
+				ImGui::Dummy(ImVec2(0.0, 2.0));
+				ImGui::PushFont(ImGui::GetIO().FontDefault);
+				ImGui::Checkbox("Enable GUI", &_displayGUI);
+				ImGui::PopFont();
+			}
 
 			ImGui::EndMenu();
 		}

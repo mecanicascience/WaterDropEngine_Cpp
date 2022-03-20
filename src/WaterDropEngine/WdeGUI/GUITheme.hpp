@@ -80,6 +80,7 @@ namespace wde::gui {
 				colors[ImGuiCol_Button] = colorMinorLight;
 				colors[ImGuiCol_ButtonHovered] = colorMinorLight;
 				colors[ImGuiCol_ButtonActive] = colorMinorLight;
+				colors[ImGuiCol_CheckMark] = colorMajor;
 
 				// Frame BG
 				colors[ImGuiCol_FrameBg] = colorMinorLight;
