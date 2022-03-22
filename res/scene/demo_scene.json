@@ -1,0 +1,9 @@
+{
+    "type" : "scene",
+    "data" : {
+        "name" : "Demo Scene",
+        "gameObjects" : [ 0, 1 ],
+        "materials" : [ 0 ],
+        "meshes" : [ 0 ]
+    }
+}

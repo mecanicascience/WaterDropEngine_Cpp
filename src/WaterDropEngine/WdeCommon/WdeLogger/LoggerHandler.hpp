@@ -23,13 +23,14 @@ namespace wde {
 
 	/** List of every logger channel */
 	enum class LogChannel {
-		/** Engine main structure */  CORE,
-		/** Debug channel messages */ DEBUG,
-		/** The rendering engine */   RENDER,
-		/** The GUI drawing engine */ GUI,
-		/** Common engine classes */  COMMON,
-		/** Scene engine */	          SCENE,
-		/** Input manager engine */   INPUT
+		/** Engine main structure */   CORE,
+		/** Debug channel messages */  DEBUG,
+		/** The rendering engine */    RENDER,
+		/** The GUI drawing engine */  GUI,
+		/** Common engine classes */   COMMON,
+		/** Scene engine */	           SCENE,
+		/** Input manager engine */    INPUT,
+		/** Resource manager module */ RES
 	};
 
 

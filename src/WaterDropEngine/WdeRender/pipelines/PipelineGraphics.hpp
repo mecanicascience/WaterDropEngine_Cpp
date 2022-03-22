@@ -9,6 +9,7 @@
 #include "ShaderUtils.hpp"
 #include "../render/RenderPass.hpp"
 #include "../../WdeScene/gameObjects/meshes/Vertex.hpp"
+#include "../../WdeResourceManager/resources/Shader.hpp"
 
 namespace wde::render {
 	class PipelineGraphics : public Pipeline {

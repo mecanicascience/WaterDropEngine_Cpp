@@ -11,6 +11,7 @@
 #include "WdeInput/InputManager.hpp"
 #include "WdeRender/descriptors/DescriptorBuilder.hpp"
 #include "WdeScene/gizmo/GizmoManager.hpp"
+#include "WdeResourceManager/WdeResourceManager.hpp"
 
 namespace wde {
 	/**
@@ -55,6 +56,10 @@ namespace wde {
 				// Scene core
 				_scene = std::make_shared<scene::WdeScene>(_subject);
 				_subject->addObserver(_scene);
+
+				// Resource Manager
+				_resourceManager = std::make_shared<resource::WdeResourceManager>(_subject);
+				_subject->addObserver(_resourceManager);
 
 				// Init engine instance
 				#ifdef WDE_ENGINE_MODE_DEBUG
@@ -115,6 +120,7 @@ namespace wde {
 						_input->tick();
 						_render->tick();
 						_gui->tick();
+						_resourceManager->tick();
 
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
 						instance.tickInstance();
@@ -144,6 +150,7 @@ namespace wde {
 				instance.cleanUpInstance();
 
 				_input.reset();
+				_resourceManager->cleanUp();
 				_scene->cleanUp();
 				_gui->cleanUp();
 				scene::GizmoManager::cleanUp();
@@ -167,6 +174,7 @@ namespace wde {
 			core::Subject& getSubject() { return *_subject; }
 			scene::WdeScene& getScene() { return *_scene; }
 			input::InputManager& getInput() { return *_input; }
+			resource::WdeResourceManager& getResourceManager() { return *_resourceManager; }
 
 
 		private:
@@ -175,6 +183,7 @@ namespace wde {
 			std::shared_ptr<gui::WdeGUI> _gui;
 			std::shared_ptr<scene::WdeScene> _scene;
 			std::shared_ptr<input::InputManager> _input;
+			std::shared_ptr<resource::WdeResourceManager> _resourceManager;
 
 			// Modules communication subject
 			std::shared_ptr<core::Subject> _subject;

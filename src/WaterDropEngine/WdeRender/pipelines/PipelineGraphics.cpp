@@ -20,26 +20,13 @@ namespace wde::render {
 
 		// Create the pipeline shader modules
 		{
-			WDE_PROFILE_FUNCTION();
 			for (const std::string &shaderStage : _shaderStages) {
-				// Create shader module
-				std::vector<char> shaderContent = WdeFileUtils::readFile(shaderStage + ".spv");
-				auto shaderModule = ShaderUtils::createShaderModule(shaderContent);
-				auto shaderStageType = ShaderUtils::getShaderStage(shaderStage);
-
-				// ShaderUtils infos
-				VkPipelineShaderStageCreateInfo shaderStageInfo {};
-				shaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-				shaderStageInfo.stage = shaderStageType;
-				shaderStageInfo.module = shaderModule;
-				shaderStageInfo.pName = "main"; // entrypoint
-				shaderStageInfo.flags = 0; // Optional
-				shaderStageInfo.pNext = nullptr; // Optional
-				shaderStageInfo.pSpecializationInfo = nullptr; // Optional
+				// Load shader
+				auto shader = WaterDropEngine::get().getResourceManager().load<resource::Shader>(shaderStage);
 
 				// Push module to the list
-				_shaderStagesInfo.emplace_back(shaderStageInfo);
-				_shaderModules.emplace_back(shaderModule);
+				_shaderStagesInfo.emplace_back(shader->getShaderStageCreateInfo());
+				_shaderModules.emplace_back(shader->getShaderModule());
 			}
 		}
 	}

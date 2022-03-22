@@ -1,0 +1,17 @@
+{
+    "type" : "material",
+    "uuid" : 0,
+    "data" : {
+        "name" : "Texture Material",
+        "shaders" : [
+            "common/texture/unlit.vert",
+            "common/texture/unlit.frag"
+        ],
+        "polygonMode" : "fill",
+        "descriptor" : {
+            "0" : {
+                "type" : "image"
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+{
+    "type" : "gameObject",
+    "uuid" : 1,
+    "data" : {
+        "name" : "Palmier Mesh",
+        "active" : true,
+        "static" : false
+    },
+    "modules" : [
+        {
+            "name" : "Transform",
+            "data" : {
+                "parentID" : -1,
+                "position" : [0, 0, 0],
+                "rotation" : [0, 0, 0],
+                "scale" : [1, 1, 1]
+            }
+        },
+        {
+            "name" : "Mesh Renderer",
+            "data" : {
+                "meshUUID" : 0,
+                "materialUUID" : 0
+            }
+        }
+    ]
+}
