@@ -1,9 +1,10 @@
 {
     "type" : "image",
-    "name" : "Fougere",
+    "name" : "Skybox",
     "data" : {
-        "type" : "2D",
-        "path" : "fougere.png",
+        "type" : "cube",
+        "path" : "skybox",
+        "extension" : "jpg",
         "format" : 43,
         "usage_flags" : 4,
         "filter" : 1,

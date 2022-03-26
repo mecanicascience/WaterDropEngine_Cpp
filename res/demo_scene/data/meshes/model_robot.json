@@ -1,0 +1,9 @@
+{
+    "type" : "mesh",
+    "name" : "Robot",
+    "data" : {
+        "type" : "obj",
+        "path" : "model_robot.obj",
+        "recalculateNormals" : false
+    }
+}

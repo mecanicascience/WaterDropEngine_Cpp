@@ -1,0 +1,24 @@
+{
+    "type" : "material",
+    "name" : "Skybox Material",
+    "data" : {
+        "shaders" : [
+            "common/skybox/skybox.vert",
+            "common/skybox/skybox.frag"
+        ],
+        "renderStage" : {
+            "pass" : 0,
+            "subpass" : 0
+        },
+        "polygonMode" : "fill",
+        "descriptor" : {
+            "0" : {
+                "type" : "image",
+                "stages" : [ "frag" ],
+                "data" : {
+                    "path" : "skybox.json"
+                }
+            }
+        }
+    }
+}

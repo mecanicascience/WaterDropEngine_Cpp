@@ -11,6 +11,7 @@
 #include <vector>
 #include <vulkan/vulkan_core.h>
 #include <glm/gtc/matrix_transform.hpp>
+#include <tiny_obj_loader.h>
 
 namespace wde::resource {
 	/**

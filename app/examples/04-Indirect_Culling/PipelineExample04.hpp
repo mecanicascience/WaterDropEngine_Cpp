@@ -12,7 +12,7 @@ using namespace wde::render;
 namespace examples {
 	class PipelineExample04 : public WdeRenderPipelineInstance {
 		public:
-			std::unique_ptr<CullingInstance> _cullingManager;
+			std::unique_ptr<wde::scene::CullingInstance> _cullingManager;
 
 			void setup() override {
 				// Create passes attachments
@@ -31,7 +31,7 @@ namespace examples {
 				});
 
 				// Create culling manager
-				_cullingManager = std::make_unique<CullingInstance>(std::pair<int, int>{0, 0}, _objectsData);
+				_cullingManager = std::make_unique<wde::scene::CullingInstance>(std::pair<int, int>{0, 0}, _objectsData);
 
 				// Initialize Gizmo
 				scene::GizmoManager::initialize(std::pair<int, int>{0, 1});
@@ -61,7 +61,7 @@ namespace examples {
 
 						// Draw gizmo on active game object
 						auto activeGO = scene.getActiveGameObject();
-						if (activeGO != nullptr && scene.getActiveGameObject() != nullptr && scene.getActiveGameObject()->getModule<CameraModule>() == nullptr) {
+						if (activeGO != nullptr && scene.getActiveGameObject() != nullptr && scene.getActiveGameObject()->getModule<wde::scene::CameraModule>() == nullptr) {
 							scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
 							scene::GizmoManager::_gizmoInstance->drawCube(activeGO->transform->position, activeGO->transform->rotation, activeGO->transform->scale);
 						}

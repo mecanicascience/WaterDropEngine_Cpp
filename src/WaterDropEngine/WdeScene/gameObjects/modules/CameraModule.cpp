@@ -141,10 +141,6 @@ namespace wde::scene {
 		auto wNear = _aspect * _nearPlane * thetaDiv2;
 		auto wFar  = _aspect * _farPlane  * thetaDiv2;
 
-		// Draw cube
-		gizmo.setColor(Color::GREEN);
-		gizmo.drawCube(_gameObject.transform->position, _gameObject.transform->rotation, _gameObject.transform->scale);
-
 		// Compute points
 		auto topNearLeft  = t * glm::vec4 {-wNear, _nearPlane * thetaDiv2, _nearPlane, 1};
 		auto topNearRight = t * glm::vec4 { wNear, _nearPlane * thetaDiv2, _nearPlane, 1};

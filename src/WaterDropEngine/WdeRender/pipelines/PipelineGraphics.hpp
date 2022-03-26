@@ -8,7 +8,6 @@
 #include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 #include "ShaderUtils.hpp"
 #include "../render/RenderPass.hpp"
-#include "../../WdeScene/gameObjects/meshes/Vertex.hpp"
 #include "../../WdeResourceManager/resources/Shader.hpp"
 #include "../../WdeResourceManager/resources/Mesh.hpp"
 

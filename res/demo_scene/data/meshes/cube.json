@@ -1,0 +1,9 @@
+{
+    "type" : "mesh",
+    "name" : "Cube",
+    "data" : {
+        "type" : "obj",
+        "path" : "cube.obj",
+        "recalculateNormals" : false
+    }
+}

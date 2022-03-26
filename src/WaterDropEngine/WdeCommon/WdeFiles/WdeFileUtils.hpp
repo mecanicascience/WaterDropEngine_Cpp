@@ -21,9 +21,10 @@ namespace wde {
 			/**
 			 * Prompt a dialog for the user to select a unique file
 			 * @param format The file format allowed
+			 * @param path Path of the selected file
 			 * @return The file content
 			 */
-			static std::vector<char> readFileDialog(const std::string& format);
+			static std::vector<char> readFileDialog(const std::string& format, std::string& path);
 
 			/**
 			 * Save the file using a prompt dialog

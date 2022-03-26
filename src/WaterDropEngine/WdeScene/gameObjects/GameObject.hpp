@@ -8,7 +8,6 @@
 #include "../../WdeRender/commands/CommandBuffer.hpp"
 #include "../../WdeRender/buffers/Buffer.hpp"
 #include "../../WdeRender/descriptors/DescriptorBuilder.hpp"
-#include "materials/Material.hpp"
 
 namespace wde::scene {
 	/**

@@ -1,0 +1,9 @@
+{
+    "type" : "mesh",
+    "name" : "Skybox",
+    "data" : {
+        "type" : "obj",
+        "path" : "skybox.obj",
+        "recalculateNormals" : false
+    }
+}

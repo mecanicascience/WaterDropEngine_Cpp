@@ -3,8 +3,6 @@
 #include "Module.hpp"
 
 #include <utility>
-#include "../materials/Material.hpp"
-#include "../meshes/Mesh.hpp"
 #include "../GameObject.hpp"
 #include "MeshRendererModule.hpp"
 

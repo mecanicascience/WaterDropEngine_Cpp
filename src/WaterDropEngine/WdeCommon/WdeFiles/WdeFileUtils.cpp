@@ -27,13 +27,14 @@ namespace wde {
 
 
 	// Dialogs
-	std::vector<char> WdeFileUtils::readFileDialog(const std::string& format) {
+	std::vector<char> WdeFileUtils::readFileDialog(const std::string& format, std::string& path) {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::COMMON) << "Opening file." << logger::endl;
-
-		auto selection = pfd::open_file("Select a file", ".", { "Format", "*." + format, "All Files", "*" }).result();
-		if (!selection.empty())
+		auto selection =  pfd::open_file("Select a file", ".", { "Format", "*." + format, "All Files", "*" }).result();
+		if (!selection.empty()) {
+			path = selection[0];
 			return readFile(selection[0]);
+		}
 
 		return {};
 	}

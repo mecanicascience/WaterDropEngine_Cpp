@@ -3,6 +3,7 @@
 #include "../../Resource.hpp"
 #include "../../../WdeRender/images/Image.hpp"
 #include "../../../WdeRender/images/Image2D.hpp"
+#include "../../../WdeRender/buffers/BufferUtils.hpp"
 
 namespace wde::resource {
 	class Texture2D : public Resource {

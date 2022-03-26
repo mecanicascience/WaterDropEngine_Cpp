@@ -3,7 +3,6 @@
 #include <utility>
 
 #include "../../../wde.hpp"
-#include "../gameObjects/meshes/Mesh.hpp"
 #include "../gameObjects/modules/MeshRendererModule.hpp"
 #include "../../WdeRender/pipelines/PipelineCompute.hpp"
 #include "../gameObjects/modules/CameraModule.hpp"

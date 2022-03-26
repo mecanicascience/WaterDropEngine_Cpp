@@ -1,9 +1,9 @@
 {
     "type" : "image",
-    "name" : "Fougere",
+    "name" : "Terrain Heightmap",
     "data" : {
         "type" : "2D",
-        "path" : "fougere.png",
+        "path" : "terrain_heightmap.png",
         "format" : 43,
         "usage_flags" : 4,
         "filter" : 1,

@@ -16,11 +16,11 @@ namespace wde::resource {
 		int texHeight;
 		{
 			int texChannels;
-			stbi_uc* pixels = stbi_load((
-                    WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/"
-					+ texData["data"]["path"].get<std::string>()
-					+ "/front."
-					+ texData["data"]["extension"].get<std::string>()).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+			auto pathResSrc = WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/"
+			            + texData["data"]["path"].get<std::string>()
+			            + "/front."
+						+ texData["data"]["extension"].get<std::string>();
+			stbi_uc* pixels = stbi_load(pathResSrc.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 			if (!pixels)
 				throw WdeException(LogChannel::RENDER, "Failed to load texture image.");
 			stbi_image_free(pixels); // clean-up pixel array
@@ -29,7 +29,7 @@ namespace wde::resource {
 		// Set image data
 		const VkDeviceSize imageSize = texWidth * texHeight * 4 * 6;
 		const VkDeviceSize layerSize = imageSize / 6;
-		uint32_t mipLevels = 1; // TODO static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+		uint32_t mipLevels = 1;
 
 		// Create image
 		{

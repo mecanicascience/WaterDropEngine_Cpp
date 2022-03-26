@@ -1,9 +1,9 @@
 {
     "type" : "image",
-    "name" : "Fougere",
+    "name" : "Robot",
     "data" : {
         "type" : "2D",
-        "path" : "fougere.png",
+        "path" : "model_robot.png",
         "format" : 43,
         "usage_flags" : 4,
         "filter" : 1,

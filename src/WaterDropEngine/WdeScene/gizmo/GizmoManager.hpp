@@ -2,7 +2,6 @@
 
 #include "Gizmo.hpp"
 #include "../../WdeRender/commands/CommandBuffer.hpp"
-#include "../gameObjects/meshes/MeshLoader.hpp"
 
 namespace wde::scene {
 #ifdef WDE_ENGINE_MODE_DEBUG

@@ -1,9 +1,5 @@
 #include "TerrainModule.hpp"
 #include "../../../WaterDropEngine.hpp"
-#include "../materials/ColorMaterial.hpp"
-#include "../../../WdeRender/images/Texture2D.hpp"
-#include "../../../WdeRender/pipelines/PipelineCompute.hpp"
-#include "../../../../../app/examples/05-Terrain/ShadowMaterial.hpp"
 
 namespace wde::scene {
 	struct PushConstants {

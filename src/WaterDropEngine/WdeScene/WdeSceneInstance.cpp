@@ -22,8 +22,6 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::cleanUpInstance() {
-		_materials.clear();
-		_meshes.clear();
 		_gameObjectsDynamic.clear();
 		_gameObjectsStatic.clear();
 		_gameObjects.clear();

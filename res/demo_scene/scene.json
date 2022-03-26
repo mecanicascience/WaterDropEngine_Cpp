@@ -1,8 +1,9 @@
 {
     "type" : "scene",
     "name" : "Demo Scene",
+    "folderName" : "demo_scene",
     "data" : {
-        "gameObjects" : [ 0, 1 ],
-        "materials" : [ "fougere.json" ]
+        "gameObjects" : [ 0, 1, 2 ],
+        "materials" : [ "fougere.json", "skybox.json" ]
     }
 }

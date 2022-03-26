@@ -3,8 +3,6 @@
 #include "../../wde.hpp"
 #include "gameObjects/GameObject.hpp"
 #include "../WdeCore/Structure/Observer.hpp"
-#include "gameObjects/materials/Material.hpp"
-#include "gameObjects/meshes/Mesh.hpp"
 #include "gameObjects/modules/CameraModule.hpp"
 
 namespace wde::scene {
@@ -31,7 +29,6 @@ namespace wde::scene {
 			// Getters and setters
 			void setPath(const std::string& path) { _scenePath = path; }
 			const std::string& getPath() const { return _scenePath; }
-			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
 			const std::shared_ptr<GameObject>& getGameObject(int goID) { return _gameObjects[goID]; }
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
@@ -71,18 +68,6 @@ namespace wde::scene {
 				return _gameObjects[_gameObjects.size() - 1];
 			}
 
-			template<typename T, typename ...Args>
-			std::shared_ptr<T> createMaterial(Args ...args) {
-				_materials.push_back(std::make_shared<T>(args...));
-				return std::static_pointer_cast<T>(_materials[_materials.size() - 1]);
-			}
-
-            template<typename T, typename ...Args>
-            std::shared_ptr<T> createMesh(Args ...args) {
-                _meshes.push_back(std::make_shared<T>(args...));
-                return std::static_pointer_cast<T>(_meshes[_meshes.size() - 1]);
-            }
-
 
 		private:
 			// Scene game objects
@@ -92,12 +77,6 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>> _gameObjectsStatic;
 			/** List of scene dynamic game objects */
 			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic;
-
-			// Scene containers
-			/** List of scene materials */
-			std::vector<std::shared_ptr<Material>> _materials;
-            /** List of scene meshes */
-            std::vector<std::shared_ptr<Mesh>> _meshes;
 
 			// Scene utils
 			/** Path to the scene object */

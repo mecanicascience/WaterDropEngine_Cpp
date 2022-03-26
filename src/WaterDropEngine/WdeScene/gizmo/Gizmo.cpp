@@ -5,14 +5,39 @@
 namespace wde::scene {
 	void Gizmo::setColor(const Color& color) {
 		WDE_PROFILE_FUNCTION();
-		if (!_pipelines.contains(color.toString())) {
+		auto colorStr = color.toString();
+		if (!_pipelines.contains(colorStr)) {
 			// Create corresponding pipeline
-			_pipelines.emplace(color.toString(),
-			                   std::make_shared<GizmoMaterial>(_renderStage, color, VK_POLYGON_MODE_LINE));
+			auto path = WaterDropEngine::get().getInstance().getScene().getPath();
+			_pipelines.emplace(colorStr,
+			   std::make_unique<render::PipelineGraphics>(
+					   _renderStage, std::vector<std::string>{path + "data/shaders/common/gizmo/gizmo.vert", path + "data/shaders/common/gizmo/gizmo.frag"},
+                       std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
+                       render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
+                       VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
+
+			// Create color descriptor
+			_pipelinesData.emplace(colorStr, std::pair<std::unique_ptr<render::Buffer>, std::pair<VkDescriptorSet, VkDescriptorSetLayout>> {});
+			_pipelinesData.at(colorStr).first = std::make_unique<render::Buffer>(sizeof(GPUGizmoColorDescriptor), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			{
+				GPUGizmoColorDescriptor matData {};
+				matData.color = glm::vec4(color._r, color._g, color._b, 0.0);
+
+				void* data = _pipelinesData.at(colorStr).first->map();
+				memcpy(data, &matData, sizeof(GPUGizmoColorDescriptor));
+				_pipelinesData.at(colorStr).first->unmap();
+			}
+
+			// Create descriptor set
+			render::DescriptorBuilder::begin()
+						.bind_buffer(0, *_pipelinesData.at(color.toString()).first, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.build(_pipelinesData.at(colorStr).second.first, _pipelinesData.at(colorStr).second.second);
 
 			// Add pipeline object descriptor
-			_pipelines.at(color.toString())->addDescriptorSet(_positionsSet);
-			_pipelines.at(color.toString())->createMaterial(); // Setup pipeline
+			_pipelines.at(colorStr)->addDescriptorSet(WaterDropEngine::get().getInstance().getPipeline().getGlobalSet().second);
+			_pipelines.at(colorStr)->addDescriptorSet(_positionsSet.second);
+			_pipelines.at(colorStr)->addDescriptorSet(_pipelinesData.at(colorStr).second.second);
+			_pipelines.at(colorStr)->initialize(); // Setup pipeline
 		}
 		_currentColor = color;
 	}
@@ -20,23 +45,29 @@ namespace wde::scene {
 
 	// Shapes
 	void Gizmo::drawCube(const glm::vec3& center, const glm::vec3& rotation, const glm::vec3& size) {
-		WDE_PROFILE_FUNCTION(); // TODO
+		WDE_PROFILE_FUNCTION();
 		// Update data buffer
-		/*void *data = _positionsSetBuffer->map();
+		void *data = _positionsSetBuffer->map();
 		GPUGizmoObjectDescriptor dataStruct {};
 		dataStruct.transformWorldSpace = getMat(center, rotation, size);
 		memcpy(data, &dataStruct, sizeof(GPUGizmoObjectDescriptor));
 		_positionsSetBuffer->unmap();
 
 		// Bind pipelines and descriptors
-		WaterDropEngine::get().getInstance().getPipeline().bind(*_commandBuffer, _pipelines.at(_currentColor.toString()).get()); // Scene data (binding : 0)
-		_pipelines.at(_currentColor.toString())->bind(*_commandBuffer); // Material data (binding : 1)
+		auto colorStr = _currentColor.toString();
+		_pipelines.at(colorStr)->bind(*_commandBuffer); // Bind pipeline
+		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+		                        _pipelines.at(colorStr)->getLayout(), 0, 1,
+								&WaterDropEngine::get().getInstance().getPipeline().getGlobalSet().first, 0, nullptr); // Scene data (binding : 0)
+		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines.at(colorStr)->getLayout(),
+								1, 1, &_pipelinesData.at(colorStr).second.first, 0, nullptr); // Material (binding : 1)
+		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines.at(colorStr)->getLayout(),
+		                        2, 1, &_positionsSet.first, 0, nullptr); // Bind model (binding : 2)
 		_meshes.at("CUBE")->bind(*_commandBuffer); // Bind model data
-		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines.at(_currentColor.toString())->getPipeline().getLayout(),
-								2, 1, &_positionsSet.first, 0, nullptr); // Bind model (binding : 2)
+
 
 		// Render GO
-		_meshes.at("CUBE")->render();*/
+		_meshes.at("CUBE")->render();
 	}
 
 
@@ -53,11 +84,13 @@ namespace wde::scene {
 		// Create line pipeline
 		if (!_linesPipelines.contains(color.toString())) {
 			// Create corresponding pipeline
+			auto path = WaterDropEngine::get().getInstance().getScene().getPath();
 			_linesPipelines.emplace(color.toString(),
-                   std::make_shared<render::PipelineGraphics>(_renderStage, std::vector<std::string>{"res/shaders/common/gizmo/gizmoLines.vert", "res/shaders/common/gizmo/gizmoLines.frag"},
-															  std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
-															  render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
-															  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
+                   std::make_shared<render::PipelineGraphics>(_renderStage,
+						  std::vector<std::string>{path + "data/shaders/common/gizmo/gizmoLines.vert", path + "data/shaders/common/gizmo/gizmoLines.frag"},
+						  std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
+						  render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
+						  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
 
 			// Add pipeline object descriptor
 			_linesPipelines.at(color.toString())->addDescriptorSet(_positionsLinesSet.second);
@@ -65,15 +98,15 @@ namespace wde::scene {
 		}
 
 		// Map vertex buffer
-		_linesSetData = (Vertex*) _positionsLinesSetBufferVertices->map();
+		_linesSetData = (resource::Vertex*) _positionsLinesSetBufferVertices->map();
 
 		return this;
 	}
 
 	Gizmo* Gizmo::addLine(const glm::vec3& from, const glm::vec3& to) {
 		// Add line to vertex buffer
-		_linesSetData[_lines.size() * 2 + 0] = Vertex {from};
-		_linesSetData[_lines.size() * 2 + 1] = Vertex {to};
+		_linesSetData[_lines.size() * 2 + 0] = resource::Vertex {from};
+		_linesSetData[_lines.size() * 2 + 1] = resource::Vertex {to};
 
 		// Add lines to list
 		_lines.emplace_back(from, to);
@@ -83,8 +116,8 @@ namespace wde::scene {
 
 	Gizmo* Gizmo::addLine(const glm::vec4& from, const glm::vec4& to) {
 		// Add line to vertex buffer
-		_linesSetData[_lines.size() * 2 + 0] = Vertex {glm::vec3{from.x, from.y, from.z}};
-		_linesSetData[_lines.size() * 2 + 1] = Vertex {glm::vec3{to.x, to.y, to.z}};
+		_linesSetData[_lines.size() * 2 + 0] = resource::Vertex {glm::vec3{from.x, from.y, from.z}};
+		_linesSetData[_lines.size() * 2 + 1] = resource::Vertex {glm::vec3{to.x, to.y, to.z}};
 
 		// Add lines to list
 		_lines.emplace_back(from, to);

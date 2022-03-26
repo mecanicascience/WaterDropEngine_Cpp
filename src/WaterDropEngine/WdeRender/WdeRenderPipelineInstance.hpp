@@ -7,7 +7,6 @@
 #include "descriptors/DescriptorBuilder.hpp"
 #include "buffers/Buffer.hpp"
 #include "pipelines/Pipeline.hpp"
-#include "../WdeScene/gameObjects/materials/Material.hpp"
 #include "../WdeScene/WdeSceneInstance.hpp"
 #include "../WdeScene/gameObjects/modules/CameraModule.hpp"
 #include "../WdeScene/gameObjects/modules/MeshRendererModule.hpp"

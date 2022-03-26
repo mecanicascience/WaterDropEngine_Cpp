@@ -2,9 +2,10 @@
 
 #include "../../../wde.hpp"
 #include "../../WdeCommon/WdeUtils/Color.hpp"
-#include "../gameObjects/materials/Material.hpp"
-#include "../gameObjects/meshes/Mesh.hpp"
-#include "../gameObjects/materials/GizmoMaterial.hpp"
+#include "../../WdeRender/commands/CommandBuffer.hpp"
+#include "../../WdeResourceManager/resources/Mesh.hpp"
+#include "../../WdeRender/pipelines/PipelineGraphics.hpp"
+#include "../../WdeRender/buffers/Buffer.hpp"
 
 namespace wde::scene {
 #ifdef WDE_ENGINE_MODE_DEBUG
@@ -21,6 +22,10 @@ namespace wde::scene {
 				glm::mat4 camView {1.0f};
 				glm::mat4 camProj {1.0f};
 				glm::vec4 matColor {0.0f};
+			};
+
+			struct GPUGizmoColorDescriptor {
+				glm::vec4 color {0.0f};
 			};
 
 			~Gizmo() override;
@@ -72,8 +77,9 @@ namespace wde::scene {
 
 			// Render values
 			/** Gizmo instance color pipelines */
-			std::unordered_map<std::string, std::shared_ptr<Material>> _pipelines {};
-			std::unordered_map<std::string, std::shared_ptr<Mesh>> _meshes {};
+			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _pipelines {};
+			std::unordered_map<std::string, std::pair<std::unique_ptr<render::Buffer>, std::pair<VkDescriptorSet, VkDescriptorSetLayout>>> _pipelinesData {};
+			std::unordered_map<std::string, std::shared_ptr<resource::Mesh>> _meshes {};
 			/** The current session lines */
 			std::vector<std::pair<glm::vec3, glm::vec3>> _lines {};
 			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _linesPipelines {};
@@ -87,7 +93,7 @@ namespace wde::scene {
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _positionsLinesSet {};
 			std::shared_ptr<render::Buffer> _positionsLinesSetBuffer {};
 			std::shared_ptr<render::Buffer> _positionsLinesSetBufferVertices {};
-			Vertex* _linesSetData = nullptr;
+			resource::Vertex* _linesSetData = nullptr;
 
 
 		private:
