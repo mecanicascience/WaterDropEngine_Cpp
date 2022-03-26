@@ -7,7 +7,7 @@ namespace wde::resource {
 	class Resource {
 		public:
 			enum ResourceType {
-				SHADER
+				MATERIAL, SHADER, IMAGE, MESH
 			};
 
 			// Core methods

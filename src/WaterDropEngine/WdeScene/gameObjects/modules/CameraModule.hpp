@@ -9,6 +9,8 @@ namespace wde::scene {
 	class CameraModule : public Module {
 		public:
 			explicit CameraModule(GameObject& gameObject);
+			explicit CameraModule(GameObject& gameObject, const std::string& data);
+
 			void tick() override;
 			void drawGUI() override;
 			void drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) override;

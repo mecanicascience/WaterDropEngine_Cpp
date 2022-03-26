@@ -10,6 +10,7 @@
 #include "../render/RenderPass.hpp"
 #include "../../WdeScene/gameObjects/meshes/Vertex.hpp"
 #include "../../WdeResourceManager/resources/Shader.hpp"
+#include "../../WdeResourceManager/resources/Mesh.hpp"
 
 namespace wde::render {
 	class PipelineGraphics : public Pipeline {
@@ -39,7 +40,7 @@ namespace wde::render {
 			 * @param cullingMode The pipeline culling mode (default VK_CULL_MODE_BACK_BIT (culling enabled for faces backing their faces), VK_CULL_MODE_NONE, VK_CULL_MODE_FRONT_BIT)
 			 * @param normalOrientation How the normals will be computed from the indices order (default VK_FRONT_FACE_COUNTER_CLOCKWISE)
 			 */
-			explicit PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, std::vector<scene::VertexInput> vertexInputs = {},
+			explicit PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, std::vector<resource::VertexInput> vertexInputs = {},
 			                          Mode pipelineMode = Mode::Polygon, Depth depthMode = PipelineGraphics::Depth::ReadWrite,
 			                          VkPrimitiveTopology vertexTopology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, VkPolygonMode polygonDrawMode = VK_POLYGON_MODE_FILL,
 			                          VkCullModeFlags cullingMode = VK_CULL_MODE_BACK_BIT, VkFrontFace normalOrientation = VK_FRONT_FACE_COUNTER_CLOCKWISE);
@@ -77,7 +78,7 @@ namespace wde::render {
 		private:
 			// Pipeline description parameters
 			std::vector<std::string> _shaderStages;
-            std::vector<scene::VertexInput> _vertexInputs;
+            std::vector<resource::VertexInput> _vertexInputs;
 			Mode _pipelineMode;
 			Depth _depthMode;
 			VkPrimitiveTopology _vertexTopology;

@@ -77,8 +77,8 @@ namespace wde::scene {
 
 		// Create batches data
 		CPURenderBatch currentBatch {};
-		std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
-		std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
+		std::shared_ptr<resource::Mesh> lastGOMeshRef = nullptr;
+		std::shared_ptr<resource::Material> lastGOMaterialRef = nullptr;
 
 		// Render GPU Batches
 		void *gpuBatchesData = _gpuRenderBatches->map();
@@ -206,6 +206,9 @@ namespace wde::scene {
 
 	void CullingInstance::cull(const std::shared_ptr<GameObject> &cullingCamera) {
 		WDE_PROFILE_FUNCTION();
+		if (cullingCamera == nullptr)
+			return;
+
 		// Update scene
 		updateScene(cullingCamera);
 
@@ -237,7 +240,7 @@ namespace wde::scene {
 		// ------
 
 		// Render batches
-		scene::Material* lastMaterial = nullptr;
+		resource::Material* lastMaterial = nullptr;
 		int goActiveID = 0;
 		for (auto& batch : _renderBatches) {
 			// If batch entirely culled, continue

@@ -8,6 +8,8 @@ namespace wde::scene {
 		public:
 			explicit TransformModule(GameObject& gameObject);
 			~TransformModule() override;
+
+			void setConfig(const std::string& data);
 			void tick() override;
 			void drawGUI() override;
 

@@ -19,7 +19,7 @@ namespace wde::scene {
 					"res/shaders/common/texture/unlit.frag"
 			}, polygonMode) {
 				// Create texture
-				_texture = std::make_unique<Texture2D>(path);
+				_texture = std::make_unique<render::Texture2D>(path);
 
 				// Create descriptor set
 				const VkDescriptorImageInfo imageDescriptor = _texture->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
@@ -33,7 +33,7 @@ namespace wde::scene {
 
 
 		private:
-			std::unique_ptr<Texture2D> _texture {};
+			std::unique_ptr<render::Texture2D> _texture {};
 	};
 }
 

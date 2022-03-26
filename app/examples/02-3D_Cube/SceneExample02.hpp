@@ -13,7 +13,7 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample02 : public WdeSceneInstance {
 		void setup() override {
-			// Viewing camera
+			/*// Viewing camera
 			auto camera = createGameObject("Viewing Camera");
 			auto camModule = camera->addModule<CameraModule>();
 			camModule->setAsActive();
@@ -31,7 +31,7 @@ namespace examples {
 
 			auto meshRenderer = object3D->addModule<MeshRendererModule>();
 			meshRenderer->setMaterial(colorMatRed);
-			meshRenderer->setMesh(cubeMesh);
+			meshRenderer->setMesh(cubeMesh);*/
 		}
 	};
 }

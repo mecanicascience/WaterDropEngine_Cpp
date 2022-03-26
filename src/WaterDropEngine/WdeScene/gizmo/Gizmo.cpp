@@ -20,9 +20,9 @@ namespace wde::scene {
 
 	// Shapes
 	void Gizmo::drawCube(const glm::vec3& center, const glm::vec3& rotation, const glm::vec3& size) {
-		WDE_PROFILE_FUNCTION();
+		WDE_PROFILE_FUNCTION(); // TODO
 		// Update data buffer
-		void *data = _positionsSetBuffer->map();
+		/*void *data = _positionsSetBuffer->map();
 		GPUGizmoObjectDescriptor dataStruct {};
 		dataStruct.transformWorldSpace = getMat(center, rotation, size);
 		memcpy(data, &dataStruct, sizeof(GPUGizmoObjectDescriptor));
@@ -36,7 +36,7 @@ namespace wde::scene {
 								2, 1, &_positionsSet.first, 0, nullptr); // Bind model (binding : 2)
 
 		// Render GO
-		_meshes.at("CUBE")->render();
+		_meshes.at("CUBE")->render();*/
 	}
 
 
@@ -55,7 +55,7 @@ namespace wde::scene {
 			// Create corresponding pipeline
 			_linesPipelines.emplace(color.toString(),
                    std::make_shared<render::PipelineGraphics>(_renderStage, std::vector<std::string>{"res/shaders/common/gizmo/gizmoLines.vert", "res/shaders/common/gizmo/gizmoLines.frag"},
-															  std::vector<scene::VertexInput>{ Vertex::getDescriptions() },
+															  std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
 															  render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
 															  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
 

@@ -1,8 +1,7 @@
 {
     "type" : "gameObject",
-    "uuid" : 1,
+    "name" : "Palmier Mesh",
     "data" : {
-        "name" : "Palmier Mesh",
         "active" : true,
         "static" : false
     },
@@ -17,10 +16,10 @@
             }
         },
         {
-            "name" : "Mesh Renderer",
+            "name" : "MeshRenderer",
             "data" : {
-                "meshUUID" : 0,
-                "materialUUID" : 0
+                "mesh" : "fougere.json",
+                "material" : "fougere.json"
             }
         }
     ]

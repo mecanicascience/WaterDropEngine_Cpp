@@ -154,7 +154,7 @@ namespace wde::render {
 		setStructure(_structure);
 	}
 
-	void WdeRenderPipelineInstance::bind(CommandBuffer &commandBuffer, scene::Material *material) const {
+	void WdeRenderPipelineInstance::bind(CommandBuffer &commandBuffer, resource::Material *material) const {
 		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 		                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
 	}

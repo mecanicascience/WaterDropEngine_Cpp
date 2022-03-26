@@ -1,0 +1,12 @@
+{
+    "type" : "image",
+    "name" : "fougere",
+    "data" : {
+        "type" : "2D",
+        "path" : "fougere.png",
+        "format" : 43,
+        "usage_flags" : 4,
+        "filter" : 1,
+        "adress_mode" : 0
+    }
+}

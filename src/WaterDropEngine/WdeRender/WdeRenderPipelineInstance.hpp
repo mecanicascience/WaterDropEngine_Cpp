@@ -51,7 +51,7 @@ namespace wde::render {
 			 * @param commandBuffer
 			 * @param material
 			 */
-			void bind(CommandBuffer& commandBuffer, scene::Material* material) const;
+			void bind(CommandBuffer& commandBuffer, resource::Material* material) const;
 
 
 			// Getters and setters

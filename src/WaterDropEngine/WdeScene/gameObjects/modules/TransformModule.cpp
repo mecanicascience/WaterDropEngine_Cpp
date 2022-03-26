@@ -9,6 +9,25 @@ namespace wde::scene {
 		_childrenIDs.clear();
 	}
 
+	void TransformModule::setConfig(const std::string &data) {
+		auto dataJ = json::parse(data);
+		position = glm::vec3 {
+			dataJ["position"][0].get<float>(),
+			dataJ["position"][1].get<float>(),
+			dataJ["position"][2].get<float>()
+		};
+		rotation = glm::vec3 {
+			dataJ["rotation"][0].get<float>(),
+			dataJ["rotation"][1].get<float>(),
+			dataJ["rotation"][2].get<float>()
+		};
+		scale = glm::vec3 {
+			dataJ["scale"][0].get<float>(),
+			dataJ["scale"][1].get<float>(),
+			dataJ["scale"][2].get<float>()
+		};
+	}
+
 	void TransformModule::tick() {
 		WDE_PROFILE_FUNCTION();
 		auto newTransform = getTransform();

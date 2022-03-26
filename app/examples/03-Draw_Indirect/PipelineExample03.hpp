@@ -13,8 +13,8 @@ namespace examples {
 			 * Stores a rendering batch
 			 */
 			struct RenderBatch {
-				scene::Material* material {nullptr}; // Material of the batch
-				scene::Mesh* mesh {nullptr}; // Mesh of the batch
+				resource::Material* material {nullptr}; // Material of the batch
+				resource::Mesh* mesh {nullptr}; // Mesh of the batch
 				int firstIndex {-1}; // Index of the first object in the batch
 				int indexCount {0}; // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
 			};
@@ -52,8 +52,8 @@ namespace examples {
 					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
 					RenderBatch currentBatch {};
 
-					std::shared_ptr<scene::Mesh> lastGOMeshRef = nullptr;
-					std::shared_ptr<scene::Material> lastGOMaterialRef = nullptr;
+					std::shared_ptr<resource::Mesh> lastGOMeshRef = nullptr;
+					std::shared_ptr<resource::Material> lastGOMaterialRef = nullptr;
 
 					// Map Render GO Commands
 					void *renderGOData = _indirectCommandsBuffer->map();
@@ -138,7 +138,7 @@ namespace examples {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
 						// Render batches
-						scene::Material* lastMaterial = nullptr;
+						resource::Material* lastMaterial = nullptr;
 						for (auto& batch : renderBatches) {
 							// Different material binding
 							if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {

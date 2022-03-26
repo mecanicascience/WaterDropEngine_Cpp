@@ -4,6 +4,12 @@
 namespace wde::scene {
 	ControllerModule::ControllerModule(GameObject &gameObject) : Module(gameObject, "Keyboard Controller", ICON_FA_KEYBOARD) {}
 
+	ControllerModule::ControllerModule(GameObject &gameObject, const std::string& data) : Module(gameObject, "Keyboard Controller", ICON_FA_KEYBOARD) {
+		auto dataJ = json::parse(data);
+		_moveSpeed = dataJ["moveSpeed"].get<float>();
+		_lookSpeed = dataJ["lookSpeed"].get<float>();
+	}
+
 	void ControllerModule::tick()  {
 		// Only active if this game object has a camera, and the camera is selected
 		auto cameraMod = WaterDropEngine::get().getInstance().getScene().getActiveCamera();

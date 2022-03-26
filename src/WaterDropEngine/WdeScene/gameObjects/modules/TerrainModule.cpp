@@ -14,7 +14,7 @@ namespace wde::scene {
 
 	TerrainModule::TerrainModule(GameObject &gameObject, const std::string& heightMap, float height, uint32_t precision, glm::vec4 gameObjectDimensions)
 			: Module(gameObject, "Terrain Renderer", ICON_FA_MAP) {
-		// Create buffer from heightmap
+		/*// Create buffer from heightmap
 		auto terrainMesh = WaterDropEngine::get().getInstance().getScene().createMesh<Mesh>("Terrain mesh");
 		terrainMesh->getVertexBuffer() = std::make_shared<render::Buffer>(sizeof(Vertex) * precision * precision,
 												 VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -63,6 +63,6 @@ namespace wde::scene {
 		auto meshModule = _gameObject.addModule<MeshRendererModule>();
 		auto terrainMaterial = WaterDropEngine::get().getInstance().getScene().createMaterial<ShadowMaterial>(std::pair<int, int>{0, 0}, Color::WHITE, VK_POLYGON_MODE_FILL);
 		meshModule->setMaterial(terrainMaterial);
-		meshModule->setMesh(terrainMesh);
+		meshModule->setMesh(terrainMesh);*/
 	}
 }

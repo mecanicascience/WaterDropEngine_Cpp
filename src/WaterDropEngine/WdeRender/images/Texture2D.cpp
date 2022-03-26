@@ -1,13 +1,13 @@
 #include "Texture2D.hpp"
 
-#define STB_IMAGE_IMPLEMENTATION
+/*#define STB_IMAGE_IMPLEMENTATION
 #include "../../../../lib/stb/stb_image.h"
-#include "../../WaterDropEngine.hpp"
+#include "../../WaterDropEngine.hpp"*/
 
 namespace wde::render {
 	Texture2D::Texture2D(glm::vec2 imageExtent, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAddressMode)
 			: _filepath(), _textureFormat(textureFormat), _imageExtent(VkExtent2D {static_cast<uint32_t>(imageExtent.x), static_cast<uint32_t>(imageExtent.y)}), _textureUsage(textureUsage) {
-		WDE_PROFILE_FUNCTION();
+		/*WDE_PROFILE_FUNCTION();
 		// Create the texture image
 		createTextureImage();
 
@@ -15,12 +15,12 @@ namespace wde::render {
 		_textureImage->createImageView();
 
 		// Create the texture sampler
-		createTextureSampler(textureFilter, textureAddressMode);
+		createTextureSampler(textureFilter, textureAddressMode);*/
 	}
 
 	Texture2D::Texture2D(std::string filepath, VkFormat textureFormat, VkImageUsageFlags textureUsage, VkFilter textureFilter, VkSamplerAddressMode textureAddressMode)
 			: _filepath(std::move(filepath)), _textureFormat(textureFormat), _imageExtent(VkExtent2D {0, 0}), _textureUsage(textureUsage) {
-		WDE_PROFILE_FUNCTION();
+		/*WDE_PROFILE_FUNCTION();
 		// Create the texture image
 		createTextureImage();
 
@@ -28,19 +28,19 @@ namespace wde::render {
 		_textureImage->createImageView();
 
 		// Create the texture sampler
-		createTextureSampler(textureFilter, textureAddressMode);
+		createTextureSampler(textureFilter, textureAddressMode);*/
 	}
 
 	Texture2D::~Texture2D() {
-		WDE_PROFILE_FUNCTION();
+		/*WDE_PROFILE_FUNCTION();
 		// Destroy texture sampler
-		vkDestroySampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _textureSampler, nullptr);
+		vkDestroySampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _textureSampler, nullptr);*/
 	};
 
 
 	// Core functions
 	void Texture2D::createTextureImage() {
-		WDE_PROFILE_FUNCTION();
+		/*WDE_PROFILE_FUNCTION();
 		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice();
 
 		// Load the texture
@@ -212,11 +212,11 @@ namespace wde::render {
 				transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL);
 			else // Default (transition to image sampled and other)
 				transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
-		}
+		}*/
 	}
 
 	void Texture2D::createTextureSampler(VkFilter sampler, VkSamplerAddressMode addressMode) {
-		WDE_PROFILE_FUNCTION();
+		/*WDE_PROFILE_FUNCTION();
 		// Create samples
 		VkSamplerCreateInfo samplerInfo {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -252,7 +252,7 @@ namespace wde::render {
 
 		// Create sampler
 		if (vkCreateSampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
-			throw WdeException(LogChannel::RENDER, "Failed to create texture sampler.");
+			throw WdeException(LogChannel::RENDER, "Failed to create texture sampler.");*/
 	}
 
 
@@ -260,7 +260,7 @@ namespace wde::render {
 
 	// Helper
 	void Texture2D::transitionImageLayout(Image &image, VkImageLayout oldLayout, VkImageLayout newLayout) {
-		// Create a temporary command buffer
+		/*// Create a temporary command buffer
 		CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
 		commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
 
@@ -347,14 +347,15 @@ namespace wde::render {
 		commandBuffer.waitForQueueIdle();
 
 		// Set new layout info
-		image.setLayout(newLayout);
+		image.setLayout(newLayout);*/
 	}
 
 	unsigned char* Texture2D::getImagePixels(const std::string& image, int& width, int& height, int channelsCount) {
-		return stbi_load(image.c_str(), &width, &height, nullptr, channelsCount);
+		/*return stbi_load(image.c_str(), &width, &height, nullptr, channelsCount);*/
+		return NULL;
 	}
 
 	void Texture2D::freeImagePixels(unsigned char* pixels) {
-		stbi_image_free(pixels);
+		/*stbi_image_free(pixels);*/
 	}
 }

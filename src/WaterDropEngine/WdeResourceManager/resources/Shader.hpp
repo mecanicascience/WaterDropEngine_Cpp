@@ -2,19 +2,13 @@
 
 #include <utility>
 #include "../Resource.hpp"
+#include "../../WdeCommon/WdeFiles/WdeFileUtils.hpp"
 
 namespace wde::resource {
 	class Shader : public Resource {
 		public:
-			explicit Shader(const std::string& path) : Resource(path, ResourceType::SHADER) {
-				WDE_PROFILE_FUNCTION();
-				logger::log(LogLevel::DEBUG, LogChannel::RES) << "Loading shader '" << path << "'." << logger::endl;
-
-				// Create shader module
-				std::vector<char> shaderContent = WdeFileUtils::readFile(path + ".spv");
-				_shaderModule = render::ShaderUtils::createShaderModule(shaderContent);
-				_shaderStageType = render::ShaderUtils::getShaderStage(path);
-			}
+			explicit Shader(const std::string& path);
+			~Shader();
 
 
 			// Shader description

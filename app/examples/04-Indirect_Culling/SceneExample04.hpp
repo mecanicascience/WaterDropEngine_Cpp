@@ -14,7 +14,7 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample04 : public WdeSceneInstance {
 		void setup() override {
-			// VIEWING CAMERA
+			/*// VIEWING CAMERA
 			{
 				WDE_PROFILE_SCOPE("examples::SceneExample02::viewingCamera");
 				auto camera = createGameObject("Viewing Camera");
@@ -71,7 +71,7 @@ namespace examples {
 				auto meshRenderer = object3D->addModule<MeshRendererModule>();
 				meshRenderer->setMaterial(colorMatBlue);
 				meshRenderer->setMesh(cubeMesh);
-			}
+			}*/
 		}
 	};
 }

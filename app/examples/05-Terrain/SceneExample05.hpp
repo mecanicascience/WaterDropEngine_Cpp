@@ -16,7 +16,7 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample05 : public WdeSceneInstance {
 		void setup() override {
-			// Terrain game object
+			/*// Terrain game object
 			{
 				auto terrainGO = createGameObject("Test Terrain");
 				terrainGO->transform->scale = {1.0f, 21.0f, 1.0f};
@@ -57,7 +57,7 @@ namespace examples {
 				auto skyboxMeshRenderer = skyboxGO->addModule<MeshRendererModule>();
 				skyboxMeshRenderer->setMaterial(skyboxMaterial);
 				skyboxMeshRenderer->setMesh(skyboxMesh);
-			}
+			}*/
 		}
 	};
 }

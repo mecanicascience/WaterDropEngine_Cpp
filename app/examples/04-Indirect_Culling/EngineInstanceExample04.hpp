@@ -10,7 +10,7 @@ namespace examples {
 		public:
 			void initialize() override {
 				setRenderPipeline(std::make_shared<PipelineExample04>());
-				setScene(std::make_shared<SceneExample04>());
+				//setScene(std::make_shared<SceneExample04>());
 			}
 
 			void update() override { }

@@ -72,6 +72,8 @@ namespace wde {
 				std::thread t ([](WdeInstance* instanceRef) {instanceRef->initialize();}, &instance);
 				t.join();
 
+				// Load scene
+				_scene->loadScene("res/demo_scene/"); // TODO
 				_gui->addObserver(instance.getScenePointer(), true);
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;

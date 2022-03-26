@@ -4,7 +4,7 @@
 #include "../../WaterDropEngine.hpp"
 
 namespace wde::render {
-	PipelineGraphics::PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, std::vector<scene::VertexInput> vertexInputs, Mode pipelineMode, Depth depthMode, VkPrimitiveTopology vertexTopology,
+	PipelineGraphics::PipelineGraphics(std::pair<int, int> renderTarget, std::vector<std::string> shaderStages, std::vector<resource::VertexInput> vertexInputs, Mode pipelineMode, Depth depthMode, VkPrimitiveTopology vertexTopology,
 									   VkPolygonMode polygonDrawMode, VkCullModeFlags cullingMode, VkFrontFace normalOrientation) :
 			_shaderStages(std::move(shaderStages)), _vertexTopology(vertexTopology), _vertexInputs(std::move(vertexInputs)), _pipelineMode(pipelineMode), _depthMode(depthMode),
 			_polygonDrawMode(polygonDrawMode), _cullingMode(cullingMode), _renderTarget(std::move(renderTarget)),
@@ -35,12 +35,8 @@ namespace wde::render {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up graphics pipeline." << logger::endl;
 
-		// Destroy shader modules
-		auto device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
-		for (const auto &shaderModule : _shaderModules)
-			vkDestroyShaderModule(device, shaderModule, nullptr);
-
 		// Destroy pipeline
+		auto device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
 		vkDestroyPipeline(device, _pipeline, nullptr);
 		vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
 

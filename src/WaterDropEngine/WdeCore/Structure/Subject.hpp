@@ -36,7 +36,8 @@ namespace wde::core {
 			 */
 			void notify(const Event& event) const {
 				for (auto& obs : _observers)
-					obs->onNotify(event);
+					if (obs != nullptr)
+						obs->onNotify(event);
 			}
 
 

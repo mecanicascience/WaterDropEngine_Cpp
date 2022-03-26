@@ -9,6 +9,7 @@ namespace wde::scene {
 		public:
 			// Constructors
 			explicit ControllerModule(GameObject &gameObject);
+			explicit ControllerModule(GameObject &gameObject, const std::string& data);
 
 			// Core functions
 			void tick() override;

@@ -26,6 +26,10 @@
 #include "WaterDropEngine/WdeCommon/WdeException/WdeException.hpp"
 #include "WaterDropEngine/WdeCommon/WdeLogger/Instrumentation.hpp"
 
+// Json
+#include "nlohmann/json.hpp"
+using json = nlohmann::json;
+
 // ImGUI includes
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/backends/imgui_impl_glfw.h"

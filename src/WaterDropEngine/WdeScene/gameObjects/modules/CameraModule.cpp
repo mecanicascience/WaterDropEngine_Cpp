@@ -11,6 +11,33 @@ namespace wde::scene {
 			setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
 	}
 
+	CameraModule::CameraModule(GameObject &gameObject, const std::string& data) : Module(gameObject, "Camera", ICON_FA_CAMERA) {
+		auto dataJ = json::parse(data);
+		// Set data
+		_projectionType = dataJ["projectionType"].get<int>();
+		_bottomCorner = glm::vec3 {
+			dataJ["orthographic"]["bottom"][0].get<float>(),
+			dataJ["orthographic"]["bottom"][1].get<float>(),
+			dataJ["orthographic"]["bottom"][2].get<float>()
+		};
+		_topCorner = glm::vec3 {
+				dataJ["orthographic"]["top"][0].get<float>(),
+				dataJ["orthographic"]["top"][1].get<float>(),
+				dataJ["orthographic"]["top"][2].get<float>()
+		};
+		_fov = dataJ["perspective"]["fov"].get<float>();
+		_nearPlane = dataJ["perspective"]["nearPlane"].get<float>();
+		_farPlane = dataJ["perspective"]["farPlane"].get<float>();
+
+		// Setup initial projection type
+		auto aspect = WaterDropEngine::get().getRender().getInstance().getSwapchain().getAspectRatio();
+		if (_projectionType == 0)
+			setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
+		else
+			setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+	}
+
+
 	void CameraModule::tick() {
 		WDE_PROFILE_FUNCTION();
 		// Update camera object based on it's game object transform associated position and rotation

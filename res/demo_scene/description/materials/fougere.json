@@ -1,0 +1,24 @@
+{
+    "type" : "material",
+    "name" : "Fougere Material",
+    "data" : {
+        "shaders" : [
+            "common/texture/unlit.vert",
+            "common/texture/unlit.frag"
+        ],
+        "renderStage" : {
+            "pass" : 0,
+            "subpass" : 0
+        },
+        "polygonMode" : "fill",
+        "descriptor" : {
+            "0" : {
+                "type" : "image",
+                "stages" : [ "frag" ],
+                "data" : {
+                    "path" : "fougere.json"
+                }
+            }
+        }
+    }
+}

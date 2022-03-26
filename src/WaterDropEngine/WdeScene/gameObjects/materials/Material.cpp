@@ -10,7 +10,7 @@ namespace wde::scene {
 			  _pipeline(std::make_unique<render::PipelineGraphics>(
 					  renderStage,
 					  shaders, // Shaders
-					  std::vector<VertexInput>{ Vertex::getDescriptions() }, // Vertices
+					  std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() }, // Vertices
 					  render::PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
 					  render::PipelineGraphics::Depth::ReadWrite,    // Do not use depth
 					  VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles

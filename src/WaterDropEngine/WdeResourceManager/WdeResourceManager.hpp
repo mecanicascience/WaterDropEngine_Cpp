@@ -53,7 +53,7 @@ namespace wde::resource {
 
 
 		private:
-			/** Resources list */
+			/** Resources list by path */
 			std::unordered_map<std::string, std::shared_ptr<Resource>> _resources {};
 	};
 }

@@ -50,10 +50,6 @@ namespace wde::scene {
 		    std::string getName() const { return _name; }
 		    int getIndexCount() const { return static_cast<int>(_indexCount); }
 	        void setIndexCount(uint32_t count) { _indexCount = count; }
-	        std::vector<Vertex>& getVertices() { return _vertices; }
-	        std::vector<uint32_t>& getIndices() { return _indices; }
-	        std::shared_ptr<render::Buffer>& getVertexBuffer() { return _vertexBuffer; }
-	        std::shared_ptr<render::Buffer>& getIndexBuffer() { return _indexBuffer; }
 		    glm::vec4 getCollisionSphere() const { return _occlusionSphere; }
 
 

@@ -1,9 +1,0 @@
-{
-    "type" : "mesh",
-    "uuid" : 0,
-    "data" : {
-        "name" : "Fougere",
-        "format" : "obj",
-        "path" : "fougere.obj"
-    }
-}

@@ -1,0 +1,8 @@
+{
+    "type" : "scene",
+    "name" : "Demo Scene",
+    "data" : {
+        "gameObjects" : [ 0, 1 ],
+        "materials" : [ "fougere.json" ]
+    }
+}

@@ -1,0 +1,9 @@
+{
+    "type" : "mesh",
+    "name" : "Fougere",
+    "data" : {
+        "type" : "obj",
+        "path" : "fougere.obj",
+        "recalculateNormals" : false
+    }
+}

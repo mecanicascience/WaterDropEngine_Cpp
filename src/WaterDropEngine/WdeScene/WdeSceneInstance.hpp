@@ -5,6 +5,7 @@
 #include "../WdeCore/Structure/Observer.hpp"
 #include "gameObjects/materials/Material.hpp"
 #include "gameObjects/meshes/Mesh.hpp"
+#include "gameObjects/modules/CameraModule.hpp"
 
 namespace wde::scene {
 	/**
@@ -28,6 +29,8 @@ namespace wde::scene {
 
 
 			// Getters and setters
+			void setPath(const std::string& path) { _scenePath = path; }
+			const std::string& getPath() const { return _scenePath; }
 			std::vector<std::shared_ptr<Material>>& getMaterials() { return _materials; }
 			const std::shared_ptr<GameObject>& getGameObject(int goID) { return _gameObjects[goID]; }
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
@@ -37,6 +40,14 @@ namespace wde::scene {
 				if (_selectedGameObjectID == -1)
 					return nullptr;
 				return _gameObjects[_selectedGameObjectID];
+			}
+			std::shared_ptr<GameObject> getFirstGameCamera() const {
+				for (auto& go : _gameObjects) {
+					auto mod = go->getModule<CameraModule>();
+					if (mod != nullptr && mod->getName() != "Editor Camera")
+						return go;
+				}
+				return nullptr;
 			}
 			std::shared_ptr<GameObject> getActiveCamera() const {
 				if (_activeCameraID == -1)
@@ -89,6 +100,8 @@ namespace wde::scene {
             std::vector<std::shared_ptr<Mesh>> _meshes;
 
 			// Scene utils
+			/** Path to the scene object */
+			std::string _scenePath;
 			/** Selected game object ID for GUI (default : 0) */
 			int _selectedGameObjectID = 0;
 

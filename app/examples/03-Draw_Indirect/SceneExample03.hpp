@@ -13,7 +13,7 @@ using namespace wde::scene;
 namespace examples {
 	class SceneExample03 : public WdeSceneInstance {
 		void setup() override {
-			// MATERIALS
+			/*// MATERIALS
 			auto colorMatRed   = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {1.0f, 0.0f, 0.0}, VK_POLYGON_MODE_FILL);
 			auto colorMatGreen = createMaterial<ColorMaterial>(std::pair<int, int>{0, 0}, Color {0.0f, 1.0f, 0.0}, VK_POLYGON_MODE_LINE);
 
@@ -53,7 +53,7 @@ namespace examples {
 					meshRenderer->setMaterial(colorMatRed);
 					meshRenderer->setMesh(cubeMesh);
 				}
-			}
+			}*/
 		}
 	};
 }

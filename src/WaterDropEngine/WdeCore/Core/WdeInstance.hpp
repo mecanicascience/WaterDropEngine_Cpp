@@ -36,9 +36,6 @@ namespace wde {
 			std::shared_ptr<scene::WdeSceneInstance>& getScenePointer() { return _scene; }
 
 
-
-
-		protected:
 			/** Change the engine rendering pipeline instance */
 			void setRenderPipeline(std::shared_ptr<render::WdeRenderPipelineInstance> pipeline);
 			/** Change the engine rendering scene instance */

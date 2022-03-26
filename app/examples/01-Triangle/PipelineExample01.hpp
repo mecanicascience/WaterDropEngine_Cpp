@@ -36,7 +36,7 @@ namespace examples {
 							"res/shaders/examples/01-Triangle/triangle.vert",
 							"res/shaders/examples/01-Triangle/triangle.frag"
 						}, // Shaders
-                        std::vector<scene::VertexInput>{}, // No vertices provided
+                        std::vector<resource::VertexInput>{}, // No vertices provided
 						PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
 						PipelineGraphics::Depth::None,    // Do not use depth
 						VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles

@@ -3,7 +3,6 @@
 #include <utility>
 
 #include "../../../wde.hpp"
-#include "../gameObjects/materials/Material.hpp"
 #include "../gameObjects/meshes/Mesh.hpp"
 #include "../gameObjects/modules/MeshRendererModule.hpp"
 #include "../../WdeRender/pipelines/PipelineCompute.hpp"
@@ -19,8 +18,8 @@ namespace wde::scene {
 			// Render batches
 			/** Stores a rendering batch on the CPU */
 			struct CPURenderBatch {
-				Material *material;     // Material of the batch
-				Mesh *mesh;             // Mesh of the batch
+				resource::Material *material;     // Material of the batch
+				resource::Mesh *mesh;             // Mesh of the batch
 				uint32_t firstIndex ;   // Index of the first object in the batch
 				uint32_t indexCount;    // Number of objects in the batch (batch goes from firstIndex to firstIndex + indexCount)
 				uint32_t instanceCount; // Number of objects to be drawn after culling (batch goes from firstIndex to firstIndex + instanceCount)
