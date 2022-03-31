@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../../../../wde.hpp"
-#include "../../gizmo/Gizmo.hpp"
+#include "../../../wde.hpp"
+#include "../gizmo/Gizmo.hpp"
 
 namespace wde::scene {
 	class GameObject;

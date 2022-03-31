@@ -3,9 +3,9 @@
 #include <utility>
 
 #include "../../../wde.hpp"
-#include "../gameObjects/modules/MeshRendererModule.hpp"
+#include "../modules/MeshRendererModule.hpp"
 #include "../../WdeRender/pipelines/PipelineCompute.hpp"
-#include "../gameObjects/modules/CameraModule.hpp"
+#include "../modules/CameraModule.hpp"
 
 namespace wde::scene {
 	/**

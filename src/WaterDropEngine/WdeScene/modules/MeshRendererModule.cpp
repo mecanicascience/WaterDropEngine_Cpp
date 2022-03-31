@@ -1,5 +1,5 @@
 #include "MeshRendererModule.hpp"
-#include "../../../WaterDropEngine.hpp"
+#include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	MeshRendererModule::MeshRendererModule(GameObject &gameObject) : Module(gameObject, "Mesh Renderer", ICON_FA_GHOST) {}

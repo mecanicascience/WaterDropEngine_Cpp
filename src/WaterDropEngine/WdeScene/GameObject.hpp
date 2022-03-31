@@ -2,12 +2,12 @@
 
 #include <utility>
 
-#include "../../../wde.hpp"
-#include "../../WdeCore/Structure/Observer.hpp"
+#include "../../wde.hpp"
+#include "../WdeCore/Structure/Observer.hpp"
 #include "modules/TransformModule.hpp"
-#include "../../WdeRender/commands/CommandBuffer.hpp"
-#include "../../WdeRender/buffers/Buffer.hpp"
-#include "../../WdeRender/descriptors/DescriptorBuilder.hpp"
+#include "../WdeRender/commands/CommandBuffer.hpp"
+#include "../WdeRender/buffers/Buffer.hpp"
+#include "../WdeRender/descriptors/DescriptorBuilder.hpp"
 
 namespace wde::scene {
 	/**

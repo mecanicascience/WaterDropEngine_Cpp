@@ -1,5 +1,5 @@
 #include "ControllerModule.hpp"
-#include "../../../WaterDropEngine.hpp"
+#include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	ControllerModule::ControllerModule(GameObject &gameObject) : Module(gameObject, "Keyboard Controller", ICON_FA_KEYBOARD) {}

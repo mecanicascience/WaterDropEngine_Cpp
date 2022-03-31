@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Module.hpp"
-#include "../../../WdeGUI/GUIRenderer.hpp"
+#include "../../WdeGUI/GUIRenderer.hpp"
 
 namespace wde::scene {
 	class TransformModule : public Module {

@@ -8,8 +8,8 @@
 #include "buffers/Buffer.hpp"
 #include "pipelines/Pipeline.hpp"
 #include "../WdeScene/WdeSceneInstance.hpp"
-#include "../WdeScene/gameObjects/modules/CameraModule.hpp"
-#include "../WdeScene/gameObjects/modules/MeshRendererModule.hpp"
+#include "../WdeScene/modules/CameraModule.hpp"
+#include "../WdeScene/modules/MeshRendererModule.hpp"
 
 namespace wde::render {
 	/**

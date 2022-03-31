@@ -1,9 +1,9 @@
 #pragma once
 
 #include "../../wde.hpp"
-#include "gameObjects/GameObject.hpp"
+#include "GameObject.hpp"
 #include "../WdeCore/Structure/Observer.hpp"
-#include "gameObjects/modules/CameraModule.hpp"
+#include "modules/CameraModule.hpp"
 
 namespace wde::scene {
 	/**

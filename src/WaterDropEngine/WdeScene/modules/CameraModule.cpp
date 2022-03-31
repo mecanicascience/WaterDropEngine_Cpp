@@ -1,5 +1,5 @@
 #include "CameraModule.hpp"
-#include "../../../WaterDropEngine.hpp"
+#include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	CameraModule::CameraModule(GameObject &gameObject) : Module(gameObject, "Camera", ICON_FA_CAMERA) {
@@ -9,6 +9,10 @@ namespace wde::scene {
 			setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
 		else
 			setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+
+		// If not camera as active, set this a default active camera
+		if (WaterDropEngine::get().getInstance().getScene().getActiveCamera() == nullptr)
+			setAsActive();
 	}
 
 	CameraModule::CameraModule(GameObject &gameObject, const std::string& data) : Module(gameObject, "Camera", ICON_FA_CAMERA) {
@@ -35,6 +39,10 @@ namespace wde::scene {
 			setOrthographicProjection(aspect * _bottomCorner.x, aspect * _topCorner.x, _bottomCorner.y, _topCorner.y, _bottomCorner.z, _topCorner.z);
 		else
 			setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
+
+		// If not camera as active, set this a default active camera
+		if (WaterDropEngine::get().getInstance().getScene().getActiveCamera() == nullptr)
+			setAsActive();
 	}
 
 

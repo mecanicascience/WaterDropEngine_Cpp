@@ -3,8 +3,8 @@
 #include "Module.hpp"
 
 #include <utility>
-#include "../../../WdeResourceManager/resources/Material.hpp"
-#include "../../../WdeResourceManager/resources/Mesh.hpp"
+#include "../../WdeResourceManager/resources/Material.hpp"
+#include "../../WdeResourceManager/resources/Mesh.hpp"
 #include "../GameObject.hpp"
 
 namespace wde::scene {

@@ -44,7 +44,7 @@ namespace examples {
 				// Do culling
 				_cullingManager->createBatches(scene.getGameObjects());
 
-				if (scene.getActiveCamera()->name == "Editor Camera")
+				if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->name == "Editor Camera")
 					_cullingManager->cull(scene.getFirstGameCamera());
 				else
 					_cullingManager->cull(scene.getActiveCamera());

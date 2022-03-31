@@ -4,7 +4,7 @@
 #include "../../WdeRender/commands/CommandBuffer.hpp"
 #include "../../WdeRender/WdeRenderPipelineInstance.hpp"
 #include "../../WdeScene/WdeSceneInstance.hpp"
-#include "../../WdeScene/gameObjects/modules/ControllerModule.hpp"
+#include "../../WdeScene/modules/ControllerModule.hpp"
 
 namespace wde {
 	/**

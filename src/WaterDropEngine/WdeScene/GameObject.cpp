@@ -1,7 +1,7 @@
 #include "GameObject.hpp"
 #include "modules/MeshRendererModule.hpp"
 #include "modules/CameraModule.hpp"
-#include "../../WaterDropEngine.hpp"
+#include "../WaterDropEngine.hpp"
 
 namespace wde::scene {
 	GameObject::GameObject(uint32_t id, std::string name, bool isStatic) : _id(id), name(std::move(name)), _isStatic(isStatic) {

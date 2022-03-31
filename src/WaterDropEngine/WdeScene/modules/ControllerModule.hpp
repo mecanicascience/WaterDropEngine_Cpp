@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Module.hpp"
-#include "../../../WdeGUI/GUIRenderer.hpp"
-#include "../../../WdeInput/InputController.hpp"
+#include "../../WdeGUI/GUIRenderer.hpp"
+#include "../../WdeInput/InputController.hpp"
 
 namespace wde::scene {
 	class ControllerModule : public Module {

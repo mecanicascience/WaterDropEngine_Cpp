@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../wde.hpp"
-#include "../WdeScene/gameObjects/GameObject.hpp"
+#include "../WdeScene/GameObject.hpp"
 
 namespace wde::input {
 	class InputController : public NonCopyable {
