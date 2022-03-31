@@ -13,6 +13,7 @@ namespace wde::resource {
 	class Material : public Resource {
 		public:
 			explicit Material(const std::string& path);
+			void drawGUI() override;
 
 			/**
 			 * Binds the material to a given command buffer
@@ -22,7 +23,7 @@ namespace wde::resource {
 
 
 			// Getters and setters
-			const std::string& getName() const { return _name; }
+			std::string getName() const override { return _name; }
 			render::PipelineGraphics& getPipeline() { return *_pipeline; }
 			uint32_t getID() const { return _materialID; }
 			std::pair<int, int> getRenderStage() const { return _renderStage; }
@@ -31,10 +32,10 @@ namespace wde::resource {
 		private:
 			/** Material UUID */
 			uint32_t _materialID {};
-			/** Material name */
 			std::string _name;
-			/** Material pipeline */
 			std::unique_ptr<render::PipelineGraphics> _pipeline = nullptr;
+			VkPolygonMode _polygonMode {};
+
 			/** Material descriptor set */
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet {};
 			/** Material rendering set pass and subpass */

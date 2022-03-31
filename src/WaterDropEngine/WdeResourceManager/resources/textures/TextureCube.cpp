@@ -5,7 +5,6 @@
 namespace wde::resource {
 	TextureCube::TextureCube(const std::string &path) : Resource(path, ResourceType::IMAGE) {
 		WDE_PROFILE_FUNCTION();
-		WDE_PROFILE_FUNCTION();
 		auto texData = json::parse(WdeFileUtils::readFile(path));
 		if (texData["type"] != "image" || texData["data"]["type"] != "cube")
 			throw WdeException(LogChannel::RES, "Trying to create a cube-texture from a non-cube-texture description.");
@@ -36,7 +35,7 @@ namespace wde::resource {
 			// Create image
 			VkExtent3D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1};
 			_textureImage = std::make_unique<render::Image>(extent, VK_IMAGE_TYPE_2D, VK_IMAGE_VIEW_TYPE_CUBE,
-			                                        VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT| VK_IMAGE_USAGE_SAMPLED_BIT,
+			                                        VK_IMAGE_ASPECT_COLOR_BIT, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_SAMPLED_BIT,
 			                                        VK_FORMAT_R8G8B8A8_UNORM, VK_IMAGE_TILING_OPTIMAL, VK_SAMPLE_COUNT_1_BIT, mipLevels, 6, 6, false);
 			_textureImage->createImage();
 
@@ -47,11 +46,11 @@ namespace wde::resource {
 		// Create staging buffer and copy texture data to it
 		VkBuffer stagingBuffer;
 		VkDeviceMemory stagingBufferMemory;
+		std::vector<std::string> textureName {"right", "left", "top", "bottom", "front", "back"};
 		{
 			render::BufferUtils::createBuffer(device.getPhysicalDevice(), device.getDevice(), layerSize,
 			                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			                          stagingBuffer, stagingBufferMemory);
-			std::vector<std::string> textureName {"right", "left", "top", "bottom", "front", "back"};
 
 			// Map
 			void* data;
@@ -128,6 +127,19 @@ namespace wde::resource {
 
 		// Transition to displaying layout
 		transitionImageLayout(*_textureImage, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+
+
+		// Generate 2D images for GUI drawing (these images should NOT CHANGE or changes will not be seen)
+#ifdef WDE_GUI_ENABLED
+		{
+			// Generate GUI Debug Images
+			for (int face = 0; face < 6; face++) {
+				const std::string pathGUI = WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/" + texData["data"]["path"].get<std::string>()
+				                         + "/" + textureName[face] + "." + texData["data"]["extension"].get<std::string>();
+				_textureImageGUI.push_back(std::make_unique<Texture2D>(pathGUI, true));
+			}
+		}
+#endif
 	}
 
 	TextureCube::~TextureCube() {
@@ -136,13 +148,33 @@ namespace wde::resource {
 		vkDestroySampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _textureSampler, nullptr);
 	}
 
+	void TextureCube::drawGUI() {
+#ifdef WDE_GUI_ENABLED
+		// Faces
+		for (int i = 0; i < 6; i++) {
+			ImGui::Image(_textureImageGUI[i]->getGUIID(), ImVec2(200.0f, 200.0f));
+			if (i != 5) {
+				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(5.0f, 0.0f));
+				ImGui::SameLine();
+			}
+		}
+
+		// Image data
+		ImGui::Dummy(ImVec2(8.0f, 0.0f));
+		ImGui::Text("Image data:");
+		ImGui::Text("  - Small texture sizes : %u x %u", _textureImageGUI[0]->getExtent().width, _textureImageGUI[0]->getExtent().height);
+		ImGui::Text("  - Format : %i", _textureImage->getFormat());
+#endif
+	}
+
 
 
 
 
 
 	// Helper
-	void TextureCube::transitionImageLayout(render::Image &image, VkImageLayout oldLayout, VkImageLayout newLayout) {
+	void TextureCube::transitionImageLayout(render::Image &image, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount) {
 		// Create a temporary command buffer
 		render::CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
 		commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);
@@ -161,7 +193,7 @@ namespace wde::resource {
 		barrier.subresourceRange.baseMipLevel = 0;
 		barrier.subresourceRange.levelCount = image.getMipLevelsCount();
 		barrier.subresourceRange.baseArrayLayer = 0;
-		barrier.subresourceRange.layerCount = 6;
+		barrier.subresourceRange.layerCount = layerCount;
 
 
 		// Set barrier source and destination masks sieges

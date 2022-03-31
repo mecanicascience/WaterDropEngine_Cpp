@@ -24,9 +24,10 @@ namespace wde::gui {
 
 				bool gameObjectsList = true;
 				ImGui::Checkbox("Scene Components", &gameObjectsList);
-
 				bool propertiesBool = true;
 				ImGui::Checkbox("Properties", &propertiesBool);
+				ImGui::Checkbox("Resources Editor", &WaterDropEngine::get().getResourceManager().displayResourceGUI());
+
 				ImGui::PopFont();
 			}
 

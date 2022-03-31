@@ -71,6 +71,7 @@ namespace wde::resource {
 		public:
 			explicit Mesh(const std::string& path);
 			~Mesh() override;
+			void drawGUI() override;
 
 			// Render functions
 			/**
@@ -108,10 +109,9 @@ namespace wde::resource {
 
 		protected:
 			// Core
-			/** Name of the mesh */
 			std::string _name;
-			/** Number of indices */
 			uint32_t _indexCount;
+			uint32_t _vertexCount;
 
 			// Model buffers
 			std::shared_ptr<render::Buffer> _indexBuffer;

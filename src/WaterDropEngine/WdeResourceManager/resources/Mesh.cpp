@@ -133,6 +133,7 @@ namespace wde::resource {
 		{
 			WDE_PROFILE_SCOPE("wde::scene::Mesh::createVerticesBuffer");
 			// Assert that vertices count >= 3
+			_vertexCount = vertices.size();
 			if (vertices.size() < 3)
 				return;
 
@@ -194,6 +195,15 @@ namespace wde::resource {
 
 	Mesh::~Mesh() {
 		_commandBuffer = nullptr;
+	}
+
+	void Mesh::drawGUI() {
+#ifdef WDE_GUI_ENABLED
+		ImGui::Text("Mesh data :");
+		ImGui::Text("  - Index count : %i", _indexCount);
+		ImGui::Text("  - Vertex count : %i", _vertexCount);
+		ImGui::Text("  - URL : %s", _path.c_str());
+#endif
 	}
 
 

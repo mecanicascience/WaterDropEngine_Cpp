@@ -9,6 +9,7 @@ namespace wde::resource {
 		public:
 			explicit Shader(const std::string& path);
 			~Shader();
+			void drawGUI() override;
 
 
 			// Shader description

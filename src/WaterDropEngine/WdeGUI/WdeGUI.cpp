@@ -149,7 +149,9 @@ namespace wde::gui {
 
 
 		// ==== BUILD GUI ====
-		if (ImGui::DockBuilderGetNode(ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str())) == nullptr) {
+		static bool firstLaunch = true;
+		if (firstLaunch) {
+			firstLaunch = false;
 			logger::log(LogLevel::DEBUG, LogChannel::GUI) << "Creating GUI elements." << logger::endl;
 			ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
 			ImGuiViewport *viewportGUI = ImGui::GetMainViewport();

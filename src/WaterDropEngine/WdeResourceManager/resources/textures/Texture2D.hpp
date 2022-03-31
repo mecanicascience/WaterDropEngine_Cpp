@@ -9,7 +9,9 @@ namespace wde::resource {
 	class Texture2D : public Resource {
 		public:
 			explicit Texture2D(const std::string &path);
-			~Texture2D();
+			explicit Texture2D(const std::string &imagePath, bool setDefaultParameters);
+			~Texture2D() override;
+			void drawGUI() override;
 
 
 			// Helper functions
@@ -20,6 +22,10 @@ namespace wde::resource {
 			 * @param newLayout New layout of the image
 			 */
 			static void transitionImageLayout(render::Image &image, VkImageLayout oldLayout, VkImageLayout newLayout);
+			/**
+			 * @param newLayout New layout of the texture image
+			 */
+			void transitionImageLayout(VkImageLayout newLayout);
 			/**
 			 * Loads an image given a link
 			 * @param image Link to the image
@@ -45,6 +51,9 @@ namespace wde::resource {
 				imageInfo.sampler = _textureSampler;
 				return imageInfo;
 			}
+			VkSampler getSampler() const { return _textureSampler; }
+			render::Image2D& getImage() const { return *_textureImage; }
+			ImTextureID getGUIID() const { return _textureGUIID; }
 
 
 
@@ -54,11 +63,16 @@ namespace wde::resource {
 			VkFormat _textureFormat {};
 			VkExtent2D _imageExtent {};
 			VkImageUsageFlags _textureUsage {};
+			VkFilter _samplerFilter {};
+			VkSamplerAddressMode _samplerAddressMode {};
 			uint32_t _mipLevels = 1;
 
 			// Texture data
 			std::unique_ptr<render::Image2D> _textureImage {};
 			VkSampler _textureSampler {};
+
+			// Texture GUI
+			ImTextureID _textureGUIID = nullptr;
 
 
 			// Core functions

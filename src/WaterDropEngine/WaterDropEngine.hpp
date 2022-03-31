@@ -78,6 +78,7 @@ namespace wde {
 				// Load scene
 				_scene->loadScene();
 				_gui->addObserver(instance.getScenePointer(), true);
+				_gui->addObserver(_resourceManager);
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
 				WDE_PROFILE_END_SESSION();

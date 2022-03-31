@@ -18,4 +18,11 @@ namespace wde::resource {
 		auto device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
 		vkDestroyShaderModule(device, _shaderModule, nullptr);
 	}
+
+	void Shader::drawGUI() {
+#ifdef WDE_GUI_ENABLED
+		ImGui::Text("Shader data ");
+		ImGui::Text("  - URL : %s", _path.c_str());
+#endif
+	}
 }

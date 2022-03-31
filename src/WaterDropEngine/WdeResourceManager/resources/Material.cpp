@@ -23,13 +23,12 @@ namespace wde::resource {
 				shadersLoc.push_back(scenePath + "data/shaders/" + s.get<std::string>());
 
 			// Get polygon mode
-			VkPolygonMode polygonMode;
 			if (matData["data"]["polygonMode"] == "fill")
-				polygonMode = VK_POLYGON_MODE_FILL;
+				_polygonMode = VK_POLYGON_MODE_FILL;
 			else if (matData["data"]["polygonMode"] == "line")
-				polygonMode = VK_POLYGON_MODE_LINE;
+				_polygonMode = VK_POLYGON_MODE_LINE;
 			else if (matData["data"]["polygonMode"] == "point")
-				polygonMode = VK_POLYGON_MODE_POINT;
+				_polygonMode = VK_POLYGON_MODE_POINT;
 
 			// Create pipeline
 			_pipeline = std::make_unique<render::PipelineGraphics>(
@@ -39,7 +38,7 @@ namespace wde::resource {
 					render::PipelineGraphics::Mode::Polygon, // Draw one polygon at a time
 					render::PipelineGraphics::Depth::ReadWrite, // Read and write to depth
 					VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, // Draw shapes as triangles
-					polygonMode,   // Fill drawn shapes
+					_polygonMode,   // Fill drawn shapes
 					VK_CULL_MODE_BACK_BIT,
 					VK_FRONT_FACE_COUNTER_CLOCKWISE);
 		}
@@ -113,6 +112,24 @@ namespace wde::resource {
 			// Initialize pipeline
 			_pipeline->initialize();
 		}
+	}
+
+	void Material::drawGUI() {
+#ifdef WDE_GUI_ENABLED
+		std::string polygonModeStr;
+		if (_polygonMode == VK_POLYGON_MODE_FILL)
+			polygonModeStr = "Fill";
+		else if (_polygonMode == VK_POLYGON_MODE_LINE)
+			polygonModeStr = "Line";
+		else if (_polygonMode == VK_POLYGON_MODE_POINT)
+			polygonModeStr = "Point";
+
+		ImGui::Text("Material data:");
+		ImGui::Text("  - ID : %i", _materialID);
+		ImGui::Text("  - Render Stage : Pass %i, SubPass %i", _renderStage.first, _renderStage.second);
+		ImGui::Text("  - Drawing Mode : %s", polygonModeStr.c_str());
+		ImGui::Text("  - URL : %s", _path.c_str());
+#endif
 	}
 
 	void Material::bind(render::CommandBuffer &commandBuffer) {
