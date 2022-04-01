@@ -18,7 +18,7 @@ namespace wde::resource {
 
 			// Get shaders absolute reference
 			std::vector<std::string> shadersLoc {};
-			auto scenePath = WaterDropEngine::get().getInstance().getScene().getPath();
+			auto scenePath = WaterDropEngine::get().getInstance().getScene()->getPath();
 			for (auto& s : matData["data"]["shaders"])
 				shadersLoc.push_back(scenePath + "data/shaders/" + s.get<std::string>());
 
@@ -63,12 +63,13 @@ namespace wde::resource {
 				}
 
 				if (setData["type"] == "image") {
-					auto imageType = json::parse(WdeFileUtils::readFile(WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/" + setData["data"]["path"].get<std::string>()));
+					auto p = WaterDropEngine::get().getInstance().getScene()->getPath();
+					auto imageType = json::parse(WdeFileUtils::readFile(p + "data/textures/" + setData["data"]["path"].get<std::string>()));
 
 					if (imageType["data"]["type"] == "2D") {
 						// Create image descriptor
 						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::Texture2D>(
-								WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/" + setData["data"]["path"].get<std::string>()
+								p + "data/textures/" + setData["data"]["path"].get<std::string>()
 						)->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 						// Bind image
@@ -77,7 +78,7 @@ namespace wde::resource {
 					else if (imageType["data"]["type"] == "cube") {
 						// Create image descriptor
 						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::TextureCube>(
-								WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/" + setData["data"]["path"].get<std::string>()
+								p + "data/textures/" + setData["data"]["path"].get<std::string>()
 						)->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 						// Bind image

@@ -15,7 +15,7 @@ namespace wde::resource {
 		int texHeight;
 		{
 			int texChannels;
-			auto pathResSrc = WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/"
+			auto pathResSrc = WaterDropEngine::get().getInstance().getScene()->getPath() + "data/textures/"
 			            + texData["data"]["path"].get<std::string>()
 			            + "/front."
 						+ texData["data"]["extension"].get<std::string>();
@@ -59,7 +59,7 @@ namespace wde::resource {
 			for (int face = 0; face < 6; face++) {
 				// Load texture and copy data to buffer
 				int texChannels;
-				stbi_uc* pixels = stbi_load((WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/"
+				stbi_uc* pixels = stbi_load((WaterDropEngine::get().getInstance().getScene()->getPath() + "data/textures/"
 				                             + texData["data"]["path"].get<std::string>()
 				                             + "/" + textureName[face] + "."
 											 + texData["data"]["extension"].get<std::string>()).c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -134,7 +134,7 @@ namespace wde::resource {
 		{
 			// Generate GUI Debug Images
 			for (int face = 0; face < 6; face++) {
-				const std::string pathGUI = WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/" + texData["data"]["path"].get<std::string>()
+				const std::string pathGUI = WaterDropEngine::get().getInstance().getScene()->getPath() + "data/textures/" + texData["data"]["path"].get<std::string>()
 				                         + "/" + textureName[face] + "." + texData["data"]["extension"].get<std::string>();
 				_textureImageGUI.push_back(std::make_unique<Texture2D>(pathGUI, true));
 			}

@@ -12,7 +12,7 @@ namespace wde::resource {
 		if (texData["type"] != "image" || texData["data"]["type"] != "2D")
 			throw WdeException(LogChannel::RES, "Trying to create a 2D-texture from a non-2D-texture description.");
 
-		_filepath = WaterDropEngine::get().getInstance().getScene().getPath() + "data/textures/" + texData["data"]["path"].get<std::string>();
+		_filepath = WaterDropEngine::get().getInstance().getScene()->getPath() + "data/textures/" + texData["data"]["path"].get<std::string>();
 		_textureFormat = texData["data"]["format"].get<VkFormat>();
 		_imageExtent = VkExtent2D {0, 0};
 		_textureUsage = texData["data"]["usage_flags"].get<VkImageUsageFlags>();

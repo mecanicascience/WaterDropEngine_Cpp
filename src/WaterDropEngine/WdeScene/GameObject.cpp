@@ -82,9 +82,9 @@ namespace wde::scene {
 			if (cameraMod != nullptr) {
 				// Icon
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
-				auto& scene = WaterDropEngine::get().getInstance().getScene();
+				auto scene = WaterDropEngine::get().getInstance().getScene();
 				ImGui::PushID(static_cast<int>(_id) + 6496321);
-				if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->getID() == _id) { // Current selected camera
+				if (scene->getActiveCamera() != nullptr && scene->getActiveCamera()->getID() == _id) { // Current selected camera
 					ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorTextMinor);
 					if (ImGui::Selectable(ICON_FA_CAMERA, false, 0, textS)) {}
 				}
@@ -98,7 +98,7 @@ namespace wde::scene {
 
 				// Label
 				ImGui::SameLine();
-				if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->getID() == _id)
+				if (scene->getActiveCamera() != nullptr && scene->getActiveCamera()->getID() == _id)
 					ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorTextMinor);
 				else
 					ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);

@@ -11,7 +11,7 @@ namespace wde::scene {
 			setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
 
 		// If not camera as active, set this a default active camera
-		if (WaterDropEngine::get().getInstance().getScene().getActiveCamera() == nullptr)
+		if (WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == nullptr)
 			setAsActive();
 	}
 
@@ -41,7 +41,7 @@ namespace wde::scene {
 			setPerspectiveProjection(_fov, aspect, _nearPlane, _farPlane);
 
 		// If not camera as active, set this a default active camera
-		if (WaterDropEngine::get().getInstance().getScene().getActiveCamera() == nullptr)
+		if (WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == nullptr)
 			setAsActive();
 	}
 
@@ -140,7 +140,7 @@ namespace wde::scene {
 
 	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {
 		// Active camera, do not draw gizmo
-		if (WaterDropEngine::get().getInstance().getScene()._activeCameraID == static_cast<int>(_gameObject.getID()))
+		if (WaterDropEngine::get().getInstance().getScene()->_activeCameraID == static_cast<int>(_gameObject.getID()))
 			return;
 
 		// Draw camera frustum gizmo
@@ -199,7 +199,7 @@ namespace wde::scene {
 	}
 
 	void CameraModule::setAsActive() {
-		WaterDropEngine::get().getInstance().getScene()._activeCameraID = static_cast<int>(_gameObject.getID());
+		WaterDropEngine::get().getInstance().getScene()->_activeCameraID = static_cast<int>(_gameObject.getID());
 	}
 
 	void CameraModule::setFarPlane(float farPlane) {

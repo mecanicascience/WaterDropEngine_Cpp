@@ -8,7 +8,7 @@ namespace wde::scene {
 		auto colorStr = color.toString();
 		if (!_pipelines.contains(colorStr)) {
 			// Create corresponding pipeline
-			auto path = WaterDropEngine::get().getInstance().getScene().getPath();
+			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
 			_pipelines.emplace(colorStr,
 			   std::make_unique<render::PipelineGraphics>(
 					   _renderStage, std::vector<std::string>{path + "data/shaders/common/gizmo/gizmo.vert", path + "data/shaders/common/gizmo/gizmo.frag"},
@@ -84,7 +84,7 @@ namespace wde::scene {
 		// Create line pipeline
 		if (!_linesPipelines.contains(color.toString())) {
 			// Create corresponding pipeline
-			auto path = WaterDropEngine::get().getInstance().getScene().getPath();
+			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
 			_linesPipelines.emplace(color.toString(),
                    std::make_shared<render::PipelineGraphics>(_renderStage,
 						  std::vector<std::string>{path + "data/shaders/common/gizmo/gizmoLines.vert", path + "data/shaders/common/gizmo/gizmoLines.frag"},
@@ -133,7 +133,7 @@ namespace wde::scene {
 
 		// Update descriptor
 		void *data = _positionsLinesSetBuffer->map();
-		auto cam = WaterDropEngine::get().getInstance().getScene().getActiveCamera();
+		auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
 		if (cam == nullptr)
 			throw WdeException(LogChannel::SCENE, "No active camera in scene.");
 		auto camMod = cam->getModule<CameraModule>();

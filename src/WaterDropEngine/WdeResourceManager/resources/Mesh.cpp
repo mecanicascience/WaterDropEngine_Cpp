@@ -16,7 +16,7 @@ namespace wde::resource {
 		// Load data
 		{
 			WDE_PROFILE_SCOPE("wde::scene::Mesh::loadMesh");
-			std::string resPath = WaterDropEngine::get().getInstance().getScene().getPath() + "data/meshes/" + matData["data"]["path"].get<std::string>();
+			std::string resPath = WaterDropEngine::get().getInstance().getScene()->getPath() + "data/meshes/" + matData["data"]["path"].get<std::string>();
 
 			// Load model
 			tinyobj::attrib_t attrib;

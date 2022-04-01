@@ -55,7 +55,7 @@ namespace wde::scene {
 					.build(_computeSet.first, _computeSet.second);
 
 			// Create compute pipeline
-			auto path = WaterDropEngine::get().getInstance().getScene().getPath();
+			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
 			_cullingPipeline = std::make_unique<render::PipelineCompute>(path + "data/shaders/common/culling/culling_indirect.comp");
 			_cullingPipeline->addDescriptorSet(_generalComputeSet.second);
 			_cullingPipeline->addDescriptorSet(_computeSet.second);

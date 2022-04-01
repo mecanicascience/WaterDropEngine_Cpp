@@ -42,15 +42,15 @@ namespace wde::render {
 		if (!commandBuffer.isRunning())
 			commandBuffer.begin();
 
-		auto& scene = WaterDropEngine::get().getInstance().getScene();
+		auto scene = WaterDropEngine::get().getInstance().getScene();
 		// Update global set data
 		{
 			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::updateGlobalSetData");
 			// Update camera buffer data
-			if (scene.getActiveCamera() == nullptr)
+			if (scene->getActiveCamera() == nullptr)
 				logger::log(LogLevel::WARN, LogChannel::SCENE) << "No camera in scene." << logger::endl;
 			else {
-				auto cameraModule = scene.getActiveCamera()->getModule<scene::CameraModule>();
+				auto cameraModule = scene->getActiveCamera()->getModule<scene::CameraModule>();
 
 				// New data
 				GPUCameraData cameraData {};
@@ -72,7 +72,7 @@ namespace wde::render {
 				// Update static objects
 				void *data = _objectsData->map();
 				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
-				for (auto& go : scene.getStaticGameObjects()) {
+				for (auto& go : scene->getStaticGameObjects()) {
 					objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
 
 					auto mesh = go->getModule<scene::MeshRendererModule>();
@@ -81,7 +81,7 @@ namespace wde::render {
 				}
 
 				// Update dynamic game objects
-				for (auto& go : scene.getDynamicGameObjects()) {
+				for (auto& go : scene->getDynamicGameObjects()) {
 					if (go->transform->changed) {
 						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
 						go->transform->changed = false;
@@ -98,7 +98,7 @@ namespace wde::render {
 			{
 				void *data = _objectsData->map();
 				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
-				for (auto& go : scene.getDynamicGameObjects()) {
+				for (auto& go : scene->getDynamicGameObjects()) {
 					if (go->transform->changed) {
 						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
 						go->transform->changed = false;
@@ -113,7 +113,7 @@ namespace wde::render {
 		{
 			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::render");
 			// ==== RENDER COMMANDS ====
-			render(commandBuffer, scene);
+			render(commandBuffer, *scene);
 		}
 
 		// Wait for last swapchain image to finish rendering before sending to queue

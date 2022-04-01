@@ -7,8 +7,8 @@ namespace wde::scene {
 	MeshRendererModule::MeshRendererModule(GameObject &gameObject, const std::string &data) : Module(gameObject, "Mesh Renderer", ICON_FA_GHOST) {
 		auto dataJ = json::parse(data);
 		auto& wde = WaterDropEngine::get();
-		_material = wde.getResourceManager().load<resource::Material>(wde.getInstance().getScene().getPath() + "description/materials/" + dataJ["material"].get<std::string>());
-		_mesh = wde.getResourceManager().load<resource::Mesh>(wde.getInstance().getScene().getPath() + "data/meshes/" + dataJ["mesh"].get<std::string>());
+		_material = wde.getResourceManager().load<resource::Material>(wde.getInstance().getScene()->getPath() + "description/materials/" + dataJ["material"].get<std::string>());
+		_mesh = wde.getResourceManager().load<resource::Mesh>(wde.getInstance().getScene()->getPath() + "data/meshes/" + dataJ["mesh"].get<std::string>());
 	}
 
 

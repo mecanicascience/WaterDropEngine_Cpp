@@ -23,6 +23,28 @@ namespace wde::scene {
 
 
 	void WdeScene::loadScenePath() {
+		auto sceneLast = WaterDropEngine::get().getInstance().getScene();
+		// Save last scene
+#ifdef WDE_GUI_ENABLED
+		/*if (sceneLast != nullptr)
+			ImGui::OpenPopup("SaveScenePopup");
+
+		if (ImGui::BeginPopupModal("SaveScenePopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+			ImGui::Text("The current scene is not be saved.\nDo you want to save the current scene?\n");
+			ImGui::Separator();
+
+			if (ImGui::Button("Do not save", ImVec2(120, 0)))
+				ImGui::CloseCurrentPopup();
+			ImGui::SetItemDefaultFocus();
+			ImGui::SameLine();
+			if (ImGui::Button("Save", ImVec2(120, 0))) {
+				saveScene();
+				ImGui::CloseCurrentPopup();
+			}
+			ImGui::EndPopup();
+		}*/
+#endif
+
 		// Get file name
 		std::string path;
 		auto fileData = json::parse(WdeFileUtils::readFileDialog("json", path));
@@ -37,8 +59,10 @@ namespace wde::scene {
 	void WdeScene::loadScene() {
 		// Load scene data
 		auto& resourceManager = WaterDropEngine::get().getResourceManager();
-		auto& scene = WaterDropEngine::get().getInstance().getScene();
-		auto path = scene.getPath();
+		auto scene = WaterDropEngine::get().getInstance().getScene();
+
+		// Load scene data
+		auto path = scene->getPath();
 		auto fileData = json::parse(WdeFileUtils::readFile(path + "scene.json"));
 		if (fileData["type"] != "scene")
 			throw WdeException(LogChannel::SCENE, "Trying to load a non-scene JSON object.");
@@ -48,14 +72,14 @@ namespace wde::scene {
 			resourceManager.load<resource::Material>(path + "description/materials/" + materialIDs.get<std::string>());
 
 		// Load game objects
-		uint32_t currentGOID = scene.getGameObjects().size();
+		uint32_t currentGOID = scene->getGameObjects().size();
 		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
 			const auto& goData = json::parse(WdeFileUtils::readFile(path + "description/gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
 			if (goData["type"] != "gameObject")
 				throw WdeException(LogChannel::SCENE, "Trying to load a non-gameObject resource type as a gameObject.");
 
 			// Create game object
-			auto go = scene.createGameObject(goData["name"], goData["data"]["static"].get<bool>());
+			auto go = scene->createGameObject(goData["name"], goData["data"]["static"].get<bool>());
 			go->active = goData["data"]["active"].get<bool>();
 
 			// Create game object modules
@@ -79,8 +103,12 @@ namespace wde::scene {
 			const auto& goData = json::parse(WdeFileUtils::readFile(path + "description/gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
 			if (goData["modules"][0]["name"] == "Transform"
 					&& goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
-				scene.getGameObject((int)currentGOID)->transform->setParent(scene.getGameObject(goData["modules"][0]["data"]["parentID"].get<int>())->transform);
+				scene->getGameObject((int)currentGOID)->transform->setParent(scene->getGameObject(goData["modules"][0]["data"]["parentID"].get<int>())->transform);
 			currentGOID++;
 		}
+	}
+
+	void WdeScene::saveScene() {
+
 	}
 }

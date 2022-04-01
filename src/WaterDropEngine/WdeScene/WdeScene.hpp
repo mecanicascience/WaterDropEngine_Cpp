@@ -17,9 +17,11 @@ namespace wde::scene {
 			// Notifications
 			void onNotify(const core::Event& event) override;
 
-			/** Loads a scene at a path */
+			/** Sets the scene path */
 			static void loadScenePath();
 			/** Loads a scene */
 			static void loadScene();
+			/** Serialize and save the scene */
+			static void saveScene();
 	};
 }

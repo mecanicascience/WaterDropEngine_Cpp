@@ -12,7 +12,7 @@ namespace wde::scene {
 
 	void ControllerModule::tick()  {
 		// Only active if this game object has a camera, and the camera is selected
-		auto cameraMod = WaterDropEngine::get().getInstance().getScene().getActiveCamera();
+		auto cameraMod = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
 		if (cameraMod == nullptr || _gameObject.getID() != cameraMod->getID())
 			return;
 

@@ -27,12 +27,12 @@ namespace wde::scene {
 
 		// Create gizmo meshes
 		inst->_meshes.emplace("CUBE", WaterDropEngine::get().getResourceManager().load<resource::Mesh>(
-				WaterDropEngine::get().getInstance().getScene().getPath() + "data/meshes/" + "cube.json"));
+				WaterDropEngine::get().getInstance().getScene()->getPath() + "data/meshes/" + "cube.json"));
 	}
 
 	void GizmoManager::render(render::CommandBuffer& commandBuffer) {
 		WDE_PROFILE_FUNCTION();
-		auto& gameObjects = WaterDropEngine::get().getInstance().getScene().getDynamicGameObjects();
+		auto& gameObjects = WaterDropEngine::get().getInstance().getScene()->getDynamicGameObjects();
 
 		if (GizmoManager::_gizmoInstance == nullptr)
 			throw WdeException(LogChannel::SCENE, "Trying to draw the Gizmo objects without initializing the renderer.");
