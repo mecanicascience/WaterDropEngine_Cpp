@@ -3,11 +3,22 @@
 
 namespace wde::gui {
 	void GUIBar::renderMenu() {
+		WDE_PROFILE_FUNCTION();
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12.0f, 4.0f));
 
 		// Main file menu
 		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Save Scene"))
+				WaterDropEngine::get().getScene().saveScene();
+			if (ImGui::MenuItem("Load Scene")) {
+				WaterDropEngine::get().getScene().loadScenePath();
+			}
+
+			ImGui::Dummy(ImVec2(0.0, 2.5));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0, 0.5));
+
 			if (ImGui::MenuItem("Exit"))
 				WaterDropEngine::get().getSubject().notify({LogChannel::RENDER, "WINDOW_SHOULD_CLOSE"});
 

@@ -1,10 +1,26 @@
 #include "WdeScene.hpp"
 #include "../WaterDropEngine.hpp"
-#include "../WdeResourceManager/resources/Material.hpp"
 
 namespace wde::scene {
+	bool WdeScene::_showSceneLoadPopup = true;
+	bool WdeScene::_showSceneLoadPopupNext = false;
+
 	WdeScene::WdeScene(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Initializing Scene Engine ==" << logger::endl;
+
+		// Load scene
+		std::string path;
+		auto content = WdeFileUtils::readFileDialog("json", path);
+		if (path.empty())
+			return;
+		auto fileData = json::parse(content);
+		path = "res/" + fileData["folderName"].get<std::string>() + "/";
+
+		// Create empty scene
+		auto scene = std::make_shared<WdeSceneInstance>();
+		scene->setPath(path);
+		WaterDropEngine::get().getInstance().setScene(scene);
+
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Initialization Done ==" << logger::endl;
 	}
 
@@ -19,36 +35,68 @@ namespace wde::scene {
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Cleaning Up Done ==" << logger::endl;
 	}
 
-	void WdeScene::onNotify(const core::Event& event) { }
+	void WdeScene::onNotify(const core::Event& event) {
+#ifdef WDE_GUI_ENABLED
+		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
+			if (_showSceneLoadPopupNext) {
+				ImGui::OpenPopup("SaveScenePopup");
+				_showSceneLoadPopupNext = false;
+			}
+
+			if (ImGui::BeginPopupModal("SaveScenePopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+				ImGui::Dummy(ImVec2(0.0f, 3.0f));
+				ImGui::Text("Do you want to save the current scene data?");
+				ImGui::Dummy(ImVec2(0.0f, 3.0f));
+				ImGui::Separator();
+				ImGui::Dummy(ImVec2(0.0f, 3.0f));
+
+				if (ImGui::Button("  Do not save  ", ImVec2(120, 0))) {
+					_showSceneLoadPopup = false;
+					loadScenePath();
+					loadScene();
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::SetItemDefaultFocus();
+				ImGui::SameLine();
+				ImGui::Dummy(ImVec2(5.0f, 0.0f));
+				ImGui::SameLine();
+
+				if (ImGui::Button("  Save  ", ImVec2(120, 0))) {
+					saveScene();
+					_showSceneLoadPopup = false;
+					loadScenePath();
+					loadScene();
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::EndPopup();
+			}
+		}
+#endif
+	}
 
 
 	void WdeScene::loadScenePath() {
-		auto sceneLast = WaterDropEngine::get().getInstance().getScene();
+		WDE_PROFILE_FUNCTION();
 		// Save last scene
 #ifdef WDE_GUI_ENABLED
-		/*if (sceneLast != nullptr)
-			ImGui::OpenPopup("SaveScenePopup");
-
-		if (ImGui::BeginPopupModal("SaveScenePopup", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-			ImGui::Text("The current scene is not be saved.\nDo you want to save the current scene?\n");
-			ImGui::Separator();
-
-			if (ImGui::Button("Do not save", ImVec2(120, 0)))
-				ImGui::CloseCurrentPopup();
-			ImGui::SetItemDefaultFocus();
-			ImGui::SameLine();
-			if (ImGui::Button("Save", ImVec2(120, 0))) {
-				saveScene();
-				ImGui::CloseCurrentPopup();
-			}
-			ImGui::EndPopup();
-		}*/
+		if (_showSceneLoadPopup) {
+			_showSceneLoadPopupNext = true;
+			return;
+		}
+		_showSceneLoadPopupNext = false;
+		_showSceneLoadPopup = true;
 #endif
 
 		// Get file name
 		std::string path;
-		auto fileData = json::parse(WdeFileUtils::readFileDialog("json", path));
+		auto content = WdeFileUtils::readFileDialog("json", path);
+		if (path.empty())
+			return;
+		auto fileData = json::parse(content);
 		path = "res/" + fileData["folderName"].get<std::string>() + "/";
+
+		// Kill last scene
+		WaterDropEngine::get().getInstance().getScene()->cleanUp();
 
 		// Create empty scene
 		auto scene = std::make_shared<WdeSceneInstance>();
@@ -57,6 +105,9 @@ namespace wde::scene {
 	}
 
 	void WdeScene::loadScene() {
+		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Loading scene data." << logger::endl;
+
 		// Load scene data
 		auto& resourceManager = WaterDropEngine::get().getResourceManager();
 		auto scene = WaterDropEngine::get().getInstance().getScene();
@@ -109,6 +160,8 @@ namespace wde::scene {
 	}
 
 	void WdeScene::saveScene() {
+		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Saving scene data." << logger::endl;
 
 	}
 }

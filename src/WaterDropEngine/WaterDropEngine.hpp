@@ -46,9 +46,6 @@ namespace wde {
 				_render->start();
 				_subject->addObserver(_render);
 
-				// Load scene path (set default scene)
-				_scene->loadScenePath();
-
 				// GUI core
 				_gui = std::make_shared<gui::WdeGUI>(_subject);
 				_subject->addObserver(_gui);
@@ -79,6 +76,7 @@ namespace wde {
 				_scene->loadScene();
 				_gui->addObserver(instance.getScenePointer(), true);
 				_gui->addObserver(_resourceManager);
+				_gui->addObserver(_scene);
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
 				WDE_PROFILE_END_SESSION();

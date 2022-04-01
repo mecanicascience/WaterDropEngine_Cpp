@@ -23,5 +23,10 @@ namespace wde::scene {
 			static void loadScene();
 			/** Serialize and save the scene */
 			static void saveScene();
+
+
+		private:
+			static bool _showSceneLoadPopup;
+			static bool _showSceneLoadPopupNext;
 	};
 }

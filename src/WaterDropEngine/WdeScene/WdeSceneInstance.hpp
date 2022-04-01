@@ -59,8 +59,7 @@ namespace wde::scene {
 			 * @param isStatic True if the game object is a static one (default false)
 			 */
 			std::shared_ptr<GameObject> createGameObject(const std::string& name, bool isStatic = false) {
-				static uint32_t ID = 0;
-				_gameObjects.push_back(std::make_shared<GameObject>(ID++, name, isStatic));
+				_gameObjects.push_back(std::make_shared<GameObject>(_gameObjectsIDCurr++, name, isStatic));
 				if (isStatic)
 					_gameObjectsStatic.push_back(_gameObjects[_gameObjects.size() - 1]);
 				else
@@ -83,6 +82,8 @@ namespace wde::scene {
 			std::string _scenePath;
 			/** Selected game object ID for GUI (default : 0) */
 			int _selectedGameObjectID = 0;
+			/** Last create game object ID */
+			uint32_t _gameObjectsIDCurr = 0;
 
 			// Helper functions
 			void drawGUIForGo(const std::shared_ptr<GameObject>& go, int* selected) const;
