@@ -54,6 +54,7 @@ namespace wde::scene {
 					_showSceneLoadPopup = false;
 					loadScenePath();
 					loadScene();
+					WaterDropEngine::get().getGUI().addObserver(WaterDropEngine::get().getInstance().getScene());
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::SetItemDefaultFocus();
@@ -66,6 +67,7 @@ namespace wde::scene {
 					_showSceneLoadPopup = false;
 					loadScenePath();
 					loadScene();
+					WaterDropEngine::get().getGUI().addObserver(WaterDropEngine::get().getInstance().getScene());
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::EndPopup();
@@ -96,7 +98,7 @@ namespace wde::scene {
 		path = "res/" + fileData["folderName"].get<std::string>() + "/";
 
 		// Kill last scene
-		WaterDropEngine::get().getInstance().getScene()->cleanUp();
+		WaterDropEngine::get().getInstance().getScene()->cleanUpInstance();
 
 		// Create empty scene
 		auto scene = std::make_shared<WdeSceneInstance>();
@@ -117,15 +119,12 @@ namespace wde::scene {
 		auto fileData = json::parse(WdeFileUtils::readFile(path + "scene.json"));
 		if (fileData["type"] != "scene")
 			throw WdeException(LogChannel::SCENE, "Trying to load a non-scene JSON object.");
-
-		// Load materials
-		for (const auto& materialIDs : fileData["data"]["materials"])
-			resourceManager.load<resource::Material>(path + "description/materials/" + materialIDs.get<std::string>());
+		scene->setName(fileData["name"]);
 
 		// Load game objects
 		uint32_t currentGOID = scene->getGameObjects().size();
 		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
-			const auto& goData = json::parse(WdeFileUtils::readFile(path + "description/gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
+			const auto& goData = json::parse(WdeFileUtils::readFile(path + "gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
 			if (goData["type"] != "gameObject")
 				throw WdeException(LogChannel::SCENE, "Trying to load a non-gameObject resource type as a gameObject.");
 
@@ -138,11 +137,11 @@ namespace wde::scene {
 				auto modConf = to_string(modData["data"]);
 				if (modData["name"] == "Transform")
 					go->transform->setConfig(modConf);
-				else if (modData["name"] == "MeshRenderer")
+				else if (modData["name"] == "Mesh Renderer")
 					go->addModule<MeshRendererModule>(modConf);
 				else if (modData["name"] == "Camera")
 					go->addModule<CameraModule>(modConf);
-				else if (modData["name"] == "KeyboardController")
+				else if (modData["name"] == "Keyboard Controller")
 					go->addModule<ControllerModule>(modConf);
 				else
 					throw WdeException(LogChannel::SCENE, "Trying to load a module '" + modData["name"].get<std::string>() + "' that isn't referenced in WdeScene.");
@@ -151,7 +150,7 @@ namespace wde::scene {
 
 		// Set game object parents and children
 		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
-			const auto& goData = json::parse(WdeFileUtils::readFile(path + "description/gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
+			const auto& goData = json::parse(WdeFileUtils::readFile(path + "gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
 			if (goData["modules"][0]["name"] == "Transform"
 					&& goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
 				scene->getGameObject((int)currentGOID)->transform->setParent(scene->getGameObject(goData["modules"][0]["data"]["parentID"].get<int>())->transform);
@@ -163,5 +162,57 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Saving scene data." << logger::endl;
 
+		// Scene main data
+		auto scene = WaterDropEngine::get().getInstance().getScene();
+		json sceneData;
+		sceneData["type"] = "scene";
+		sceneData["name"] = scene->getName();
+		sceneData["folderName"] = scene->getPath().substr(4, scene->getPath().size() - 5);
+		std::string sceneRes = "res/" + sceneData["folderName"].get<std::string>() + "/";
+
+		// Create folders
+		std::filesystem::create_directories(sceneRes);
+		std::filesystem::create_directories(sceneRes + "gameObjects/");
+
+		// Game objects list
+		auto goList = std::vector<uint32_t>();
+		for (auto& res : scene->getGameObjects()) {
+			// Continue if editor camera
+#ifdef WDE_ENGINE_MODE_DEBUG
+			if (res->getID() == 0)
+				continue;
+#endif
+
+			// Create reference in scene
+			auto index = res->getID();
+			goList.push_back(index);
+
+			// Create GO file
+			json goJSON;
+			goJSON["type"] = "gameObject";
+			goJSON["name"] = res->name;
+			goJSON["data"]["active"] = res->active;
+			goJSON["data"]["static"] = res->isStatic();
+
+			// Create modules json data
+			std::vector<json> modulesJSON;
+			for (auto& mod : res->getModules()) {
+				json locJSON;
+				locJSON["name"] = mod->getName();
+				locJSON["data"] = mod->serialize();
+				modulesJSON.push_back(locJSON);
+			}
+			goJSON["modules"] = modulesJSON;
+
+			// Output file
+			std::ofstream outputGOData {sceneRes + "gameObjects/go_" + std::to_string(index) + ".json", std::ofstream::out};
+			outputGOData << goJSON << std::endl;
+		}
+		sceneData["data"]["gameObjects"] = goList;
+
+		// Serialize and write to file
+		std::ofstream outputData {sceneRes + "scene.json", std::ofstream::out};
+		outputData << to_string(sceneData);
+		outputData.close();
 	}
 }

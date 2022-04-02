@@ -37,6 +37,25 @@ namespace wde::scene {
 		}
 	}
 
+	void TransformModule::drawGUI() {
+		gui::GUIRenderer::addVec3Button("Position", position);
+		gui::GUIRenderer::addVec3Button("Rotation", rotation);
+		gui::GUIRenderer::addVec3Button("Scale", scale, 1.0f);
+	}
+
+	json TransformModule::serialize() {
+		json jData;
+		if (_parent != nullptr)
+			jData["parentID"] = _parent->_gameObject.getID();
+		else
+			jData["parentID"] = -1;
+		jData["position"] = { position.x, position.y, position.z };
+		jData["rotation"] = { rotation.x, rotation.y, rotation.z };
+		jData["scale"] = { scale.x, scale.y, scale.z };
+		return jData;
+	}
+
+
 
 	void TransformModule::setParent(TransformModule *parent) {
 		// Remove last parent children ID
@@ -46,12 +65,6 @@ namespace wde::scene {
 		_parent = parent;
 		// Add children to new parent
 		_parent->_childrenIDs.push_back(static_cast<int>(_gameObject.getID()));
-	}
-
-	void TransformModule::drawGUI() {
-		gui::GUIRenderer::addVec3Button("Position", position);
-		gui::GUIRenderer::addVec3Button("Rotation", rotation);
-		gui::GUIRenderer::addVec3Button("Scale", scale, 1.0f);
 	}
 
 	glm::mat4 TransformModule::getTransform() const {

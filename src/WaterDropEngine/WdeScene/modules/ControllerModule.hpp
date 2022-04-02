@@ -14,6 +14,7 @@ namespace wde::scene {
 			// Core functions
 			void tick() override;
 			void drawGUI() override;
+			json serialize() override;
 
 
 		private:

@@ -181,6 +181,22 @@ namespace wde::scene {
 		->drawLines(commandBuffer);
 	}
 
+	json CameraModule::serialize() {
+		json jData;
+		jData["projectionType"] = _projectionType;
+		jData["orthographic"]["bottom"][0] = _bottomCorner.x;
+		jData["orthographic"]["bottom"][1] = _bottomCorner.y;
+		jData["orthographic"]["bottom"][2] = _bottomCorner.z;
+		jData["orthographic"]["top"][0] = _topCorner.x;
+		jData["orthographic"]["top"][1] = _topCorner.y;
+		jData["orthographic"]["top"][2] = _topCorner.z;
+		jData["perspective"]["fov"] = _fov;
+		jData["perspective"]["nearPlane"] = _nearPlane;
+		jData["perspective"]["farPlane"] = _farPlane;
+		return jData;
+	}
+
+
 
 	void CameraModule::setOrthographicProjection(float leftVal, float rightVal, float topVal, float bottomVal, float nearVal, float farVal)  {
 		// Update class values

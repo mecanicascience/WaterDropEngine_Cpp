@@ -32,4 +32,11 @@ namespace wde::scene {
 		// Look speed
 		gui::GUIRenderer::addFloatDragger("Look speed", _lookSpeed, 1.5f);
 	}
+
+	json ControllerModule::serialize() {
+		json jData;
+		jData["moveSpeed"] = _moveSpeed;
+		jData["lookSpeed"] = _lookSpeed;
+		return jData;
+	}
 }

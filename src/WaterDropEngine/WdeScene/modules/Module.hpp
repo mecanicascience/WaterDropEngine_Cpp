@@ -11,7 +11,7 @@ namespace wde::scene {
 	 */
 	class Module : public NonCopyable {
 		public:
-			explicit Module(GameObject& gameObject, std::string name) : _gameObject(gameObject), _name(std::move(name)), _icon("") {}
+			explicit Module(GameObject& gameObject, std::string name) : _gameObject(gameObject), _name(std::move(name)) {}
 			explicit Module(GameObject& gameObject, std::string name, std::string icon) : _gameObject(gameObject), _name(std::move(name)), _icon(std::move(icon)) {}
 			~Module() override = default;
 
@@ -22,6 +22,8 @@ namespace wde::scene {
 			virtual void drawGUI() {};
 			/** Draw the gizmo elements to the scene */
 			virtual void drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {};
+			/** @return the serialized module data */
+			virtual json serialize() { return {}; }
 
 
 			// Getters and setters

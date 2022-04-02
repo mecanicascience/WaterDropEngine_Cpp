@@ -12,6 +12,7 @@ namespace wde::scene {
 			void setConfig(const std::string& data);
 			void tick() override;
 			void drawGUI() override;
+			json serialize() override;
 
 
 

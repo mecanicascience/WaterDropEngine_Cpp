@@ -29,6 +29,8 @@ namespace wde::scene {
 			// Getters and setters
 			void setPath(const std::string& path) { _scenePath = path; }
 			const std::string& getPath() const { return _scenePath; }
+			void setName(const std::string& name) { _sceneName = name; }
+			const std::string& getName() const { return _sceneName; }
 			const std::shared_ptr<GameObject>& getGameObject(int goID) { return _gameObjects[goID]; }
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
@@ -80,6 +82,8 @@ namespace wde::scene {
 			// Scene utils
 			/** Path to the scene object */
 			std::string _scenePath;
+			/** Name of the scene object */
+			std::string _sceneName;
 			/** Selected game object ID for GUI (default : 0) */
 			int _selectedGameObjectID = 0;
 			/** Last create game object ID */

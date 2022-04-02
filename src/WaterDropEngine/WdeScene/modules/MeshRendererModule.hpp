@@ -16,6 +16,7 @@ namespace wde::scene {
 			explicit MeshRendererModule(GameObject& gameObject);
 			explicit MeshRendererModule(GameObject& gameObject, const std::string& data);
 			void drawGUI() override;
+			json serialize() override;
 
 
 			// Getters and setters
@@ -31,5 +32,9 @@ namespace wde::scene {
 			std::shared_ptr<resource::Mesh> _mesh;
 			/** Selected material of the mesh renderer */
 			std::shared_ptr<resource::Material> _material;
+
+			// Material data
+			std::string _meshName;
+			std::string _materialName;
 	};
 }

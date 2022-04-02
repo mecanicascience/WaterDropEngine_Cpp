@@ -1,0 +1,1 @@
+{"data":{"active":true,"static":false},"modules":[{"data":{"parentID":-1,"position":[-2.0,0.0,0.0],"rotation":[3.299999952316284,0.0,0.0],"scale":[1.0,1.0,1.0]},"name":"Transform"},{"data":{"material":"fougere.json","mesh":"fougere.json"},"name":"Mesh Renderer"}],"name":"Palmier Mesh 2","type":"gameObject"}
