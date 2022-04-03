@@ -134,17 +134,7 @@ namespace wde::scene {
 
 			// Create game object modules
 			for (const auto& modData : goData["modules"]) {
-				auto modConf = to_string(modData["data"]);
-				if (modData["name"] == "Transform")
-					go->transform->setConfig(modConf);
-				else if (modData["name"] == "Mesh Renderer")
-					go->addModule<MeshRendererModule>(modConf);
-				else if (modData["name"] == "Camera")
-					go->addModule<CameraModule>(modConf);
-				else if (modData["name"] == "Keyboard Controller")
-					go->addModule<ControllerModule>(modConf);
-				else
-					throw WdeException(LogChannel::SCENE, "Trying to load a module '" + modData["name"].get<std::string>() + "' that isn't referenced in WdeScene.");
+				ModuleSerializer::addModuleFromName(modData["name"], to_string(modData["data"]), *go);
 			}
 		}
 
@@ -196,12 +186,8 @@ namespace wde::scene {
 
 			// Create modules json data
 			std::vector<json> modulesJSON;
-			for (auto& mod : res->getModules()) {
-				json locJSON;
-				locJSON["name"] = mod->getName();
-				locJSON["data"] = mod->serialize();
-				modulesJSON.push_back(locJSON);
-			}
+			for (auto& mod : res->getModules())
+				modulesJSON.push_back(ModuleSerializer::serializeModule(*mod));
 			goJSON["modules"] = modulesJSON;
 
 			// Output file

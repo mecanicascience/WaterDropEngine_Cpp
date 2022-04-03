@@ -41,7 +41,7 @@ namespace wde::scene {
 			void setSelected(bool selected) { _isSelected = selected; }
 			bool isSelected() const { return _isSelected; }
 			bool isStatic() const { return _isStatic; }
-			const std::vector<std::unique_ptr<Module>>& getModules() const { return _modules; }
+			std::vector<std::unique_ptr<Module>>& getModules() { return _modules; }
 
 
 			// Modules handlers
@@ -59,6 +59,19 @@ namespace wde::scene {
 						return static_cast<T*>(mod.get());
 				// Not found
 				return nullptr;
+			}
+
+			template<typename T>
+			void removeModule() {
+				// Iterate over every module
+				int index = 0;
+				for (auto& mod : _modules) {
+					if (dynamic_cast<T *>(mod.get()) != nullptr) {
+						_modules.erase(_modules.begin() + index);
+						return;
+					}
+					index++;
+				}
 			}
 
 

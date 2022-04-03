@@ -3,6 +3,23 @@
 #include "modules/CameraModule.hpp"
 #include "../WaterDropEngine.hpp"
 
+/**
+ * Add Combo with std vector methods to ImGUI.
+ */
+namespace ImGui {
+	static auto vector_getter = [](void* vec, int idx, const char** out_text) {
+		auto& vector = *static_cast<std::vector<std::string>*>(vec);
+		if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
+		*out_text = vector.at(idx).c_str();
+		return true;
+	};
+
+	bool Combo(const char* label, int* currIndex, std::vector<std::string>& values) {
+		if (values.empty()) { return false; }
+		return Combo(label, currIndex, vector_getter, static_cast<void*>(&values), static_cast<int>(values.size()));
+	}
+}
+
 namespace wde::scene {
 	GameObject::GameObject(uint32_t id, std::string name, bool isStatic) : _id(id), name(std::move(name)), _isStatic(isStatic) {
 		// Add default transform module
@@ -129,6 +146,9 @@ namespace wde::scene {
 		{
 			bool lastOneOpen = false;
 			for(auto& module : _modules) {
+				if (module == nullptr)
+					continue;
+
 				// Small padding between modules
 				if (lastOneOpen)
 					ImGui::Dummy(ImVec2(0.0f, 14.0f));
@@ -143,6 +163,16 @@ namespace wde::scene {
 				if (!module->getIcon().empty())
 					dispStr = module->getIcon().append("    ");
 				if (ImGui::CollapsingHeader((dispStr + module->getName()).c_str(), ImGuiTreeNodeFlags_DefaultOpen)) {
+					bool moduleRemoved = false;
+					if (module->getName() != "Transform" && ImGui::BeginPopupContextItem()) {
+						if (ImGui::Button("Remove Module")) {
+							if (module->getName() == "Camera" && WaterDropEngine::get().getInstance().getScene()->getActiveCamera().get() == this)
+								WaterDropEngine::get().getInstance().getScene()->_activeCameraID = -1;
+							moduleRemoved = true;
+							ModuleSerializer::removeModuleFromName(module->getName(), *this);
+						}
+						ImGui::EndPopup();
+					}
 					lastOneOpen = true;
 					ImGui::PopStyleVar(2);
 					ImGui::Dummy(ImVec2(0.0f, 1.0f));
@@ -151,15 +181,41 @@ namespace wde::scene {
 
 					// Render header content
 					ImGui::PushFont(ImGui::GetIO().FontDefault);
-					module->drawGUI();
+					if (!moduleRemoved)
+						module->drawGUI();
 					ImGui::PopFont();
 				}
 				else {
+					if (module->getName() != "Transform" && ImGui::BeginPopupContextItem()) {
+						if (ImGui::Button("Remove Module"))
+							ModuleSerializer::removeModuleFromName(module->getName(), *this);
+						ImGui::EndPopup();
+					}
 					lastOneOpen = false;
 					ImGui::PopStyleVar(2);
 					ImGui::PopFont();
 					ImGui::PopStyleColor();
 				}
+			}
+		}
+
+		// Add Modules Option
+		{
+			auto modules = ModuleSerializer::getRemainingModulesList(*this);
+			if (!modules.empty()) {
+				static int item_current = 0;
+				ImGui::Dummy(ImVec2(0.0f, 4.0f));
+				ImGui::Separator();
+				ImGui::Dummy(ImVec2(0.0f, 2.0f));
+
+				const float width = ImGui::GetWindowWidth();
+				ImGui::SetNextItemWidth(width * 0.6f);
+				ImGui::Combo("##Select Module", &item_current, modules);
+
+				ImGui::SameLine();
+				ImGui::SetNextItemWidth(width * 0.3f);
+				if (ImGui::Button("Add Module"))
+					ModuleSerializer::addModuleFromName(modules[item_current], "", *this);
 			}
 		}
 	}

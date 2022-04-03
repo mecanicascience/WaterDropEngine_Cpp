@@ -2,6 +2,7 @@
 
 #include "../../wde.hpp"
 #include "../WdeCore/Core/Module.hpp"
+#include "modules/ModuleSerializer.hpp"
 
 namespace wde::scene {
 	/**
