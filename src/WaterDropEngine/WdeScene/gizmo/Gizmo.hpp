@@ -79,7 +79,7 @@ namespace wde::scene {
 			/** Gizmo instance color pipelines */
 			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _pipelines {};
 			std::unordered_map<std::string, std::pair<std::unique_ptr<render::Buffer>, std::pair<VkDescriptorSet, VkDescriptorSetLayout>>> _pipelinesData {};
-			std::unordered_map<std::string, std::shared_ptr<resource::Mesh>> _meshes {};
+			std::unordered_map<std::string, resource::Mesh*> _meshes {};
 			/** The current session lines */
 			std::vector<std::pair<glm::vec3, glm::vec3>> _lines {};
 			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _linesPipelines {};

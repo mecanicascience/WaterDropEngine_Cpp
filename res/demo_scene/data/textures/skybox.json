@@ -1,6 +1,6 @@
 {
     "type" : "image",
-    "name" : "Skybox",
+    "name" : "skybox",
     "data" : {
         "type" : "cube",
         "path" : "skybox",

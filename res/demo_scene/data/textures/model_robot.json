@@ -1,6 +1,6 @@
 {
     "type" : "image",
-    "name" : "Robot",
+    "name" : "model_robot",
     "data" : {
         "type" : "2D",
         "path" : "model_robot.png",

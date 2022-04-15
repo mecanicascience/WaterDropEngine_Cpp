@@ -4,7 +4,6 @@
 namespace wde::resource {
 	Shader::Shader(const std::string &path)  : Resource(path, ResourceType::SHADER) {
 		WDE_PROFILE_FUNCTION();
-		logger::log(LogLevel::DEBUG, LogChannel::RES) << "Loading shader '" << path << "'." << logger::endl;
 
 		// Create shader module
 		std::vector<char> shaderContent = WdeFileUtils::readFile(path + ".spv");
@@ -23,6 +22,7 @@ namespace wde::resource {
 #ifdef WDE_GUI_ENABLED
 		ImGui::Text("Shader data ");
 		ImGui::Text("  - URL : %s", _path.c_str());
+		ImGui::Text("  - Reference Count : %i", _referenceCount);
 #endif
 	}
 }

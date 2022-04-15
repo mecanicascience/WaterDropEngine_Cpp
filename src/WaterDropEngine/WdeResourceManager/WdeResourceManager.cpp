@@ -8,6 +8,25 @@ namespace wde::resource {
 	void WdeResourceManager::tick() {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RES) << "Ticking for resource manager." << logger::endl;
+
+		// Delete resources that need to be deleted
+		for (auto& res : _resourcesToDelete) {
+			// Decrease ticks
+			res.second.first--;
+
+			// If no ticks remaining, delete
+			if (res.second.first <= 0) {
+				if (res.second.second->getReferenceCount() > 0) {
+					_resourcesToDelete.erase(res.first);
+					continue;
+				}
+
+				logger::log(LogLevel::DEBUG, LogChannel::RES) << "Releasing resource \"" << res.first << "\"." << logger::endl;
+				_resourcesByType[res.second.second->getType()].erase(res.first);
+				_resources.erase(res.first);
+				_resourcesToDelete.erase(res.first);
+			}
+		}
 	}
 
 	void WdeResourceManager::cleanUp() {

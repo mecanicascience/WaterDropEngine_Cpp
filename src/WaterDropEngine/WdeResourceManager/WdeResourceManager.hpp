@@ -26,29 +26,41 @@ namespace wde::resource {
 			 * @param resource The path to the resource
 			 */
 			template<typename T>
-			std::shared_ptr<T> load(const std::string& resource) {
-				if (_resources.contains(resource))
-					return std::dynamic_pointer_cast<T>(_resources[resource]);
+			T* load(const std::string& resource) {
+				// Resource already imported
+				if (_resources.contains(resource)) {
+					auto res = _resources[resource];
+					res->increaseReferenceCount();
+					return std::dynamic_pointer_cast<T>(res).get();
+				}
 
 				// Create resource
+				logger::log(LogLevel::DEBUG, LogChannel::RES) << "Loading resource \"" << resource << "\"." << logger::endl;
 				std::shared_ptr<T> baseRes (new T(resource));
-				auto res = std::dynamic_pointer_cast<Resource> (baseRes);
+				auto res = std::dynamic_pointer_cast<Resource>(baseRes);
+				res->increaseReferenceCount();
 				_resources[resource] = res;
 				_resourcesByType[res->getType()][resource] = res;
-				return baseRes;
+				return baseRes.get();
 			}
 
 			/**
-			 * Unload a given resource
+			 * Release a given resource
 			 * @param resource The path to the resource
 			 */
-			void unload(const std::string& resource) {
+			void release(const std::string& resource) {
 				if (!_resources.contains(resource))
 					return;
 
-				// Unload resource
-				_resourcesByType[_resources.at(resource)->getType()].erase(resource);
-				_resources.erase(resource);
+				// Decrease reference count
+				auto& res = _resources.at(resource);
+				if (res == nullptr)
+					return;
+				res->decreaseReferenceCount();
+
+				// Release resource if it can (3 ticks remaining)
+				if (res->getReferenceCount() <= 0)
+					_resourcesToDelete.emplace(res->getPath(), std::pair(3, res.get()));
 			}
 
 
@@ -64,5 +76,7 @@ namespace wde::resource {
 			std::unordered_map<std::string, std::shared_ptr<Resource>> _resources {};
 			/** Resources list by type */
 			std::unordered_map<Resource::ResourceType, std::unordered_map<std::string, std::shared_ptr<Resource>>> _resourcesByType {};
+			/** Resources list that needs to be deleted by path (name - (tickRemainingBeforeDeleting, Resource*)) */
+			std::unordered_map<std::string, std::pair<int, Resource*>> _resourcesToDelete {};
 	};
 }

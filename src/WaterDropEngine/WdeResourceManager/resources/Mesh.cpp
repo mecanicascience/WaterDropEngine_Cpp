@@ -24,7 +24,6 @@ namespace wde::resource {
 			std::vector<tinyobj::material_t> materials;
 			std::string warn, err;
 
-			logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Loading model from " << resPath << "." << logger::endl;
 			tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, resPath.c_str());
 			if (!warn.empty())
 				logger::log(LogLevel::WARN, LogChannel::SCENE) << "Failed to load model. " + std::string(warn) + std::string(err) << logger::endl;
@@ -98,7 +97,6 @@ namespace wde::resource {
 		// Recalculate normals
 		if (matData["data"]["recalculateNormals"].get<bool>()) {
 			WDE_PROFILE_SCOPE("wde::scene::Mesh::recomputeNormals");
-			logger::log << "Recalculating model normals." << logger::endl;
 
 			// Reset vertices normals
 			for (auto& vertex : vertices)
@@ -203,6 +201,7 @@ namespace wde::resource {
 		ImGui::Text("  - Index count : %i", _indexCount);
 		ImGui::Text("  - Vertex count : %i", _vertexCount);
 		ImGui::Text("  - URL : %s", _path.c_str());
+		ImGui::Text("  - Reference Count : %i", _referenceCount);
 #endif
 	}
 

@@ -49,6 +49,11 @@ namespace wde::scene {
 
 	void GizmoManager::cleanUp() {
 		WDE_PROFILE_FUNCTION();
+
+		// Clear meshes
+		_gizmoInstance->_meshes.clear();
+
+		// Clear instance
 		if (_gizmoInstance != nullptr)
 			_gizmoInstance.reset();
 	}

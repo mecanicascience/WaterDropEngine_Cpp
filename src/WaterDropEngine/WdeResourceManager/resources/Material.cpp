@@ -68,18 +68,18 @@ namespace wde::resource {
 
 					if (imageType["data"]["type"] == "2D") {
 						// Create image descriptor
-						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::Texture2D>(
-								p + "data/textures/" + setData["data"]["path"].get<std::string>()
-						)->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+						_textureURL = p + "data/textures/" + setData["data"]["path"].get<std::string>();
+						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::Texture2D>(_textureURL)
+								->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 						// Bind image
 						descBuilder.bind_image(set, &imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, stagesMask);
 					}
 					else if (imageType["data"]["type"] == "cube") {
 						// Create image descriptor
-						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::TextureCube>(
-								p + "data/textures/" + setData["data"]["path"].get<std::string>()
-						)->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+						_textureURL = p + "data/textures/" + setData["data"]["path"].get<std::string>();
+						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::TextureCube>(_textureURL)
+								->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 						// Bind image
 						descBuilder.bind_image(set, &imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, stagesMask);
@@ -115,6 +115,12 @@ namespace wde::resource {
 		}
 	}
 
+	Material::~Material() {
+		// Release resource
+		if (!_textureURL.empty())
+			WaterDropEngine::get().getResourceManager().release(_textureURL);
+	}
+
 	void Material::drawGUI() {
 #ifdef WDE_GUI_ENABLED
 		std::string polygonModeStr;
@@ -130,6 +136,7 @@ namespace wde::resource {
 		ImGui::Text("  - Render Stage : Pass %i, SubPass %i", _renderStage.first, _renderStage.second);
 		ImGui::Text("  - Drawing Mode : %s", polygonModeStr.c_str());
 		ImGui::Text("  - URL : %s", _path.c_str());
+		ImGui::Text("  - Reference Count : %i", _referenceCount);
 #endif
 	}
 

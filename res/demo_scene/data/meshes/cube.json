@@ -1,6 +1,6 @@
 {
     "type" : "mesh",
-    "name" : "Cube",
+    "name" : "cube",
     "data" : {
         "type" : "obj",
         "path" : "cube.obj",

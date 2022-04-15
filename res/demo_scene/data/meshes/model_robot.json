@@ -1,6 +1,6 @@
 {
     "type" : "mesh",
-    "name" : "Robot",
+    "name" : "model_robot",
     "data" : {
         "type" : "obj",
         "path" : "model_robot.obj",

@@ -12,10 +12,7 @@ namespace wde::render {
 			throw WdeException(LogChannel::RENDER, "The specified image format is undefined.");
 
 		if (initialize) {
-			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating a Vulkan image." << logger::endl;
 			createImage();
-
-			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating a Vulkan image view." << logger::endl;
 			createImageView();
 		}
 	}
