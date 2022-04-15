@@ -69,6 +69,15 @@ namespace wde::scene {
 				return _gameObjects[_gameObjects.size() - 1];
 			}
 
+			/**
+			 * Remove a given GameObject
+			 * @param go
+			 */
+			void removeGameObject(GameObject& go) {
+				// Remove GameObject
+				_gameObjectsToDelete.push_back(&go);
+			}
+
 
 		private:
 			// Scene game objects
@@ -78,6 +87,8 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>> _gameObjectsStatic;
 			/** List of scene dynamic game objects */
 			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic;
+			/** List of all scene game objects to delete on next tick */
+			std::vector<GameObject*> _gameObjectsToDelete {};
 
 			// Scene utils
 			/** Path to the scene object */

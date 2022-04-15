@@ -5,6 +5,22 @@ namespace wde::scene {
 	void WdeSceneInstance::tick() {
 		WDE_PROFILE_FUNCTION();
 
+		// Remove game objects to delete
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Removing deleted game objects." << logger::endl;
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::deleteGameObjects");
+			for (auto& go : _gameObjectsToDelete) {
+				/*_selectedGameObjectID = -1;
+				 * TODO
+
+				// Remove from static list
+				if (go->isStatic()) {
+					for (auto& go : _gameObjectsStatic)
+					_gameObjectsStatic.r
+				}*/
+			}
+		}
+
 		// Update game objects
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene dynamic game objects." << logger::endl;
 		{
@@ -57,6 +73,19 @@ namespace wde::scene {
 			ImGui::BeginChild("Scene Components Children");
 			ImGui::Dummy(ImVec2(0.0f, 0.15f));
 
+			// Add Game Object button
+			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+			if (ImGui::Button(ICON_FA_PLUS_CIRCLE))
+				createGameObject("Empty Gameobject");
+			ImGui::PopFont();
+			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+			ImGui::PushFont(ImGui::GetIO().FontDefault);
+			ImGui::SameLine();
+			ImGui::Text("Add an empty Gameobject");
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::Separator();
+
 			// Scene game objects
 			ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_NoClip;
 			static int selected = -1;
@@ -68,7 +97,6 @@ namespace wde::scene {
 						drawGUIForGo(go, &selected);
 					}
 				}
-
 				ImGui::EndTable();
 			}
 

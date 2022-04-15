@@ -87,8 +87,22 @@ namespace wde::scene {
 					nameLoc[i] = name[i];
 				ImGui::Text("Edit name :");
 				ImGui::InputText("##edit", nameLoc, sizeC);
+				ImGui::Separator();
 				if (ImGui::Button("Close"))
 					ImGui::CloseCurrentPopup();
+
+				ImGui::SameLine();
+				ImGui::Dummy({2.0f, 0.0f});
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_Button, gui::GUITheme::colorRedMajor);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, gui::GUITheme::colorRedMinor);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, gui::GUITheme::colorRedMinor);
+				if (ImGui::Button("Delete")) {
+					WaterDropEngine::get().getInstance().getScene()->removeGameObject(*this);
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::PopStyleColor(3);
+
 				name = nameLoc;
 				ImGui::EndPopup();
 			}
