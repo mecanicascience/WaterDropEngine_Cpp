@@ -36,6 +36,7 @@ namespace wde::resource {
 				}
 
 				// Create resource
+				logger::log(LogLevel::DEBUG, LogChannel::RES) << "Loading resource \"" << resource << "\"." << logger::endl;
 				std::shared_ptr<T> baseRes (new T(resource));
 				auto res = std::dynamic_pointer_cast<Resource>(baseRes);
 				res->increaseReferenceCount();

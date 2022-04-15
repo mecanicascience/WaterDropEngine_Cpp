@@ -165,6 +165,7 @@ namespace wde::resource {
 		ImGui::Text("Image data:");
 		ImGui::Text("  - Small texture sizes : %u x %u", _textureImageGUI[0]->getExtent().width, _textureImageGUI[0]->getExtent().height);
 		ImGui::Text("  - Format : %i", _textureImage->getFormat());
+		ImGui::Text("  - Reference Count : %i", _referenceCount);
 #endif
 	}
 

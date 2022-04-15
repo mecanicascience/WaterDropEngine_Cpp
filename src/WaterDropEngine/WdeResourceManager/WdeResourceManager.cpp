@@ -21,6 +21,7 @@ namespace wde::resource {
 					continue;
 				}
 
+				logger::log(LogLevel::DEBUG, LogChannel::RES) << "Releasing resource \"" << res.first << "\"." << logger::endl;
 				_resourcesByType[res.second.second->getType()].erase(res.first);
 				_resources.erase(res.first);
 				_resourcesToDelete.erase(res.first);

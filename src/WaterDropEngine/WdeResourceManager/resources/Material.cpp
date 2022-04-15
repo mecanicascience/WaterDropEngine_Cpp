@@ -136,6 +136,7 @@ namespace wde::resource {
 		ImGui::Text("  - Render Stage : Pass %i, SubPass %i", _renderStage.first, _renderStage.second);
 		ImGui::Text("  - Drawing Mode : %s", polygonModeStr.c_str());
 		ImGui::Text("  - URL : %s", _path.c_str());
+		ImGui::Text("  - Reference Count : %i", _referenceCount);
 #endif
 	}
 

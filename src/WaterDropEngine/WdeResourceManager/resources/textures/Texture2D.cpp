@@ -75,6 +75,7 @@ namespace wde::resource {
 		ImGui::Text("  - Filter : %i", _textureUsage);
 		ImGui::Text("  - Sampler Filter : %i", _samplerFilter);
 		ImGui::Text("  - Sampler Address mode : %i", _samplerAddressMode);
+		ImGui::Text("  - Reference Count : %i", _referenceCount);
 #endif
 	}
 
@@ -85,7 +86,6 @@ namespace wde::resource {
 		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice();
 
 		// Load the texture
-		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Loading texture from path '" + _filepath + "'." << logger::endl;
 		int texChannels;
 		int texWidth;
 		int texHeight;
