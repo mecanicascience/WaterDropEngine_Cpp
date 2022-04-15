@@ -30,17 +30,67 @@ namespace wde::scene {
 
 	void MeshRendererModule::drawGUI() {
 		ImGui::PushFont(ImGui::GetIO().FontDefault);
+
+		if (ImGui::BeginPopupContextItem("MeshSelect")) { // Select mesh
+			if (ImGui::Button("Select other mesh")) {
+				std::string filePath;
+				auto jsonRes = json::parse(WdeFileUtils::readFileDialog("json", filePath));
+
+				if (!filePath.empty()) {
+					// Remove old material
+					if (_mesh != nullptr)
+						WaterDropEngine::get().getResourceManager().release(_mesh->getPath());
+
+					// Add new material
+					auto& wde = WaterDropEngine::get();
+					_meshName = jsonRes["name"];
+					_mesh = wde.getResourceManager().load<resource::Mesh>(wde.getInstance().getScene()->getPath() + "data/meshes/" + _meshName + ".json");
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::Separator();
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+
+		if (ImGui::BeginPopupContextItem("MaterialSelect")) { // Select mesh
+			if (ImGui::Button("Select other material")) {
+				std::string filePath;
+				auto jsonRes = json::parse(WdeFileUtils::readFileDialog("json", filePath));
+
+				if (!filePath.empty()) {
+					// Remove old material
+					if (_material != nullptr)
+						WaterDropEngine::get().getResourceManager().release(_material->getPath());
+
+					// Add new material
+					auto& wde = WaterDropEngine::get();
+					_materialName = jsonRes["name"];
+					_material = wde.getResourceManager().load<resource::Material>(wde.getInstance().getScene()->getPath() + "data/materials/" + _materialName + ".json");
+					ImGui::CloseCurrentPopup();
+				}
+			}
+			ImGui::Separator();
+			if (ImGui::Button("Close"))
+				ImGui::CloseCurrentPopup();
+			ImGui::EndPopup();
+		}
+
 		// Mesh
 		if (_mesh == nullptr)
 			ImGui::Text(" No mesh selected.");
 		else
 			ImGui::Text(" Mesh name : \"%s\".", _mesh->getName().c_str());
+		ImGui::OpenPopupOnItemClick("MeshSelect", ImGuiPopupFlags_MouseButtonRight);
+
 
 		// Material
 		if (_material == nullptr)
 			ImGui::Text(" No material selected.");
 		else
 			ImGui::Text(" Material name : \"%s\".", _material->getName().c_str());
+		ImGui::OpenPopupOnItemClick("MaterialSelect", ImGuiPopupFlags_MouseButtonRight);
 		ImGui::PopFont();
 	}
 

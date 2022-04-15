@@ -1,6 +1,6 @@
 {
     "type" : "material",
-    "name" : "Skybox Material",
+    "name" : "skybox",
     "data" : {
         "shaders" : [
             "common/skybox/skybox.vert",

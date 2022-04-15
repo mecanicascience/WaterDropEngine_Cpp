@@ -1,6 +1,6 @@
 {
     "type" : "image",
-    "name" : "Fougere",
+    "name" : "fougere",
     "data" : {
         "type" : "2D",
         "path" : "fougere.png",

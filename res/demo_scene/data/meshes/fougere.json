@@ -1,6 +1,6 @@
 {
     "type" : "mesh",
-    "name" : "Fougere",
+    "name" : "fougere",
     "data" : {
         "type" : "obj",
         "path" : "fougere.obj",

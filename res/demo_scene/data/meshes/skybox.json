@@ -1,6 +1,6 @@
 {
     "type" : "mesh",
-    "name" : "Skybox",
+    "name" : "skybox",
     "data" : {
         "type" : "obj",
         "path" : "skybox.obj",

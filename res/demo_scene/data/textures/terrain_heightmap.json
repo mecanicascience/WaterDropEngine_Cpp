@@ -1,6 +1,6 @@
 {
     "type" : "image",
-    "name" : "Terrain Heightmap",
+    "name" : "terrain_heightmap",
     "data" : {
         "type" : "2D",
         "path" : "terrain_heightmap.png",

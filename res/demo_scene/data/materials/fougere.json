@@ -1,6 +1,6 @@
 {
     "type" : "material",
-    "name" : "Fougere Material",
+    "name" : "fougere",
     "data" : {
         "shaders" : [
             "common/texture/unlit.vert",
