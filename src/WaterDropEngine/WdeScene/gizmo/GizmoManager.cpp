@@ -49,6 +49,12 @@ namespace wde::scene {
 
 	void GizmoManager::cleanUp() {
 		WDE_PROFILE_FUNCTION();
+
+		// Release gizmo meshes
+		for (auto m : GizmoManager::_gizmoInstance->_meshes)
+			WaterDropEngine::get().getResourceManager().release(m.second->getPath());
+
+		// Destroy instance
 		if (_gizmoInstance != nullptr)
 			_gizmoInstance.reset();
 	}

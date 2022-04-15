@@ -13,6 +13,7 @@ namespace wde::resource {
 	class Material : public Resource {
 		public:
 			explicit Material(const std::string& path);
+			~Material();
 			void drawGUI() override;
 
 			/**
@@ -35,6 +36,7 @@ namespace wde::resource {
 			std::string _name;
 			std::unique_ptr<render::PipelineGraphics> _pipeline = nullptr;
 			VkPolygonMode _polygonMode {};
+			std::string _textureURL;
 
 			/** Material descriptor set */
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _materialSet {};

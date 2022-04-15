@@ -52,8 +52,8 @@ namespace examples {
 					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
 					RenderBatch currentBatch {};
 
-					std::shared_ptr<resource::Mesh> lastGOMeshRef = nullptr;
-					std::shared_ptr<resource::Material> lastGOMaterialRef = nullptr;
+					resource::Mesh* lastGOMeshRef = nullptr;
+					resource::Material* lastGOMaterialRef = nullptr;
 
 					// Map Render GO Commands
 					void *renderGOData = _indirectCommandsBuffer->map();
@@ -83,15 +83,15 @@ namespace examples {
 						commandsGOData[goActiveID] = meshModule->getMesh()->getRenderIndirectCommand(go->getID());
 
 						// If material different from last one, push last batch
-						auto& mat = meshModule->getMaterial();
+						auto mat = meshModule->getMaterial();
 						if (currentBatch.indexCount > 0 && lastGOMaterialRef != mat) {
 							if (currentBatch.indexCount > 0)
 								renderBatches.push_back(currentBatch);
 
 							// Add this object to a new batch
 							currentBatch = RenderBatch {};
-							currentBatch.material = mat.get();
-							currentBatch.mesh = meshModule->getMesh().get();
+							currentBatch.material = mat;
+							currentBatch.mesh = meshModule->getMesh();
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
 							goActiveID++;
@@ -100,15 +100,15 @@ namespace examples {
 						lastGOMaterialRef = mat;
 
 						// If mesh different from last one, push last batch
-						auto& mesh = meshModule->getMesh();
+						auto mesh = meshModule->getMesh();
 						if (currentBatch.indexCount > 0 && lastGOMeshRef != mesh) {
 							if (currentBatch.indexCount > 0)
 								renderBatches.push_back(currentBatch);
 
 							// Add this object to a new batch
 							currentBatch = RenderBatch {};
-							currentBatch.material = mat.get();
-							currentBatch.mesh = mesh.get();
+							currentBatch.material = mat;
+							currentBatch.mesh = mesh;
 							currentBatch.firstIndex = static_cast<int>(goActiveID);
 							currentBatch.indexCount = 1;
 							goActiveID++;
@@ -117,8 +117,8 @@ namespace examples {
 						lastGOMeshRef = mesh;
 
 						// Same material and mesh
-						currentBatch.material = mat.get();
-						currentBatch.mesh = mesh.get();
+						currentBatch.material = mat;
+						currentBatch.mesh = mesh;
 						currentBatch.indexCount++;
 						if (currentBatch.firstIndex == -1)
 							currentBatch.firstIndex = static_cast<int>(goActiveID);

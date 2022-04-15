@@ -320,6 +320,10 @@ namespace wde::render {
 				throw WdeException(LogChannel::RENDER, "Failed to create graphics pipelines.");
 		}
 
+		// Release shader modules
+		for (const std::string &shaderStage : _shaderStages)
+			WaterDropEngine::get().getResourceManager().release(shaderStage);
+
 		// Set pipeline initialized status
 		_initialized = true;
 	}

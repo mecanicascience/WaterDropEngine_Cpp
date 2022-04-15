@@ -124,13 +124,15 @@ namespace wde {
 						_input->tick();
 						_render->tick();
 						_gui->tick();
-						_resourceManager->tick();
 
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
 						instance.tickInstance();
 
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for scene instance." << logger::endl;
 						_scene->tick();
+
+						// Clear unused resources
+						_resourceManager->tick();
 
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "====== End of tick. ======\n\n" << logger::endl;
 					}

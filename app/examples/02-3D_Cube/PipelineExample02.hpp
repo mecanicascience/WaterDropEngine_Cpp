@@ -38,7 +38,7 @@ namespace examples {
 								continue;
 
 							// Bind sets
-							bind(commandBuffer, mesh->getMaterial().get()); // global
+							bind(commandBuffer, mesh->getMaterial()); // global
 							mesh->getMaterial()->bind(commandBuffer); // material
 							mesh->getMesh()->bind(commandBuffer); // object
 

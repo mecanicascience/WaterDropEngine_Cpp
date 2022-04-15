@@ -13,6 +13,20 @@ namespace wde::scene {
 		_mesh = wde.getResourceManager().load<resource::Mesh>(wde.getInstance().getScene()->getPath() + "data/meshes/" + _meshName);
 	}
 
+	MeshRendererModule::~MeshRendererModule() {
+		// Release material and mesh
+		if (_material != nullptr) {
+			WaterDropEngine::get().getResourceManager().release(_material->getPath());
+			_materialName = "";
+			_material = nullptr;
+		}
+		if (_mesh != nullptr) {
+			WaterDropEngine::get().getResourceManager().release(_mesh->getPath());
+			_meshName = "";
+			_mesh = nullptr;
+		}
+	}
+
 
 	void MeshRendererModule::drawGUI() {
 		ImGui::PushFont(ImGui::GetIO().FontDefault);
