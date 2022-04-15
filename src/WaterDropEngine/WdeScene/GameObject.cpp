@@ -80,6 +80,19 @@ namespace wde::scene {
 
 		// Display object name
 		{
+			if (ImGui::BeginPopupContextItem("edit_object_name")) {
+				uint32_t sizeC = name.size() + 30;
+				char* nameLoc = new char[sizeC];
+				for (int i = 0; i < name.size(); i++)
+					nameLoc[i] = name[i];
+				ImGui::Text("Edit name :");
+				ImGui::InputText("##edit", nameLoc, sizeC);
+				if (ImGui::Button("Close"))
+					ImGui::CloseCurrentPopup();
+				name = nameLoc;
+				ImGui::EndPopup();
+			}
+
 			ImGui::SameLine();
 			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 			char buf[4 + name.size() + 5];
@@ -90,6 +103,7 @@ namespace wde::scene {
 			else
 				sprintf(buf, ICON_FA_FOLDER "   %s", name.c_str());
 			gui::GUIRenderer::textCentered(buf);
+			ImGui::OpenPopupOnItemClick("edit_object_name", ImGuiPopupFlags_MouseButtonRight);
 			ImGui::PopFont();
 		}
 
