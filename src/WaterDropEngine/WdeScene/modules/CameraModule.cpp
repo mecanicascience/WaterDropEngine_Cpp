@@ -140,7 +140,7 @@ namespace wde::scene {
 
 	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {
 		// Active camera, do not draw gizmo
-		if (WaterDropEngine::get().getInstance().getScene()->_activeCameraID == static_cast<int>(_gameObject.getID()))
+		if (WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == &_gameObject)
 			return;
 
 		// Draw camera frustum gizmo
@@ -215,7 +215,7 @@ namespace wde::scene {
 	}
 
 	void CameraModule::setAsActive() {
-		WaterDropEngine::get().getInstance().getScene()->_activeCameraID = static_cast<int>(_gameObject.getID());
+		WaterDropEngine::get().getInstance().getScene()->setActiveCamera(&_gameObject);
 	}
 
 	void CameraModule::setFarPlane(float farPlane) {

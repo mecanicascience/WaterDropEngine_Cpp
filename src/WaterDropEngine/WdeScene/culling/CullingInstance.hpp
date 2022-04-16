@@ -72,7 +72,7 @@ namespace wde::scene {
 			 * Do culling based on it's batches for a specific scene camera
 			 * @param cullingCamera
 			 */
-			void cull(const std::shared_ptr<GameObject>& cullingCamera);
+			void cull(GameObject* cullingCamera);
 
 			 /**
 			  * Draws the objects in the culled buffers
@@ -111,7 +111,7 @@ namespace wde::scene {
 
 			// Helper functions
 			/** Update the culling scene parameters based on the scene and on it's configured camera */
-			void updateScene(const std::shared_ptr<GameObject>& cullingCamera);
+			void updateScene(GameObject* cullingCamera);
 
 			inline static glm::vec4 normalizePlane(glm::vec4 p) {
 				return p / glm::length(glm::vec3(p));

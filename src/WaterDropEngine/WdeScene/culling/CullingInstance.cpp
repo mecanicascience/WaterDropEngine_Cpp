@@ -205,7 +205,7 @@ namespace wde::scene {
 		_gpuRenderBatches->unmap();
 	}
 
-	void CullingInstance::cull(const std::shared_ptr<GameObject> &cullingCamera) {
+	void CullingInstance::cull(GameObject* cullingCamera) {
 		WDE_PROFILE_FUNCTION();
 		if (cullingCamera == nullptr)
 			return;
@@ -278,7 +278,7 @@ namespace wde::scene {
 
 
 	// Helper functions
-	void CullingInstance::updateScene(const std::shared_ptr<GameObject> &cullingCamera) {
+	void CullingInstance::updateScene(GameObject* cullingCamera) {
 		WDE_PROFILE_FUNCTION();
 		if (cullingCamera == nullptr)
 			throw WdeException(LogChannel::SCENE, "Trying to run culling without a camera set.");

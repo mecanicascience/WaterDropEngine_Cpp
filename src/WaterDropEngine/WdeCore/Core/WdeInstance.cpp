@@ -66,7 +66,7 @@ namespace wde {
 			auto camModule = camera->addModule<scene::CameraModule>();
 			camModule->setAsActive();
 			camModule->setFarPlane(std::numeric_limits<float>::max());
-			_scene->_activeCameraID = static_cast<int>(camera->getID());
+			_scene->setActiveCamera(camera.get());
 			camera->addModule<scene::ControllerModule>();
 			camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
 			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};

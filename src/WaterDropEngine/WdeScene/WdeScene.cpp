@@ -123,6 +123,7 @@ namespace wde::scene {
 
 		// Load game objects
 		uint32_t currentGOID = scene->getGameObjects().size();
+		std::unordered_map<int, int> oldToNewIds {}; // <oldID, newID>
 		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
 			const auto& goData = json::parse(WdeFileUtils::readFile(path + "gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
 			if (goData["type"] != "gameObject")
@@ -132,18 +133,19 @@ namespace wde::scene {
 			auto go = scene->createGameObject(goData["name"], goData["data"]["static"].get<bool>());
 			go->active = goData["data"]["active"].get<bool>();
 
+			// Add parent id to list
+			oldToNewIds.emplace(goIDs.get<int>(), go->getID());
+
 			// Create game object modules
-			for (const auto& modData : goData["modules"]) {
+			for (const auto& modData : goData["modules"])
 				ModuleSerializer::addModuleFromName(modData["name"], to_string(modData["data"]), *go);
-			}
 		}
 
 		// Set game object parents and children
 		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
 			const auto& goData = json::parse(WdeFileUtils::readFile(path + "gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
-			if (goData["modules"][0]["name"] == "Transform"
-					&& goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
-				scene->getGameObject((int)currentGOID)->transform->setParent(scene->getGameObject(goData["modules"][0]["data"]["parentID"].get<int>())->transform);
+			if (goData["modules"][0]["name"] == "Transform" && goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
+				scene->getGameObjects()[(int) currentGOID]->transform->setParent(scene->getGameObjects()[oldToNewIds.at(goData["modules"][0]["data"]["parentID"].get<int>())]->transform);
 			currentGOID++;
 		}
 	}

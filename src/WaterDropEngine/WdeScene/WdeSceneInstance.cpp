@@ -9,15 +9,33 @@ namespace wde::scene {
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Removing deleted game objects." << logger::endl;
 		{
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::deleteGameObjects");
-			for (auto& go : _gameObjectsToDelete) {
-				/*_selectedGameObjectID = -1;
-				 * TODO
+
+			if (!_gameObjectsToDelete.empty()) {
+				// Remove selected and active camera
+				for (GameObject* go : _gameObjectsToDelete) {
+					if (_selectedGameObject == go)
+						_selectedGameObject = nullptr;
+					if (_activeCamera == go)
+						_activeCamera = nullptr;
+				}
 
 				// Remove from static list
-				if (go->isStatic()) {
-					for (auto& go : _gameObjectsStatic)
-					_gameObjectsStatic.r
-				}*/
+				_gameObjectsStatic.erase(std::remove_if(_gameObjectsStatic.begin(), _gameObjectsStatic.end(), [this](const auto&x) {
+					return std::find(_gameObjectsToDelete.begin(), _gameObjectsToDelete.end(), x.get()) != _gameObjectsToDelete.end();
+				}), _gameObjectsStatic.end());
+
+				// Remove from dynamic list
+				_gameObjectsDynamic.erase(std::remove_if(_gameObjectsDynamic.begin(), _gameObjectsDynamic.end(), [this](const auto&x) {
+					return std::find(_gameObjectsToDelete.begin(), _gameObjectsToDelete.end(), x.get()) != _gameObjectsToDelete.end();
+				}), _gameObjectsDynamic.end());
+
+				// Remove from game objects
+				_gameObjects.erase(std::remove_if(_gameObjects.begin(), _gameObjects.end(), [this](const auto&x) {
+					return std::find(_gameObjectsToDelete.begin(), _gameObjectsToDelete.end(), x.get()) != _gameObjectsToDelete.end();
+				}), _gameObjects.end());
+
+				// Clear game objects to delete
+				_gameObjectsToDelete.clear();
 			}
 		}
 
@@ -38,6 +56,11 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::cleanUpInstance() {
+		// Remove references
+		_selectedGameObject = nullptr;
+		_activeCamera = nullptr;
+
+		// Remove game objects
 		_gameObjectsDynamic.clear();
 		_gameObjectsStatic.clear();
 		_gameObjects.clear();
@@ -88,25 +111,24 @@ namespace wde::scene {
 
 			// Scene game objects
 			ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_NoClip;
-			static int selected = -1;
+			GameObject* oldSelected = _selectedGameObject;
 			if (ImGui::BeginTable("Game Objects List", 3, flags)) {
 				// Draw game objects list
 				for (auto& go : _gameObjects) {
 					if (go->transform->getParent() == nullptr) {
 						ImGui::TableNextRow();
-						drawGUIForGo(go, &selected);
+						drawGUIForGo(go, _selectedGameObject);
 					}
 				}
 				ImGui::EndTable();
 			}
 
 			// Selected game object changed
-			if (selected != _selectedGameObjectID) {
-				if (_selectedGameObjectID >= 0)
-					_gameObjects[_selectedGameObjectID]->setSelected(false);
-				_selectedGameObjectID = selected;
-				if (_selectedGameObjectID >= 0)
-					_gameObjects[_selectedGameObjectID]->setSelected(true);
+			if (oldSelected != _selectedGameObject) {
+				if (oldSelected != nullptr)
+					oldSelected->setSelected(false);
+				if (_selectedGameObject != nullptr)
+					_selectedGameObject->setSelected(true);
 			}
 
 			ImGui::EndChild();
@@ -120,15 +142,15 @@ namespace wde::scene {
 			gui::GUIRenderer::popWindowTabStyle();
 			ImGui::PushFont(ImGui::GetIO().FontDefault);
 			ImGui::Dummy(ImVec2(0.0f, 0.15f));
-			if (_selectedGameObjectID != -1)
-				_gameObjects.at(_selectedGameObjectID)->drawGUI();
+			if (_selectedGameObject != nullptr)
+				_selectedGameObject->drawGUI();
 			ImGui::End();
 			ImGui::PopFont();
 		}
 #endif
 	}
 
-	void WdeSceneInstance::drawGUIForGo(const std::shared_ptr<GameObject> &go, int* selected) const {
+	void WdeSceneInstance::drawGUIForGo(const std::shared_ptr<GameObject> &go, GameObject*& selected) const {
 #ifdef WDE_GUI_ENABLED
 		std::string typeName;
 		if (go->getModule<MeshRendererModule>())
@@ -173,8 +195,8 @@ namespace wde::scene {
 			// Draw tree node
 			ImGui::SameLine();
 			ImGui::PushID(static_cast<int>(go->getID()) + 216846353);
-			if (ImGui::Selectable(buf3, *selected == go->getID(), ImGuiSelectableFlags_SpanAllColumns))
-				*selected = static_cast<int>(go->getID());
+			if (ImGui::Selectable(buf3, selected == go.get(), ImGuiSelectableFlags_SpanAllColumns))
+				selected = go.get();
 			ImGui::PopID();
 			ImGui::PopFont();
 
@@ -210,8 +232,8 @@ namespace wde::scene {
 
 			ImGui::SameLine();
 			ImGui::PushID(static_cast<int>(go->getID()) + 216846354);
-			if (ImGui::Selectable(buf2, *selected == go->getID(), ImGuiSelectableFlags_SpanAllColumns))
-				*selected = static_cast<int>(go->getID());
+			if (ImGui::Selectable(buf2, selected == go.get(), ImGuiSelectableFlags_SpanAllColumns))
+				selected = go.get();
 			ImGui::PopID();
 			ImGui::PopFont();
 

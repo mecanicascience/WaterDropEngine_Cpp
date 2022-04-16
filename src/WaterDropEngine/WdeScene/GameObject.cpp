@@ -103,7 +103,7 @@ namespace wde::scene {
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, gui::GUITheme::colorRedMinor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, gui::GUITheme::colorRedMinor);
 				if (ImGui::Button("Delete")) {
-					// TODO
+					WaterDropEngine::get().getInstance().getScene()->removeGameObject(this);
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::PopStyleColor(3);
@@ -197,8 +197,8 @@ namespace wde::scene {
 					bool moduleRemoved = false;
 					if (module->getName() != "Transform" && ImGui::BeginPopupContextItem()) {
 						if (ImGui::Button("Remove Module")) {
-							if (module->getName() == "Camera" && WaterDropEngine::get().getInstance().getScene()->getActiveCamera().get() == this)
-								WaterDropEngine::get().getInstance().getScene()->_activeCameraID = -1;
+							if (module->getName() == "Camera" && WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == this)
+								WaterDropEngine::get().getInstance().getScene()->setActiveCamera(nullptr);
 							moduleRemoved = true;
 							ModuleSerializer::removeModuleFromName(module->getName(), *this);
 						}
