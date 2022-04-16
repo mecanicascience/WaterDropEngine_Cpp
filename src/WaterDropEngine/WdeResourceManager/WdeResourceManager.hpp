@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utility>
+#include <queue>
 
 #include "../../wde.hpp"
 #include "../WdeCore/Core/Module.hpp"
@@ -50,6 +51,7 @@ namespace wde::resource {
 			 * @param resource The path to the resource
 			 */
 			void release(const std::string& resource) {
+				// Not loaded in memory
 				if (!_resources.contains(resource))
 					return;
 
@@ -60,8 +62,8 @@ namespace wde::resource {
 				res->decreaseReferenceCount();
 
 				// Release resource if it can (3 ticks remaining)
-				if (res->getReferenceCount() <= 0)
-					_resourcesToDelete.emplace(res->getPath(), std::pair(3, res.get()));
+				if (res->getReferenceCount() <= 0 && !_resourcesToDelete.contains(res->getPath()))
+					_resourcesToDelete.emplace(res->getPath(), 3);
 			}
 
 
@@ -77,7 +79,7 @@ namespace wde::resource {
 			std::unordered_map<std::string, std::shared_ptr<Resource>> _resources {};
 			/** Resources list by type */
 			std::unordered_map<Resource::ResourceType, std::unordered_map<std::string, std::shared_ptr<Resource>>> _resourcesByType {};
-			/** Resources list that needs to be deleted by path (name - (tickRemainingBeforeDeleting, Resource*)) */
-			std::unordered_map<std::string, std::pair<int, Resource*>> _resourcesToDelete {};
+			/** Resources list that needs to be deleted by path (name - tickRemainingBeforeDeleting) */
+			std::unordered_map<std::string, int> _resourcesToDelete {};
 	};
 }

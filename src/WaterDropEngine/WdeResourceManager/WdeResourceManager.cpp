@@ -9,23 +9,31 @@ namespace wde::resource {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RES) << "Ticking for resource manager." << logger::endl;
 
-		// Delete resources that need to be deleted
-		for (auto& res : _resourcesToDelete) {
+		// Select resources that need to be deleted
+		std::vector<decltype(_resourcesToDelete)::key_type> vecToDelete;
+		for (auto&& el : _resourcesToDelete) {
 			// Decrease ticks
-			res.second.first--;
+			el.second--;
 
 			// If no ticks remaining, delete
-			if (res.second.first <= 0) {
-				if (res.second.second->getReferenceCount() > 0) {
-					_resourcesToDelete.erase(res.first);
+			if (el.second <= 0) {
+				// Resource not loaded or reloaded since last time
+				if (!_resources.contains(el.first) || _resources.at(el.first)->getReferenceCount() > 0) {
+					vecToDelete.emplace_back(el.first);
 					continue;
 				}
 
-				logger::log(LogLevel::DEBUG, LogChannel::RES) << "Releasing resource \"" << res.first << "\"." << logger::endl;
-				_resourcesByType[res.second.second->getType()].erase(res.first);
-				_resources.erase(res.first);
-				_resourcesToDelete.erase(res.first);
+				// Release resource
+				_resourcesByType[_resources.at(el.first)->getType()].erase(el.first);
+				_resources.erase(el.first);
+				vecToDelete.emplace_back(el.first);
 			}
+		}
+
+		// Erase resources that need to be deleted
+		for (auto&& key : vecToDelete) {
+			logger::log(LogLevel::DEBUG, LogChannel::RES) << "Releasing resource \"" << key << "\"." << logger::endl;
+			_resourcesToDelete.erase(key);
 		}
 	}
 
