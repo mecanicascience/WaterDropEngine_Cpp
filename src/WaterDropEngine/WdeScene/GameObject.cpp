@@ -81,16 +81,21 @@ namespace wde::scene {
 		// Display object name
 		{
 			if (ImGui::BeginPopupContextItem("edit_object_name")) {
-				uint32_t sizeC = name.size() + 30;
-				char* nameLoc = new char[sizeC];
-				for (int i = 0; i < name.size(); i++)
-					nameLoc[i] = name[i];
+				// Edit
+				static char nameLoc[128] = "";
+				memset(nameLoc, 0, IM_ARRAYSIZE(nameLoc));
+				for (int i = 0; i < IM_ARRAYSIZE(nameLoc); i++) {
+					if (i < name.size())
+						nameLoc[i] = name[i];
+				}
 				ImGui::Text("Edit name :");
-				ImGui::InputText("##edit", nameLoc, sizeC);
+				ImGui::InputText("##edit", nameLoc, IM_ARRAYSIZE(nameLoc));
 				ImGui::Separator();
 				if (ImGui::Button("Close"))
 					ImGui::CloseCurrentPopup();
+				name = nameLoc;
 
+				// Delete object
 				ImGui::SameLine();
 				ImGui::Dummy({2.0f, 0.0f});
 				ImGui::SameLine();
@@ -98,12 +103,10 @@ namespace wde::scene {
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, gui::GUITheme::colorRedMinor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, gui::GUITheme::colorRedMinor);
 				if (ImGui::Button("Delete")) {
-					WaterDropEngine::get().getInstance().getScene()->removeGameObject(*this);
+					// TODO
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::PopStyleColor(3);
-
-				name = nameLoc;
 				ImGui::EndPopup();
 			}
 

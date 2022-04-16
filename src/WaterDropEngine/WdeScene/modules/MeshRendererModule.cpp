@@ -14,12 +14,14 @@ namespace wde::scene {
 	}
 
 	MeshRendererModule::~MeshRendererModule() {
-		// Release material and mesh
+		// Release material
 		if (_material != nullptr) {
 			WaterDropEngine::get().getResourceManager().release(_material->getPath());
 			_materialName = "";
 			_material = nullptr;
 		}
+
+		// Release mesh
 		if (_mesh != nullptr) {
 			WaterDropEngine::get().getResourceManager().release(_mesh->getPath());
 			_meshName = "";
@@ -34,16 +36,16 @@ namespace wde::scene {
 		if (ImGui::BeginPopupContextItem("MeshSelect")) { // Select mesh
 			if (ImGui::Button("Select other mesh")) {
 				std::string filePath;
-				auto jsonRes = json::parse(WdeFileUtils::readFileDialog("json", filePath));
+				auto resRaw = WdeFileUtils::readFileDialog("json", filePath);
 
-				if (!filePath.empty()) {
+				if (!filePath.empty() && !resRaw.empty()) {
 					// Remove old material
 					if (_mesh != nullptr)
 						WaterDropEngine::get().getResourceManager().release(_mesh->getPath());
 
 					// Add new material
 					auto& wde = WaterDropEngine::get();
-					_meshName = jsonRes["name"];
+					_meshName = json::parse(resRaw)["name"];
 					_mesh = wde.getResourceManager().load<resource::Mesh>(wde.getInstance().getScene()->getPath() + "data/meshes/" + _meshName + ".json");
 					ImGui::CloseCurrentPopup();
 				}
@@ -57,16 +59,16 @@ namespace wde::scene {
 		if (ImGui::BeginPopupContextItem("MaterialSelect")) { // Select mesh
 			if (ImGui::Button("Select other material")) {
 				std::string filePath;
-				auto jsonRes = json::parse(WdeFileUtils::readFileDialog("json", filePath));
+				auto resRaw = WdeFileUtils::readFileDialog("json", filePath);
 
-				if (!filePath.empty()) {
+				if (!filePath.empty() && !resRaw.empty()) {
 					// Remove old material
 					if (_material != nullptr)
 						WaterDropEngine::get().getResourceManager().release(_material->getPath());
 
 					// Add new material
 					auto& wde = WaterDropEngine::get();
-					_materialName = jsonRes["name"];
+					_materialName = json::parse(resRaw)["name"];
 					_material = wde.getResourceManager().load<resource::Material>(wde.getInstance().getScene()->getPath() + "data/materials/" + _materialName + ".json");
 					ImGui::CloseCurrentPopup();
 				}

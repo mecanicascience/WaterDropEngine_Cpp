@@ -24,6 +24,9 @@ namespace wde::resource {
 			uint32_t getReferenceCount() const { return _referenceCount; }
 			/** @return The name of the resource (default : will return resource path) */
 			virtual std::string getName() const { return _path; }
+			void increaseReferenceCount() { _referenceCount++; }
+			void decreaseReferenceCount() { _referenceCount--; }
+			uint32_t getReferenceCount() const { return _referenceCount; }
 
 
 			static std::string getName(const ResourceType& type) {
@@ -58,7 +61,7 @@ namespace wde::resource {
 		protected:
 			std::string _path;
 			ResourceType _type;
-			uint32_t _referenceCount;
+      uint32_t _referenceCount = 0;
 	};
 }
 

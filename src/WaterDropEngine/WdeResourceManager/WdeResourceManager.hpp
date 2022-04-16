@@ -46,7 +46,7 @@ namespace wde::resource {
 			}
 
 			/**
-			 * Unload a given resource
+			 * Release a given resource
 			 * @param resource The path to the resource
 			 */
 			void release(const std::string& resource) {

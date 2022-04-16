@@ -15,7 +15,7 @@ namespace wde::scene {
 		public:
 			explicit MeshRendererModule(GameObject& gameObject);
 			explicit MeshRendererModule(GameObject& gameObject, const std::string& data);
-			~MeshRendererModule();
+			~MeshRendererModule() override;
 			void drawGUI() override;
 			json serialize() override;
 
@@ -30,9 +30,9 @@ namespace wde::scene {
 		private:
 			// Core data
 			/** Selected game object mesh */
-			resource::Mesh* _mesh;
+			resource::Mesh* _mesh = nullptr;
 			/** Selected material of the mesh renderer */
-			resource::Material* _material;
+			resource::Material* _material = nullptr;
 
 			// Material data
 			std::string _meshName;

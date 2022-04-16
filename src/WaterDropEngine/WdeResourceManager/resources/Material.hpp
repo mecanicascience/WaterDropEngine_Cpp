@@ -13,7 +13,7 @@ namespace wde::resource {
 	class Material : public Resource {
 		public:
 			explicit Material(const std::string& path);
-			~Material();
+			~Material() override;
 			void drawGUI() override;
 
 			/**

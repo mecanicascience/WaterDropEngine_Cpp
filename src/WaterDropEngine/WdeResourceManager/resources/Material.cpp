@@ -70,7 +70,7 @@ namespace wde::resource {
 						// Create image descriptor
 						_textureURL = p + "data/textures/" + setData["data"]["path"].get<std::string>();
 						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::Texture2D>(_textureURL)
-						        ->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+								->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 						// Bind image
 						descBuilder.bind_image(set, &imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, stagesMask);
@@ -79,7 +79,7 @@ namespace wde::resource {
 						// Create image descriptor
 						_textureURL = p + "data/textures/" + setData["data"]["path"].get<std::string>();
 						auto imageDescriptor = WaterDropEngine::get().getResourceManager().load<resource::TextureCube>(_textureURL)
-						        ->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+								->createDescriptor(VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
 						// Bind image
 						descBuilder.bind_image(set, &imageDescriptor, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, stagesMask);
