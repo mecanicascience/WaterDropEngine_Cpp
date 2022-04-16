@@ -15,7 +15,7 @@
 WaterDropEngine (<i>WDE</i>) is a 3D rendering engine mainly designed for computer graphics and physics simulations, using Vulkan.
 WDE is a free and open-source project, so you can directly support it by submitting improvements and by creating
 new pull requests or issues.
-We'll be happy to answer your questions and to add your new code implementation ideas.
+We'll be happy to answer your questions and add your new code implementation ideas.
 
 
 <br/>
@@ -28,6 +28,7 @@ and open a terminal window inside the `WaterDropEngine` cloned folder. Then run 
 to install the engine required submodules.
 
 Once all of these is done, you are ready to start using WaterDropEngine.
+Just run the CMakeFile, and you'll find the application under `bin/{Debug-Release}`.
 
 <br/>
 
@@ -74,9 +75,6 @@ The WaterDropEngine rendering structure was highly based on the [Vulkan tutorial
 
 WaterDropEngine was created and is currently maintained by [Mecanica Science](https://mecanicascience.fr/).
 You can find further information and library credits down below.
-- If you want to use WaterDropEngine, you need to follow the [license requirements](https://github.com/mecanicascience/WaterDropEngine/blob/master/LICENSE) (to sum up, you can use pSEngine everywhere and for any purpose, as long as there is a copyright notice).
+- If you want to use WaterDropEngine, you need to follow the [license requirements](https://github.com/mecanicascience/WaterDropEngine/blob/master/LICENSE) (to sum up, you can use  WaterDropEngine everywhere and for any purpose, as long as there is a copyright notice).
 - You can find all WaterDropEngine versions on [this link](https://github.com/mecanicascience/WaterDropEngine/releases).
-- WaterDropEngine uses [Vulkan](https://www.vulkan.org/), [GLFW](https://www.glfw.org/), [GLM](https://github.com/g-truc/glm),
-[tinyobjloader](https://github.com/tinyobjloader/tinyobjloader) and [Dear ImGUI](https://github.com/ocornut/imgui).
-
 <br />
