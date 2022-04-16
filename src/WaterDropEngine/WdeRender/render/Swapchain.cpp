@@ -7,7 +7,7 @@ namespace wde::render {
 
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating swapchain." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::Swapchain::Swapchain::fetchImages()");
 			// Choose the best image data from what's available
 			SwapChainSupportDetails swapChainSupport = render.getDevice().querySwapChainSupport();
 			VkSurfaceFormatKHR surfaceFormat = CoreDevice::chooseBestSwapSurfaceFormat(swapChainSupport.formats);
@@ -77,7 +77,7 @@ namespace wde::render {
 		// Create an image view for every image in the swapchain
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating swapchain image views." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::Swapchain::Swapchain::createImageViews()");
 			// Setup one image view for each image in the swapchain
 			_swapChainImageViews.resize(_swapChainImages.size());
 
@@ -112,7 +112,7 @@ namespace wde::render {
 		// Create sync objects
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating swapchain fences." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::Swapchain::Swapchain::createFences()");
 			_imagesInFlight.resize(_swapChainImages.size(), VK_NULL_HANDLE); // By default, = VK_NULL
 
 			// === CREATE THREE SEMAPHORES + 1 CMD BUFFER FOR EACH IMAGE IN THE SWAPCHAIN ===
@@ -183,13 +183,13 @@ namespace wde::render {
 		std::size_t currentFrame = instance.getCurrentFrame();
 
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::Swapchain::Swapchain::waitForFences()");
 			// Wait until the last presentation to the queue of this frame is done
 			vkWaitForFences(device, 1, &_inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 		}
 
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::Swapchain::Swapchain::acquireNextImage()");
 			VkResult acquireResult = vkAcquireNextImageKHR(
 					device,
 					_swapchain,

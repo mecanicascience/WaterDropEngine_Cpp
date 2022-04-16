@@ -5,6 +5,7 @@ namespace wde::scene {
 	MeshRendererModule::MeshRendererModule(GameObject &gameObject) : Module(gameObject, "Mesh Renderer", ICON_FA_GHOST) {}
 
 	MeshRendererModule::MeshRendererModule(GameObject &gameObject, const std::string &data) : Module(gameObject, "Mesh Renderer", ICON_FA_GHOST) {
+		WDE_PROFILE_FUNCTION();
 		auto dataJ = json::parse(data);
 		auto& wde = WaterDropEngine::get();
 		_materialName = dataJ["material"].get<std::string>();
@@ -14,6 +15,7 @@ namespace wde::scene {
 	}
 
 	MeshRendererModule::~MeshRendererModule() {
+		WDE_PROFILE_FUNCTION();
 		// Release material
 		if (_material != nullptr) {
 			WaterDropEngine::get().getResourceManager().release(_material->getPath());
@@ -31,6 +33,7 @@ namespace wde::scene {
 
 
 	void MeshRendererModule::drawGUI() {
+		WDE_PROFILE_FUNCTION();
 		ImGui::PushFont(ImGui::GetIO().FontDefault);
 
 		if (ImGui::BeginPopupContextItem("MeshSelect")) { // Select mesh
@@ -97,6 +100,7 @@ namespace wde::scene {
 	}
 
 	json MeshRendererModule::serialize() {
+		WDE_PROFILE_FUNCTION();
 		json jData;
 		jData["material"] = _materialName;
 		jData["mesh"] = _meshName;

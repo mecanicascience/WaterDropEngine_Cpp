@@ -1,7 +1,5 @@
 #pragma once
 
-#include <thread>
-
 #include "../wde.hpp"
 #include "WdeRender/WdeRender.hpp"
 #include "WdeGUI/WdeGUI.hpp"
@@ -68,13 +66,12 @@ namespace wde {
 					std::cout << "Initializing engine instance." << std::endl;
 				#endif
 
-				// Initialize instance on a different thread
-				std::thread t ([](WdeInstance* instanceRef) {instanceRef->initialize();}, &instance);
-				t.join();
+				// Initialize instance
+				instance.initialize();
 
 				// Load scene
 				_scene->loadScene();
-				_gui->addObserver(instance.getScenePointer(), true);
+				_gui->addObserver(instance.getScene(), true);
 				_gui->addObserver(_resourceManager);
 				_gui->addObserver(_scene);
 
@@ -178,7 +175,7 @@ namespace wde {
 			gui::WdeGUI& getGUI() { return *_gui; }
 			WdeInstance& getInstance() { return *_instance; }
 			core::Subject& getSubject() { return *_subject; }
-			scene::WdeScene& getScene() { return *_scene; }
+			scene::WdeScene& getSceneManager() { return *_scene; }
 			input::InputManager& getInput() { return *_input; }
 			resource::WdeResourceManager& getResourceManager() { return *_resourceManager; }
 

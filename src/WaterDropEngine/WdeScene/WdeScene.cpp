@@ -6,6 +6,7 @@ namespace wde::scene {
 	bool WdeScene::_showSceneLoadPopupNext = false;
 
 	WdeScene::WdeScene(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
+		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Initializing Scene Engine ==" << logger::endl;
 
 		// Load scene
@@ -30,6 +31,7 @@ namespace wde::scene {
 	}
 
 	void WdeScene::cleanUp() {
+		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Cleaning Up Scene Engine ==" << logger::endl;
 
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Cleaning Up Done ==" << logger::endl;
@@ -38,6 +40,7 @@ namespace wde::scene {
 	void WdeScene::onNotify(const core::Event& event) {
 #ifdef WDE_GUI_ENABLED
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
+			WDE_PROFILE_SCOPE("wde::scene::WdeScene::drawGUI()");
 			if (_showSceneLoadPopupNext) {
 				ImGui::OpenPopup("SaveScenePopup");
 				_showSceneLoadPopupNext = false;

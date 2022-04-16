@@ -8,6 +8,7 @@ namespace wde::render {
 	             uint32_t mipLevels, uint32_t arrayLayers, uint32_t layerCount, bool initialize)
 			: _type(type), _viewType(viewType), _arrayLayers(arrayLayers), _format(format), _extent(extent), _mipLevels(mipLevels),
 			  _samplesCount(samplesCount), _tiling(tiling), _usage(usage), _imageAspect(imageAspect), _layerCount(layerCount) {
+		WDE_PROFILE_FUNCTION();
 		if (format == VK_FORMAT_UNDEFINED)
 			throw WdeException(LogChannel::RENDER, "The specified image format is undefined.");
 
@@ -93,6 +94,7 @@ namespace wde::render {
 
 
 	VkFormat Image::findSupportedFormat(const std::vector<VkFormat> &candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+		WDE_PROFILE_FUNCTION();
 		for (const auto &format : candidates) {
 			VkFormatProperties props;
 			vkGetPhysicalDeviceFormatProperties(WaterDropEngine::get().getRender().getInstance().getDevice().getPhysicalDevice(), format, &props);

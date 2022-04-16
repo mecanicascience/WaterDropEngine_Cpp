@@ -10,9 +10,9 @@ namespace wde::gui {
 		// Main file menu
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Save Scene"))
-				WaterDropEngine::get().getScene().saveScene();
+				WaterDropEngine::get().getSceneManager().saveScene();
 			if (ImGui::MenuItem("Load Scene")) {
-				WaterDropEngine::get().getScene().loadScenePath();
+				WaterDropEngine::get().getSceneManager().loadScenePath();
 			}
 
 			ImGui::Dummy(ImVec2(0.0, 2.5));
@@ -90,9 +90,5 @@ namespace wde::gui {
 
 		ImGui::PopStyleVar();
 		ImGui::PopFont();
-	}
-
-	void GUIBar::renderGUI() {
-
 	}
 }

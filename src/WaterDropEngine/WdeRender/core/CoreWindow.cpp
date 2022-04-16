@@ -8,7 +8,7 @@ namespace wde::render {
 
 		// Setup glfw
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreWindow::CoreWindow::createWindowGLFW()");
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating GLFW window." << logger::endl;
 			glfwInit();
 			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API); // Do not use OpenGL API (since Vulkan used)
@@ -16,7 +16,7 @@ namespace wde::render {
 
 		// Create window
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreWindow::CoreWindow::createWindow()");
 			if (Config::IS_FULLSCREEN) {
 				auto monitor = glfwGetPrimaryMonitor();
 				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -29,6 +29,7 @@ namespace wde::render {
 
 		// Set icon
 		{
+			WDE_PROFILE_SCOPE("wde::render::CoreWindow::CoreWindow::loadIcons()");
 			GLFWimage images[4];
 			images[3].pixels = resource::Texture2D::getImagePixels("res/icon/logo_16x16.png", images[3].width, images[3].height, 4);
 			images[2].pixels = resource::Texture2D::getImagePixels("res/icon/logo_32x32.png", images[2].width, images[2].height, 4);
@@ -43,7 +44,7 @@ namespace wde::render {
 
 		// Add callbacks
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreWindow::CoreWindow::createCallbacks()");
 			glfwSetWindowUserPointer(_window, this);
 			glfwSetFramebufferSizeCallback(_window, framebufferResizeCallback);
 		}

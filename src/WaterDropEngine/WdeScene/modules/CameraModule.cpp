@@ -3,6 +3,7 @@
 
 namespace wde::scene {
 	CameraModule::CameraModule(GameObject &gameObject) : Module(gameObject, "Camera", ICON_FA_CAMERA) {
+		WDE_PROFILE_FUNCTION();
 		// Setup initial projection type
 		auto aspect = WaterDropEngine::get().getRender().getInstance().getSwapchain().getAspectRatio();
 		if (_projectionType == 0)
@@ -16,6 +17,7 @@ namespace wde::scene {
 	}
 
 	CameraModule::CameraModule(GameObject &gameObject, const std::string& data) : Module(gameObject, "Camera", ICON_FA_CAMERA) {
+		WDE_PROFILE_FUNCTION();
 		auto dataJ = json::parse(data);
 		// Set data
 		_projectionType = dataJ["projectionType"].get<int>();
@@ -105,6 +107,7 @@ namespace wde::scene {
 	}
 
 	void CameraModule::drawGUI() {
+		WDE_PROFILE_FUNCTION();
 		// Selected projection
 		ImGui::Columns(2);
 		ImGui::SetColumnWidth(0, 140.0f);
@@ -139,6 +142,7 @@ namespace wde::scene {
 	}
 
 	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {
+		WDE_PROFILE_FUNCTION();
 		// Active camera, do not draw gizmo
 		if (WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == &_gameObject)
 			return;
@@ -182,6 +186,7 @@ namespace wde::scene {
 	}
 
 	json CameraModule::serialize() {
+		WDE_PROFILE_FUNCTION();
 		json jData;
 		jData["projectionType"] = _projectionType;
 		jData["orthographic"]["bottom"][0] = _bottomCorner.x;

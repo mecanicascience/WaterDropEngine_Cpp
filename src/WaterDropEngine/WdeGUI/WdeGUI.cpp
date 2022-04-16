@@ -5,6 +5,7 @@ namespace wde::gui {
 #ifdef WDE_GUI_ENABLED
 	// Module commands
 	WdeGUI::WdeGUI(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)), Subject("GUI Subject") {
+		WDE_PROFILE_FUNCTION();
 		// === Create ImGui context ===
 		IMGUI_CHECKVERSION();
 		logger::log(LogLevel::DEBUG, LogChannel::GUI) << "== Initializing GUI Engine ==" << logger::endl;
@@ -52,6 +53,7 @@ namespace wde::gui {
 	}
 
 	void WdeGUI::initialize(std::pair<int, int> renderStage) {
+		WDE_PROFILE_FUNCTION();
 		auto& renderInstance = WaterDropEngine::get().getRender();
 		WaterDropEngine::get().getGUI()._initialized = true;
 
@@ -182,9 +184,7 @@ namespace wde::gui {
 		// End dockspace
 		ImGui::End();
 
-		// ==== RENDER ELEMENTS HERE ====
-		WaterDropEngine::get().getGUI()._guiBar.renderGUI();
-
+		// Render GUI Elements
 		if (WaterDropEngine::get().getGUI()._guiBar.displayGUI()) {
 			// Notify GUI drawing
 			WaterDropEngine::get().getGUI().notify({LogChannel::GUI, "DrawGUI"});

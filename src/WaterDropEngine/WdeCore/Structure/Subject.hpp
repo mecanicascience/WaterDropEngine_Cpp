@@ -35,6 +35,7 @@ namespace wde::core {
 			 * @param event Payload
 			 */
 			void notify(const Event& event) const {
+				WDE_PROFILE_FUNCTION();
 				for (auto& obs : _observers)
 					if (obs != nullptr)
 						obs->onNotify(event);

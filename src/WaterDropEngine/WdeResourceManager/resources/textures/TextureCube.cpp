@@ -32,6 +32,7 @@ namespace wde::resource {
 
 		// Create image
 		{
+			WDE_PROFILE_SCOPE("wde::resource::TextureCube::TextureCube::createImage()");
 			// Create image
 			VkExtent3D extent = {static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), 1};
 			_textureImage = std::make_unique<render::Image>(extent, VK_IMAGE_TYPE_2D, VK_IMAGE_VIEW_TYPE_CUBE,
@@ -48,6 +49,7 @@ namespace wde::resource {
 		VkDeviceMemory stagingBufferMemory;
 		std::vector<std::string> textureName {"right", "left", "top", "bottom", "front", "back"};
 		{
+			WDE_PROFILE_SCOPE("wde::resource::TextureCube::TextureCube::createBuffers()");
 			render::BufferUtils::createBuffer(device.getPhysicalDevice(), device.getDevice(), layerSize,
 			                          VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
 			                          stagingBuffer, stagingBufferMemory);
@@ -87,6 +89,7 @@ namespace wde::resource {
 
 		// Create texture sampler
 		{
+			WDE_PROFILE_SCOPE("wde::resource::TextureCube::TextureCube::createSamplers()");
 			// Create samples
 			VkSamplerCreateInfo samplerInfo {};
 			samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -132,6 +135,7 @@ namespace wde::resource {
 		// Generate 2D images for GUI drawing (these images should NOT CHANGE or changes will not be seen)
 #ifdef WDE_GUI_ENABLED
 		{
+			WDE_PROFILE_SCOPE("wde::resource::TextureCube::TextureCube::createGUIImages()");
 			// Generate GUI Debug Images
 			for (int face = 0; face < 6; face++) {
 				const std::string pathGUI = WaterDropEngine::get().getInstance().getScene()->getPath() + "data/textures/" + texData["data"]["path"].get<std::string>()
@@ -149,6 +153,7 @@ namespace wde::resource {
 	}
 
 	void TextureCube::drawGUI() {
+		WDE_PROFILE_FUNCTION();
 #ifdef WDE_GUI_ENABLED
 		// Faces
 		for (int i = 0; i < 6; i++) {
@@ -176,6 +181,7 @@ namespace wde::resource {
 
 	// Helper
 	void TextureCube::transitionImageLayout(render::Image &image, VkImageLayout oldLayout, VkImageLayout newLayout, int layerCount) {
+		WDE_PROFILE_FUNCTION();
 		// Create a temporary command buffer
 		render::CommandBuffer commandBuffer {false, VK_COMMAND_BUFFER_LEVEL_PRIMARY};
 		commandBuffer.begin(VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT);

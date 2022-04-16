@@ -7,7 +7,7 @@ namespace wde::render {
 	CoreDevice::CoreDevice(int deviceID, CoreWindow &window, VkInstance &instance, VkSurfaceKHR &surface) : _window(window), _instance(instance), _surface(surface) {
 		// Setup physical device, device, graphics queue, presentation queue
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreDevice::CoreDevice::bindPhysicalDevice()");
 
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Binding physical device." << logger::endl;
 			// Count available physical devices
@@ -31,7 +31,7 @@ namespace wde::render {
 
 		// Retrieve logical graphical and present queues
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreDevice::CoreDevice::bindLogicalQueues()");
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Binding logical device and queues." << logger::endl;
 			// Get allowed devices queues types
 			QueueFamilyIndices indices = findQueueFamilies();
@@ -90,6 +90,7 @@ namespace wde::render {
 	}
 
 	CoreDevice::~CoreDevice() {
+		WDE_PROFILE_FUNCTION();
 		// Destroy device
 		vkDestroyDevice(_device, nullptr);
 	}
@@ -100,6 +101,7 @@ namespace wde::render {
 
 	// DEVICE HELPER FUNCTIONS
 	bool CoreDevice::isSuitable() const {
+		WDE_PROFILE_FUNCTION();
 		QueueFamilyIndices indices = findQueueFamilies();
 		bool isCompleteIndicesQueues = indices.isComplete(); // Required queues supported
 		bool extensionsSupported = checkDeviceExtensionSupport(); // Required extensions supported
@@ -120,6 +122,7 @@ namespace wde::render {
 
 
 	QueueFamilyIndices CoreDevice::findQueueFamilies() const {
+		WDE_PROFILE_FUNCTION();
 		QueueFamilyIndices indices;
 
 		// Count queue family indices
@@ -174,6 +177,7 @@ namespace wde::render {
 	}
 
 	SwapChainSupportDetails CoreDevice::querySwapChainSupport() const {
+		WDE_PROFILE_FUNCTION();
 		SwapChainSupportDetails details;
 
 		// Get basic surface capabilities
@@ -201,6 +205,7 @@ namespace wde::render {
 	}
 
 	VkSampleCountFlagBits CoreDevice::getMaxUsableSampleCount() const {
+		WDE_PROFILE_FUNCTION();
 		static VkSampleCountFlagBits maxSamples = VK_SAMPLE_COUNT_1_BIT;
 		static bool initialized = false;
 		if (initialized)
@@ -227,6 +232,7 @@ namespace wde::render {
 
 	// Config selection
 	VkSurfaceFormatKHR CoreDevice::chooseBestSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+		WDE_PROFILE_FUNCTION();
 		// We choose to use VK_FORMAT_B8G8R8A8_SRGB as a SRGB color space if available
 		for (const auto& availableFormat : availableFormats)
 			if (availableFormat.format == VK_FORMAT_R8G8B8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
@@ -236,6 +242,7 @@ namespace wde::render {
 	}
 
 	VkPresentModeKHR CoreDevice::chooseBestSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+		WDE_PROFILE_FUNCTION();
 		// We choose to use VK_PRESENT_MODE_MAILBOX_KHR (if buffer empty, use it for parallel computing) if available
 		for (const auto& availablePresentMode : availablePresentModes) {
 			if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
@@ -249,6 +256,7 @@ namespace wde::render {
 	}
 
 	VkExtent2D CoreDevice::chooseBestSwapExtent(GLFWwindow *window, const VkSurfaceCapabilitiesKHR& capabilities) {
+		WDE_PROFILE_FUNCTION();
 		if (capabilities.currentExtent.width != UINT32_MAX) {
 			// Targeted resolution is available
 			return capabilities.currentExtent;

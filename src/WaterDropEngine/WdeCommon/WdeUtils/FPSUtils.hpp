@@ -12,6 +12,7 @@ namespace wde {
 		public:
 			/** Called when the next frame is done being drawn on the screen */
 			void update() {
+				WDE_PROFILE_FUNCTION();
 				// Computes delta time
 				auto newTime = std::chrono::steady_clock::now();
 				auto elapsedTime =

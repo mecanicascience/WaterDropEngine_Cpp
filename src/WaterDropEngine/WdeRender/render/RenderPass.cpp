@@ -6,6 +6,7 @@
 namespace wde::render {
 	RenderPass::RenderPass(std::vector<RenderAttachment>& attachments, std::vector<RenderSubPassStructure> subpassesStructure)
 			: _attachments(attachments), _subpassesStructure(std::move(subpassesStructure)) {
+		WDE_PROFILE_FUNCTION();
 		CoreInstance &renderInstance = WaterDropEngine::get().getRender().getInstance();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating render pass." << logger::endl;
 
@@ -30,7 +31,7 @@ namespace wde::render {
 		std::vector<std::vector<VkAttachmentReference>> inputAttachments;
 		VkAttachmentReference depthAttachmentRef {};
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::RenderPass::RenderPass::createSubpasses()");
 			int i = 0;
 			for (auto &subpass: _subpassesStructure) {
 				colorAttachments.emplace_back();
@@ -92,7 +93,7 @@ namespace wde::render {
 		// ==== Handle attachments ====
 		std::vector<VkAttachmentDescription> attachmentDescriptions;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::RenderPass::RenderPass::createAttachments()");
 			// Create stencils and buffers
 			if (depthAttachmentID != -1)
 				_depthStencil = std::make_unique<ImageDepth>(
@@ -125,7 +126,7 @@ namespace wde::render {
 		// ==== Create render pass dependencies ====
 		std::vector<VkSubpassDependency> dependencies;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::RenderPass::RenderPass::createDependencies()");
 			int counter = 0;
 			for (auto &subpass: _subpassesStructure) {
 				VkSubpassDependency subpassDependency = {};
@@ -157,7 +158,7 @@ namespace wde::render {
 
 		// ==== Creates the render pass ====
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::RenderPass::RenderPass::createRenderpass()");
 			VkRenderPassCreateInfo renderPassCreateInfo = {};
 			renderPassCreateInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 			renderPassCreateInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
@@ -173,7 +174,7 @@ namespace wde::render {
 
 		// ==== Create the associated frame buffers ====
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::RenderPass::RenderPass::createFramebuffers()");
 			// Create list of attachments input bindings id
 			std::vector<uint32_t> bindingInputIDs {};
 			for (const auto &subpass : _subpassesStructure) {
@@ -247,8 +248,8 @@ namespace wde::render {
 	}
 
 	void RenderPass::startSubPass(uint32_t subPassIndex) {
-		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Starting subpass " << subPassIndex << "." << logger::endl;
 		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Starting subpass " << subPassIndex << "." << logger::endl;
 		if (subPassIndex == 0)
 			return;
 
@@ -257,7 +258,7 @@ namespace wde::render {
 	}
 
 	void RenderPass::endSubPass(uint32_t subPassIndex) {
-		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Ending subpass " << subPassIndex << "." << logger::endl;
 		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Ending subpass " << subPassIndex << "." << logger::endl;
 	}
 }

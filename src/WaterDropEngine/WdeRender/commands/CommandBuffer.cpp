@@ -93,6 +93,7 @@ namespace wde::render {
 	}
 
 	void CommandBuffer::submitIdle() {
+		WDE_PROFILE_FUNCTION();
 		end();
 		submit();
 		waitForQueueIdle();

@@ -53,12 +53,14 @@ namespace wde::resource {
 	void WdeResourceManager::onNotify(const core::Event& event) {
 #ifdef WDE_GUI_ENABLED
 		if (event.channel == LogChannel::GUI && event.name == "CreateGUI") {
+			WDE_PROFILE_SCOPE("wde::resource::WdeResourceManager::WdeResourceManager::createGUI()");
 			// Create a game objects list tab
 			ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
 			ImGui::DockBuilderDockWindow("Resources Editor", dockspaceID);
 		}
 
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI" && _displayResourceGUI) {
+			WDE_PROFILE_SCOPE("wde::resource::WdeResourceManager::WdeResourceManager::drawGUI()");
 			// Draw resources
 			ImGui::Begin("Resources Editor");
 			bool lastOneOpen = false;

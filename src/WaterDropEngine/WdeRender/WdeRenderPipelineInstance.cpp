@@ -19,6 +19,7 @@ namespace wde::render {
 	}
 
 	WdeRenderPipelineInstance::~WdeRenderPipelineInstance() {
+		WDE_PROFILE_FUNCTION();
 		// Destroy render passes
 		_passes.clear();
 	}

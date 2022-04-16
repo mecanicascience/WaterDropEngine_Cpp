@@ -3,11 +3,13 @@
 
 namespace wde {
 	WdeInstance::WdeInstance() {
+		WDE_PROFILE_FUNCTION();
 		// Create the engine instance
 		WaterDropEngine::get();
 	}
 
 	void WdeInstance::startInstance() {
+		WDE_PROFILE_FUNCTION();
 		// Start the engine
 		WaterDropEngine::get().start(*this);
 	}
@@ -31,6 +33,7 @@ namespace wde {
 	}
 
 	void WdeInstance::cleanUpInstance() {
+		WDE_PROFILE_FUNCTION();
 		// Destroy render scene
 		if (_scene != nullptr) {
 			_scene->cleanUpInstance();

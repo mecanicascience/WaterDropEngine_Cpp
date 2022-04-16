@@ -116,6 +116,7 @@ namespace wde::resource {
 	}
 
 	Material::~Material() {
+		WDE_PROFILE_FUNCTION();
 		// Release resource
 		if (!_textureURL.empty())
 			WaterDropEngine::get().getResourceManager().release(_textureURL);
@@ -123,6 +124,7 @@ namespace wde::resource {
 
 	void Material::drawGUI() {
 #ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_FUNCTION();
 		std::string polygonModeStr;
 		if (_polygonMode == VK_POLYGON_MODE_FILL)
 			polygonModeStr = "Fill";

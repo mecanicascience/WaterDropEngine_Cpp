@@ -64,6 +64,7 @@ namespace wde::resource {
 
 	void Texture2D::drawGUI() {
 #ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_FUNCTION();
 		ImGui::Image(_textureGUIID, ImVec2(200.0f, 200.0f));
 
 		// Image data
@@ -287,11 +288,13 @@ namespace wde::resource {
 
 	// Helper
 	void Texture2D::transitionImageLayout(VkImageLayout newLayout) {
+		WDE_PROFILE_FUNCTION();
 		Texture2D::transitionImageLayout(*_textureImage, _textureImage->getLayout(), newLayout);
 		_textureImage->setLayout(newLayout);
 	}
 
 	void Texture2D::transitionImageLayout(render::Image &image, VkImageLayout oldLayout, VkImageLayout newLayout) {
+		WDE_PROFILE_FUNCTION();
 		if (oldLayout == newLayout)
 			return;
 
@@ -394,10 +397,12 @@ namespace wde::resource {
 	}
 
 	unsigned char* Texture2D::getImagePixels(const std::string& image, int& width, int& height, int channelsCount) {
+		WDE_PROFILE_FUNCTION();
 		return stbi_load(image.c_str(), &width, &height, nullptr, channelsCount);
 	}
 
 	void Texture2D::freeImagePixels(unsigned char* pixels) {
+		WDE_PROFILE_FUNCTION();
 		stbi_image_free(pixels);
 	}
 }

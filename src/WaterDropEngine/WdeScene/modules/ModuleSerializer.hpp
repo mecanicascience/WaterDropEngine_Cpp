@@ -19,6 +19,7 @@ namespace wde::scene {
 			 * @param go Corresponding game object
 			 */
 			static void addModuleFromName(const std::string& moduleName, const std::string& moduleConfig, GameObject& go) {
+				WDE_PROFILE_FUNCTION();
 				if (moduleName == "Transform") {
 					if (!moduleConfig.empty())
 						go.transform->setConfig(moduleConfig);
@@ -45,6 +46,7 @@ namespace wde::scene {
 			 * @param go
 			 */
 			static void removeModuleFromName(const std::string moduleName, GameObject& go) {
+				WDE_PROFILE_FUNCTION();
 				int index = 0;
 				for (auto& mod : go.getModules()) {
 					if (mod->getName() == moduleName) {
@@ -60,6 +62,7 @@ namespace wde::scene {
 			 * @return The remaining modules not in the game object
 			 */
 			static std::vector<std::string> getRemainingModulesList(GameObject& go) {
+				WDE_PROFILE_FUNCTION();
 				const std::vector<std::string> everyModulesList { "Transform", "Mesh Renderer", "Camera", "Keyboard Controller" };
 
 				// Get modules names in gameobject
@@ -84,6 +87,7 @@ namespace wde::scene {
 			 * @return The module json description
 			 */
 			static json serializeModule(Module& mod) {
+				WDE_PROFILE_FUNCTION();
 				json locJSON;
 				locJSON["name"] = mod.getName();
 				locJSON["data"] = mod.serialize();

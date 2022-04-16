@@ -5,11 +5,13 @@ namespace wde::scene {
 	TransformModule::TransformModule(GameObject &gameObject) : Module(gameObject, "Transform", ICON_FA_GLOBE) {}
 
 	TransformModule::~TransformModule() {
+		WDE_PROFILE_FUNCTION();
 		_parent = nullptr;
 		_childrenIDs.clear();
 	}
 
 	void TransformModule::setConfig(const std::string &data) {
+		WDE_PROFILE_FUNCTION();
 		auto dataJ = json::parse(data);
 		position = glm::vec3 {
 			dataJ["position"][0].get<float>(),
@@ -38,12 +40,14 @@ namespace wde::scene {
 	}
 
 	void TransformModule::drawGUI() {
+		WDE_PROFILE_FUNCTION();
 		gui::GUIRenderer::addVec3Button("Position", position);
 		gui::GUIRenderer::addVec3Button("Rotation", rotation);
 		gui::GUIRenderer::addVec3Button("Scale", scale, 1.0f);
 	}
 
 	json TransformModule::serialize() {
+		WDE_PROFILE_FUNCTION();
 		json jData;
 		if (_parent != nullptr)
 			jData["parentID"] = _parent->_gameObject.getID();
@@ -58,6 +62,7 @@ namespace wde::scene {
 
 
 	void TransformModule::setParent(TransformModule *parent) {
+		WDE_PROFILE_FUNCTION();
 		// Remove last parent children ID
 		if (_parent != nullptr)
 			_parent->_childrenIDs.erase(std::remove(_parent->_childrenIDs.begin(), _parent->_childrenIDs.end(), _gameObject.getID()), _parent->_childrenIDs.end());

@@ -15,7 +15,7 @@ namespace wde::resource {
 
 		// Load data
 		{
-			WDE_PROFILE_SCOPE("wde::scene::Mesh::loadMesh");
+			WDE_PROFILE_SCOPE("wde::resource::Mesh::Mesh::loadMesh");
 			std::string resPath = WaterDropEngine::get().getInstance().getScene()->getPath() + "data/meshes/" + matData["data"]["path"].get<std::string>();
 
 			// Load model
@@ -96,7 +96,7 @@ namespace wde::resource {
 
 		// Recalculate normals
 		if (matData["data"]["recalculateNormals"].get<bool>()) {
-			WDE_PROFILE_SCOPE("wde::scene::Mesh::recomputeNormals");
+			WDE_PROFILE_SCOPE("wde::resource::Mesh::Mesh::recomputeNormals");
 
 			// Reset vertices normals
 			for (auto& vertex : vertices)
@@ -129,7 +129,7 @@ namespace wde::resource {
 
 		// Initialize mesh
 		{
-			WDE_PROFILE_SCOPE("wde::scene::Mesh::createVerticesBuffer");
+			WDE_PROFILE_SCOPE("wde::resource::Mesh::Mesh::createVerticesBuffer");
 			// Assert that vertices count >= 3
 			_vertexCount = vertices.size();
 			if (vertices.size() < 3)
@@ -159,7 +159,7 @@ namespace wde::resource {
 
 		// Create index buffer
 		{
-			WDE_PROFILE_SCOPE("wde::scene::Mesh::createIndicesBuffer");
+			WDE_PROFILE_SCOPE("wde::resource::Mesh::Mesh::createIndicesBuffer");
 			// Set indices count
 			if (!indices.empty())
 				_indexCount = indices.size();
@@ -197,6 +197,7 @@ namespace wde::resource {
 
 	void Mesh::drawGUI() {
 #ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_FUNCTION();
 		ImGui::Text("Mesh data :");
 		ImGui::Text("  - Index count : %i", _indexCount);
 		ImGui::Text("  - Vertex count : %i", _vertexCount);

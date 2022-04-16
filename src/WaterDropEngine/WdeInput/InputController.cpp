@@ -6,6 +6,7 @@
 
 namespace wde::input {
 	void InputController::moveInPlaneXZ(float dt, scene::GameObject &gameObject, float moveSpeed, float lookSpeed) {
+		WDE_PROFILE_FUNCTION();
 		// Update game objects rotation
 		glm::vec3 rotation {0.0f};
 

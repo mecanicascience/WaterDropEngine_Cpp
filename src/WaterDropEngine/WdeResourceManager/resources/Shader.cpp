@@ -20,6 +20,7 @@ namespace wde::resource {
 
 	void Shader::drawGUI() {
 #ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_FUNCTION();
 		ImGui::Text("Shader data ");
 		ImGui::Text("  - URL : %s", _path.c_str());
 		ImGui::Text("  - Reference Count : %i", _referenceCount);

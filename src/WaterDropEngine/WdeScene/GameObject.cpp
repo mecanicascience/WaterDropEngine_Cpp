@@ -22,11 +22,13 @@ namespace ImGui {
 
 namespace wde::scene {
 	GameObject::GameObject(uint32_t id, std::string name, bool isStatic) : _id(id), name(std::move(name)), _isStatic(isStatic) {
+		WDE_PROFILE_FUNCTION();
 		// Add default transform module
 		transform = addModule<TransformModule>();
 	}
 
 	GameObject::~GameObject() {
+		WDE_PROFILE_FUNCTION();
 		transform = nullptr;
 		_modules.clear();
 	}

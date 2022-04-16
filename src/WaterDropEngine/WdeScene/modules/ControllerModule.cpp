@@ -5,12 +5,14 @@ namespace wde::scene {
 	ControllerModule::ControllerModule(GameObject &gameObject) : Module(gameObject, "Keyboard Controller", ICON_FA_KEYBOARD) {}
 
 	ControllerModule::ControllerModule(GameObject &gameObject, const std::string& data) : Module(gameObject, "Keyboard Controller", ICON_FA_KEYBOARD) {
+		WDE_PROFILE_FUNCTION();
 		auto dataJ = json::parse(data);
 		_moveSpeed = dataJ["moveSpeed"].get<float>();
 		_lookSpeed = dataJ["lookSpeed"].get<float>();
 	}
 
 	void ControllerModule::tick()  {
+		WDE_PROFILE_FUNCTION();
 		// Only active if this game object has a camera, and the camera is selected
 		auto cameraMod = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
 		if (cameraMod == nullptr || _gameObject.getID() != cameraMod->getID())
@@ -27,6 +29,7 @@ namespace wde::scene {
 	}
 
 	void ControllerModule::drawGUI() {
+		WDE_PROFILE_FUNCTION();
 		// Move speed
 		gui::GUIRenderer::addFloatDragger("Move speed", _moveSpeed, 1.3f);
 		// Look speed
@@ -34,6 +37,7 @@ namespace wde::scene {
 	}
 
 	json ControllerModule::serialize() {
+		WDE_PROFILE_FUNCTION();
 		json jData;
 		jData["moveSpeed"] = _moveSpeed;
 		jData["lookSpeed"] = _lookSpeed;

@@ -3,6 +3,7 @@
 
 namespace wde::input {
 	InputManager::InputManager() {
+		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::INPUT) << "== Initializing Input manager ==" << logger::endl;
 		logger::log(LogLevel::DEBUG, LogChannel::INPUT) << "Setting default keymap configuration." << logger::endl;
 		setDefaultKeyMapping();
@@ -10,6 +11,7 @@ namespace wde::input {
 	}
 
 	InputManager::~InputManager() {
+		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::INPUT) << "== Cleaning up Input manager ==" << logger::endl;
 		// Nothing to do
 		logger::log(LogLevel::DEBUG, LogChannel::INPUT) << "== Cleaning up Done ==" << logger::endl;
@@ -19,6 +21,7 @@ namespace wde::input {
 
 
 	void InputManager::setDefaultKeyMapping() {
+		WDE_PROFILE_FUNCTION();
 		// For now, set manually every required keys
 		addKey("moveForward", GLFW_KEY_W);
 		addKey("moveBackward", GLFW_KEY_S);

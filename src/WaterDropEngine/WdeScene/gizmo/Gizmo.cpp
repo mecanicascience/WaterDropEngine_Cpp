@@ -192,6 +192,7 @@ namespace wde::scene {
 	}
 
 	Gizmo::~Gizmo()  {
+		WDE_PROFILE_FUNCTION();
 		_commandBuffer = nullptr;
 		_pipelines.clear();
 	}

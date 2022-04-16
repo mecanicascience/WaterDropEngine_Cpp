@@ -50,6 +50,7 @@ namespace wde::gui {
 			 * Sets the custom ImGUI color theme
 			 */
 			static void setCustomColorTheme() {
+				WDE_PROFILE_FUNCTION();
 				ImGui::StyleColorsDark(); // Use dark theme as base
 
 				auto& colors = ImGui::GetStyle().Colors;
@@ -98,6 +99,7 @@ namespace wde::gui {
 			 * Sets the custom ImGUI configuration style
 			 */
 			static void setCustomStyle() {
+				WDE_PROFILE_FUNCTION();
 				ImGuiStyle& style = ImGui::GetStyle();
 
 				// Setup window style

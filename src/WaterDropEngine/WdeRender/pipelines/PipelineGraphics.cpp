@@ -49,7 +49,7 @@ namespace wde::render {
 		// Create the pipeline layout
 		std::vector<VkDescriptorSetLayout> descriptorVec {};
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::PipelineGraphics::initialize::createPipelineLayout()");
 			VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo {};
 			pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 
@@ -80,7 +80,7 @@ namespace wde::render {
 
 		// Create the pipeline attributes
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::PipelineGraphics::initialize::createLayout()");
 			// == Input assembly (groups vertex data into primitives for processing by rest of pipelines) ==
 			_configInfo.inputAssemblyState.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 			_configInfo.inputAssemblyState.topology = _vertexTopology;
@@ -217,7 +217,7 @@ namespace wde::render {
 
 		// Create MRT pipeline
 		if (_pipelineMode == Mode::MRT) {
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::PipelineGraphics::initialize::createPipelineMRT()");
 			// Blend attachment states
 			auto attachmentCount = WaterDropEngine::get().getInstance().getPipeline().getRenderPass(_renderTarget.first).getAttachmentColorCount(_renderTarget.second);
 			std::vector<VkPipelineColorBlendAttachmentState> blendAttachmentStates;
@@ -243,7 +243,7 @@ namespace wde::render {
 
 		// Create the pipeline
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::PipelineGraphics::initialize::createPipeline()");
 			// Get vertices and indices bindings
 			std::vector<VkVertexInputBindingDescription> bindingDescriptions;
 			std::vector<VkVertexInputAttributeDescription> attributeDescriptions;

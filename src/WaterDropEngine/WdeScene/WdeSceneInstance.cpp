@@ -56,6 +56,7 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::cleanUpInstance() {
+		WDE_PROFILE_FUNCTION();
 		// Remove references
 		_selectedGameObject = nullptr;
 		_activeCamera = nullptr;
@@ -152,6 +153,7 @@ namespace wde::scene {
 
 	void WdeSceneInstance::drawGUIForGo(const std::shared_ptr<GameObject> &go, GameObject*& selected) const {
 #ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_FUNCTION();
 		std::string typeName;
 		if (go->getModule<MeshRendererModule>())
 			typeName = "Mesh Entity";

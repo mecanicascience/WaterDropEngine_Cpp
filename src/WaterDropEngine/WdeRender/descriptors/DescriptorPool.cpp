@@ -3,6 +3,7 @@
 
 namespace wde::render {
 	DescriptorPool::DescriptorPool(const std::vector<VkDescriptorPoolSize>& poolSizes, uint32_t maxSets, VkDescriptorPoolCreateFlags flags) {
+		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating a descriptor pool." << logger::endl;
 
 		// Create pool
@@ -18,6 +19,7 @@ namespace wde::render {
 	}
 
 	DescriptorPool::~DescriptorPool() {
+		WDE_PROFILE_FUNCTION();
 		vkDestroyDescriptorPool(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), _pool, nullptr);
 	}
 }

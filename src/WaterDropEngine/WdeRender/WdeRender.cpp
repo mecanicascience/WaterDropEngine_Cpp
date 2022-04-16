@@ -4,6 +4,7 @@
 namespace wde::render {
 	// Module commands
 	WdeRender::WdeRender(std::shared_ptr<core::Subject> moduleSubject) : Module(std::move(moduleSubject)) {
+		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "== Initializing Rendering Engine ==" << logger::endl;
 
 		// Create window
@@ -50,6 +51,7 @@ namespace wde::render {
 
 	// On message from another module
 	void WdeRender::onNotify(const core::Event& event) {
+		WDE_PROFILE_FUNCTION();
 		// Check if window should close
 		if (event.channel == LogChannel::RENDER && event.name == "WINDOW_SHOULD_CLOSE")
 			_shouldRun = false;

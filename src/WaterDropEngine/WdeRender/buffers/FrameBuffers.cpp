@@ -4,6 +4,7 @@
 namespace wde::render {
 	FrameBuffers::FrameBuffers(const std::vector<RenderAttachment>& attachments, const std::vector<RenderSubPassStructure>& subpassesStructure,
 	                           const std::vector<uint32_t>& inputAttachments, VkRenderPass& renderPass, ImageDepth& depthStencil) {
+		WDE_PROFILE_FUNCTION();
 		auto& deviceEn = WaterDropEngine::get().getRender().getInstance().getDevice();
 		auto& device = deviceEn.getDevice();
 		auto& swapchain = WaterDropEngine::get().getRender().getInstance().getSwapchain();
@@ -67,6 +68,7 @@ namespace wde::render {
 
 
 	FrameBuffers::~FrameBuffers() {
+		WDE_PROFILE_FUNCTION();
 		auto &device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
 
 		// Cleanup frame buffers

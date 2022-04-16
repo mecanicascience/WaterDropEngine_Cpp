@@ -9,7 +9,7 @@ namespace wde::render {
 		// ========== CREATE VULKAN INSTANCE ==========
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Vulkan instance." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::start::createInstance()");
 			// Check if required debug layers are all available
 			logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Checking validation layer support." << logger::endl;
 			#ifdef WDE_ENGINE_MODE_DEBUG
@@ -65,7 +65,7 @@ namespace wde::render {
 		// ========== CREATE VULKAN SURFACE ==========
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Vulkan surface." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::createSurface()");
 			if (glfwCreateWindowSurface(_instance, _window.getWindow(), nullptr, &_surface) != VK_SUCCESS)
 				throw WdeException(LogChannel::RENDER, "Failed to create window surface.");
 		}
@@ -73,7 +73,7 @@ namespace wde::render {
 		// ========== CREATE DEBUGGER MESSAGE CALLBACKS ==========
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating DebugMessenger callback." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::start::createDebugMessenger()");
 			#ifdef WDE_ENGINE_MODE_DEBUG
 				// Setup messenger and callbacks
 				VkDebugUtilsMessengerCreateInfoEXT createInfo;
@@ -88,7 +88,7 @@ namespace wde::render {
 		// ============ CREATE DEVICE ============
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Initializing devices." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::start::initializeDevices()");
 			uint32_t deviceCount = 0;
 			vkEnumeratePhysicalDevices(_instance, &deviceCount, nullptr);
 
@@ -117,14 +117,14 @@ namespace wde::render {
 		// ============ CREATE DESCRIPTOR LAYOUTS CACHE =============
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Descriptor Layout Cache." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::start::createDescriptorLayoutCache()");
 			_descriptorLayoutCache = std::make_unique<DescriptorLayoutCache>();
 		}
 
 		// ============ CREATE SWAPCHAIN ============
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating Swapchain." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::start::createSwapchain()");
 			_swapchain = std::make_unique<Swapchain>();
 			_commandBuffers.resize(_swapchain->getImageCount());
 
@@ -138,6 +138,7 @@ namespace wde::render {
 		// ============ CREATE DESCRIPTOR ALLOCATORS ============
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Creating descriptor allocators." << logger::endl;
 		{
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::start::createDescriptorAllocators()");
 			for (size_t i = 0; i < _swapchain->getImageCount(); i++)
 				_descriptorAllocators.push_back(std::make_unique<DescriptorAllocator>());
 		}
@@ -184,7 +185,7 @@ namespace wde::render {
 
 		// Wait if window minimized
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::onWindowResized::createInstance()");
 			int width = 0, height = 0;
 			glfwGetFramebufferSize(_window.getWindow(), &width, &height);
 			while (width == 0 || height == 0) {
@@ -200,7 +201,7 @@ namespace wde::render {
 		// Clean up command buffers and swapchain
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Recreating old swapchain and command buffers." << logger::endl;
 		{
-			WDE_PROFILE_FUNCTION();
+			WDE_PROFILE_SCOPE("wde::render::CoreInstance::onWindowResized::recreateSwapchain()");
 			_swapchain.reset();
 			_swapchain = std::make_unique<Swapchain>();
 
