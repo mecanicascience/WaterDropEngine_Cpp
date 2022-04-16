@@ -24,6 +24,7 @@ namespace wde::resource {
 			 * Load a given resource
 			 * @tparam T Type of the resource
 			 * @param resource The path to the resource
+			 * @return A pointer to the resource
 			 */
 			template<typename T>
 			T* load(const std::string& resource) {

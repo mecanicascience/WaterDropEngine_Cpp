@@ -11,7 +11,7 @@ namespace wde::resource {
 			};
 
 			// Core methods
-			explicit Resource(std::string path, ResourceType type) : _path(std::move(path)), _type(type) {}
+			explicit Resource(std::string path, ResourceType type) : _path(std::move(path)), _type(type), _referenceCount(0) {}
 			virtual ~Resource() = default;
 			virtual void drawGUI() {};
 
@@ -19,11 +19,15 @@ namespace wde::resource {
 			// Getters and setters
 			std::string getPath() const { return _path; }
 			ResourceType getType() const { return _type; }
+			void increaseReferenceCount() { _referenceCount++; }
+			void decreaseReferenceCount() { _referenceCount--; }
+			uint32_t getReferenceCount() const { return _referenceCount; }
 			/** @return The name of the resource (default : will return resource path) */
 			virtual std::string getName() const { return _path; }
 			void increaseReferenceCount() { _referenceCount++; }
 			void decreaseReferenceCount() { _referenceCount--; }
 			uint32_t getReferenceCount() const { return _referenceCount; }
+
 
 			static std::string getName(const ResourceType& type) {
 				switch (type) {
@@ -57,7 +61,7 @@ namespace wde::resource {
 		protected:
 			std::string _path;
 			ResourceType _type;
-			uint32_t _referenceCount = 0;
+      uint32_t _referenceCount = 0;
 	};
 }
 

@@ -5,6 +5,22 @@ namespace wde::scene {
 	void WdeSceneInstance::tick() {
 		WDE_PROFILE_FUNCTION();
 
+		// Remove game objects to delete
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Removing deleted game objects." << logger::endl;
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::deleteGameObjects");
+			for (auto& go : _gameObjectsToDelete) {
+				/*_selectedGameObjectID = -1;
+				 * TODO
+
+				// Remove from static list
+				if (go->isStatic()) {
+					for (auto& go : _gameObjectsStatic)
+					_gameObjectsStatic.r
+				}*/
+			}
+		}
+
 		// Update game objects
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene dynamic game objects." << logger::endl;
 		{
@@ -81,7 +97,6 @@ namespace wde::scene {
 						drawGUIForGo(go, &selected);
 					}
 				}
-
 				ImGui::EndTable();
 			}
 

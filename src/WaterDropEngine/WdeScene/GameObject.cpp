@@ -107,7 +107,6 @@ namespace wde::scene {
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::PopStyleColor(3);
-
 				ImGui::EndPopup();
 			}
 
