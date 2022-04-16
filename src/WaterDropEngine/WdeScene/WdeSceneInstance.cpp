@@ -57,6 +57,19 @@ namespace wde::scene {
 			ImGui::BeginChild("Scene Components Children");
 			ImGui::Dummy(ImVec2(0.0f, 0.15f));
 
+			// Add Game Object button
+			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+			if (ImGui::Button(ICON_FA_PLUS_CIRCLE))
+				createGameObject("Empty Gameobject");
+			ImGui::PopFont();
+			ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+			ImGui::PushFont(ImGui::GetIO().FontDefault);
+			ImGui::SameLine();
+			ImGui::Text("Add an empty Gameobject");
+			ImGui::PopFont();
+			ImGui::PopStyleColor();
+			ImGui::Separator();
+
 			// Scene game objects
 			ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_NoClip;
 			static int selected = -1;

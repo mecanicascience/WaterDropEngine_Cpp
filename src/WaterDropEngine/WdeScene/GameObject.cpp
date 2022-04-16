@@ -80,6 +80,37 @@ namespace wde::scene {
 
 		// Display object name
 		{
+			if (ImGui::BeginPopupContextItem("edit_object_name")) {
+				// Edit
+				static char nameLoc[128] = "";
+				memset(nameLoc, 0, IM_ARRAYSIZE(nameLoc));
+				for (int i = 0; i < IM_ARRAYSIZE(nameLoc); i++) {
+					if (i < name.size())
+						nameLoc[i] = name[i];
+				}
+				ImGui::Text("Edit name :");
+				ImGui::InputText("##edit", nameLoc, IM_ARRAYSIZE(nameLoc));
+				ImGui::Separator();
+				if (ImGui::Button("Close"))
+					ImGui::CloseCurrentPopup();
+				name = nameLoc;
+
+				// Delete object
+				ImGui::SameLine();
+				ImGui::Dummy({2.0f, 0.0f});
+				ImGui::SameLine();
+				ImGui::PushStyleColor(ImGuiCol_Button, gui::GUITheme::colorRedMajor);
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, gui::GUITheme::colorRedMinor);
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, gui::GUITheme::colorRedMinor);
+				if (ImGui::Button("Delete")) {
+					// TODO
+					ImGui::CloseCurrentPopup();
+				}
+				ImGui::PopStyleColor(3);
+
+				ImGui::EndPopup();
+			}
+
 			ImGui::SameLine();
 			ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 			char buf[4 + name.size() + 5];
@@ -90,6 +121,7 @@ namespace wde::scene {
 			else
 				sprintf(buf, ICON_FA_FOLDER "   %s", name.c_str());
 			gui::GUIRenderer::textCentered(buf);
+			ImGui::OpenPopupOnItemClick("edit_object_name", ImGuiPopupFlags_MouseButtonRight);
 			ImGui::PopFont();
 		}
 
