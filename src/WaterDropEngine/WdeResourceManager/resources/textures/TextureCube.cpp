@@ -59,6 +59,7 @@ namespace wde::resource {
 			vkMapMemory(device.getDevice(), stagingBufferMemory, 0, layerSize, 0, &data);
 
 			for (int face = 0; face < 6; face++) {
+				WDE_PROFILE_SCOPE("wde::resource::TextureCube::TextureCube::loadFace()");
 				// Load texture and copy data to buffer
 				int texChannels;
 				stbi_uc* pixels = stbi_load((WaterDropEngine::get().getInstance().getScene()->getPath() + "data/textures/"
