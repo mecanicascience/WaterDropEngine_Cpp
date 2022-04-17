@@ -101,7 +101,7 @@ namespace wde::scene {
 		path = "res/" + fileData["folderName"].get<std::string>() + "/";
 
 		// Kill last scene
-		WaterDropEngine::get().getInstance().getScene()->cleanUpInstance();
+		WaterDropEngine::get().getInstance().getScene()->cleanUp();
 
 		// Create empty scene
 		auto scene = std::make_shared<WdeSceneInstance>();
@@ -123,34 +123,6 @@ namespace wde::scene {
 		if (fileData["type"] != "scene")
 			throw WdeException(LogChannel::SCENE, "Trying to load a non-scene JSON object.");
 		scene->setName(fileData["name"]);
-
-		// Load game objects
-		uint32_t currentGOID = scene->getGameObjects().size();
-		std::unordered_map<int, int> oldToNewIds {}; // <oldID, newID>
-		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
-			const auto& goData = json::parse(WdeFileUtils::readFile(path + "gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
-			if (goData["type"] != "gameObject")
-				throw WdeException(LogChannel::SCENE, "Trying to load a non-gameObject resource type as a gameObject.");
-
-			// Create game object
-			auto go = scene->createGameObject(goData["name"], goData["data"]["static"].get<bool>());
-			go->active = goData["data"]["active"].get<bool>();
-
-			// Add parent id to list
-			oldToNewIds.emplace(goIDs.get<int>(), go->getID());
-
-			// Create game object modules
-			for (const auto& modData : goData["modules"])
-				ModuleSerializer::addModuleFromName(modData["name"], to_string(modData["data"]), *go);
-		}
-
-		// Set game object parents and children
-		for (const auto& goIDs : fileData["data"]["gameObjects"]) {
-			const auto& goData = json::parse(WdeFileUtils::readFile(path + "gameObjects/go_" + std::to_string(goIDs.get<uint32_t>()) + ".json"));
-			if (goData["modules"][0]["name"] == "Transform" && goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
-				scene->getGameObjects()[(int) currentGOID]->transform->setParent(scene->getGameObjects()[oldToNewIds.at(goData["modules"][0]["data"]["parentID"].get<int>())]->transform);
-			currentGOID++;
-		}
 	}
 
 	void WdeScene::saveScene() {
@@ -158,7 +130,7 @@ namespace wde::scene {
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Saving scene data." << logger::endl;
 
 		// Scene main data
-		auto scene = WaterDropEngine::get().getInstance().getScene();
+		/*auto scene = WaterDropEngine::get().getInstance().getScene(); // TODO
 		json sceneData;
 		sceneData["type"] = "scene";
 		sceneData["name"] = scene->getName();
@@ -199,11 +171,11 @@ namespace wde::scene {
 			std::ofstream outputGOData {sceneRes + "gameObjects/go_" + std::to_string(index) + ".json", std::ofstream::out};
 			outputGOData << goJSON << std::endl;
 		}
-		sceneData["data"]["gameObjects"] = goList;
+		//sceneData["data"]["gameObjects"] = goList;
 
 		// Serialize and write to file
 		std::ofstream outputData {sceneRes + "scene.json", std::ofstream::out};
 		outputData << to_string(sceneData);
-		outputData.close();
+		outputData.close();*/
 	}
 }

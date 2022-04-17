@@ -32,7 +32,7 @@ namespace examples {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
 						// Draw mesh sync
-						for (auto& go : scene.getGameObjects()) {
+						/*for (auto& go : scene.getGameObjects()) {
 							// If no mesh or material, continue
 							auto mesh = go->getModule<scene::MeshRendererModule>();
 							if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
@@ -45,7 +45,7 @@ namespace examples {
 
 							// Draw
 							mesh->getMesh()->render(go->getID());
-						}
+						}*/
 					endRenderSubPass();
 
 					beginRenderSubPass(1);

@@ -12,8 +12,10 @@ namespace wde::scene {
 	class Chunk {
 		public:
 			// Constructors
-			explicit Chunk(glm::vec2 pos);
+			explicit Chunk(glm::ivec2 pos);
 			~Chunk();
+			void tick();
+			void drawGUI();
 
 
 			// Getters
@@ -50,15 +52,15 @@ namespace wde::scene {
 
 		private:
 			// Chunk data
-			glm::vec2 _pos;
+			glm::ivec2 _pos;
 
 			// Chunk game objects handling
 			/** List of all scene game objects */
-			std::vector<std::shared_ptr<GameObject>> _gameObjects;
+			std::vector<std::shared_ptr<GameObject>> _gameObjects {};
 			/** List of scene static game objects */
-			std::vector<std::shared_ptr<GameObject>> _gameObjectsStatic;
+			std::vector<std::shared_ptr<GameObject>> _gameObjectsStatic {};
 			/** List of scene dynamic game objects */
-			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic;
+			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic {};
 			/** List of all scene game objects to delete on next tick */
 			std::vector<GameObject*> _gameObjectsToDelete {};
 

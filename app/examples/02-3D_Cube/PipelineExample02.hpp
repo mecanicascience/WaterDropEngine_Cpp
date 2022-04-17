@@ -29,7 +29,7 @@ namespace examples {
 			}
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
-				beginRenderPass(0);
+				/*beginRenderPass(0);
 					beginRenderSubPass(0);
 						for (auto& go : scene.getGameObjects()) {
 							// If no mesh or material, continue
@@ -51,7 +51,7 @@ namespace examples {
 						// Render GUI
 						gui::WdeGUI::render(commandBuffer);
 					endRenderSubPass();
-				endRenderPass();
+				endRenderPass();*/
 			}
 
 			void cleanUp() override { }

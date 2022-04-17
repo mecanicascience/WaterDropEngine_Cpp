@@ -1,13 +1,187 @@
 #include "Chunk.hpp"
+#include "../../WaterDropEngine.hpp"
 
 namespace wde::scene {
-	Chunk::Chunk(glm::vec2 pos) : _pos(pos) {
+	Chunk::Chunk(glm::ivec2 pos) : _pos(pos) {
+		WDE_PROFILE_FUNCTION();
 
+		// Load chunk data
+		auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
+		auto fileData = json::parse(WdeFileUtils::readFile(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json"));
+		if (fileData["type"] != "chunk")
+			throw WdeException(LogChannel::SCENE, "Trying to load a non-chunk JSON object.");
+		if (fileData["data"]["id"]["x"].get<int>() != pos.x || fileData["data"]["id"]["y"].get<int>() != pos.y)
+			throw WdeException(LogChannel::SCENE, "Chunk at (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ") has incorrect ID in JSON file.");
+
+		// Add editor camera if chunk (0, 0)
+#ifdef WDE_ENGINE_MODE_DEBUG
+		if (_pos.x == 0 && _pos.y == 0) {
+			auto camera = createGameObject("Editor Camera");
+			auto camModule = camera->addModule<scene::CameraModule>();
+			camModule->setAsActive();
+			camModule->setFarPlane(std::numeric_limits<float>::max());
+			WaterDropEngine::get().getInstance().getScene()->setActiveCamera(camera.get());
+			camera->addModule<scene::ControllerModule>();
+			camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
+			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
+		}
+#endif
+
+		// Load chunk game objects
+		uint32_t currentGOID = _gameObjectsIDCurr;
+		std::unordered_map<uint32_t, uint32_t> oldToNewIds {}; // <oldID, newID>
+		for (const auto& goData : fileData["data"]["gameObjects"]) {
+			if (goData["type"] != "gameObject")
+				throw WdeException(LogChannel::SCENE, "Trying to load a non-gameObject resource type as a gameObject.");
+
+			// Create game object
+			auto go = createGameObject(goData["name"], goData["data"]["static"].get<bool>());
+			go->active = goData["data"]["active"].get<bool>();
+
+			// Add parent id to list
+			oldToNewIds.emplace(goData["data"]["id"].get<uint32_t>(), go->getID());
+
+			// Create game object modules
+			for (const auto& modData : goData["modules"])
+				ModuleSerializer::addModuleFromName(modData["name"], to_string(modData["data"]), *go);
+		}
+
+		// Set game object parents and children
+		for (const auto& goData : fileData["data"]["gameObjects"]) {
+			if (goData["modules"][0]["name"] == "Transform" && goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
+				_gameObjects[(int) currentGOID]->transform->setParent(_gameObjects[oldToNewIds.at(goData["modules"][0]["data"]["parentID"].get<int>())]->transform);
+			currentGOID++;
+		}
 	}
 
 	Chunk::~Chunk() {
+		WDE_PROFILE_FUNCTION();
 
+		// Remove game objects
+		_gameObjectsDynamic.clear();
+		_gameObjectsStatic.clear();
+		_gameObjects.clear();
 	}
+
+
+	void Chunk::tick() {
+		WDE_PROFILE_FUNCTION();
+
+		// Remove game objects to delete
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Removing deleted game objects." << logger::endl;
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::deleteGameObjects");
+
+			auto sceneInstance = WaterDropEngine::get().getInstance().getScene();
+			if (!_gameObjectsToDelete.empty()) {
+				// Remove selected and active camera
+				for (GameObject* go : _gameObjectsToDelete) {
+					if (sceneInstance->getActiveGameObject() == go)
+						sceneInstance->getActiveGameObject() = nullptr;
+					if (sceneInstance->getActiveCamera() == go)
+						sceneInstance->setActiveCamera(nullptr);
+				}
+
+				// Remove from static list
+				_gameObjectsStatic.erase(std::remove_if(_gameObjectsStatic.begin(), _gameObjectsStatic.end(), [this](const auto&x) {
+					return std::find(_gameObjectsToDelete.begin(), _gameObjectsToDelete.end(), x.get()) != _gameObjectsToDelete.end();
+				}), _gameObjectsStatic.end());
+
+				// Remove from dynamic list
+				_gameObjectsDynamic.erase(std::remove_if(_gameObjectsDynamic.begin(), _gameObjectsDynamic.end(), [this](const auto&x) {
+					return std::find(_gameObjectsToDelete.begin(), _gameObjectsToDelete.end(), x.get()) != _gameObjectsToDelete.end();
+				}), _gameObjectsDynamic.end());
+
+				// Remove from game objects
+				_gameObjects.erase(std::remove_if(_gameObjects.begin(), _gameObjects.end(), [this](const auto&x) {
+					return std::find(_gameObjectsToDelete.begin(), _gameObjectsToDelete.end(), x.get()) != _gameObjectsToDelete.end();
+				}), _gameObjects.end());
+
+				// Clear game objects to delete
+				_gameObjectsToDelete.clear();
+			}
+		}
+
+		// Update game objects
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene dynamic game objects." << logger::endl;
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::dynamicGameObjects");
+
+			for (auto &go: _gameObjectsDynamic)
+				go->tick();
+		}
+	}
+
+
+
+	void Chunk::drawGUI() {
+#ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::drawGUI");
+		if (_gameObjects.empty())
+			return;
+
+		// Setup scene components list
+		gui::GUIRenderer::pushWindowTabStyle();
+		ImGui::Begin("Scene Components");
+		gui::GUIRenderer::popWindowTabStyle();
+		ImGui::BeginChild("Scene Components Children");
+		ImGui::Dummy(ImVec2(0.0f, 0.15f));
+
+		// Add Game Object button
+		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
+		if (ImGui::Button(ICON_FA_PLUS_CIRCLE))
+			createGameObject("Empty Gameobject");
+		ImGui::PopFont();
+		ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
+		ImGui::PushFont(ImGui::GetIO().FontDefault);
+		ImGui::SameLine();
+		ImGui::Text("Add an empty Gameobject");
+		ImGui::PopFont();
+		ImGui::PopStyleColor();
+		ImGui::Separator();
+
+		// Scene game objects
+		ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_NoClip;
+		auto scene = WaterDropEngine::get().getInstance().getScene();
+		GameObject* oldSelected = scene->getActiveGameObject();
+		if (ImGui::BeginTable("Game Objects List", 3, flags)) {
+			// Draw game objects list
+			for (auto& go : _gameObjects) {
+				if (go->transform->getParent() == nullptr) {
+					ImGui::TableNextRow();
+					drawGUIForGo(go, scene->getActiveGameObject());
+				}
+			}
+			ImGui::EndTable();
+		}
+
+		// Selected game object changed
+		if (oldSelected != scene->getActiveGameObject()) {
+			if (oldSelected != nullptr)
+				oldSelected->setSelected(false);
+			if (scene->getActiveGameObject() != nullptr)
+				scene->getActiveGameObject()->setSelected(true);
+		}
+
+		ImGui::EndChild();
+		ImGui::End();
+
+
+
+		// Render selected game object properties in properties component
+		gui::GUIRenderer::pushWindowTabStyle();
+		ImGui::Begin("Properties");
+		gui::GUIRenderer::popWindowTabStyle();
+		ImGui::PushFont(ImGui::GetIO().FontDefault);
+		ImGui::Dummy(ImVec2(0.0f, 0.15f));
+		if (scene->getActiveGameObject() != nullptr)
+			scene->getActiveGameObject()->drawGUI();
+		ImGui::End();
+		ImGui::PopFont();
+#endif
+	}
+
+
 
 
 

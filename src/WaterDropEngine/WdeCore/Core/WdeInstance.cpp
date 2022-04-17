@@ -36,7 +36,7 @@ namespace wde {
 		WDE_PROFILE_FUNCTION();
 		// Destroy render scene
 		if (_scene != nullptr) {
-			_scene->cleanUpInstance();
+			_scene->cleanUp();
 			_scene.reset();
 		}
 
@@ -59,21 +59,6 @@ namespace wde {
 	}
 
 	void WdeInstance::setScene(std::shared_ptr<scene::WdeSceneInstance> scene) {
-		WDE_PROFILE_FUNCTION();
 		_scene = std::move(scene);
-
-		// Add editor camera
-#ifdef WDE_ENGINE_MODE_DEBUG
-		{
-			auto camera = _scene->createGameObject("Editor Camera");
-			auto camModule = camera->addModule<scene::CameraModule>();
-			camModule->setAsActive();
-			camModule->setFarPlane(std::numeric_limits<float>::max());
-			_scene->setActiveCamera(camera.get());
-			camera->addModule<scene::ControllerModule>();
-			camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
-			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
-		}
-#endif
 	}
 }

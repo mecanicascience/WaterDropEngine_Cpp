@@ -46,7 +46,7 @@ namespace examples {
 			}
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
-				// Create rendering batches
+				/*// Create rendering batches
 				std::vector<RenderBatch> renderBatches {};
 				{
 					WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::createRenderBatches");
@@ -161,7 +161,7 @@ namespace examples {
 						// Render GUI
 						gui::WdeGUI::render(commandBuffer);
 					endRenderSubPass();
-				endRenderPass();
+				endRenderPass();*/
 			}
 
 			void cleanUp() override { }

@@ -70,9 +70,9 @@ namespace wde::render {
 			if (isFirstTime) {
 				isFirstTime = false;
 
-				// Update static objects
+				// Update static objects // TODO
 				void *data = _objectsData->map();
-				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
+				/*auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
 				for (auto& go : scene->getStaticGameObjects()) {
 					objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
 
@@ -91,20 +91,20 @@ namespace wde::render {
 						if (mesh != nullptr && mesh->getMesh() != nullptr)
 							objectsData[go->getID()].collisionSphere = mesh->getMesh()->getCollisionSphere();
 					}
-				}
+				}*/
 				_objectsData->unmap();
 			}
 
 			// Update game objects data
 			{
 				void *data = _objectsData->map();
-				auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
+				/*auto* objectsData = (scene::GameObject::GPUGameObjectData*) data; // TODO
 				for (auto& go : scene->getDynamicGameObjects()) {
 					if (go->transform->changed) {
 						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
 						go->transform->changed = false;
 					}
-				}
+				}*/
 				_objectsData->unmap();
 			}
 		}

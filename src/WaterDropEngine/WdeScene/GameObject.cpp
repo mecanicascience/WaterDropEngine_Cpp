@@ -105,7 +105,8 @@ namespace wde::scene {
 				ImGui::PushStyleColor(ImGuiCol_ButtonActive, gui::GUITheme::colorRedMinor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, gui::GUITheme::colorRedMinor);
 				if (ImGui::Button("Delete")) {
-					WaterDropEngine::get().getInstance().getScene()->removeGameObject(this);
+					auto scene = WaterDropEngine::get().getInstance().getScene();
+					scene->getChunk(scene->getSelectedGameObjectChunk())->removeGameObject(this);
 					ImGui::CloseCurrentPopup();
 				}
 				ImGui::PopStyleColor(3);

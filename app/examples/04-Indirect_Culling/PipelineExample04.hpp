@@ -42,17 +42,17 @@ namespace examples {
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
 				// Do culling
-				_cullingManager->createBatches(scene.getGameObjects());
+				/*_cullingManager->createBatches(scene.getGameObjects());
 
 				if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->name == "Editor Camera")
 					_cullingManager->cull(scene.getFirstGameCamera());
 				else
-					_cullingManager->cull(scene.getActiveCamera());
+					_cullingManager->cull(scene.getActiveCamera());*/
 
 
 				beginRenderPass(0);
 					beginRenderSubPass(0);
-						_cullingManager->render(commandBuffer);
+						//_cullingManager->render(commandBuffer);
 					endRenderSubPass();
 
 					beginRenderSubPass(1);

@@ -15,8 +15,8 @@ namespace wde::scene {
 			// Scene instance methods
 			/** Ticking for scene instance (called by WaterDropEngine) */
 			void tick();
+			void cleanUp();
 			void onNotify(const core::Event& event) override;
-			void cleanUpInstance();
 
 
 			// Getters and setters
@@ -25,17 +25,16 @@ namespace wde::scene {
 			void setName(const std::string& name) { _sceneName = name; }
 			const std::string& getName() const { return _sceneName; }
 
-			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
-			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
-			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
-
-			GameObject* getActiveGameObject() const { return _selectedGameObject; }
+			GameObject*& getActiveGameObject() { return _selectedGameObject; }
+			glm::ivec2 getSelectedGameObjectChunk() const { return _selectedGameObjectChunkID; }
 			/** @return The first camera in the scene that is not the editor camera */
 			GameObject* getFirstGameCamera() {
-				for (auto& go : _gameObjectsDynamic) {
-					auto mod = go->getModule<CameraModule>();
-					if (mod != nullptr && mod->getName() != "Editor Camera")
-						return go.get();
+				for (auto& c : _activeChunks) {
+					for (auto& go : c.second->getDynamicGameObjects()) {
+						auto mod = go->getModule<CameraModule>();
+						if (mod != nullptr && mod->getName() != "Editor Camera")
+							return go.get();
+					}
 				}
 				return nullptr;
 			}
@@ -43,64 +42,41 @@ namespace wde::scene {
 			GameObject* getActiveCamera() const { return _activeCamera; }
 
 
+			// Chunks manager
 			/**
-			 * Create a new GameObject
-			 * @param name Name of the GameObject
-			 * @param isStatic True if the game object is a static one (default false)
+			 * @param chunkID Unique chunk position identifier
+			 * @return The a pointer to the chunk
 			 */
-			std::shared_ptr<GameObject> createGameObject(const std::string& name, bool isStatic = false) {
-				auto goPtr = std::make_shared<GameObject>(_gameObjectsIDCurr++, name, isStatic);
-				_gameObjects.push_back(goPtr);
-				if (isStatic)
-					_gameObjectsStatic.push_back(goPtr);
-				else
-					_gameObjectsDynamic.push_back(goPtr);
-				return goPtr;
+			Chunk* getChunk(glm::ivec2 chunkID) {
+				// Chunk found
+				if (_activeChunks.contains(chunkID))
+					return _activeChunks.at(chunkID).get();
+
+				// Not found
+				auto ch = std::make_shared<Chunk>(chunkID);
+				_activeChunks.emplace(chunkID, ch);
+				return ch.get();
 			}
 
-			/**
-			 * Remove a given GameObject
-			 * @param go
-			 */
-			void removeGameObject(GameObject* go) {
-				// Remove GameObject
-				_gameObjectsToDelete.push_back(go);
-			}
 
 
 		private:
-			// Scene game objects
-			/** List of all scene game objects */
-			std::vector<std::shared_ptr<GameObject>> _gameObjects;
-			/** List of scene static game objects */
-			std::vector<std::shared_ptr<GameObject>> _gameObjectsStatic;
-			/** List of scene dynamic game objects */
-			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic;
-			/** List of all scene game objects to delete on next tick */
-			std::vector<GameObject*> _gameObjectsToDelete {};
-
 			// Scene utils
 			/** Path to the scene object */
 			std::string _scenePath;
 			/** Name of the scene object */
 			std::string _sceneName;
-			/** Last create game object ID */
-			uint32_t _gameObjectsIDCurr = 0;
 
 			// Selected game objects
+			/** Selected game object chunk id */
+			glm::ivec2 _selectedGameObjectChunkID {0, 0};
 			/** Selected game object for GUI (none : nullptr) */
 			GameObject* _selectedGameObject = nullptr;
 			/** Active camera (none = nullptr) */
 			GameObject* _activeCamera = nullptr;
 
-			// Helper functions
-			void drawGUIForGo(const std::shared_ptr<GameObject>& go, GameObject*& selected) const;
-
-
-
-
-			///////////////// NEW /////////////
+			// Scene chunks
 			/** List of scene active chunks (pos - chunk*) */
-			std::unordered_map<glm::vec2, std::unique_ptr<Chunk>> _chunks {};
+			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _activeChunks {};
 	};
 }
