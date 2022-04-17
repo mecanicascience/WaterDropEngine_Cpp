@@ -46,13 +46,6 @@ namespace wde::scene {
 			for (auto &go: _gameObjectsDynamic)
 				go->tick();
 		}
-
-		// Update scene
-		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Updating scene instance." << logger::endl;
-		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::updateScene");
-			update();
-		}
 	}
 
 	void WdeSceneInstance::cleanUpInstance() {
@@ -65,9 +58,6 @@ namespace wde::scene {
 		_gameObjectsDynamic.clear();
 		_gameObjectsStatic.clear();
 		_gameObjects.clear();
-
-		// Clean up scene
-		cleanUp();
 	}
 
 

@@ -4,6 +4,7 @@
 #include "GameObject.hpp"
 #include "../WdeCore/Structure/Observer.hpp"
 #include "modules/CameraModule.hpp"
+#include "terrain/Chunk.hpp"
 
 namespace wde::scene {
 	/**
@@ -11,11 +12,6 @@ namespace wde::scene {
 	 */
 	class WdeSceneInstance : public core::Observer {
 		public:
-			// Scene engine override methods
-			virtual void setup() {};
-			virtual void update() {};
-			virtual void cleanUp() {};
-
 			// Scene instance methods
 			/** Ticking for scene instance (called by WaterDropEngine) */
 			void tick();
@@ -99,5 +95,12 @@ namespace wde::scene {
 
 			// Helper functions
 			void drawGUIForGo(const std::shared_ptr<GameObject>& go, GameObject*& selected) const;
+
+
+
+
+			///////////////// NEW /////////////
+			/** List of scene active chunks (pos - chunk*) */
+			std::unordered_map<glm::vec2, std::unique_ptr<Chunk>> _chunks {};
 	};
 }

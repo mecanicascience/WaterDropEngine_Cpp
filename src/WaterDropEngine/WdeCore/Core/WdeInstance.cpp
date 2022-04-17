@@ -75,8 +75,5 @@ namespace wde {
 			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
 		}
 #endif
-
-		// Setup scene
-		_scene->setup();
 	}
 }
