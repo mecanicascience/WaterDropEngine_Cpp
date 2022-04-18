@@ -1,5 +1,7 @@
 #pragma once
 
+#include <queue>
+
 #include "../../wde.hpp"
 #include "GameObject.hpp"
 #include "../WdeCore/Structure/Observer.hpp"
@@ -43,20 +45,18 @@ namespace wde::scene {
 
 
 			// Chunks manager
+			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getActiveChunks() { return _activeChunks; }
 			/**
 			 * @param chunkID Unique chunk position identifier
 			 * @return The a pointer to the chunk
 			 */
-			Chunk* getChunk(glm::ivec2 chunkID) {
-				// Chunk found
-				if (_activeChunks.contains(chunkID))
-					return _activeChunks.at(chunkID).get();
+			Chunk* getChunk(glm::ivec2 chunkID);
 
-				// Not found
-				auto ch = std::make_shared<Chunk>(chunkID);
-				_activeChunks.emplace(chunkID, ch);
-				return ch.get();
-			}
+			/**
+			 * Remove a chunk from the list if the chunk exists
+			 * @param chunkID
+			 */
+			void removeChunk(glm::ivec2 chunkID);
 
 
 
@@ -78,5 +78,7 @@ namespace wde::scene {
 			// Scene chunks
 			/** List of scene active chunks (pos - chunk*) */
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _activeChunks {};
+			/** Lists of chunks that needs to be deleted */
+			std::queue<glm::ivec2> _removingChunks {};
 	};
 }

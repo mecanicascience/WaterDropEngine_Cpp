@@ -28,6 +28,14 @@ namespace wde::core {
 					_observers.push_back(std::move(observer));
 			}
 
+			/**
+			 * Remove an observer from the list
+			 * @param observer
+			 */
+			void removeObserver(const std::shared_ptr<Observer>& observer) {
+				_observers.erase(std::remove(_observers.begin(), _observers.end(), observer), _observers.end());
+			}
+
 
 
 			/**

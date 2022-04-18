@@ -1,17 +1,17 @@
 #include "Chunk.hpp"
+
+#include <utility>
 #include "../../WaterDropEngine.hpp"
+#include "../../WdeScene/WdeSceneInstance.hpp"
 
 namespace wde::scene {
-	Chunk::Chunk(glm::ivec2 pos) : _pos(pos) {
+	Chunk::Chunk(WdeSceneInstance* sceneInstance, glm::ivec2 pos) : _sceneInstance(sceneInstance), _pos(pos) {
 		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Loading chunk (" << _pos.x << ", " << _pos.y << ")." << logger::endl;
 
-		// Load chunk data
-		auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
-		auto fileData = json::parse(WdeFileUtils::readFile(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json"));
-		if (fileData["type"] != "chunk")
-			throw WdeException(LogChannel::SCENE, "Trying to load a non-chunk JSON object.");
-		if (fileData["data"]["id"]["x"].get<int>() != pos.x || fileData["data"]["id"]["y"].get<int>() != pos.y)
-			throw WdeException(LogChannel::SCENE, "Chunk at (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ") has incorrect ID in JSON file.");
+		// Check if file chunk exist, if not create empty chunk
+		auto path = _sceneInstance->getPath();
+		bool exist = WdeFileUtils::fileExist(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json");
 
 		// Add editor camera if chunk (0, 0)
 #ifdef WDE_ENGINE_MODE_DEBUG
@@ -26,6 +26,17 @@ namespace wde::scene {
 			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
 		}
 #endif
+
+		// No chunk data
+		if (!exist)
+			return;
+
+		// Check chunk file format
+		auto fileData = json::parse(WdeFileUtils::readFile(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json"));
+		if (fileData["type"] != "chunk")
+			throw WdeException(LogChannel::SCENE, "Trying to load a non-chunk JSON object.");
+		if (fileData["data"]["id"]["x"].get<int>() != pos.x || fileData["data"]["id"]["y"].get<int>() != pos.y)
+			throw WdeException(LogChannel::SCENE, "Chunk at (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ") has incorrect ID in JSON file.");
 
 		// Load chunk game objects
 		uint32_t currentGOID = _gameObjectsIDCurr;
@@ -54,10 +65,71 @@ namespace wde::scene {
 		}
 	}
 
+	void Chunk::save() {
+		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Saving chunk (" << _pos.x << ", " << _pos.y << ")." << logger::endl;
+
+		// Make sure directory is created
+		std::filesystem::create_directories(_sceneInstance->getPath() + "chunk/");
+
+		// Chunk data
+		json chunkData {};
+		chunkData["type"] = "chunk";
+		chunkData["data"]["id"]["x"] = _pos.x;
+		chunkData["data"]["id"]["y"] = _pos.y;
+
+		// Game objects list
+		std::vector<json> goJSONArr {};
+#ifdef WDE_ENGINE_MODE_DEBUG
+		if (_gameObjects.size() >= 0 && _gameObjects[0]->name == "Editor Camera")
+			goJSONArr.resize(_gameObjects.size() - 1);
+		else
+			goJSONArr.resize(_gameObjects.size());
+#else
+		goJSONArr.resize(_gameObjects.size());
+#endif
+
+		int it = 0;
+		for (const auto& res : _gameObjects) {
+			// Continue if editor camera
+#ifdef WDE_ENGINE_MODE_DEBUG
+			if (res->name == "Editor Camera")
+				continue;
+#endif
+
+			// Create GO file
+			json goJSON;
+			goJSON["type"] = "gameObject";
+			goJSON["name"] = res->name;
+			goJSON["data"]["id"] = res->getID();
+			goJSON["data"]["active"] = res->active;
+			goJSON["data"]["static"] = res->isStatic();
+
+			// Create modules json data
+			std::vector<json> modulesJSON;
+			for (auto& mod : res->getModules())
+				modulesJSON.push_back(ModuleSerializer::serializeModule(*mod));
+			goJSON["modules"] = modulesJSON;
+
+			// Output file
+			goJSONArr[it++] = goJSON;
+		}
+		chunkData["data"]["gameObjects"] = goJSONArr;
+
+		// Serialize and write to file
+		std::ofstream outputData {_sceneInstance->getPath() + "chunk/chunk_" + std::to_string(_pos.x) + "-" + std::to_string(_pos.y) +  ".json", std::ofstream::out};
+		outputData << to_string(chunkData);
+		outputData.close();
+	}
+
 	Chunk::~Chunk() {
 		WDE_PROFILE_FUNCTION();
 
+		// Save chunk data
+		save();
+
 		// Remove game objects
+		_sceneInstance = nullptr;
 		_gameObjectsDynamic.clear();
 		_gameObjectsStatic.clear();
 		_gameObjects.clear();

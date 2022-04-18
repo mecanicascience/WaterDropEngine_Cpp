@@ -1,8 +1,5 @@
 {
     "type" : "scene",
     "name" : "Demo Scene",
-    "folderName" : "demo_scene",
-    "data" : {
-        "chunk_size" : 16
-    }
+    "folderName" : "demo_scene"
 }

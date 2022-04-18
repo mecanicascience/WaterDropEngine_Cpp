@@ -32,7 +32,6 @@ namespace wde::scene {
 
 	void GizmoManager::render(render::CommandBuffer& commandBuffer) {
 		WDE_PROFILE_FUNCTION();
-		/*auto& gameObjects = WaterDropEngine::get().getInstance().getScene()->getDynamicGameObjects();*/ // TODO
 
 		if (GizmoManager::_gizmoInstance == nullptr)
 			throw WdeException(LogChannel::SCENE, "Trying to draw the Gizmo objects without initializing the renderer.");
@@ -41,10 +40,12 @@ namespace wde::scene {
 		// Set command buffer
 		inst->_commandBuffer = &commandBuffer;
 
-		// Render Gizmo for modules // TODO
-		/*for (auto& go : gameObjects)
-			for (auto& mod : go->getModules())
-				mod->drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);*/
+		// Render Gizmo for modules
+		auto scene = WaterDropEngine::get().getInstance().getScene();
+		for (auto& ch : scene->getActiveChunks())
+			for (auto& go : ch.second->getDynamicGameObjects())
+				for (auto& mod : go->getModules())
+					mod->drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
 	}
 
 	void GizmoManager::cleanUp() {

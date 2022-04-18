@@ -33,7 +33,6 @@ namespace wde::scene {
 	void WdeScene::cleanUp() {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Cleaning Up Scene Engine ==" << logger::endl;
-
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "== Cleaning Up Done ==" << logger::endl;
 	}
 
@@ -97,15 +96,17 @@ namespace wde::scene {
 		auto content = WdeFileUtils::readFileDialog("json", path);
 		if (path.empty())
 			return;
-		auto fileData = json::parse(content);
-		path = "res/" + fileData["folderName"].get<std::string>() + "/";
+
+		// Remove last scene from observers
+		WaterDropEngine::get().getGUI().removeObserver(WaterDropEngine::get().getInstance().getScene());
 
 		// Kill last scene
 		WaterDropEngine::get().getInstance().getScene()->cleanUp();
 
 		// Create empty scene
+		auto fileData = json::parse(content);
 		auto scene = std::make_shared<WdeSceneInstance>();
-		scene->setPath(path);
+		scene->setPath("res/" + fileData["folderName"].get<std::string>() + "/");
 		WaterDropEngine::get().getInstance().setScene(scene);
 	}
 
@@ -129,53 +130,20 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Saving scene data." << logger::endl;
 
+		// Save chunk data
+		auto scene = WaterDropEngine::get().getInstance().getScene();
+		for (auto& c : scene->getActiveChunks())
+			c.second->save();
+
 		// Scene main data
-		/*auto scene = WaterDropEngine::get().getInstance().getScene(); // TODO
 		json sceneData;
 		sceneData["type"] = "scene";
 		sceneData["name"] = scene->getName();
 		sceneData["folderName"] = scene->getPath().substr(4, scene->getPath().size() - 5);
-		std::string sceneRes = "res/" + sceneData["folderName"].get<std::string>() + "/";
-
-		// Create folders
-		std::filesystem::create_directories(sceneRes);
-		std::filesystem::create_directories(sceneRes + "gameObjects/");
-
-		// Game objects list
-		auto goList = std::vector<uint32_t>();
-		for (auto& res : scene->getGameObjects()) {
-			// Continue if editor camera
-#ifdef WDE_ENGINE_MODE_DEBUG
-			if (res->getID() == 0)
-				continue;
-#endif
-
-			// Create reference in scene
-			auto index = res->getID();
-			goList.push_back(index);
-
-			// Create GO file
-			json goJSON;
-			goJSON["type"] = "gameObject";
-			goJSON["name"] = res->name;
-			goJSON["data"]["active"] = res->active;
-			goJSON["data"]["static"] = res->isStatic();
-
-			// Create modules json data
-			std::vector<json> modulesJSON;
-			for (auto& mod : res->getModules())
-				modulesJSON.push_back(ModuleSerializer::serializeModule(*mod));
-			goJSON["modules"] = modulesJSON;
-
-			// Output file
-			std::ofstream outputGOData {sceneRes + "gameObjects/go_" + std::to_string(index) + ".json", std::ofstream::out};
-			outputGOData << goJSON << std::endl;
-		}
-		//sceneData["data"]["gameObjects"] = goList;
 
 		// Serialize and write to file
-		std::ofstream outputData {sceneRes + "scene.json", std::ofstream::out};
+		std::ofstream outputData {"res/" + sceneData["folderName"].get<std::string>() + "/scene.json", std::ofstream::out};
 		outputData << to_string(sceneData);
-		outputData.close();*/
+		outputData.close();
 	}
 }

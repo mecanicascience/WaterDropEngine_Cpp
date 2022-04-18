@@ -16,6 +16,14 @@ namespace wde {
 			 */
 			static std::vector<char> readFile(const std::string &fileName);
 
+			/**
+			 * @param fileName The path of the file from the root of the project
+			 * @return true if the file exists
+			 */
+			static bool fileExist(const std::string& fileName) {
+				return std::filesystem::exists(fileName);
+			}
+
 
 			// Dialogs
 			/**

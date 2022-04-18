@@ -6,14 +6,19 @@
 #include "../modules/CameraModule.hpp"
 
 namespace wde::scene {
+	class WdeSceneInstance;
+
 	/**
 	 * Class that represents a scene terrain chunk.
 	 */
 	class Chunk {
 		public:
 			// Constructors
-			explicit Chunk(glm::ivec2 pos);
+			explicit Chunk(WdeSceneInstance* sceneInstance, glm::ivec2 pos);
 			~Chunk();
+
+			/** Saves the chunk data to the associated chunk file */
+			void save();
 			void tick();
 			void drawGUI();
 
@@ -52,6 +57,7 @@ namespace wde::scene {
 
 		private:
 			// Chunk data
+			WdeSceneInstance* _sceneInstance;
 			glm::ivec2 _pos;
 
 			// Chunk game objects handling
