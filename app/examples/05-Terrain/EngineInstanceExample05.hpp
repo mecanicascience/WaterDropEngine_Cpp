@@ -8,7 +8,7 @@ namespace examples {
 	class EngineInstanceExample05 : public WdeInstance {
 		public:
 			void initialize() override {
-				setRenderPipeline(std::make_shared<PipelineExample05>());
+				//setRenderPipeline(std::make_shared<PipelineExample05>());
 			}
 
 			void update() override { }

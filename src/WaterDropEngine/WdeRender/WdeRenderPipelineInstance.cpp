@@ -66,47 +66,15 @@ namespace wde::render {
 
 
 			// On first update, also update every static game objects
-			static bool isFirstTime = true;
-			if (isFirstTime) {
-				isFirstTime = false;
-
-				// Update static objects // TODO
-				void *data = _objectsData->map();
-				/*auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
-				for (auto& go : scene->getStaticGameObjects()) {
-					objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
-
-					auto mesh = go->getModule<scene::MeshRendererModule>();
-					if (mesh != nullptr && mesh->getMesh() != nullptr)
-						objectsData[go->getID()].collisionSphere = mesh->getMesh()->getCollisionSphere();
+			void *data = _objectsData->map();
+			auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
+			uint32_t iterator = 0;
+			for (auto& chunk : scene->getActiveChunks()) {
+				for (auto& go : chunk.second->getGameObjects()) {
+					objectsData[iterator++].transformWorldSpace = go->transform->getTransform();
 				}
-
-				// Update dynamic game objects
-				for (auto& go : scene->getDynamicGameObjects()) {
-					if (go->transform->changed) {
-						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
-						go->transform->changed = false;
-
-						auto mesh = go->getModule<scene::MeshRendererModule>();
-						if (mesh != nullptr && mesh->getMesh() != nullptr)
-							objectsData[go->getID()].collisionSphere = mesh->getMesh()->getCollisionSphere();
-					}
-				}*/
-				_objectsData->unmap();
 			}
-
-			// Update game objects data
-			{
-				void *data = _objectsData->map();
-				/*auto* objectsData = (scene::GameObject::GPUGameObjectData*) data; // TODO
-				for (auto& go : scene->getDynamicGameObjects()) {
-					if (go->transform->changed) {
-						objectsData[go->getID()].transformWorldSpace = go->transform->getTransform();
-						go->transform->changed = false;
-					}
-				}*/
-				_objectsData->unmap();
-			}
+			_objectsData->unmap();
 		}
 
 

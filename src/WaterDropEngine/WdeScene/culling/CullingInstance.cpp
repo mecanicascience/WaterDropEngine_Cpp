@@ -10,8 +10,8 @@ namespace wde::scene {
 		// === Create buffers ===
 		int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
 
-		// List of rendered indirect commands created by the compute shader
 		{
+			// List of rendered indirect commands created by the compute shader
 			_indirectCommandsBuffer = std::make_unique<render::Buffer>(
 					MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
 					VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);

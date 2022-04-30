@@ -30,14 +30,7 @@ namespace wde::scene {
 		};
 	}
 
-	void TransformModule::tick() {
-		WDE_PROFILE_FUNCTION();
-		auto newTransform = getTransform();
-		if (_lastTransform != newTransform) {
-			changed = true;
-			_lastTransform = newTransform;
-		}
-	}
+	void TransformModule::tick() {};
 
 	void TransformModule::drawGUI() {
 		WDE_PROFILE_FUNCTION();

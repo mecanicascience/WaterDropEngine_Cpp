@@ -32,20 +32,23 @@ namespace examples {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
 						// Draw mesh sync
-						/*for (auto& go : scene.getGameObjects()) {
-							// If no mesh or material, continue
-							auto mesh = go->getModule<scene::MeshRendererModule>();
-							if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
-								continue;
+						for (auto& ch : scene.getActiveChunks()) {
+							for (auto &go: ch.second->getGameObjects()) {
+								// If no mesh or material, continue
+								auto mesh = go->getModule<scene::MeshRendererModule>();
+								if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr ||
+								    mesh->getMaterial() == nullptr)
+									continue;
 
-							// Bind sets
-							bind(commandBuffer, mesh->getMaterial()); // global
-							mesh->getMaterial()->bind(commandBuffer); // material
-							mesh->getMesh()->bind(commandBuffer); // object
+								// Bind sets
+								bind(commandBuffer, mesh->getMaterial()); // global
+								mesh->getMaterial()->bind(commandBuffer); // material
+								mesh->getMesh()->bind(commandBuffer); // object
 
-							// Draw
-							mesh->getMesh()->render(go->getID());
-						}*/
+								// Draw
+								mesh->getMesh()->render(go->getID());
+							}
+						}
 					endRenderSubPass();
 
 					beginRenderSubPass(1);

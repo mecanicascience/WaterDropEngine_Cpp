@@ -7,6 +7,7 @@ namespace wde::scene {
 
 	void GizmoManager::initialize(std::pair<int, int> renderStage) {
 		WDE_PROFILE_FUNCTION();
+
 		// Create gizmo instance
 		GizmoManager::_gizmoInstance = std::make_unique<Gizmo>();
 
@@ -51,12 +52,13 @@ namespace wde::scene {
 	void GizmoManager::cleanUp() {
 		WDE_PROFILE_FUNCTION();
 
-		// Clear meshes
-		_gizmoInstance->_meshes.clear();
+		if (_gizmoInstance != nullptr) {
+			// Clear meshes
+			_gizmoInstance->_meshes.clear();
 
-		// Clear instance
-		if (_gizmoInstance != nullptr)
+			// Clear instance
 			_gizmoInstance.reset();
+		}
 	}
 }
 #endif

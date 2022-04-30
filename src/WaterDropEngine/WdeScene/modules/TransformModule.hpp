@@ -41,16 +41,11 @@ namespace wde::scene {
 			/** The game object world scale */
 			glm::vec3 scale {1.0f, 1.0f, 1.0f};
 
-			/** True if the transform module has changed since last tick */
-			bool changed = true;
-
 
 		private:
 			/** Module transform parent */
 			TransformModule* _parent = nullptr;
 			/** Module children IDs */
 			std::vector<int> _childrenIDs {};
-			/** Transform matrix from last tick */
-			glm::mat4 _lastTransform {1.0f};
 	};
 }
