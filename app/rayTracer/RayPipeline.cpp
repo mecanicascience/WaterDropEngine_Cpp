@@ -2,6 +2,30 @@
 #include "RayPipeline.hpp"
 #include "../../src/WaterDropEngine/WaterDropEngine.hpp"
 
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "DanglingPointer"
+void RayPipeline::renderRayTracing() {
+	if (_imageData == nullptr)
+		return;
+
+	// Do ray tracing
+	for (int j = _viewportHeight - 1; j >= 0; j--) {
+		for (int i = 0; i < _viewportWidth; i++) {
+			// Pixel UV coordinate (from (0, 0) at bottom left to (1, 1) at top right)
+			glm::vec2 uv {float(i) / static_cast<float>(_viewportWidth - 1), float(_viewportHeight - 1 - j) / static_cast<float>(_viewportHeight - 1)};
+
+			// Compute color
+			Color color {uv.x, uv.y, 0, 1.0f};
+			_imageData[i + j * _viewportWidth] = color.toRGBA2B();
+		}
+	}
+
+	// Update image data
+	_image->setData(_imageData);
+}
+
+
 void RayPipeline::setup() {
 	// Create passes attachments
 	setAttachments({
@@ -53,21 +77,6 @@ void RayPipeline::cleanUp() {
 	_image.reset();
 }
 
-void RayPipeline::renderRayTracing() {
-	// Do ray tracing
-	static std::mt19937 s_RandomEngine {};
-	static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution {};
-
-	for (uint32_t i = 0; i < _viewportWidth * _viewportHeight; i++) {
-		_imageData[i] = s_Distribution(s_RandomEngine);
-		_imageData[i] |= 0xff000000;
-	}
-
-	// Update image data
-	_image->setData(_imageData);
-
-}
-
 void RayPipeline::onNotify(const core::Event& event) {
 	#ifdef WDE_GUI_ENABLED
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
@@ -84,3 +93,5 @@ void RayPipeline::onNotify(const core::Event& event) {
 	#endif
 }
 
+
+#pragma clang diagnostic pop

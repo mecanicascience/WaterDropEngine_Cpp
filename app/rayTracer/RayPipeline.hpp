@@ -24,6 +24,6 @@ class RayPipeline : public WdeRenderPipelineInstance {
 		std::shared_ptr<CImage> _image;
 		uint32_t* _imageData = nullptr;
 
-		uint32_t _viewportWidth = 0;
-		uint32_t _viewportHeight = 0;
+		int _viewportWidth = 0;
+		int _viewportHeight = 0;
 };

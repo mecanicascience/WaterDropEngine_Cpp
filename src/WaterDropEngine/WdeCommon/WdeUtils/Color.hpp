@@ -40,5 +40,15 @@ namespace wde {
 				       + "," + std::to_string(int(_b * 255.0))
 				       + "," + std::to_string(int(_a * 255.0)) + ")";
 			}
+
+
+			typedef unsigned char uchar;
+			/** @return the 2 bytes rgba value of the color */
+			uint32_t toRGBA2B() const {
+				return  uchar(_r * 255)
+					 + (uchar(_g * 255) << 8)
+			         + (uchar(_b * 255) << 16)
+				     + (uchar(_a * 255) << 24);
+			}
 	};
 }
