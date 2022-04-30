@@ -1,3 +1,4 @@
+#include <random>
 #include "RayPipeline.hpp"
 #include "../../src/WaterDropEngine/WaterDropEngine.hpp"
 
@@ -21,6 +22,20 @@ void RayPipeline::setup() {
 }
 
 void RayPipeline::render(CommandBuffer &commandBuffer, scene::WdeSceneInstance &scene) {
+	// Recreate raytracing image if needed
+	if (!_image || _viewportWidth != _image->getWidth() || _viewportHeight != _image->getHeight()) {
+		if (_viewportWidth == 0 && _viewportHeight == 0) {
+			_viewportWidth = 10;
+			_viewportHeight = 10;
+		}
+
+		WaterDropEngine::get().getRender().getInstance().waitForDevicesReady();
+		_image = std::make_shared<CImage>(_viewportWidth, _viewportHeight, ImageFormat::RGBA);
+		delete[] _imageData;
+		_imageData = new uint32_t[_viewportWidth * _viewportHeight];
+		renderRayTracing();
+	}
+
 	beginRenderPass(0);
 		beginRenderSubPass(0);
 		endRenderSubPass();
@@ -34,15 +49,27 @@ void RayPipeline::render(CommandBuffer &commandBuffer, scene::WdeSceneInstance &
 
 void RayPipeline::cleanUp() {
 	// Clean up raytracer
+	delete[] _imageData;
 	_image.reset();
+}
+
+void RayPipeline::renderRayTracing() {
+	// Do ray tracing
+	static std::mt19937 s_RandomEngine {};
+	static std::uniform_int_distribution<std::mt19937::result_type> s_Distribution {};
+
+	for (uint32_t i = 0; i < _viewportWidth * _viewportHeight; i++) {
+		_imageData[i] = s_Distribution(s_RandomEngine);
+		_imageData[i] |= 0xff000000;
+	}
+
+	// Update image data
+	_image->setData(_imageData);
+
 }
 
 void RayPipeline::onNotify(const core::Event& event) {
 	#ifdef WDE_GUI_ENABLED
-		if (event.channel == LogChannel::GUI && event.name == "CreateGUI") {
-
-		}
-
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 			ImGui::Begin("RenderZone");

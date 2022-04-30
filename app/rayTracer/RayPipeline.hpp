@@ -18,8 +18,12 @@ class RayPipeline : public WdeRenderPipelineInstance {
 		void onNotify(const core::Event& event) override;
 		void cleanUp() override;
 
+		void renderRayTracing();
+
 	private:
 		std::shared_ptr<CImage> _image;
+		uint32_t* _imageData = nullptr;
+
 		uint32_t _viewportWidth = 0;
 		uint32_t _viewportHeight = 0;
 };

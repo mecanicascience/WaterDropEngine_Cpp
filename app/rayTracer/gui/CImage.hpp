@@ -12,7 +12,7 @@ namespace wde::render {
 
 	class CImage {
 		public:
-			explicit CImage(uint32_t width, uint32_t height, ImageFormat format, const void* data);
+			explicit CImage(uint32_t width, uint32_t height, ImageFormat format, const void* data = nullptr);
 			~CImage();
 
 			// Getters and setters
