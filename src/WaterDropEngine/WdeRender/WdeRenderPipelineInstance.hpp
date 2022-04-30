@@ -15,7 +15,7 @@ namespace wde::render {
 	/**
 	 * Represents an instance of the engine rendering pipeline
 	 */
-	class WdeRenderPipelineInstance : public NonCopyable {
+	class WdeRenderPipelineInstance : public core::Observer {
 		public:
 			WdeRenderPipelineInstance();
 			~WdeRenderPipelineInstance() override;
@@ -38,6 +38,11 @@ namespace wde::render {
 			 * @param scene
 			 */
 			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
+			/**
+			 * On a GUI event or engine event is received
+			 * @param event
+			 */
+			void onNotify(const core::Event& event) override {};
 			/**
 			 * Clean up the pipeline resources
 			 */

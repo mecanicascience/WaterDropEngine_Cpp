@@ -3,6 +3,7 @@
 #include "examples/03-Draw_Indirect/EngineInstanceExample03.hpp"
 #include "examples/04-Indirect_Culling/EngineInstanceExample04.hpp"
 #include "examples/05-Terrain/EngineInstanceExample05.hpp"
+#include "rayTracer/RayEngineInstance.hpp"
 
 int main() {
 	// === EXAMPLES ===
@@ -20,13 +21,17 @@ int main() {
 		//instance03.startInstance();
 
 		// 04 - Indirect Culling
-		examples::EngineInstanceExample04 instance04 {};
-		instance04.startInstance();
+		//examples::EngineInstanceExample04 instance04 {};
+		//instance04.startInstance();
 
 		// 05 - Terrain
 		//examples::EngineInstanceExample05 instance05 {};
 		//instance05.startInstance();
 	}
+
+	// Ray Tracing
+	RayEngineInstance instance {};
+	instance.startInstance();
 
 	return 0;
 }

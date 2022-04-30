@@ -36,6 +36,13 @@ namespace wde::core {
 				_observers.erase(std::remove(_observers.begin(), _observers.end(), observer), _observers.end());
 			}
 
+			/**
+			 * Clear every observers
+			 */
+			 void clearObservers() {
+				 _observers.clear();
+			 }
+
 
 
 			/**

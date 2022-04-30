@@ -74,6 +74,7 @@ namespace wde {
 				_gui->addObserver(instance.getScene(), true);
 				_gui->addObserver(_resourceManager);
 				_gui->addObserver(_scene);
+				_gui->addObserver(instance.getPipelinePtr());
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
 				WDE_PROFILE_END_SESSION();
@@ -143,6 +144,9 @@ namespace wde {
 				// Clean up WaterDropEngine
 				WDE_PROFILE_BEGIN_SESSION("Cleaning Up", "logs/profiler_cleanup.json");
 				// ===== DELETE MODULES IN REVERSE ORDER =====
+				// Clear observers for gui
+				_gui->clearObservers();
+
 				// Clear engine instance
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== Cleaning up modules ========" << logger::endl;
 				#ifdef WDE_ENGINE_MODE_DEBUG
