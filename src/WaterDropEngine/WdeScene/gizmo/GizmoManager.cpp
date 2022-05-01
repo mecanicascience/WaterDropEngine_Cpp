@@ -41,6 +41,9 @@ namespace wde::scene {
 		// Set command buffer
 		inst->_commandBuffer = &commandBuffer;
 
+		// Render Gizmo for instance
+		WaterDropEngine::get().getInstance().getPipeline().drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
+
 		// Render Gizmo for modules
 		auto scene = WaterDropEngine::get().getInstance().getScene();
 		for (auto& ch : scene->getActiveChunks())

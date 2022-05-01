@@ -34,7 +34,7 @@ namespace wde::scene {
 				for (auto& c : _activeChunks) {
 					for (auto& go : c.second->getDynamicGameObjects()) {
 						auto mod = go->getModule<CameraModule>();
-						if (mod != nullptr && mod->getName() != "Editor Camera")
+						if (mod != nullptr && go->name != "Editor Camera")
 							return go.get();
 					}
 				}

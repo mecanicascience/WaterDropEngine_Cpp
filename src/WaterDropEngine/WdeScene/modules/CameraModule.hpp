@@ -74,6 +74,8 @@ namespace wde::scene {
 			const glm::mat4& getView() const { return _viewMatrix; }
 			float getNear() const { return _nearPlane; }
 			float getFar() const { return _farPlane; }
+			float getAspect() const { return _aspect; }
+			float getFov() const { return _fov; }
 			void setFarPlane(float farPlane);
 
 

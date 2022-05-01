@@ -38,6 +38,8 @@ namespace wde::render {
 			 * @param scene
 			 */
 			virtual void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) = 0;
+			/** Draw the gizmo elements to the scene */
+			virtual void drawGizmo(scene::Gizmo& gizmo, render::CommandBuffer& commandBuffer) {};
 			/**
 			 * Clean up the pipeline resources
 			 */
