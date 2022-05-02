@@ -1,27 +1,6 @@
-#include <random>
 #include "RayPipeline.hpp"
 #include "../../src/WaterDropEngine/WaterDropEngine.hpp"
-#include "tracer/Ray.hpp"
 
-
-bool hit_sphere(const glm::dvec3& center, double radius, const Ray& r) {
-	vec3 oc = r.getFrom() - center;
-	auto a = dot(r.getDir(), r.getDir());
-	auto b = 2.0 * (oc.x*r.getDir().x + oc.y*r.getDir().y + oc.z*r.getDir().z);
-	auto c = dot(oc, oc) - radius*radius;
-	auto discriminant = b*b - 4*a*c;
-	return (discriminant > 0);
-}
-
-Color rayColor(const Ray& r) {
-	if (hit_sphere(glm::dvec3 {-4.0, 0.0, 0.0}, 1.0, r))
-		return Color(1.0, 1.0, 1.0);
-	return Color(0.0, 0.0, 0.0);
-}
-
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "DanglingPointer"
 void RayPipeline::renderRayTracing() {
 	if (_imageData == nullptr)
 		return;
@@ -31,40 +10,30 @@ void RayPipeline::renderRayTracing() {
 	if (cam == nullptr)
 		return;
 	auto camMod = cam->getModule<scene::CameraModule>();
+	if (camMod == nullptr)
+		return;
 	auto aspectRatio = camMod->getAspect();
+	float rayLength = camMod->getFar() - camMod->getNear();
 
 	// Do ray tracing
+	auto uvSinX = std::sin(glm::radians(camMod->getFov() * aspectRatio) / 2);
+	auto uvSinY = std::sin(glm::radians(camMod->getFov()) / 2);
 	for (int j = _viewportHeight - 1; j >= 0; j--) {
 		for (int i = 0; i < _viewportWidth; i++) {
-			// Pixel UV coordinate (from (0, 0) at bottom left to (1, 1) at top right)
-			glm::vec2 uv {float(i) / static_cast<float>(_viewportWidth - 1), float(_viewportHeight - 1 - j) / static_cast<float>(_viewportHeight - 1)};
-
-			auto thetaDiv2 = std::tan(glm::radians(camMod->getFov()) / 2.0f);
-			auto wNear = camMod->getAspect() * camMod->getNear() * thetaDiv2;
-			auto bottomNearLeft  = cam->transform->getTransform() * glm::vec4 {-wNear, -camMod->getNear() * thetaDiv2, camMod->getFar(), 1};
-			glm::vec4 rayDir = bottomNearLeft + glm::vec4 {uv.x * static_cast<float>(_viewportHeight) * aspectRatio, uv.y * static_cast<float>(_viewportHeight), 0.0, 0.0};
-			rayDir /= std::sqrt(rayDir.x*rayDir.x + rayDir.y*rayDir.y + rayDir.z*rayDir.z);
-
-			Ray ray {cam->transform->position, glm::vec3(rayDir.x, rayDir.y, rayDir.z) * 100.0f};
-			_imageData[i + j * _viewportWidth] = rayColor(ray).toRGBA2B();
-
-			/*// Compute ray direction (suppose camera pointing to x-axis)
-			glm::vec4 rayDir {
-				camMod->getNear(),
-				(uv.y - 0.5) * 2.0 * _viewportHeight,
-				(uv.x - 0.5) * 2.0 * _viewportHeight * aspectRatio,
-				0.0
+			glm::vec2 uv {
+				float(i) / static_cast<float>(_viewportWidth - 1),
+				float(_viewportHeight - 1 - j) / static_cast<float>(_viewportHeight - 1)
 			};
-			//rayDir = rayDir * camMod->getView();
+
+			glm::vec4 rayDir {(uv.x - 0.5) * 2.0 * uvSinX, (uv.y - 0.5) * 2.0 * uvSinY, 1.0, 0.0 };
+			rayDir = cam->transform->getTransform() * rayDir;
 			rayDir /= std::sqrt(rayDir.x*rayDir.x + rayDir.y*rayDir.y + rayDir.z*rayDir.z);
 
-			// Create ray from camera
-			Ray ray {cam->transform->position, glm::vec3(rayDir.x, rayDir.y, rayDir.z) * 1000.0f};
-			_imageData[i + j * _viewportWidth] = rayColor(ray).toRGBA2B();*/
-
-			// Compute color
-			//Color color {std::abs(rayDir.x * 255) / static_cast<float>(_viewportHeight) * aspectRatio, std::abs(rayDir.y * 255) / static_cast<float>(_viewportHeight), 0, 1};
-			//_imageData[i + j * _viewportWidth] = color.toRGBA2B();
+			Ray ray {
+				Vector(cam->transform->position.x, cam->transform->position.y, cam->transform->position.z),
+				Vector(cam->transform->position.x + rayDir.x, cam->transform->position.y + rayDir.y, cam->transform->position.z + rayDir.z) * rayLength
+			};
+			_imageData[i + j * _viewportWidth] = _rayTracer->getRayColor(ray).toRGBA2B();
 		}
 	}
 
@@ -90,6 +59,9 @@ void RayPipeline::setup() {
 
 	// Initialize GUI
 	gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
+
+	// Ray tracer instance
+	_rayTracer = std::make_unique<RayTracer>();
 }
 
 void RayPipeline::render(CommandBuffer &commandBuffer, scene::WdeSceneInstance &scene) {
@@ -110,7 +82,7 @@ void RayPipeline::render(CommandBuffer &commandBuffer, scene::WdeSceneInstance &
 	// Render ray tracing
 	static int acc = 0;
 	acc++;
-	if (acc >= 100) {
+	if (acc >= 20) {
 		acc = 0;
 		renderRayTracing();
 	}
@@ -138,8 +110,8 @@ void RayPipeline::onNotify(const core::Event& event) {
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
 			ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
 			ImGui::Begin("RenderZone");
-			_viewportWidth = static_cast<uint32_t>(ImGui::GetContentRegionAvail().x);
-			_viewportHeight = static_cast<uint32_t>(ImGui::GetContentRegionAvail().y);
+			_viewportWidth = static_cast<int>(ImGui::GetContentRegionAvail().x);
+			_viewportHeight = static_cast<int>(ImGui::GetContentRegionAvail().y);
 			if (_image)
 				ImGui::Image(_image->getDescriptorSet(), { (float)_image->getWidth(), (float)_image->getHeight() });
 

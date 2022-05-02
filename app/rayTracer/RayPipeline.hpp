@@ -6,6 +6,9 @@
 #include "../../../src/WaterDropEngine/WdeScene/gizmo/GizmoManager.hpp"
 #include "../../../src/WaterDropEngine/WdeScene/culling/CullingInstance.hpp"
 #include "gui/CImage.hpp"
+#include "rays/Ray.hpp"
+#include "rays/RayTracer.hpp"
+#include "utils/Vector.hpp"
 
 using namespace wde;
 using namespace wde::render;
@@ -22,6 +25,7 @@ class RayPipeline : public WdeRenderPipelineInstance {
 
 	private:
 		std::shared_ptr<CImage> _image;
+		std::unique_ptr<RayTracer> _rayTracer;
 		uint32_t* _imageData = nullptr;
 
 		int _viewportWidth = 0;
