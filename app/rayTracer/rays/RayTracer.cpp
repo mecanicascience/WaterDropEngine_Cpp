@@ -10,5 +10,5 @@ Color RayTracer::getRayColor(const Ray& ray) {
 	HitRecord rec {};
 	if (_sphere.hit(ray, 0, 1, rec))
 		return Color::RED;
-	return Color::WHITE;
+	return Color::BLUE;
 }
