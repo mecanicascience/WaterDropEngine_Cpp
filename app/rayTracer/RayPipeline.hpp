@@ -16,12 +16,15 @@ using namespace wde::render;
 
 class RayPipeline : public WdeRenderPipelineInstance {
 	public:
+		static bool _shouldRenderRayTracing;
+
 		void setup() override;
 		void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override;
 		void onNotify(const core::Event& event) override;
 		void cleanUp() override;
 
 		void renderRayTracing();
+
 
 	private:
 		std::shared_ptr<CImage> _image;

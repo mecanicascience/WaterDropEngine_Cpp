@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <cmath>
 #include "../../../src/WaterDropEngine/WdeCommon/WdeException/WdeException.hpp"
+#include "HitConstants.hpp"
 
 class Vector {
 	public:
@@ -96,5 +97,35 @@ class Vector {
 		friend std::ostream& operator<<(std::ostream &os, const Vector& v) {
 			os << "(" << v.x << ", " << v.y << ", " << v.z << ")";
 			return os;
+		}
+
+
+		// Random Vectors
+		inline static Vector random() {
+			return {randomDouble(), randomDouble(), randomDouble()};
+		}
+
+		inline static Vector random(double min, double max) {
+			return {randomDouble(min, max), randomDouble(min, max), randomDouble(min, max)};
+		}
+
+		inline static Vector randomInUnitSphere() {
+			while (true) {
+				auto p = Vector::random(-1, 1);
+				if (p.magSquared() >= 1) continue;
+					return p;
+			}
+		}
+
+		/**
+		 * @param normal Normal vector that define the distribution
+		 * @return A random vector given a normal distribution
+		 */
+		inline static Vector randomInHemisphere(const Vector& normal) {
+			Vector inUnitSphere = randomInUnitSphere();
+			if (inUnitSphere * normal > 0.0) // In the same hemisphere as the normal
+				return inUnitSphere;
+			else
+				return inUnitSphere * (-1);
 		}
 };

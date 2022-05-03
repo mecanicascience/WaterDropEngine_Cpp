@@ -30,8 +30,9 @@ namespace wde {
 			float _a;
 
 			// Constructors
-			explicit Color(float r, float g, float b) : Color(r, g, b, 1) {}
-			explicit Color(float r, float g, float b, float a) : _r(r), _g(g), _b(b), _a(a) {}
+			Color(double r, double g, double b, double a = 1) : _r(static_cast<float>(r)), _g(static_cast<float>(g)), _b(static_cast<float>(b)), _a(static_cast<float>(a)) {}
+			Color(int r, int g, int b, int a = 1) : _r(static_cast<float>(r)), _g(static_cast<float>(g)), _b(static_cast<float>(b)), _a(static_cast<float>(a)) {}
+			Color(float r, float g, float b, float a = 1) : _r(r), _g(g), _b(b), _a(a) {}
 
 
 			std::string toString() const {

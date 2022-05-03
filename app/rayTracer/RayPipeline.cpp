@@ -1,9 +1,15 @@
 #include "RayPipeline.hpp"
 #include "../../src/WaterDropEngine/WaterDropEngine.hpp"
 
+bool RayPipeline::_shouldRenderRayTracing = false;
+
 void RayPipeline::renderRayTracing() {
 	if (_imageData == nullptr)
 		return;
+
+	// Config
+	double samplesPerPixel = 5;
+	int maximumDepth = 10;
 
 	// Get camera
 	auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
@@ -18,27 +24,58 @@ void RayPipeline::renderRayTracing() {
 	// Do ray tracing
 	auto uvSinX = std::sin(glm::radians(camMod->getFov() * aspectRatio) / 2);
 	auto uvSinY = std::sin(glm::radians(camMod->getFov()) / 2);
+
+	logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Starting rendering." << logger::endl;
 	for (int j = _viewportHeight - 1; j >= 0; j--) {
+		// Display percentage
+		if (j % ((_viewportHeight - 1) / 30) == 0)
+			logger::log(LogLevel::DEBUG, LogChannel::RENDER)
+				<< "Lines rendered percentage: "
+				<< int(float(_viewportHeight - 1 - j) / float(_viewportHeight - 1) * 100)
+				<< "%." << logger::endl;
+
 		for (int i = 0; i < _viewportWidth; i++) {
-			glm::vec2 uv {
-				float(i) / static_cast<float>(_viewportWidth - 1),
-				float(_viewportHeight - 1 - j) / static_cast<float>(_viewportHeight - 1)
-			};
+			// Render
+			Color pixelColor (0, 0, 0);
+			for (int s = 0; s < samplesPerPixel; s++) {
+				// Compute UV
+				glm::vec2 uv {
+					float(i + randomDouble()) / static_cast<float>(_viewportWidth - 1),
+					float(_viewportHeight - 1 - j + randomDouble()) / static_cast<float>(_viewportHeight - 1)
+				};
 
-			glm::vec4 rayDir {(uv.x - 0.5) * 2.0 * uvSinX, (uv.y - 0.5) * 2.0 * uvSinY, 1.0, 0.0 };
-			rayDir = cam->transform->getTransform() * rayDir;
-			rayDir /= std::sqrt(rayDir.x*rayDir.x + rayDir.y*rayDir.y + rayDir.z*rayDir.z);
+				// Compute ray
+				glm::vec4 rayDir {(uv.x - 0.5) * 2.0 * uvSinX, (uv.y - 0.5) * 2.0 * uvSinY, 1.0, 0.0};
+				rayDir = cam->transform->getTransform() * rayDir;
+				rayDir /= std::sqrt(rayDir.x*rayDir.x + rayDir.y*rayDir.y + rayDir.z*rayDir.z);
+				Ray ray {
+					Vector(cam->transform->position.x, cam->transform->position.y, cam->transform->position.z),
+					Vector(cam->transform->position.x + rayDir.x, cam->transform->position.y + rayDir.y, cam->transform->position.z + rayDir.z) * rayLength
+				};
 
-			Ray ray {
-				Vector(cam->transform->position.x, cam->transform->position.y, cam->transform->position.z),
-				Vector(cam->transform->position.x + rayDir.x, cam->transform->position.y + rayDir.y, cam->transform->position.z + rayDir.z) * rayLength
-			};
-			_imageData[i + j * _viewportWidth] = _rayTracer->getRayColor(ray).toRGBA2B();
+				// Compute ray pixel color contribution
+				Color colLocal = _rayTracer->getRayColor(ray, maximumDepth);
+				pixelColor._r += colLocal._r;
+				pixelColor._g += colLocal._g;
+				pixelColor._b += colLocal._b;
+				pixelColor._a += colLocal._a;
+			}
+
+			// Normalize color based on samples and apply gamma correction
+			pixelColor._r = std::sqrt(clamp(pixelColor._r / samplesPerPixel, 0.0, 1.0));
+			pixelColor._g = std::sqrt(clamp(pixelColor._g / samplesPerPixel, 0.0, 1.0));
+			pixelColor._b = std::sqrt(clamp(pixelColor._b / samplesPerPixel, 0.0, 1.0));
+			pixelColor._a = std::sqrt(clamp(pixelColor._a / samplesPerPixel, 0.0, 1.0));
+
+			// Update pixel
+			_imageData[i + j * _viewportWidth] = pixelColor.toRGBA2B();
 		}
 	}
+	logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Rendering complete." << logger::endl;
 
 	// Update image data
 	_image->setData(_imageData);
+	_shouldRenderRayTracing = false;
 }
 
 
@@ -68,24 +105,22 @@ void RayPipeline::render(CommandBuffer &commandBuffer, scene::WdeSceneInstance &
 	// Recreate raytracing image if needed
 	if (!_image || _viewportWidth != _image->getWidth() || _viewportHeight != _image->getHeight()) {
 		if (_viewportWidth == 0 && _viewportHeight == 0) {
-			_viewportWidth = 10;
-			_viewportHeight = 10;
+			_viewportWidth = 5;
+			_viewportHeight = 5;
 		}
 
 		WaterDropEngine::get().getRender().getInstance().waitForDevicesReady();
 		_image = std::make_shared<CImage>(_viewportWidth, _viewportHeight, ImageFormat::RGBA);
 		delete[] _imageData;
 		_imageData = new uint32_t[_viewportWidth * _viewportHeight];
-		renderRayTracing();
+
+		// Render ray-tracing
+		_shouldRenderRayTracing = true;
 	}
 
-	// Render ray tracing
-	static int acc = 0;
-	acc++;
-	if (acc >= 20) {
-		acc = 0;
+	// Render Ray-Tracing
+	if (_shouldRenderRayTracing)
 		renderRayTracing();
-	}
 
 	// Render pass (only gui)
 	beginRenderPass(0);

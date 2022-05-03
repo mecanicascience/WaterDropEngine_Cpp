@@ -1,15 +1,29 @@
 #pragma once
 
-#include "../utils/Vector.hpp"
-#include "../rays/Ray.hpp"
+#include "../utils/HitConstants.hpp"
 
 /**
  * Stores the last hit data
  */
 struct HitRecord {
+	/** Intersection point */
 	Vector point {};
+	/** Intersection point normal */
 	Vector normal {};
+	/** Percentage of the vectr where it hits */
 	double t = 0;
+	/** True if the ray is coming from outside, false if coming from inside */
+	bool frontFace;
+
+	/**
+	 * Set the face normal (keep inside or outside normal based on where the ray comes)
+	 * @param ray Ray
+	 * @param outwardNormal Local object normal at intersection point
+	 */
+	inline void setFaceNormal(const Ray& ray, const Vector& outwardNormal) {
+		frontFace = (ray.getDir() * outwardNormal) < 0;
+		normal = frontFace ? outwardNormal : outwardNormal * (-1);
+	}
 };
 
 /**

@@ -23,5 +23,6 @@ bool Sphere::hit(const Ray &ray, double tMin, double tMax, HitRecord &lastHitRec
 	lastHitRecord.t = root;
 	lastHitRecord.point = ray.at(lastHitRecord.t);
 	lastHitRecord.normal = (lastHitRecord.point - _center) / _radius;
+	lastHitRecord.setFaceNormal(ray, (lastHitRecord.point - _center) / _radius);
 	return true; // root found
 }

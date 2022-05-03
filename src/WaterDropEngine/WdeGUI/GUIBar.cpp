@@ -1,5 +1,6 @@
 #include "GUIBar.hpp"
 #include "../WaterDropEngine.hpp"
+#include "../../../app/rayTracer/RayPipeline.hpp"
 
 namespace wde::gui {
 	void GUIBar::renderMenu() {
@@ -11,9 +12,15 @@ namespace wde::gui {
 		if (ImGui::BeginMenu("File")) {
 			if (ImGui::MenuItem("Save Scene"))
 				WaterDropEngine::get().getSceneManager().saveScene();
-			if (ImGui::MenuItem("Load Scene")) {
+			if (ImGui::MenuItem("Load Scene"))
 				WaterDropEngine::get().getSceneManager().loadScenePath();
-			}
+
+			ImGui::Dummy(ImVec2(0.0, 2.5));
+			ImGui::Separator();
+			ImGui::Dummy(ImVec2(0.0, 0.5));
+
+			if (ImGui::MenuItem("Render"))
+				RayPipeline::_shouldRenderRayTracing = true;
 
 			ImGui::Dummy(ImVec2(0.0, 2.5));
 			ImGui::Separator();
