@@ -14,23 +14,25 @@ using namespace wde;
 using namespace wde::render;
 
 
-class RayPipeline : public WdeRenderPipelineInstance {
-	public:
-		static bool _shouldRenderRayTracing;
+namespace rtx {
+	class RayPipeline : public WdeRenderPipelineInstance {
+		public:
+			static bool _shouldRenderRayTracing;
 
-		void setup() override;
-		void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override;
-		void onNotify(const core::Event& event) override;
-		void cleanUp() override;
+			void setup() override;
+			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override;
+			void onNotify(const core::Event& event) override;
+			void cleanUp() override;
 
-		void renderRayTracing();
+			void renderRayTracing();
 
 
-	private:
-		std::shared_ptr<CImage> _image;
-		std::unique_ptr<RayTracer> _rayTracer;
-		uint32_t* _imageData = nullptr;
+		private:
+			std::shared_ptr<CImage> _image;
+			std::unique_ptr<RayTracer> _rayTracer;
+			uint32_t* _imageData = nullptr;
 
-		int _viewportWidth = 0;
-		int _viewportHeight = 0;
-};
+			int _viewportWidth = 0;
+			int _viewportHeight = 0;
+	};
+}

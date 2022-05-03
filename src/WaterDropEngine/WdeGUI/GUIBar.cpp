@@ -20,7 +20,7 @@ namespace wde::gui {
 			ImGui::Dummy(ImVec2(0.0, 0.5));
 
 			if (ImGui::MenuItem("Render"))
-				RayPipeline::_shouldRenderRayTracing = true;
+				rtx::RayPipeline::_shouldRenderRayTracing = true;
 
 			ImGui::Dummy(ImVec2(0.0, 2.5));
 			ImGui::Separator();

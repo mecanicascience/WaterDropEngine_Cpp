@@ -8,19 +8,22 @@
 
 using namespace wde;
 
-class RayTracer {
-	public:
-		explicit RayTracer();
 
-		/**
-		 * Compute the ray color
-		 * @param ray The input ray to compute color
-		 * @param depth Current ray depth
-		 * @return The ray color
-		 */
-		Color getRayColor(const Ray& ray, int depth);
+namespace rtx {
+	class RayTracer {
+		public:
+			explicit RayTracer();
+
+			/**
+			 * Compute the ray color
+			 * @param ray The input ray to compute color
+			 * @param depth Current ray depth
+			 * @return The ray color
+			 */
+			Color getRayColor(const Ray &ray, int depth);
 
 
-	private:
-		HittableList _worldObjects {};
-};
+		private:
+			HittableList _worldObjects{};
+	};
+}

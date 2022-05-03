@@ -30,7 +30,7 @@ int main() {
 	}
 
 	// Ray Tracing
-	RayEngineInstance instance {};
+	rtx::RayEngineInstance instance {};
 	instance.startInstance();
 
 	return 0;
