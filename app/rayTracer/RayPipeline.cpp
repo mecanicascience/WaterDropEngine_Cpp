@@ -10,8 +10,8 @@ namespace rtx {
 			return;
 
 		// Config
-		double samplesPerPixel = 40;
-		int maximumDepth = 20;
+		double samplesPerPixel = 1;
+		int maximumDepth = 5;
 
 		// Get camera
 		auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
@@ -127,13 +127,13 @@ namespace rtx {
 
 		// Render pass (only gui)
 		beginRenderPass(0);
-		beginRenderSubPass(0);
-		endRenderSubPass();
+			beginRenderSubPass(0);
+			endRenderSubPass();
 
-		beginRenderSubPass(1);
-		// Render GUI
-		gui::WdeGUI::render(commandBuffer);
-		endRenderSubPass();
+			beginRenderSubPass(1);
+				// Render GUI
+				gui::WdeGUI::render(commandBuffer);
+			endRenderSubPass();
 		endRenderPass();
 	}
 

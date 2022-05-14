@@ -18,7 +18,7 @@ namespace rtx {
 		_worldObjects.add(make_shared<Sphere>(Vector( 1.1,    0.0, 2.0),   0.5, materialRight));
 
 		// Random small spheres
-		int sphCount = 7;
+		int sphCount = 1;
 		for (int a = -sphCount; a < sphCount; a++) {
 			for (int b = -sphCount; b < sphCount; b++) {
 				auto choose_mat = randomDouble();
