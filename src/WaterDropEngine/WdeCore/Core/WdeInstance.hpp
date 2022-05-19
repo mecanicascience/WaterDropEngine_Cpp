@@ -32,6 +32,7 @@ namespace wde {
 
 			// Getters and setters
 			render::WdeRenderPipelineInstance& getPipeline() { return *_pipeline; }
+			std::shared_ptr<render::WdeRenderPipelineInstance> getPipelinePtr() const { return _pipeline; }
 			std::shared_ptr<scene::WdeSceneInstance> getScene() const { return _scene; }
 
 
