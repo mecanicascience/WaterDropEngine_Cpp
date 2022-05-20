@@ -136,7 +136,6 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 
 		// Remove game objects to delete
-		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Removing deleted game objects." << logger::endl;
 		{
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::deleteGameObjects");
 
@@ -169,7 +168,6 @@ namespace wde::scene {
 		}
 
 		// Update game objects
-		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Ticking for scene dynamic game objects." << logger::endl;
 		{
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::dynamicGameObjects");
 

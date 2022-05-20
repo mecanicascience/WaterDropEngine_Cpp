@@ -70,6 +70,9 @@ namespace wde::scene {
 			 * @param chunkID
 			 */
 			void removeChunk(glm::ivec2 chunkID);
+
+			/** Create and unload chunks */
+			void manageChunks();
 			/** Reassign game objects to nearest chunk */
 			void reassignGOToChunks();
 

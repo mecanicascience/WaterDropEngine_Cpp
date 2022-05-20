@@ -8,37 +8,8 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::tick() {
-		// Load chunks that need to be loaded
-		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::loadChunks()");
-			while (!_loadingChunks.empty()) {
-				glm::vec2 id = _loadingChunks.back();
-				if (_activeChunks.contains(id)) { // Already loaded
-					_loadingChunks.pop_back();
-					continue;
-				}
-				if (_removingChunks.contains(id)) // Should be removed but also created => should be created
-					_removingChunks.erase(id);
-
-				auto ch = std::make_shared<Chunk>(this, id);
-				_activeChunks.emplace(id, ch);
-				_loadingChunks.pop_back();
-			}
-		}
-
-		// Remove chunks that need to be removed
-		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::removeChunks()");
-			/*while (!_removingChunks.empty()) {
-				glm::vec2 id = _removingChunks.front();
-
-				if (_activeChunks.contains(id))
-					_activeChunks.erase(id);
-				_removingChunks.pop();
-			}*/
-		}
-
-
+		// Load and unload chunks
+		manageChunks();
 
 		// Update
 		double chunkSize = Config::CHUNK_SIZE;
@@ -196,6 +167,46 @@ namespace wde::scene {
 	}
 
 
+
+	void WdeSceneInstance::manageChunks() {
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::loadChunks()");
+			while (!_loadingChunks.empty()) {
+				glm::vec2 id = _loadingChunks.back();
+				if (_activeChunks.contains(id)) { // Already loaded
+					_loadingChunks.pop_back();
+					continue;
+				}
+				if (_removingChunks.contains(id)) // Should be removed but also created => should be created
+					_removingChunks.erase(id);
+
+				auto ch = std::make_shared<Chunk>(this, id);
+				_activeChunks.emplace(id, ch);
+				_loadingChunks.pop_back();
+			}
+		}
+
+		// Remove chunks that need to be removed
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::removeChunks()");
+			auto itr = _removingChunks.begin();
+			while (itr != _removingChunks.end()) {
+				auto id = itr->first;
+				// Chunk is loading
+				if (std::find(_loadingChunks.begin(), _loadingChunks.end(), id) == _loadingChunks.end()) {
+					itr = _removingChunks.erase(itr);
+					continue;
+				}
+
+				// Remove from active chunks
+				if (_activeChunks.contains(id))
+					_activeChunks.erase(id);
+
+				// Remove from removing chunks
+				itr = _removingChunks.erase(itr);
+			}
+		}
+	}
 
 	void WdeSceneInstance::reassignGOToChunks() {
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Reassigning game objects to nearest chunks" << logger::endl;

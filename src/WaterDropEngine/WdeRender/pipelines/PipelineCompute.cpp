@@ -24,7 +24,6 @@ namespace wde::render {
 
 		// Create shaders
 		{
-			// Load shaders
 			auto shader = WaterDropEngine::get().getResourceManager().load<resource::Shader>(_shaderStage);
 			_shaderDescription = shader->getShaderStageCreateInfo();
 			_shaderModule = shader->getShaderModule();
@@ -72,6 +71,9 @@ namespace wde::render {
 			pipelineCreateInfo.basePipelineIndex = -1;
 			vkCreateComputePipelines(device, nullptr, 1, &pipelineCreateInfo, nullptr, &_pipeline);
 		}
+
+		// Release shaders
+		WaterDropEngine::get().getResourceManager().release(_shaderStage);
 
 		// Set initialized
 		_initialized = true;
