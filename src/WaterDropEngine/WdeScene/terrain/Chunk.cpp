@@ -1,10 +1,10 @@
 #include "Chunk.hpp"
-
-#include <utility>
 #include "../../WaterDropEngine.hpp"
 #include "../../WdeScene/WdeSceneInstance.hpp"
 
 namespace wde::scene {
+	uint32_t Chunk::_gameObjectsIDCurr = 0;
+
 	Chunk::Chunk(WdeSceneInstance* sceneInstance, glm::ivec2 pos) : _sceneInstance(sceneInstance), _pos(pos) {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Loading chunk (" << _pos.x << ", " << _pos.y << ")." << logger::endl;
@@ -15,7 +15,7 @@ namespace wde::scene {
 
 		// Add editor camera if chunk (0, 0)
 #ifdef WDE_ENGINE_MODE_DEBUG
-		if (_pos.x == 0 && _pos.y == 0) {
+		if (_pos.x == 0 && _pos.y == 0 && sceneInstance->getActiveCamera() == nullptr) {
 			auto camera = createGameObject("Editor Camera");
 			auto camModule = camera->addModule<scene::CameraModule>();
 			camModule->setAsActive();
@@ -80,21 +80,16 @@ namespace wde::scene {
 
 		// Game objects list
 		std::vector<json> goJSONArr {};
-#ifdef WDE_ENGINE_MODE_DEBUG
-		if (_gameObjects.size() >= 0 && _gameObjects[0]->name == "Editor Camera")
-			goJSONArr.resize(_gameObjects.size() - 1);
-		else
-			goJSONArr.resize(_gameObjects.size());
-#else
 		goJSONArr.resize(_gameObjects.size());
-#endif
 
 		int it = 0;
 		for (const auto& res : _gameObjects) {
 			// Continue if editor camera
 #ifdef WDE_ENGINE_MODE_DEBUG
-			if (res->name == "Editor Camera")
+			if (res->name == "Editor Camera") {
+				goJSONArr.pop_back();
 				continue;
+			}
 #endif
 
 			// Create GO file
@@ -126,7 +121,8 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 
 		// Save chunk data
-		save();
+		if (!_gameObjects.empty())
+			save();
 
 		// Remove game objects
 		_sceneInstance = nullptr;
@@ -148,10 +144,8 @@ namespace wde::scene {
 			if (!_gameObjectsToDelete.empty()) {
 				// Remove selected and active camera
 				for (GameObject* go : _gameObjectsToDelete) {
-					if (sceneInstance->getActiveGameObject() == go)
+					if (sceneInstance->getSelectedGameObjectChunk() == _pos && sceneInstance->getActiveGameObject() == go)
 						sceneInstance->getActiveGameObject() = nullptr;
-					if (sceneInstance->getActiveCamera() == go)
-						sceneInstance->setActiveCamera(nullptr);
 				}
 
 				// Remove from static list

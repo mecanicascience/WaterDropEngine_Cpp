@@ -26,7 +26,7 @@ namespace wde::resource {
 		// Create the texture sampler
 		_samplerFilter = texData["data"]["filter"].get<VkFilter>();
 		_samplerAddressMode = texData["data"]["adress_mode"].get<VkSamplerAddressMode>();
-		createTextureSampler(_samplerFilter, _samplerAddressMode);
+		createTextureSampler(_textureSampler, _mipLevels, _samplerFilter, _samplerAddressMode);
 
 #ifdef WDE_GUI_ENABLED
 		// Generate texture ID
@@ -47,7 +47,7 @@ namespace wde::resource {
 		_textureImage->createImageView();
 
 		// Create the texture sampler
-		createTextureSampler();
+		createTextureSampler(_textureSampler, _mipLevels);
 
 #ifdef WDE_GUI_ENABLED
 		// Generate texture ID
@@ -245,13 +245,13 @@ namespace wde::resource {
 		}
 	}
 
-	void Texture2D::createTextureSampler(VkFilter sampler, VkSamplerAddressMode addressMode) {
+	void Texture2D::createTextureSampler(VkSampler& sampler, uint32_t mipLevels, VkFilter filter, VkSamplerAddressMode addressMode) {
 		WDE_PROFILE_FUNCTION();
 		// Create samples
 		VkSamplerCreateInfo samplerInfo {};
 		samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-		samplerInfo.magFilter = sampler;
-		samplerInfo.minFilter = sampler;
+		samplerInfo.magFilter = filter;
+		samplerInfo.minFilter = filter;
 
 		// Adress sample mode
 		samplerInfo.addressModeU = addressMode;
@@ -278,10 +278,10 @@ namespace wde::resource {
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR; // Suppose linear mode active on device
 		samplerInfo.mipLodBias = 0.0f;
 		samplerInfo.minLod = 0.0f;
-		samplerInfo.maxLod = static_cast<float>(_mipLevels);
+		samplerInfo.maxLod = static_cast<float>(mipLevels);
 
 		// Create sampler
-		if (vkCreateSampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), &samplerInfo, nullptr, &_textureSampler) != VK_SUCCESS)
+		if (vkCreateSampler(WaterDropEngine::get().getRender().getInstance().getDevice().getDevice(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS)
 			throw WdeException(LogChannel::RENDER, "Failed to create texture sampler.");
 	}
 
@@ -324,58 +324,46 @@ namespace wde::resource {
 		VkPipelineStageFlags destinationStage;
 
 
-		// From undefined
-		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+		// Set old layout
+		if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
 			barrier.srcAccessMask = 0;
-			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
 			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
+			sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		}
+		else if (oldLayout == VK_IMAGE_LAYOUT_GENERAL) {
+			barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
+			sourceStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+		}
+		else
+			throw WdeException(LogChannel::RENDER, "Initial layout transition currently not implemented.");
+
+		// Set new layout
+		if (newLayout == VK_IMAGE_LAYOUT_UNDEFINED) {
+			barrier.dstAccessMask = 0;
+			destinationStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+		}
+		else if (newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
 		}
-		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-			barrier.srcAccessMask = 0;
+		else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
 			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		}
-		else if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED) { // && newLayout == VK_IMAGE_LAYOUT_GENERAL
-			barrier.srcAccessMask = 0;
+		else if (newLayout == VK_IMAGE_LAYOUT_GENERAL) {
 			barrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-
-			sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
 			destinationStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
 		}
-
-			// From transfer distance
-		else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-			barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-			sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		}
-			// From shader read
-		else if (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-			barrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-			barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-			sourceStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-			destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-		}
-
-			// From general layout
-		else if (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) { // && oldLayout == VK_IMAGE_LAYOUT_GENERAL
-			barrier.srcAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-			barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-			sourceStage = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
-			destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		}
-
-			// Not implemented
 		else
-			throw WdeException(LogChannel::RENDER, "Layout transition currently not implemented.");
+			throw WdeException(LogChannel::RENDER, "New layout transition currently not implemented.");
+
 
 		// Push barrier to the command buffer
 		vkCmdPipelineBarrier(

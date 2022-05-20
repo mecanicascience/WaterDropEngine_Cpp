@@ -6,6 +6,7 @@
 #include "../../wde.hpp"
 #include "../WdeCore/Core/Module.hpp"
 #include "Resource.hpp"
+#include "../WdeGUI/panels/ResourcesPanel.hpp"
 
 namespace wde::resource {
 	/**
@@ -68,18 +69,22 @@ namespace wde::resource {
 
 
 			// Getters and setters
-			bool& displayResourceGUI() { return _displayResourceGUI; }
+			gui::ResourcesPanel& getResourcesPanel() { return _resourcesPanel; }
+			std::unordered_map<Resource::ResourceType, std::unordered_map<std::string, std::shared_ptr<Resource>>>& getResourcesByType() { return _resourcesByType; }
 
 
 
 		private:
-			/** True if the resources GUI editor should be shown */
-			bool _displayResourceGUI = false;
+			// Resources
 			/** Resources list by path */
 			std::unordered_map<std::string, std::shared_ptr<Resource>> _resources {};
 			/** Resources list by type */
 			std::unordered_map<Resource::ResourceType, std::unordered_map<std::string, std::shared_ptr<Resource>>> _resourcesByType {};
 			/** Resources list that needs to be deleted by path (name - tickRemainingBeforeDeleting) */
 			std::unordered_map<std::string, int> _resourcesToDelete {};
+
+			// GUI
+			/** The resources GUI panel */
+			gui::ResourcesPanel _resourcesPanel {};
 	};
 }

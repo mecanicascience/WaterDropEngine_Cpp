@@ -42,6 +42,11 @@ namespace wde::Config {
 	// Scene data
 	extern int MAX_SCENE_OBJECTS_COUNT;
 	extern int MAX_GIZMO_OBJECTS_COUNT;
+
+	// World config
+	extern int CHUNK_SIZE;
+	extern int MAX_CHUNKS_COUNT;
+	extern int CHUNK_LOADED_DISTANCE;
 }
 #endif
 

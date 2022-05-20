@@ -6,11 +6,8 @@ namespace wde::render {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::RENDER) << "Cleaning up compute pipeline." << logger::endl;
 
-		// Destroy shader modules
-		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
-		vkDestroyShaderModule(device, _shaderModule, nullptr);
-
 		// Destroy pipeline
+		auto& device = WaterDropEngine::get().getRender().getInstance().getDevice().getDevice();
 		vkDestroyPipeline(device, _pipeline, nullptr);
 		vkDestroyPipelineLayout(device, _pipelineLayout, nullptr);
 
@@ -27,22 +24,10 @@ namespace wde::render {
 
 		// Create shaders
 		{
-			// Create shader module
-			std::vector<char> shaderContent = WdeFileUtils::readFile(_shaderStage);
-			auto shaderModule = ShaderUtils::createShaderModule(shaderContent);
-			auto shaderStageType = ShaderUtils::getShaderStage(_shaderStage);
-
-			// ShaderUtils infos
-			_shaderDescription.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			_shaderDescription.stage = shaderStageType;
-			_shaderDescription.module = shaderModule;
-			_shaderDescription.pName = "main"; // entrypoint
-			_shaderDescription.flags = 0; // Optional
-			_shaderDescription.pNext = nullptr; // Optional
-			_shaderDescription.pSpecializationInfo = nullptr; // Optional
-
-			// Set shader module
-			_shaderModule = shaderModule;
+			// Load shaders
+			auto shader = WaterDropEngine::get().getResourceManager().load<resource::Shader>(_shaderStage);
+			_shaderDescription = shader->getShaderStageCreateInfo();
+			_shaderModule = shader->getShaderModule();
 		}
 
 

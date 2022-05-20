@@ -42,7 +42,7 @@ namespace wde {
 			void setScene(std::shared_ptr<scene::WdeSceneInstance> scene);
 
 
-		private:
+		protected:
 			/** Engine rendering pipeline */
 			std::shared_ptr<render::WdeRenderPipelineInstance> _pipeline;
 			/** Engine active scene */

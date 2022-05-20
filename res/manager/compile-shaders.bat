@@ -1,4 +1,4 @@
-cd "../shaders/"
+cd "../"
 for /r %%f in (*) do (
     set "TRUE="
     If "%%~xf"==".vert" set TRUE=1
@@ -8,4 +8,4 @@ for /r %%f in (*) do (
         "%VULKAN_SDK%\Bin32\glslc.exe" "%%f" -o  "%%f.spv"
     )
 )
-cd "../manager/"
+cd "./manager/"

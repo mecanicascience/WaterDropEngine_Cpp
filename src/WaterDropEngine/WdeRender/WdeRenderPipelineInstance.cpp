@@ -52,7 +52,6 @@ namespace wde::render {
 				logger::log(LogLevel::WARN, LogChannel::SCENE) << "No camera in scene." << logger::endl;
 			else {
 				auto cameraModule = scene->getActiveCamera()->getModule<scene::CameraModule>();
-
 				// New data
 				GPUCameraData cameraData {};
 				cameraData.proj = cameraModule->getProjection();

@@ -26,6 +26,21 @@ namespace wde::gui {
 		}
 
 
+		// Scene menu
+		if (ImGui::BeginMenu("World")) {
+			{
+				// World partition
+				ImGui::Text("World partition");
+				ImGui::Dummy(ImVec2(0.0, 2.0));
+
+				if (ImGui::MenuItem("Reassign GO to chunks"))
+					WaterDropEngine::get().getInstance().getScene()->reassignGOToChunks();
+			}
+
+			ImGui::EndMenu();
+		}
+
+
 		// Window menu
 		if (ImGui::BeginMenu("Window")) {
 			{
@@ -37,7 +52,8 @@ namespace wde::gui {
 				ImGui::Checkbox("Scene Components", &gameObjectsList);
 				bool propertiesBool = true;
 				ImGui::Checkbox("Properties", &propertiesBool);
-				ImGui::Checkbox("Resources Editor", &WaterDropEngine::get().getResourceManager().displayResourceGUI());
+				ImGui::Checkbox("Resources Editor", &WaterDropEngine::get().getResourceManager().getResourcesPanel().getActiveStatus());
+				ImGui::Checkbox("World Partition", &WaterDropEngine::get().getInstance().getScene()->getWorldPartitionPanel().getActiveStatus());
 
 				ImGui::PopFont();
 			}

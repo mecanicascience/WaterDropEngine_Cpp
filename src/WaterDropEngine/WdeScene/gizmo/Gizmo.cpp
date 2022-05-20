@@ -11,7 +11,7 @@ namespace wde::scene {
 			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
 			_pipelines.emplace(colorStr,
 			   std::make_unique<render::PipelineGraphics>(
-					   _renderStage, std::vector<std::string>{path + "data/shaders/common/gizmo/gizmo.vert", path + "data/shaders/common/gizmo/gizmo.frag"},
+					   _renderStage, std::vector<std::string>{path + "data/shaders/engine/gizmo/gizmo.vert", path + "data/shaders/engine/gizmo/gizmo.frag"},
                        std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
                        render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
                        VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
@@ -87,7 +87,7 @@ namespace wde::scene {
 			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
 			_linesPipelines.emplace(color.toString(),
                    std::make_shared<render::PipelineGraphics>(_renderStage,
-						  std::vector<std::string>{path + "data/shaders/common/gizmo/gizmoLines.vert", path + "data/shaders/common/gizmo/gizmoLines.frag"},
+						  std::vector<std::string>{path + "data/shaders/engine/gizmo/gizmoLines.vert", path + "data/shaders/engine/gizmo/gizmoLines.frag"},
 						  std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
 						  render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
 						  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
@@ -135,7 +135,7 @@ namespace wde::scene {
 		void *data = _positionsLinesSetBuffer->map();
 		auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
 		if (cam == nullptr)
-			throw WdeException(LogChannel::SCENE, "No active camera in scene.");
+			return;
 		auto camMod = cam->getModule<CameraModule>();
 		GPUGizmoLineDescriptor dataStruct {};
 		dataStruct.camProj = camMod->getProjection();

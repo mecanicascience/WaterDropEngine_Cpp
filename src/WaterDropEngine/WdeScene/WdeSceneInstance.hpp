@@ -7,6 +7,7 @@
 #include "../WdeCore/Structure/Observer.hpp"
 #include "modules/CameraModule.hpp"
 #include "terrain/Chunk.hpp"
+#include "../WdeGUI/panels/WorldPartitionPanel.hpp"
 
 namespace wde::scene {
 	/**
@@ -15,6 +16,8 @@ namespace wde::scene {
 	class WdeSceneInstance : public core::Observer {
 		public:
 			// Scene instance methods
+			WdeSceneInstance();
+
 			/** Ticking for scene instance (called by WaterDropEngine) */
 			void tick();
 			void cleanUp();
@@ -26,6 +29,7 @@ namespace wde::scene {
 			const std::string& getPath() const { return _scenePath; }
 			void setName(const std::string& name) { _sceneName = name; }
 			const std::string& getName() const { return _sceneName; }
+			gui::WorldPartitionPanel& getWorldPartitionPanel() { return *_worldPartitionPanel; }
 
 			GameObject*& getActiveGameObject() { return _selectedGameObject; }
 			glm::ivec2 getSelectedGameObjectChunk() const { return _selectedGameObjectChunkID; }
@@ -46,17 +50,27 @@ namespace wde::scene {
 
 			// Chunks manager
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getActiveChunks() { return _activeChunks; }
+			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getUnloadingChunks() { return _removingChunks; }
 			/**
 			 * @param chunkID Unique chunk position identifier
-			 * @return The a pointer to the chunk
+			 * @return The pointer to the chunk (nullptr if added to load list)
 			 */
 			Chunk* getChunk(glm::ivec2 chunkID);
+
+			/**
+			 * Loads a chunk synchronously
+			* @param chunkID Unique chunk position identifier
+			* @return The pointer to the chunk
+			*/
+			Chunk* getChunkSync(glm::ivec2 chunkID);
 
 			/**
 			 * Remove a chunk from the list if the chunk exists
 			 * @param chunkID
 			 */
 			void removeChunk(glm::ivec2 chunkID);
+			/** Reassign game objects to nearest chunk */
+			void reassignGOToChunks();
 
 
 
@@ -67,6 +81,7 @@ namespace wde::scene {
 			/** Name of the scene object */
 			std::string _sceneName;
 
+
 			// Selected game objects
 			/** Selected game object chunk id */
 			glm::ivec2 _selectedGameObjectChunkID {0, 0};
@@ -75,10 +90,16 @@ namespace wde::scene {
 			/** Active camera (none = nullptr) */
 			GameObject* _activeCamera = nullptr;
 
+
 			// Scene chunks
 			/** List of scene active chunks (pos - chunk*) */
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _activeChunks {};
 			/** Lists of chunks that needs to be deleted */
-			std::queue<glm::ivec2> _removingChunks {};
+			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _removingChunks {};
+
+
+			// GUI
+			/** The panel that displays loaded chunks list */
+			std::unique_ptr<gui::WorldPartitionPanel> _worldPartitionPanel {};
 	};
 }

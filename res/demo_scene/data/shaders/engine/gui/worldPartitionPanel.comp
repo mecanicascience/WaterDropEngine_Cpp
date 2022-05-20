@@ -1,0 +1,71 @@
+#version 450
+
+layout (local_size_x = 32, local_size_y = 32) in;
+
+// Writing image
+layout (binding = 0, rgba8) uniform writeonly image2D worldImage;
+
+// Config data buffer
+layout (set = 0, binding = 1) uniform WorldPartitionConfig {
+    int imageSize;
+    int chunkSize;
+    int viewSize;
+    int playerChunkIDX;
+    int playerChunkIDY;
+    int activeChunksCount;
+    int unloadChunksCount;
+} inWConfig;
+
+// Active chunks
+layout (set = 0, binding = 2) readonly buffer ActiveChunksID {
+    int[] chunks;
+} inActiveCh;
+
+// Unloading chunks
+layout (set = 0, binding = 3) readonly buffer UnloadingChunksID {
+    int[] chunks;
+} inUnloadCh;
+
+void main() {
+    uint gIDx = gl_GlobalInvocationID.x;
+    uint gIDy = gl_GlobalInvocationID.y;
+    if (gIDx >= inWConfig.imageSize || gIDy >= inWConfig.imageSize) {
+        return;
+    }
+
+    // Compute chunk ID
+    vec2 pixelWorldPos = vec2 (
+         (float(gIDx) / float(inWConfig.imageSize) * 2.0 - 1.0) * float(inWConfig.viewSize),
+        -(float(gIDy) / float(inWConfig.imageSize) * 2.0 - 1.0) * float(inWConfig.viewSize)
+    );
+    vec2 pixelChunkID = vec2 (
+        floor(pixelWorldPos.x / float(inWConfig.chunkSize) + 0.5),
+        floor(pixelWorldPos.y / float(inWConfig.chunkSize) + 0.5)
+    );
+
+    // Compute color
+    vec4 writeColor = vec4 (0.0, 0.0, 0.0, 1.0);
+    if (pixelChunkID.x == inWConfig.playerChunkIDX && pixelChunkID.y == inWConfig.playerChunkIDY) { // Player chunk
+        writeColor = vec4 (0.85, 0.85, 0.85, 1.0);
+    }
+    else {
+        for (int i = 0; i < inWConfig.activeChunksCount; i++) {
+            // Active chunk
+            if (pixelChunkID.x == inActiveCh.chunks[i * 2] && pixelChunkID.y == inActiveCh.chunks[i * 2 + 1]) {
+                writeColor = vec4 (0.4, 0.4, 0.4, 1.0);
+                break;
+            }
+        }
+
+        for (int i = 0; i < inWConfig.unloadChunksCount; i++) {
+            // Unloading chunk
+            if (pixelChunkID.x == inUnloadCh.chunks[i * 2] && pixelChunkID.y == inUnloadCh.chunks[i * 2 + 1]) {
+                writeColor = vec4 (0.8, 0.2, 0.2, 1.0);
+                break;
+            }
+        }
+    }
+
+    // Write to image
+    imageStore(worldImage, ivec2(gIDx, gIDy), writeColor);
+}
