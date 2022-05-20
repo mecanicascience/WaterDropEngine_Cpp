@@ -132,10 +132,11 @@ namespace wde::scene {
 		_positionsLinesSetBufferVertices->unmap();
 
 		// Update descriptor
-		void *data = _positionsLinesSetBuffer->map();
 		auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
-		if (cam == nullptr)
+		if (cam == nullptr) {
 			return;
+		}
+		void *data = _positionsLinesSetBuffer->map();
 		auto camMod = cam->getModule<CameraModule>();
 		GPUGizmoLineDescriptor dataStruct {};
 		dataStruct.camProj = camMod->getProjection();

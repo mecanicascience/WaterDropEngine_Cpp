@@ -43,6 +43,7 @@ namespace wde::scene {
 
 		// Render Gizmo for instance
 		WaterDropEngine::get().getInstance().getPipeline().drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
+		WaterDropEngine::get().getInstance().getScene()->drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
 
 		// Render Gizmo for modules
 		auto scene = WaterDropEngine::get().getInstance().getScene();

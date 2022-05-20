@@ -198,8 +198,15 @@ namespace wde::scene {
 		ImGui::PopFont();
 		ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorGrayMinor);
 		ImGui::PushFont(ImGui::GetIO().FontDefault);
+		double chunkSize = Config::CHUNK_SIZE;
+		GameObject* cam = _sceneInstance->getActiveCamera();
+		glm::ivec2 cc { 0, 0 };
+		if (cam != nullptr) {
+			cc.x = std::floor(cam->transform->position.x / chunkSize + 0.5);
+			cc.y = std::floor(cam->transform->position.z / chunkSize + 0.5);
+		}
 		ImGui::SameLine();
-		ImGui::Text("Add an empty Gameobject");
+		ImGui::Text("%s", ("Add GameObject (chunk (" + std::to_string(cc.x) + ", " + std::to_string(cc.y) + "))").c_str());
 		ImGui::PopFont();
 		ImGui::PopStyleColor();
 		ImGui::Separator();

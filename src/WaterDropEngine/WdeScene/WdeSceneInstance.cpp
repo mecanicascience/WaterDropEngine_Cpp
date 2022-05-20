@@ -84,6 +84,34 @@ namespace wde::scene {
 		_activeCamera = nullptr;
 	}
 
+	void WdeSceneInstance::drawGizmo(Gizmo &gizmo, render::CommandBuffer &commandBuffer) {
+		WDE_PROFILE_FUNCTION();
+
+#ifdef WDE_ENGINE_MODE_DEBUG
+		// Current Chunk
+		double chunkSize = Config::CHUNK_SIZE;
+		GameObject* cam = getActiveCamera();
+		glm::ivec2 cc { 0, 0 };
+		if (cam != nullptr) {
+			cc.x = std::floor(cam->transform->position.x / chunkSize + 0.5);
+			cc.y = std::floor(cam->transform->position.z / chunkSize + 0.5);
+		}
+
+		// Draw grid
+		int linesDensity = 30;
+		auto lm = gizmo.linesManager(Color::GREY);
+		for (int i = -6; i <= linesDensity; i++) {
+			double shiftX = double(i) / double(linesDensity) * chunkSize - chunkSize / 2.0 + cc.x * chunkSize;
+			double shiftY = double(i) / double(linesDensity) * chunkSize - chunkSize / 2.0 + cc.y * chunkSize;
+
+			lm->addLine({shiftX, 0, -chunkSize / 2.0 + cc.y * chunkSize}, {shiftX, 0, chunkSize / 2.0 + cc.y * chunkSize});
+			lm->addLine({-chunkSize / 2.0 + cc.x * chunkSize, 0, shiftY}, {chunkSize / 2.0 + cc.x * chunkSize, 0, shiftY});
+		}
+		lm->drawLines(commandBuffer);
+#endif
+	}
+
+
 
 	void WdeSceneInstance::onNotify(const core::Event& event) {
 #ifdef WDE_GUI_ENABLED
@@ -103,9 +131,15 @@ namespace wde::scene {
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::drawGUI()");
 
-			// Draw GUI for selected chunk
+			// Draw GUI for selected chunk (= chunk of current camera)
 			{
-				// TODO Change selected chunk
+				double chunkSize = Config::CHUNK_SIZE;
+				GameObject* cam = getActiveCamera();
+				if (cam != nullptr) {
+					_selectedGameObjectChunkID.x = std::floor(cam->transform->position.x / chunkSize + 0.5);
+					_selectedGameObjectChunkID.y = std::floor(cam->transform->position.z / chunkSize + 0.5);
+				}
+
 				auto ch = getChunk(_selectedGameObjectChunkID);
 				if (ch != nullptr)
 					ch->drawGUI();
