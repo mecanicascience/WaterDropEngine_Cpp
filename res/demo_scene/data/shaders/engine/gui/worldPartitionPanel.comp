@@ -12,6 +12,7 @@ layout (set = 0, binding = 1) uniform WorldPartitionConfig {
     int viewSize;
     int playerChunkIDX;
     int playerChunkIDY;
+    int loadChunksCount;
     int activeChunksCount;
     int unloadChunksCount;
 } inWConfig;
@@ -25,6 +26,11 @@ layout (set = 0, binding = 2) readonly buffer ActiveChunksID {
 layout (set = 0, binding = 3) readonly buffer UnloadingChunksID {
     int[] chunks;
 } inUnloadCh;
+
+// Loading chunks
+layout (set = 0, binding = 3) readonly buffer LoadingChunksID {
+    int[] chunks;
+} inLoadCh;
 
 void main() {
     uint gIDx = gl_GlobalInvocationID.x;
@@ -53,6 +59,14 @@ void main() {
             // Active chunk
             if (pixelChunkID.x == inActiveCh.chunks[i * 2] && pixelChunkID.y == inActiveCh.chunks[i * 2 + 1]) {
                 writeColor = vec4 (0.4, 0.4, 0.4, 1.0);
+                break;
+            }
+        }
+
+        for (int i = 0; i < inWConfig.loadChunksCount; i++) {
+            // Loading chunk
+            if (pixelChunkID.x == inLoadCh.chunks[i * 2] && pixelChunkID.y == inLoadCh.chunks[i * 2 + 1]) {
+                writeColor = vec4 (0.4, 0.8, 0.4, 1.0);
                 break;
             }
         }

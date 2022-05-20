@@ -43,6 +43,11 @@ namespace wde::gui {
 						sizeof(WorldPartitionConfig),
 						VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
+				// Create loading chunks buffer
+				_loadingChBuffer = std::make_unique<render::Buffer>(
+						sizeof(int) * 2 * Config::MAX_CHUNKS_COUNT,
+						VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
 				// Create active chunks buffer
 				_activeChBuffer = std::make_unique<render::Buffer>(
 						sizeof(int) * 2 * Config::MAX_CHUNKS_COUNT,
@@ -70,6 +75,7 @@ namespace wde::gui {
 					.bind_buffer(1, *_computeImConfig, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 					.bind_buffer(2, *_activeChBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 					.bind_buffer(3, *_unloadChBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+					.bind_buffer(4, *_loadingChBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 				.build(_imageSet.first, _imageSet.second);
 
 				// Initialize
@@ -85,10 +91,21 @@ namespace wde::gui {
 			auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
 			double chunkSize = Config::CHUNK_SIZE;
 
+			// Set loading chunks IDs
+			void *computeLoadD = _loadingChBuffer->map();
+			auto* data4 = (int*) computeLoadD;
+			auto loadChunks = scene->getLoadingChunks();
+			int k = 0;
+			for (auto& c : loadChunks) {
+				data4[k++] = int(c.x);
+				data4[k++] = int(c.y);
+			}
+			_loadingChBuffer->unmap();
+
 			// Set active chunks IDs
 			void *computeActiveD = _activeChBuffer->map();
 			auto* data = (int*) computeActiveD;
-			auto& activeChunks = WaterDropEngine::get().getInstance().getScene()->getActiveChunks();
+			auto& activeChunks = scene->getActiveChunks();
 			int i = 0;
 			for (auto& c : activeChunks) {
 				data[i++] = int(c.first.x);
@@ -99,7 +116,7 @@ namespace wde::gui {
 			// Set unloading chunks IDs
 			void *computeUnloadD = _unloadChBuffer->map();
 			auto* data3 = (int*) computeUnloadD;
-			auto unloadChunks = WaterDropEngine::get().getInstance().getScene()->getUnloadingChunks();
+			auto unloadChunks = scene->getUnloadingChunks();
 			int j = 0;
 			for (auto& c : unloadChunks) {
 				data3[j++] = int(c.first.x);
@@ -115,6 +132,7 @@ namespace wde::gui {
 			data2->playerChunkIDX = std::floor(cam->transform->position.x / chunkSize + 0.5);
 			data2->playerChunkIDY = std::floor(cam->transform->position.z / chunkSize + 0.5);
 			data2->viewSize = VIEW_SIZE;
+			data2->loadChunksCount = int(loadChunks.size());
 			data2->activeChunksCount = int(activeChunks.size());
 			data2->unloadChunksCount = int(unloadChunks.size());
 			_computeImConfig->unmap();
@@ -143,8 +161,10 @@ namespace wde::gui {
 		// Render image and display data
 		{
 			// Render world partition infos
-			ImGui::Text("Chunk size : %i x %i", Config::CHUNK_SIZE, Config::CHUNK_SIZE);
-			ImGui::Text("Chunk count : %llu", scene->getActiveChunks().size());
+			ImGui::Text("Chunk size : %i x %i.", Config::CHUNK_SIZE, Config::CHUNK_SIZE);
+			ImGui::Text("Loading chunk count : %llu.",scene->getLoadingChunks().size());
+			ImGui::Text("Active chunk count : %llu.", scene->getActiveChunks().size());
+			ImGui::Text("Unloading chunk count : %llu.", scene->getUnloadingChunks().size());
 
 			// Render image
 			ImGui::Dummy(ImVec2(8.0f, 0.0f));

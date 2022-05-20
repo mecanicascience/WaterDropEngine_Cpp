@@ -20,6 +20,7 @@ namespace wde::gui {
 				int viewSize;
 				int playerChunkIDX;
 				int playerChunkIDY;
+				int loadChunksCount;
 				int activeChunksCount;
 				int unloadChunksCount;
 			};
@@ -31,6 +32,7 @@ namespace wde::gui {
 
 			// Compute pipeline
 			std::unique_ptr<render::Buffer> _computeImConfig {};
+			std::unique_ptr<render::Buffer> _loadingChBuffer {};
 			std::unique_ptr<render::Buffer> _activeChBuffer {};
 			std::unique_ptr<render::Buffer> _unloadChBuffer {};
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _imageSet {};

@@ -49,6 +49,7 @@ namespace wde::scene {
 
 
 			// Chunks manager
+			std::vector<glm::ivec2>& getLoadingChunks() { return _loadingChunks; }
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getActiveChunks() { return _activeChunks; }
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getUnloadingChunks() { return _removingChunks; }
 			/**
@@ -92,9 +93,11 @@ namespace wde::scene {
 
 
 			// Scene chunks
+			/** List of scene loading chunks (pos - chunk*) */
+			std::vector<glm::ivec2> _loadingChunks {};
 			/** List of scene active chunks (pos - chunk*) */
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _activeChunks {};
-			/** Lists of chunks that needs to be deleted */
+			/** Lists of chunks that needs to be deleted (pos - chunk*) */
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _removingChunks {};
 
 

@@ -8,6 +8,39 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::tick() {
+		// Load chunks that need to be loaded
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::loadChunks()");
+			while (!_loadingChunks.empty()) {
+				glm::vec2 id = _loadingChunks.back();
+				if (_activeChunks.contains(id)) { // Already loaded
+					_loadingChunks.pop_back();
+					continue;
+				}
+				if (_removingChunks.contains(id)) // Should be removed but also created => should be created
+					_removingChunks.erase(id);
+
+				auto ch = std::make_shared<Chunk>(this, id);
+				_activeChunks.emplace(id, ch);
+				_loadingChunks.pop_back();
+			}
+		}
+
+		// Remove chunks that need to be removed
+		{
+			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::removeChunks()");
+			/*while (!_removingChunks.empty()) {
+				glm::vec2 id = _removingChunks.front();
+
+				if (_activeChunks.contains(id))
+					_activeChunks.erase(id);
+				_removingChunks.pop();
+			}*/
+		}
+
+
+
+		// Update
 		double chunkSize = Config::CHUNK_SIZE;
 		GameObject* cam = getActiveCamera();
 		glm::ivec2 cc { 0, 0 };
@@ -44,21 +77,9 @@ namespace wde::scene {
 			for (int i = -dist; i <= dist; i++) {
 				for (int j = -dist; j <= dist; j++) {
 					if (i*i + j*j <= dist*dist)
-						getChunk({cc.x + i, cc.y + j});
+						getChunkSync({cc.x + i, cc.y + j});
 				}
 			}
-		}
-
-		// Remove chunks that need to be removed
-		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::removeChunks()");
-			/*while (!_removingChunks.empty()) {
-				glm::vec2 id = _removingChunks.front();
-
-				if (_activeChunks.contains(id))
-					_activeChunks.erase(id);
-				_removingChunks.pop();
-			}*/
 		}
 
 		// Tick for chunks and check if empty ones
@@ -142,10 +163,10 @@ namespace wde::scene {
 			return ch.get();
 		}
 
-		// Not found, add to loading list // TODO
-		auto ch = std::make_shared<Chunk>(this, chunkID);
-		_activeChunks.emplace(chunkID, ch);
-		return ch.get();
+		// Not found, add to loading list
+		if (std::find(_loadingChunks.begin(), _loadingChunks.end(), chunkID) == _loadingChunks.end())
+			_loadingChunks.push_back(chunkID);
+		return nullptr;
 	}
 
 	Chunk* WdeSceneInstance::getChunkSync(glm::ivec2 chunkID) {
@@ -168,7 +189,7 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::removeChunk(glm::ivec2 chunkID) {
-		if (!_activeChunks.contains(chunkID))
+		if (_removingChunks.contains(chunkID) || !_activeChunks.contains(chunkID))
 			return;
 		_removingChunks.emplace(chunkID, _activeChunks.at(chunkID));
 		_activeChunks.erase(chunkID);
