@@ -3,6 +3,7 @@
 
 namespace wde::gui {
 	void GUIBar::renderMenu() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 		ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
 		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(12.0f, 4.0f));
@@ -106,5 +107,6 @@ namespace wde::gui {
 
 		ImGui::PopStyleVar();
 		ImGui::PopFont();
+#endif
 	}
 }

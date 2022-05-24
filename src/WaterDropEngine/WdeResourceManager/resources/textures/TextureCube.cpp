@@ -154,8 +154,9 @@ namespace wde::resource {
 	}
 
 	void TextureCube::drawGUI() {
-		WDE_PROFILE_FUNCTION();
 #ifdef WDE_GUI_ENABLED
+		WDE_PROFILE_FUNCTION();
+
 		// Faces
 		for (int i = 0; i < 6; i++) {
 			ImGui::Image(_textureImageGUI[i]->getGUIID(), ImVec2(200.0f, 200.0f));

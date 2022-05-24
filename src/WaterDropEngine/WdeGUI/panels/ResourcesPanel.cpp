@@ -3,6 +3,7 @@
 
 namespace wde::gui {
 	void ResourcesPanel::render() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 
 		// Draw resources
@@ -63,5 +64,6 @@ namespace wde::gui {
 			}
 		}
 		ImGui::End();
+#endif
 	}
 }

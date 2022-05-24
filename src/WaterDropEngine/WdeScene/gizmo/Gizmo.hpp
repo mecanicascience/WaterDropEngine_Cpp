@@ -122,7 +122,9 @@ namespace wde::scene {
 			Gizmo* linesManager(Color color) { return this; }
 			Gizmo* addLine(glm::vec3 from, glm::vec3 to) { return this; }
 			Gizmo* addLine(glm::vec4 from, glm::vec4 to) { return this; }
-			void drawLines(render::CommandBuffer& commandBuffer) {}
+			void drawLines() {}
+			void drawLinesInstance(render::CommandBuffer& commandBuffer) {}
+			void resetLinesManager() {}
 	};
 #endif
 }

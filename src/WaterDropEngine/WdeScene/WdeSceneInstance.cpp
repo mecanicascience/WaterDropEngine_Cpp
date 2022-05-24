@@ -94,9 +94,9 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::drawGizmo(Gizmo &gizmo) {
+#ifdef WDE_ENGINE_MODE_DEBUG
 		WDE_PROFILE_FUNCTION();
 
-#ifdef WDE_ENGINE_MODE_DEBUG
 		// Current Chunk
 		double chunkSize = Config::CHUNK_SIZE;
 		glm::ivec2 cc = getCurrentChunkID();

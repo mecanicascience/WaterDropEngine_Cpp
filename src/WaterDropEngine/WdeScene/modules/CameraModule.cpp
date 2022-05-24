@@ -107,6 +107,7 @@ namespace wde::scene {
 	}
 
 	void CameraModule::drawGUI() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 		// Selected projection
 		ImGui::Columns(2);
@@ -139,10 +140,13 @@ namespace wde::scene {
 			gui::GUIRenderer::addFloatDragger("Far Plane", _farPlane, 10.0f);
 			ImGui::TreePop();
 		}
+#endif
 	}
 
 	void CameraModule::drawGizmo(Gizmo& gizmo) {
+#ifdef WDE_ENGINE_MODE_DEBUG
 		WDE_PROFILE_FUNCTION();
+
 		// Active camera, do not draw gizmo
 		if (WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == &_gameObject)
 			return;
@@ -183,10 +187,12 @@ namespace wde::scene {
 			->addLine(topFarRight, topFarLeft)
 			->addLine(topFarLeft, bottomFarLeft)
 		->drawLines();
+#endif
 	}
 
 	json CameraModule::serialize() {
 		WDE_PROFILE_FUNCTION();
+
 		json jData;
 		jData["projectionType"] = _projectionType;
 		jData["orthographic"]["bottom"][0] = _bottomCorner.x;

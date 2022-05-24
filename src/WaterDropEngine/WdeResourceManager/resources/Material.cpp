@@ -4,6 +4,7 @@
 namespace wde::resource {
 	Material::Material(const std::string &path) : Resource(path, ResourceType::MATERIAL) {
 		WDE_PROFILE_FUNCTION();
+
 		auto matData = json::parse(WdeFileUtils::readFile(path));
 		if (matData["type"] != "material")
 			throw WdeException(LogChannel::RES, "Trying to create a material from a non-material description.");

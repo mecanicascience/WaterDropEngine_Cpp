@@ -9,14 +9,18 @@ namespace wde::gui {
 			// Windows rendering
 			/** Push the window tab size style */
 			static void pushWindowTabStyle() {
+#ifdef WDE_GUI_ENABLED
 				ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[0]);
 				ImGui::PushStyleColor(ImGuiCol_Text, gui::GUITheme::colorWhiteMajor);
+#endif
 			}
 
 			/** Pop the window tab size style */
 			static void popWindowTabStyle() {
+#ifdef WDE_GUI_ENABLED
 				ImGui::PopStyleColor();
 				ImGui::PopFont();
+#endif
 			}
 
 
@@ -26,6 +30,7 @@ namespace wde::gui {
 			 * @param text
 			 */
 			static void textCentered(const std::string& text) {
+#ifdef WDE_GUI_ENABLED
 				WDE_PROFILE_FUNCTION();
 				float win_width = ImGui::GetWindowSize().x;
 				float text_width = ImGui::CalcTextSize(text.c_str()).x;
@@ -45,6 +50,7 @@ namespace wde::gui {
 				ImGui::PushTextWrapPos(win_width - text_indentation);
 				ImGui::TextWrapped("%s", text.c_str());
 				ImGui::PopTextWrapPos();
+#endif
 			}
 
 
@@ -56,6 +62,7 @@ namespace wde::gui {
 			 * @param columnWidth The width of the columns (default 80)
 			 */
 			static void addVec3Button(const std::string& label, glm::vec3 &values, float resetValue = 0.0f, float columnWidth = 80.0f) {
+#ifdef WDE_GUI_ENABLED
 				WDE_PROFILE_FUNCTION();
 				ImGui::PushID(label.c_str()); // label vector id
 				ImGui::Columns(2); // two columns (one label / one vector)
@@ -81,6 +88,7 @@ namespace wde::gui {
 				// End of array
 				ImGui::PopID();
 				ImGui::Columns(1); // empty column
+#endif
 			}
 
 
@@ -92,6 +100,7 @@ namespace wde::gui {
 			 * @param columnWidth The label column width (default 120)
 			 */
 			static void addFloatDragger(const std::string& label, float &value, float resetValue = 0.0f, float columnWidth = 120.0f, float cursorSpeed = 0.1f) {
+#ifdef WDE_GUI_ENABLED
 				WDE_PROFILE_FUNCTION();
 				// Array
 				ImGui::PushID(label.c_str());
@@ -110,6 +119,7 @@ namespace wde::gui {
 				// End of array
 				ImGui::PopID();
 				ImGui::Columns(1);
+#endif
 			}
 
 
@@ -124,6 +134,7 @@ namespace wde::gui {
 			 * @param hoverColor Color of button hovered (default colorMinorLight)
 			 */
 			static void addFloatDraggerButton(const std::string& name, float &value, float resetValue = 0.0f, ImVec4 buttonColor = GUITheme::colorMajorLight, ImVec4 hoverColor = GUITheme::colorMinorLight, float cursorSpeed = 0.1f) {
+#ifdef WDE_GUI_ENABLED
 				WDE_PROFILE_FUNCTION();
 				ImGui::PushStyleColor(ImGuiCol_Button, buttonColor);
 				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, hoverColor);
@@ -134,6 +145,7 @@ namespace wde::gui {
 
 				ImGui::SameLine();
 				ImGui::DragFloat(("##" + name).c_str(), &value, cursorSpeed, 0.0f, 0.0f, "%0.2f");
+#endif
 			}
 	};
 }

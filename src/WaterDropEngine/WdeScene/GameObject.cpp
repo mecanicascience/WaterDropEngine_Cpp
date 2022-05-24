@@ -44,6 +44,7 @@ namespace wde::scene {
 	}
 
 	void GameObject::drawGUI() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 
 		// Type of the object
@@ -254,5 +255,6 @@ namespace wde::scene {
 					ModuleSerializer::addModuleFromName(modules[item_current], "", *this);
 			}
 		}
+#endif
 	}
 }

@@ -29,11 +29,13 @@ namespace wde::scene {
 	}
 
 	void ControllerModule::drawGUI() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 		// Move speed
 		gui::GUIRenderer::addFloatDragger("Move speed", _moveSpeed, 1.3f);
 		// Look speed
 		gui::GUIRenderer::addFloatDragger("Look speed", _lookSpeed, 1.5f);
+#endif
 	}
 
 	json ControllerModule::serialize() {

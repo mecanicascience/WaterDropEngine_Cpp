@@ -33,6 +33,7 @@ namespace wde::scene {
 
 
 	void MeshRendererModule::drawGUI() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 		ImGui::PushFont(ImGui::GetIO().FontDefault);
 
@@ -97,6 +98,7 @@ namespace wde::scene {
 			ImGui::Text(" Material name : \"%s\".", _material->getName().c_str());
 		ImGui::OpenPopupOnItemClick("MaterialSelect", ImGuiPopupFlags_MouseButtonRight);
 		ImGui::PopFont();
+#endif
 	}
 
 	json MeshRendererModule::serialize() {

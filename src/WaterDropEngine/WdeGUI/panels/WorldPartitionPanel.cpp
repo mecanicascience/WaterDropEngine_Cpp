@@ -3,6 +3,7 @@
 
 namespace wde::gui {
 	void WorldPartitionPanel::render() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 		// View 5 chunks around the player
 		const int VIEW_SIZE = Config::CHUNK_SIZE * 20;
@@ -173,9 +174,11 @@ namespace wde::gui {
 		}
 
 		ImGui::End();
+#endif
 	}
 
 	WorldPartitionPanel::~WorldPartitionPanel() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
 
 		// Destroy texture sampler
@@ -183,5 +186,6 @@ namespace wde::gui {
 
 		// Destroy image
 		_worldImage.reset();
+#endif
 	}
 }

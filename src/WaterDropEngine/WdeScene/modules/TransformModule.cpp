@@ -12,6 +12,7 @@ namespace wde::scene {
 
 	void TransformModule::setConfig(const std::string &data) {
 		WDE_PROFILE_FUNCTION();
+
 		auto dataJ = json::parse(data);
 		position = glm::vec3 {
 			dataJ["position"][0].get<float>(),
@@ -33,10 +34,13 @@ namespace wde::scene {
 	void TransformModule::tick() {};
 
 	void TransformModule::drawGUI() {
+#ifdef WDE_GUI_ENABLED
 		WDE_PROFILE_FUNCTION();
+
 		gui::GUIRenderer::addVec3Button("Position", position);
 		gui::GUIRenderer::addVec3Button("Rotation", rotation);
 		gui::GUIRenderer::addVec3Button("Scale", scale, 1.0f);
+#endif
 	}
 
 	json TransformModule::serialize() {
