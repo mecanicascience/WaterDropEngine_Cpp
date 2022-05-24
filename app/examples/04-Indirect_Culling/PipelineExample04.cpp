@@ -55,7 +55,7 @@ namespace examples {
 		endRenderPass();
 	}
 
-	void PipelineExample04::drawGizmo(scene::Gizmo &gizmo, CommandBuffer &commandBuffer) {
+	void PipelineExample04::drawGizmo(scene::Gizmo &gizmo) {
 
 	}
 }

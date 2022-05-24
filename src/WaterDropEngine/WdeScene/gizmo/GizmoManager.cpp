@@ -20,11 +20,24 @@ namespace wde::scene {
 		render::DescriptorBuilder::begin()
 					.bind_buffer(0, *inst->_positionsSetBuffer, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(inst->_positionsSet.first, inst->_positionsSet.second);
-		inst->_positionsLinesSetBuffer = std::make_shared<render::Buffer>(sizeof(Gizmo::GPUGizmoLineDescriptor), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		inst->_positionsLinesSetBuffer = std::make_shared<render::Buffer>(sizeof(Gizmo::GPUGizmoLineCamera), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		inst->_positionsLinesSetBufferVertices = std::make_shared<render::Buffer>(sizeof(resource::Vertex) * Config::MAX_GIZMO_OBJECTS_COUNT, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+		inst->_linesManagerColors = std::make_unique<render::Buffer>(sizeof(Gizmo::GPUGizmoColorDescriptor) * Config::MAX_GIZMO_OBJECTS_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 		render::DescriptorBuilder::begin()
 					.bind_buffer(0, *inst->_positionsLinesSetBuffer, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(1, *inst->_linesManagerColors, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(inst->_positionsLinesSet.first, inst->_positionsLinesSet.second);
+
+		// Create gizmo lines pipeline
+		auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
+		inst->_linesPipeline = std::make_shared<render::PipelineGraphics>(
+				renderStage,
+                std::vector<std::string>{path + "data/shaders/engine/gizmo/gizmoLines.vert", path + "data/shaders/engine/gizmo/gizmoLines.frag"},
+                std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
+                render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
+                VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE);
+		inst->_linesPipeline->addDescriptorSet(inst->_positionsLinesSet.second);
+		inst->_linesPipeline->initialize();
 
 		// Create gizmo meshes
 		inst->_meshes.emplace("CUBE", WaterDropEngine::get().getResourceManager().load<resource::Mesh>(
@@ -38,19 +51,25 @@ namespace wde::scene {
 			throw WdeException(LogChannel::SCENE, "Trying to draw the Gizmo objects without initializing the renderer.");
 		auto& inst = GizmoManager::_gizmoInstance;
 
+		// Clear last lines instance
+		inst->resetLinesManager();
+
 		// Set command buffer
 		inst->_commandBuffer = &commandBuffer;
 
 		// Render Gizmo for instance
-		WaterDropEngine::get().getInstance().getPipeline().drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
-		WaterDropEngine::get().getInstance().getScene()->drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
+		WaterDropEngine::get().getInstance().getPipeline().drawGizmo(*GizmoManager::_gizmoInstance);
+		WaterDropEngine::get().getInstance().getScene()->drawGizmo(*GizmoManager::_gizmoInstance);
 
 		// Render Gizmo for modules
 		auto scene = WaterDropEngine::get().getInstance().getScene();
 		for (auto& ch : scene->getActiveChunks())
 			for (auto& go : ch.second->getDynamicGameObjects())
 				for (auto& mod : go->getModules())
-					mod->drawGizmo(*GizmoManager::_gizmoInstance, commandBuffer);
+					mod->drawGizmo(*GizmoManager::_gizmoInstance);
+
+		// Draw Gizmo lines
+		inst->drawLinesInstance(commandBuffer);
 	}
 
 	void GizmoManager::cleanUp() {

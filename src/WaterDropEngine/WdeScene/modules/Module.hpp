@@ -21,7 +21,7 @@ namespace wde::scene {
 			/** Draw the module GUI */
 			virtual void drawGUI() {};
 			/** Draw the gizmo elements to the scene */
-			virtual void drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {};
+			virtual void drawGizmo(Gizmo& gizmo) {};
 			/** @return the serialized module data */
 			virtual json serialize() { return {}; }
 

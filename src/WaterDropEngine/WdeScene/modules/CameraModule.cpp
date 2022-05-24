@@ -141,7 +141,7 @@ namespace wde::scene {
 		}
 	}
 
-	void CameraModule::drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) {
+	void CameraModule::drawGizmo(Gizmo& gizmo) {
 		WDE_PROFILE_FUNCTION();
 		// Active camera, do not draw gizmo
 		if (WaterDropEngine::get().getInstance().getScene()->getActiveCamera() == &_gameObject)
@@ -182,7 +182,7 @@ namespace wde::scene {
 			->addLine(bottomFarRight, topFarRight)
 			->addLine(topFarRight, topFarLeft)
 			->addLine(topFarLeft, bottomFarLeft)
-		->drawLines(commandBuffer);
+		->drawLines();
 	}
 
 	json CameraModule::serialize() {

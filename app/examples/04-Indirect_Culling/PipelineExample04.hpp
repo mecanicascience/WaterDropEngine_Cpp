@@ -40,7 +40,7 @@ namespace examples {
 				gui::WdeGUI::initialize(std::pair<int, int>{0, 2});
 			}
 
-			void drawGizmo(scene::Gizmo& gizmo, render::CommandBuffer& commandBuffer) override;
+			void drawGizmo(scene::Gizmo& gizmo) override;
 
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override;
 

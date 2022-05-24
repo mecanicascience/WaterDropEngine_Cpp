@@ -93,7 +93,7 @@ namespace wde::scene {
 		_activeCamera = nullptr;
 	}
 
-	void WdeSceneInstance::drawGizmo(Gizmo &gizmo, render::CommandBuffer &commandBuffer) {
+	void WdeSceneInstance::drawGizmo(Gizmo &gizmo) {
 		WDE_PROFILE_FUNCTION();
 
 #ifdef WDE_ENGINE_MODE_DEBUG
@@ -104,14 +104,14 @@ namespace wde::scene {
 		// Draw grid
 		int linesDensity = 30;
 		auto lm = gizmo.linesManager(Color::GREY);
-		for (int i = -6; i <= linesDensity; i++) {
+		for (int i = 0; i <= linesDensity; i++) {
 			double shiftX = double(i) / double(linesDensity) * chunkSize - chunkSize / 2.0 + cc.x * chunkSize;
 			double shiftY = double(i) / double(linesDensity) * chunkSize - chunkSize / 2.0 + cc.y * chunkSize;
 
 			lm->addLine({shiftX, 0, -chunkSize / 2.0 + cc.y * chunkSize}, {shiftX, 0, chunkSize / 2.0 + cc.y * chunkSize});
 			lm->addLine({-chunkSize / 2.0 + cc.x * chunkSize, 0, shiftY}, {chunkSize / 2.0 + cc.x * chunkSize, 0, shiftY});
 		}
-		lm->drawLines(commandBuffer);
+		lm->drawLines();
 #endif
 	}
 

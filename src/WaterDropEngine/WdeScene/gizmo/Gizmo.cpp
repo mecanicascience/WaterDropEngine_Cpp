@@ -73,30 +73,24 @@ namespace wde::scene {
 
 
 	// Lines manager
-	Gizmo* Gizmo::linesManager(const Color& color) {
+	void Gizmo::resetLinesManager() {
 		WDE_PROFILE_FUNCTION();
-		// Delete last session
-		_lines.clear();
-		_linesSetData = nullptr;
 
-		// Set current color
-		_currentColor = color;
+		// Clear instances
+		_linesManagerInstances.clear();
+	}
 
-		// Create line pipeline
-		if (!_linesPipelines.contains(color.toString())) {
-			// Create corresponding pipeline
-			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
-			_linesPipelines.emplace(color.toString(),
-                   std::make_shared<render::PipelineGraphics>(_renderStage,
-						  std::vector<std::string>{path + "data/shaders/engine/gizmo/gizmoLines.vert", path + "data/shaders/engine/gizmo/gizmoLines.frag"},
-						  std::vector<resource::VertexInput>{ resource::Vertex::getDescriptions() },
-						  render::PipelineGraphics::Mode::Polygon, render::PipelineGraphics::Depth::ReadWrite,
-						  VK_PRIMITIVE_TOPOLOGY_LINE_LIST, VK_POLYGON_MODE_LINE, VK_CULL_MODE_NONE, VK_FRONT_FACE_COUNTER_CLOCKWISE));
-
-			// Add pipeline object descriptor
-			_linesPipelines.at(color.toString())->addDescriptorSet(_positionsLinesSet.second);
-			_linesPipelines.at(color.toString())->initialize(); // Setup pipeline
-		}
+	Gizmo* Gizmo::linesManager(const Color& color) {
+		// Create new instance
+		LinesManagerInstance inst {};
+		inst.color = color;
+		if (_linesManagerInstances.empty())
+			inst.lastLinesIndex = 0;
+		else
+			inst.lastLinesIndex = _linesManagerInstances[_linesManagerInstances.size() - 1].linesCount
+								+ _linesManagerInstances[_linesManagerInstances.size() - 1].lastLinesIndex;
+		inst.linesCount = 0;
+		_linesManagerInstances.push_back(inst);
 
 		// Map vertex buffer
 		_linesSetData = (resource::Vertex*) _positionsLinesSetBufferVertices->map();
@@ -105,57 +99,67 @@ namespace wde::scene {
 	}
 
 	Gizmo* Gizmo::addLine(const glm::vec3& from, const glm::vec3& to) {
-		// Add line to vertex buffer
-		_linesSetData[_lines.size() * 2 + 0] = resource::Vertex {from};
-		_linesSetData[_lines.size() * 2 + 1] = resource::Vertex {to};
-
-		// Add lines to list
-		_lines.emplace_back(from, to);
-
-		return this;
+		return addLine({from.x, from.y, from.z, 0.0f}, {to.x, to.y, to.z, 0.0f});
 	}
 
 	Gizmo* Gizmo::addLine(const glm::vec4& from, const glm::vec4& to) {
 		// Add line to vertex buffer
-		_linesSetData[_lines.size() * 2 + 0] = resource::Vertex {glm::vec3{from.x, from.y, from.z}};
-		_linesSetData[_lines.size() * 2 + 1] = resource::Vertex {glm::vec3{to.x, to.y, to.z}};
+		auto& s = _linesManagerInstances[_linesManagerInstances.size() - 1];
+		_linesSetData[(s.linesCount + s.lastLinesIndex) * 2 + 0] = resource::Vertex {glm::vec3{from.x, from.y, from.z}};
+		_linesSetData[(s.linesCount + s.lastLinesIndex) * 2 + 1] = resource::Vertex {glm::vec3{to.x, to.y, to.z}};
 
-		// Add lines to list
-		_lines.emplace_back(from, to);
+		// Update instance
+		s.linesCount++;
 
 		return this;
 	}
 
-	void Gizmo::drawLines(render::CommandBuffer& commandBuffer) {
-		WDE_PROFILE_FUNCTION();
-
+	void Gizmo::drawLines() {
 		// Unmap vertex buffer
 		_positionsLinesSetBufferVertices->unmap();
+	}
 
-		// Update descriptor
+	void Gizmo::drawLinesInstance(render::CommandBuffer& commandBuffer) {
+		WDE_PROFILE_FUNCTION();
+
+		// Update camera descriptor
 		auto cam = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
-		if (cam == nullptr) {
+		if (cam == nullptr)
 			return;
+		{
+			void *data = _positionsLinesSetBuffer->map();
+			auto camMod = cam->getModule<CameraModule>();
+			GPUGizmoLineCamera dataStruct {};
+			dataStruct.camProj = camMod->getProjection();
+			dataStruct.camView = camMod->getView();
+			memcpy(data, &dataStruct, sizeof(GPUGizmoLineCamera));
+			_positionsLinesSetBuffer->unmap();
 		}
-		void *data = _positionsLinesSetBuffer->map();
-		auto camMod = cam->getModule<CameraModule>();
-		GPUGizmoLineDescriptor dataStruct {};
-		dataStruct.camProj = camMod->getProjection();
-		dataStruct.camView = camMod->getView();
-		dataStruct.matColor = glm::vec4(_currentColor._r, _currentColor._g, _currentColor._b, _currentColor._a);
-		memcpy(data, &dataStruct, sizeof(GPUGizmoLineDescriptor));
-		_positionsLinesSetBuffer->unmap();
+
+		// Update color descriptor
+		{
+			auto* data = (GPUGizmoColorDescriptor*) _linesManagerColors->map();
+			uint32_t index = 0;
+			for (auto& i : _linesManagerInstances)
+				data[index++] = GPUGizmoColorDescriptor {glm::vec4 {i.color._r, i.color._g, i.color._b, i.color._a}};
+			_linesManagerColors->unmap();
+		}
+
 
 		// Bind descriptors and pipeline
-		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linesPipelines.at(_currentColor.toString())->getPipeline());
-		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linesPipelines.at(_currentColor.toString())->getLayout(),
-		                        0, 1, &_positionsLinesSet.first, 0, nullptr); // Bind description pipeline (binding : 0)
+		vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linesPipeline->getPipeline());
+		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _linesPipeline->getLayout(),
+		                        0, 1, &_positionsLinesSet.first, 0, nullptr); // Bind global pipeline (binding : 0)
 
-		// Draw lines
+		// Bind vertex buffer
 		VkBuffer vertexBuffers[] = { _positionsLinesSetBufferVertices->getBuffer() };
 		VkDeviceSize offsets[] = { 0 };
 		vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-		vkCmdDraw(commandBuffer, _lines.size() * 2, 1, 0, 0);
+
+		// Draw lines
+		uint32_t instanceID = 0;
+		for (auto& i : _linesManagerInstances)
+			vkCmdDraw(commandBuffer, i.linesCount * 2, 1, i.lastLinesIndex * 2, instanceID++);
 	}
 
 

@@ -44,7 +44,7 @@ namespace wde::render {
 			 */
 			void onNotify(const core::Event& event) override {};
 			/** Draw the gizmo elements to the scene */
-			virtual void drawGizmo(scene::Gizmo& gizmo, render::CommandBuffer& commandBuffer) {};
+			virtual void drawGizmo(scene::Gizmo& gizmo) {};
 			/**
 			 * Clean up the pipeline resources
 			 */

@@ -13,7 +13,7 @@ namespace wde::scene {
 
 			void tick() override;
 			void drawGUI() override;
-			void drawGizmo(Gizmo& gizmo, render::CommandBuffer& commandBuffer) override;
+			void drawGizmo(Gizmo& gizmo) override;
 			json serialize() override;
 
 			/** Sets this camera to be the current scene viewing camera */

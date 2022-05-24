@@ -18,15 +18,21 @@ namespace wde::scene {
 				glm::mat4 transformWorldSpace;
 			};
 
-			struct GPUGizmoLineDescriptor {
+			struct GPUGizmoLineCamera {
 				glm::mat4 camView {1.0f};
 				glm::mat4 camProj {1.0f};
-				glm::vec4 matColor {0.0f};
 			};
 
 			struct GPUGizmoColorDescriptor {
 				glm::vec4 color {0.0f};
 			};
+
+			struct LinesManagerInstance {
+				uint32_t lastLinesIndex = 0;
+				uint32_t linesCount = 0;
+				Color color {0.0f, 0.0f, 0.0f, 0.0f};
+			};
+
 
 			~Gizmo() override;
 
@@ -48,6 +54,9 @@ namespace wde::scene {
 
 
 			// Lines
+			/** Resets the lines manager */
+			void resetLinesManager();
+
 			/** Create a new line drawing session */
 			Gizmo* linesManager(const Color& color);
 			/**
@@ -64,7 +73,10 @@ namespace wde::scene {
 			Gizmo* addLine(const glm::vec4& from, const glm::vec4& to);
 
 			/** Draw every lines in the current drawing session */
-			void drawLines(render::CommandBuffer& commandBuffer);
+			void drawLines();
+
+			/** Draw every lines in the command buffer */
+			void drawLinesInstance(render::CommandBuffer& commandBuffer);
 
 
 			// Parameters
@@ -80,9 +92,10 @@ namespace wde::scene {
 			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _pipelines {};
 			std::unordered_map<std::string, std::pair<std::unique_ptr<render::Buffer>, std::pair<VkDescriptorSet, VkDescriptorSetLayout>>> _pipelinesData {};
 			std::unordered_map<std::string, resource::Mesh*> _meshes {};
-			/** The current session lines */
-			std::vector<std::pair<glm::vec3, glm::vec3>> _lines {};
-			std::unordered_map<std::string, std::shared_ptr<render::PipelineGraphics>> _linesPipelines {};
+			/** The gizmo lines */
+			std::shared_ptr<render::PipelineGraphics> _linesPipeline {};
+			std::vector<LinesManagerInstance> _linesManagerInstances {};
+			std::unique_ptr<render::Buffer> _linesManagerColors {};
 
 			// Descriptors
 			/** Game Objects descriptor set */

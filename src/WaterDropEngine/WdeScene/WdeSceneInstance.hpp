@@ -22,7 +22,7 @@ namespace wde::scene {
 			void tick();
 			void cleanUp();
 			void onNotify(const core::Event& event) override;
-			void drawGizmo(scene::Gizmo& gizmo, render::CommandBuffer& commandBuffer);
+			void drawGizmo(scene::Gizmo& gizmo);
 
 
 			// Getters and setters
