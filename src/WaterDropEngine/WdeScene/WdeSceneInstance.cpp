@@ -5,6 +5,20 @@ namespace wde::scene {
 	WdeSceneInstance::WdeSceneInstance() {
 		// Create panel
 		_worldPartitionPanel = std::make_unique<gui::WorldPartitionPanel>();
+
+		// Create default global set
+		{
+			// Buffers
+			_cameraData = std::make_unique<render::Buffer>(sizeof(Chunk::GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+			_objectsData = std::make_unique<render::Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * Config::MAX_SCENE_OBJECTS_COUNT,
+																VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+			// Create global descriptor set
+			render::DescriptorBuilder::begin()
+					.bind_buffer(0, *_cameraData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(1, *_objectsData, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+				.build(_globalSetDefault.first, _globalSetDefault.second);
+		}
 	}
 
 	void WdeSceneInstance::tick() {
@@ -12,13 +26,8 @@ namespace wde::scene {
 		manageChunks();
 
 		// Update
-		double chunkSize = Config::CHUNK_SIZE;
 		GameObject* cam = getActiveCamera();
-		glm::ivec2 cc { 0, 0 };
-		if (cam != nullptr) {
-			cc.x = std::floor(cam->transform->position.x / chunkSize + 0.5);
-			cc.y = std::floor(cam->transform->position.z / chunkSize + 0.5);
-		}
+		glm::ivec2 cc = getCurrentChunkID();
 
 		// Update camera current chunk
 		{
@@ -90,12 +99,7 @@ namespace wde::scene {
 #ifdef WDE_ENGINE_MODE_DEBUG
 		// Current Chunk
 		double chunkSize = Config::CHUNK_SIZE;
-		GameObject* cam = getActiveCamera();
-		glm::ivec2 cc { 0, 0 };
-		if (cam != nullptr) {
-			cc.x = std::floor(cam->transform->position.x / chunkSize + 0.5);
-			cc.y = std::floor(cam->transform->position.z / chunkSize + 0.5);
-		}
+		glm::ivec2 cc = getCurrentChunkID();
 
 		// Draw grid
 		int linesDensity = 30;
@@ -133,13 +137,7 @@ namespace wde::scene {
 
 			// Draw GUI for selected chunk (= chunk of current camera)
 			{
-				double chunkSize = Config::CHUNK_SIZE;
-				GameObject* cam = getActiveCamera();
-				if (cam != nullptr) {
-					_selectedGameObjectChunkID.x = std::floor(cam->transform->position.x / chunkSize + 0.5);
-					_selectedGameObjectChunkID.y = std::floor(cam->transform->position.z / chunkSize + 0.5);
-				}
-
+				_selectedGameObjectChunkID = getCurrentChunkID();
 				auto ch = getChunk(_selectedGameObjectChunkID);
 				if (ch != nullptr)
 					ch->drawGUI();

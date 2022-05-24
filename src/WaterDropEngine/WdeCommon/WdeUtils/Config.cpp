@@ -23,7 +23,7 @@ namespace wde::Config {
 
 	// Scene config
 	/** Max objects in the scene */
-	int MAX_SCENE_OBJECTS_COUNT = 100000;
+	int MAX_SCENE_OBJECTS_COUNT = 10000;
 	/** Max objects in the gizmo scene */
 	int MAX_GIZMO_OBJECTS_COUNT = 10000;
 

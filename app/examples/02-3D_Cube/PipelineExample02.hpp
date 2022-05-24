@@ -31,23 +31,21 @@ namespace examples {
 			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
 				beginRenderPass(0);
 					beginRenderSubPass(0);
-						uint32_t iterator = 0;
-						for (auto& chunk : scene.getActiveChunks()) {
-							for (auto& go : chunk.second->getGameObjects()) {
-								iterator++;
-
+						for (auto &chunk: scene.getActiveChunks()) {
+							uint32_t iterator = 0;
+							for (auto &go: chunk.second->getGameObjects()) {
 								// If no mesh or material, continue
 								auto mesh = go->getModule<scene::MeshRendererModule>();
 								if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
 									continue;
 
 								// Bind sets
-								bind(commandBuffer, mesh->getMaterial()); // global
+								chunk.second->bind(commandBuffer, mesh->getMaterial()); // global
 								mesh->getMaterial()->bind(commandBuffer); // material
 								mesh->getMesh()->bind(commandBuffer); // object
 
 								// Draw
-								mesh->getMesh()->render(iterator - 1);
+								mesh->getMesh()->render(iterator++);
 							}
 						}
 					endRenderSubPass();

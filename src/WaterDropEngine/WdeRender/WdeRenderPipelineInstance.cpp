@@ -2,22 +2,6 @@
 #include "../WaterDropEngine.hpp"
 
 namespace wde::render {
-	WdeRenderPipelineInstance::WdeRenderPipelineInstance() {
-		WDE_PROFILE_FUNCTION();
-
-		// Camera data buffer
-		_cameraData = std::make_unique<Buffer>(sizeof(GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-
-		// Objects buffer
-		_objectsData = std::make_unique<Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * Config::MAX_SCENE_OBJECTS_COUNT, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
-
-		// Create global descriptor set
-		DescriptorBuilder::begin()
-					.bind_buffer(0, *_cameraData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-					.bind_buffer(1, *_objectsData, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-				.build(_globalSet.first, _globalSet.second);
-	}
-
 	WdeRenderPipelineInstance::~WdeRenderPipelineInstance() {
 		WDE_PROFILE_FUNCTION();
 		// Destroy render passes
@@ -43,44 +27,12 @@ namespace wde::render {
 		if (!commandBuffer.isRunning())
 			commandBuffer.begin();
 
-		auto scene = WaterDropEngine::get().getInstance().getScene();
-		// Update global set data
-		{
-			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::updateGlobalSetData");
-			// Update camera buffer data
-			if (scene->getActiveCamera() == nullptr)
-				logger::log(LogLevel::WARN, LogChannel::SCENE) << "No camera in scene." << logger::endl;
-			else {
-				auto cameraModule = scene->getActiveCamera()->getModule<scene::CameraModule>();
-				// New data
-				GPUCameraData cameraData {};
-				cameraData.proj = cameraModule->getProjection();
-				cameraData.view = cameraModule->getView();
-
-				// Map data
-				void *data = _cameraData->map();
-				memcpy(data, &cameraData, sizeof(GPUCameraData));
-				_cameraData->unmap();
-			}
-
-
-			// On first update, also update every static game objects
-			void *data = _objectsData->map();
-			auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
-			uint32_t iterator = 0;
-			for (auto& chunk : scene->getActiveChunks()) {
-				for (auto& go : chunk.second->getGameObjects()) {
-					objectsData[iterator++].transformWorldSpace = go->transform->getTransform();
-				}
-			}
-			_objectsData->unmap();
-		}
-
-
 		// Engine recording commands to the current frame command buffer
 		{
 			WDE_PROFILE_SCOPE("wde::render::WdeRenderPipelineInstance::tick()::render");
+
 			// ==== RENDER COMMANDS ====
+			auto scene = WaterDropEngine::get().getInstance().getScene();
 			render(commandBuffer, *scene);
 		}
 
@@ -120,11 +72,6 @@ namespace wde::render {
 		// Recreate render passes
 		_passes.clear();
 		setStructure(_structure);
-	}
-
-	void WdeRenderPipelineInstance::bind(CommandBuffer &commandBuffer, resource::Material *material) const {
-		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-		                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
 	}
 
 

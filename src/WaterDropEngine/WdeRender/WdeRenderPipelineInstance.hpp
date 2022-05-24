@@ -17,7 +17,7 @@ namespace wde::render {
 	 */
 	class WdeRenderPipelineInstance : public core::Observer {
 		public:
-			WdeRenderPipelineInstance();
+			WdeRenderPipelineInstance() = default;
 			~WdeRenderPipelineInstance() override;
 
 			// Core WDE functions
@@ -50,20 +50,8 @@ namespace wde::render {
 			 */
 			virtual void cleanUp() = 0;
 
-
-			// Draw commands
-			/**
-			 * Bind the global set to a command buffer and a material
-			 * @param commandBuffer
-			 * @param material
-			 */
-			void bind(CommandBuffer& commandBuffer, resource::Material* material) const;
-
-
 			// Getters and setters
 			RenderPass& getRenderPass(uint32_t renderPassID) { return *_passes[renderPassID]; }
-			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
-			render::Buffer& getCameraBuffer() { return *_cameraData; }
 
 
 
@@ -85,24 +73,6 @@ namespace wde::render {
 
 			void beginRenderSubPass(uint32_t index);
 			void endRenderSubPass();
-
-
-
-
-			// ======= SETS DATA =========
-			// Passes common descriptor sets
-			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _globalSet;
-
-			// Global set
-			/** Camera data */
-			struct GPUCameraData {
-				glm::mat4 view {1.0f};
-				glm::mat4 proj {1.0f};
-			};
-			std::unique_ptr<render::Buffer> _cameraData;
-
-			/** Game objects data */
-			std::unique_ptr<render::Buffer> _objectsData;
 
 
 

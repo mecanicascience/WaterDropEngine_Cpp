@@ -62,11 +62,11 @@ namespace wde::scene {
 			_cullingPipeline->initialize();
 
 
-			// Create drawing descriptor set
-			render::DescriptorBuilder::begin()
+			// Create drawing descriptor set // TODO
+			/*render::DescriptorBuilder::begin()
 						.bind_buffer(0, WaterDropEngine::get().getInstance().getPipeline().getCameraBuffer(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 						.bind_buffer(1, *sceneObjectsBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-					.build(_drawingDescriptorSet.first, _drawingDescriptorSet.second);
+					.build(_drawingDescriptorSet.first, _drawingDescriptorSet.second);*/
 		}
 	}
 

@@ -4,6 +4,8 @@
 #include "../GameObject.hpp"
 #include "../modules/MeshRendererModule.hpp"
 #include "../modules/CameraModule.hpp"
+#include "../../WdeRender/buffers/Buffer.hpp"
+#include "../../WdeScene/GameObject.hpp"
 
 #include <utility>
 
@@ -15,13 +17,22 @@ namespace wde::scene {
 	 */
 	class Chunk {
 		public:
+			/** Camera data */
+			struct GPUCameraData {
+				glm::mat4 view {1.0f};
+				glm::mat4 proj {1.0f};
+			};
+
 			// Constructors
 			explicit Chunk(WdeSceneInstance* sceneInstance, glm::ivec2 pos);
-			~Chunk();
-
 			/** Saves the chunk data to the associated chunk file */
 			void save();
+			~Chunk();
+
+			// Common methods
 			void tick();
+			void updateGOBuffers();
+			void bind(render::CommandBuffer &commandBuffer, resource::Material *material) const;
 			void drawGUI();
 
 
@@ -30,6 +41,7 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
 			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
 			static void setObjectIDCurrent(uint32_t id) { _gameObjectsIDCurr = id; }
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
 
 
 			// Game Objects Manager
@@ -94,6 +106,13 @@ namespace wde::scene {
 			// Chunk game objects data
 			/** Last create game object ID */
 			static uint32_t _gameObjectsIDCurr;
+
+			// Passes common descriptor sets
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _globalSet;
+
+			// Global set
+			std::unique_ptr<render::Buffer> _cameraData;
+			std::unique_ptr<render::Buffer> _objectsData;
 
 			
 			// Helper functions

@@ -9,59 +9,82 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Loading chunk (" << _pos.x << ", " << _pos.y << ")." << logger::endl;
 
-		// Check if file chunk exist, if not create empty chunk
-		auto path = _sceneInstance->getPath();
-		bool exist = WdeFileUtils::fileExist(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json");
+		// Create buffers
+		{
+			WDE_PROFILE_SCOPE("wde::scene::Chunk::Chunk::createBuffers");
 
-		// Add editor camera if chunk (0, 0)
-#ifdef WDE_ENGINE_MODE_DEBUG
-		if (_pos.x == 0 && _pos.y == 0 && sceneInstance->getActiveCamera() == nullptr) {
-			auto camera = createGameObject("Editor Camera");
-			auto camModule = camera->addModule<scene::CameraModule>();
-			camModule->setAsActive();
-			camModule->setFarPlane(std::numeric_limits<float>::max());
-			WaterDropEngine::get().getInstance().getScene()->setActiveCamera(camera.get());
-			camera->addModule<scene::ControllerModule>();
-			camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
-			camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
+			// Camera data buffer
+			_cameraData = std::make_unique<render::Buffer>(sizeof(GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+			// Objects buffer
+			_objectsData = std::make_unique<render::Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * Config::MAX_SCENE_OBJECTS_COUNT,
+															VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+
+			// Create global descriptor set
+			render::DescriptorBuilder::begin()
+					.bind_buffer(0, *_cameraData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+					.bind_buffer(1, *_objectsData, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+				.build(_globalSet.first, _globalSet.second);
 		}
+
+		// Load chunk
+		{
+			WDE_PROFILE_SCOPE("wde::scene::Chunk::Chunk::loadChunkFile");
+
+			// Check if file chunk exist, if not create empty chunk
+			auto path = _sceneInstance->getPath();
+			bool exist = WdeFileUtils::fileExist(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json");
+
+			// Add editor camera if chunk (0, 0)
+#ifdef WDE_ENGINE_MODE_DEBUG
+			if (_pos.x == 0 && _pos.y == 0 && sceneInstance->getActiveCamera() == nullptr) {
+				auto camera = createGameObject("Editor Camera");
+				auto camModule = camera->addModule<scene::CameraModule>();
+				camModule->setAsActive();
+				camModule->setFarPlane(std::numeric_limits<float>::max());
+				WaterDropEngine::get().getInstance().getScene()->setActiveCamera(camera.get());
+				camera->addModule<scene::ControllerModule>();
+				camera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
+				camera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
+			}
 #endif
 
-		// No chunk data
-		if (!exist)
-			return;
+			// No chunk data
+			if (!exist)
+				return;
 
-		// Check chunk file format
-		auto fileData = json::parse(WdeFileUtils::readFile(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json"));
-		if (fileData["type"] != "chunk")
-			throw WdeException(LogChannel::SCENE, "Trying to load a non-chunk JSON object.");
-		if (fileData["data"]["id"]["x"].get<int>() != pos.x || fileData["data"]["id"]["y"].get<int>() != pos.y)
-			throw WdeException(LogChannel::SCENE, "Chunk at (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ") has incorrect ID in JSON file.");
+			// Check chunk file format
+			auto fileData = json::parse(WdeFileUtils::readFile(path + "chunk/chunk_" + std::to_string(pos.x) + "-" + std::to_string(pos.y) + ".json"));
+			if (fileData["type"] != "chunk")
+				throw WdeException(LogChannel::SCENE, "Trying to load a non-chunk JSON object.");
+			if (fileData["data"]["id"]["x"].get<int>() != pos.x || fileData["data"]["id"]["y"].get<int>() != pos.y)
+				throw WdeException(LogChannel::SCENE, "Chunk at (" + std::to_string(pos.x) + "," + std::to_string(pos.y) + ") has incorrect ID in JSON file.");
 
-		// Load chunk game objects
-		uint32_t currentGOID = _gameObjectsIDCurr;
-		std::unordered_map<uint32_t, uint32_t> oldToNewIds {}; // <oldID, newID>
-		for (const auto& goData : fileData["data"]["gameObjects"]) {
-			if (goData["type"] != "gameObject")
-				throw WdeException(LogChannel::SCENE, "Trying to load a non-gameObject resource type as a gameObject.");
+			// Load chunk game objects
+			uint32_t currentGOID = _gameObjectsIDCurr;
+			std::unordered_map<uint32_t, uint32_t> oldToNewIds {}; // <oldID, newID>
+			for (const auto& goData : fileData["data"]["gameObjects"]) {
+				if (goData["type"] != "gameObject")
+					throw WdeException(LogChannel::SCENE, "Trying to load a non-gameObject resource type as a gameObject.");
 
-			// Create game object
-			auto go = createGameObject(goData["name"], goData["data"]["static"].get<bool>());
-			go->active = goData["data"]["active"].get<bool>();
+				// Create game object
+				auto go = createGameObject(goData["name"], goData["data"]["static"].get<bool>());
+				go->active = goData["data"]["active"].get<bool>();
 
-			// Add parent id to list
-			oldToNewIds.emplace(goData["data"]["id"].get<uint32_t>(), go->getID());
+				// Add parent id to list
+				oldToNewIds.emplace(goData["data"]["id"].get<uint32_t>(), go->getID());
 
-			// Create game object modules
-			for (const auto& modData : goData["modules"])
-				ModuleSerializer::addModuleFromName(modData["name"], to_string(modData["data"]), *go);
-		}
+				// Create game object modules
+				for (const auto& modData : goData["modules"])
+					ModuleSerializer::addModuleFromName(modData["name"], to_string(modData["data"]), *go);
+			}
 
-		// Set game object parents and children
-		for (const auto& goData : fileData["data"]["gameObjects"]) {
-			if (goData["modules"][0]["name"] == "Transform" && goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
-				_gameObjects[(int) currentGOID]->transform->setParent(_gameObjects[oldToNewIds.at(goData["modules"][0]["data"]["parentID"].get<int>())]->transform);
-			currentGOID++;
+			// Set game object parents and children
+			for (const auto& goData : fileData["data"]["gameObjects"]) {
+				if (goData["modules"][0]["name"] == "Transform" && goData["modules"][0]["data"]["parentID"].get<int>() != -1) // First module should always be the transform module
+					_gameObjects[(int) currentGOID]->transform->setParent(_gameObjects[oldToNewIds.at(goData["modules"][0]["data"]["parentID"].get<int>())]->transform);
+				currentGOID++;
+			}
 		}
 	}
 
@@ -174,8 +197,52 @@ namespace wde::scene {
 			for (auto &go: _gameObjectsDynamic)
 				go->tick();
 		}
+
+		// Update game objects buffers
+		updateGOBuffers();
 	}
 
+	void Chunk::updateGOBuffers() {
+		WDE_PROFILE_FUNCTION();
+
+		// Update camera buffer data
+		auto scene = WaterDropEngine::get().getInstance().getScene();
+		if (scene->getActiveCamera() == nullptr)
+			logger::log(LogLevel::WARN, LogChannel::SCENE) << "No camera in scene." << logger::endl;
+		else {
+			auto cameraModule = scene->getActiveCamera()->getModule<scene::CameraModule>();
+			// New data
+			GPUCameraData cameraData {};
+			cameraData.proj = cameraModule->getProjection();
+			cameraData.view = cameraModule->getView();
+
+			// Map data
+			void *data = _cameraData->map();
+			memcpy(data, &cameraData, sizeof(GPUCameraData));
+			_cameraData->unmap();
+		}
+
+
+		// Update every game objects translate
+		void *data = _objectsData->map();
+		auto* objectsData = (scene::GameObject::GPUGameObjectData*) data;
+		uint32_t iterator = 0;
+		for (auto& go : _gameObjects) {
+			// If no mesh or material, continue
+			auto mesh = go->getModule<scene::MeshRendererModule>();
+			if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
+				continue;
+
+			// Set transform
+			objectsData[iterator++].transformWorldSpace = go->transform->getTransform();
+		}
+		_objectsData->unmap();
+	}
+
+	void Chunk::bind(render::CommandBuffer &commandBuffer, resource::Material *material) const {
+		vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
+		                        material->getPipeline().getLayout(), 0, 1, &_globalSet.first, 0, nullptr);
+	}
 
 
 	void Chunk::drawGUI() {

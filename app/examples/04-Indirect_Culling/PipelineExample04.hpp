@@ -31,7 +31,7 @@ namespace examples {
 				});
 
 				// Create culling manager
-				_cullingManager = std::make_unique<wde::scene::CullingInstance>(std::pair<int, int>{0, 0}, _objectsData);
+				//_cullingManager = std::make_unique<wde::scene::CullingInstance>(std::pair<int, int>{0, 0}, _objectsData);
 
 				// Initialize Gizmo
 				scene::GizmoManager::initialize(std::pair<int, int>{0, 1});

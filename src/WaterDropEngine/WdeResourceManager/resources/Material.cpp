@@ -100,9 +100,10 @@ namespace wde::resource {
 		// Create material
 		{
 			auto& pipeline = WaterDropEngine::get().getInstance().getPipeline();
+			auto scene = WaterDropEngine::get().getInstance().getScene();
 
 			// Add material descriptors if created
-			_pipeline->addDescriptorSet(pipeline.getGlobalSet().second);
+			_pipeline->addDescriptorSet(scene->getDefaultGlobalSet().second);
 			if (_materialSet.first != VkDescriptorSet {})
 				_pipeline->addDescriptorSet(_materialSet.second);
 

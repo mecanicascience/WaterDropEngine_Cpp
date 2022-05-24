@@ -34,7 +34,8 @@ namespace wde::scene {
 					.build(_pipelinesData.at(colorStr).second.first, _pipelinesData.at(colorStr).second.second);
 
 			// Add pipeline object descriptor
-			_pipelines.at(colorStr)->addDescriptorSet(WaterDropEngine::get().getInstance().getPipeline().getGlobalSet().second);
+			auto scene = WaterDropEngine::get().getInstance().getScene();
+			_pipelines.at(colorStr)->addDescriptorSet(scene->getDefaultGlobalSet().second);
 			_pipelines.at(colorStr)->addDescriptorSet(_positionsSet.second);
 			_pipelines.at(colorStr)->addDescriptorSet(_pipelinesData.at(colorStr).second.second);
 			_pipelines.at(colorStr)->initialize(); // Setup pipeline
@@ -56,15 +57,15 @@ namespace wde::scene {
 		// Bind pipelines and descriptors
 		auto colorStr = _currentColor.toString();
 		_pipelines.at(colorStr)->bind(*_commandBuffer); // Bind pipeline
+		auto scene = WaterDropEngine::get().getInstance().getScene();
 		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
 		                        _pipelines.at(colorStr)->getLayout(), 0, 1,
-								&WaterDropEngine::get().getInstance().getPipeline().getGlobalSet().first, 0, nullptr); // Scene data (binding : 0)
+								&scene->getDefaultGlobalSet().first, 0, nullptr); // Scene data (binding : 0)
 		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines.at(colorStr)->getLayout(),
 								1, 1, &_pipelinesData.at(colorStr).second.first, 0, nullptr); // Material (binding : 1)
 		vkCmdBindDescriptorSets(*_commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, _pipelines.at(colorStr)->getLayout(),
 		                        2, 1, &_positionsSet.first, 0, nullptr); // Bind model (binding : 2)
 		_meshes.at("CUBE")->bind(*_commandBuffer); // Bind model data
-
 
 		// Render GO
 		_meshes.at("CUBE")->render();

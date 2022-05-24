@@ -48,11 +48,21 @@ namespace wde::scene {
 			void setActiveCamera(GameObject* camera) { _activeCamera = camera; }
 			GameObject* getActiveCamera() const { return _activeCamera; }
 
-
 			// Chunks manager
 			std::vector<glm::ivec2>& getLoadingChunks() { return _loadingChunks; }
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getActiveChunks() { return _activeChunks; }
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>>& getUnloadingChunks() { return _removingChunks; }
+			glm::ivec2 getCurrentChunkID() const {
+				double chunkSize = Config::CHUNK_SIZE;
+				glm::ivec2 cc { 0, 0 };
+				if (_activeCamera != nullptr) {
+					cc.x = std::floor(_activeCamera->transform->position.x / chunkSize + 0.5);
+					cc.y = std::floor(_activeCamera->transform->position.z / chunkSize + 0.5);
+				}
+				return {cc.x, cc.y};
+			}
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getDefaultGlobalSet() { return _globalSetDefault; }
+
 			/**
 			 * @param chunkID Unique chunk position identifier
 			 * @return The pointer to the chunk (nullptr if added to load list)
@@ -103,10 +113,14 @@ namespace wde::scene {
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _activeChunks {};
 			/** Lists of chunks that needs to be deleted (pos - chunk*) */
 			std::unordered_map<glm::ivec2, std::shared_ptr<Chunk>> _removingChunks {};
+			/** Global default set */
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _globalSetDefault {};
 
 
 			// GUI
 			/** The panel that displays loaded chunks list */
 			std::unique_ptr<gui::WorldPartitionPanel> _worldPartitionPanel {};
+			std::unique_ptr<render::Buffer> _cameraData {};
+			std::unique_ptr<render::Buffer> _objectsData {};
 	};
 }
