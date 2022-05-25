@@ -173,6 +173,8 @@ namespace wde::scene {
 	}
 
 	Chunk* WdeSceneInstance::getChunkSync(glm::ivec2 chunkID) {
+		WDE_PROFILE_FUNCTION();
+
 		// Chunk found
 		if (_activeChunks.contains(chunkID))
 			return _activeChunks.at(chunkID).get();
@@ -240,8 +242,12 @@ namespace wde::scene {
 		}
 	}
 
+
+
+
 	void WdeSceneInstance::reassignGOToChunks() {
-		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Reassigning game objects to nearest chunks" << logger::endl;
+		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Reassigning game objects to nearest chunks." << logger::endl;
 
 		// Store each go pointer into a vector
 		std::vector<std::shared_ptr<GameObject>> _gameObjectsTmp {};
@@ -264,6 +270,70 @@ namespace wde::scene {
 
 			// Assign
 			getChunkSync(chunkCoord)->addGameObject(go);
+		}
+	}
+
+	void WdeSceneInstance::reorderGO() {
+		WDE_PROFILE_FUNCTION();
+		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Reordering game objects." << logger::endl;
+
+		// For each chunks
+		for (auto& c : _activeChunks) {
+			// Copy game objects
+			auto& activeGO = c.second->getGameObjects();
+			std::unordered_map<resource::Material*, std::unordered_map<resource::Mesh*, std::vector<std::shared_ptr<GameObject>>>> res {};
+			std::vector<std::shared_ptr<GameObject>> otherObjects {};
+
+			// Order by materials and meshes
+			for (auto& go : activeGO) {
+				// Check if this game object will be rendered
+				auto matMod = go->getModule<MeshRendererModule>();
+				if (matMod == nullptr || matMod->getMaterial() == nullptr || matMod->getMesh() == nullptr) {
+					otherObjects.push_back(go);
+					continue;
+				}
+
+				// Create material if it doesn't exist
+				auto mat = matMod->getMaterial();
+				if (!res.contains(mat))
+					res.emplace(mat, std::unordered_map<resource::Mesh*, std::vector<std::shared_ptr<GameObject>>> {});
+
+				// Create mesh if it doesn't exit
+				auto mesh = matMod->getMesh();
+				if (!res.at(mat).contains(mesh))
+					res.at(mat).emplace(mesh, std::vector<std::shared_ptr<GameObject>> {});
+
+				// Add game object to material and mesh
+				res.at(mat).at(mesh).push_back(go);
+			}
+
+			// Create new objects array ordered
+			std::vector<std::shared_ptr<GameObject>> newGO {};
+			std::vector<std::shared_ptr<GameObject>> newStaticGO {};
+			std::vector<std::shared_ptr<GameObject>> newDynamicGO {};
+			for (auto& matArr : res) {
+				for (auto& meshArr : matArr.second) {
+					for (auto& go : meshArr.second) {
+						newGO.push_back(go);
+						if (go->isStatic())
+							newStaticGO.push_back(go);
+						else
+							newDynamicGO.push_back(go);
+					}
+				}
+			}
+			for (auto& go : otherObjects) {
+				newGO.push_back(go);
+				if (go->isStatic())
+					newStaticGO.push_back(go);
+				else
+					newDynamicGO.push_back(go);
+			}
+
+			// Rewriting dynamic and static game objects
+			c.second->getGameObjects() = newGO;
+			c.second->getDynamicGameObjects() = newDynamicGO;
+			c.second->getStaticGameObjects() = newStaticGO;
 		}
 	}
 }

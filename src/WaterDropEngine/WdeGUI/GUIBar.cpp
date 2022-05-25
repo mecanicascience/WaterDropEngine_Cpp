@@ -34,8 +34,12 @@ namespace wde::gui {
 				ImGui::Text("World partition");
 				ImGui::Dummy(ImVec2(0.0, 2.0));
 
-				if (ImGui::MenuItem("Reassign GO to chunks"))
+				ImGui::PushFont(ImGui::GetIO().FontDefault);
+				if (ImGui::MenuItem("Click to reassign GO to chunks"))
 					WaterDropEngine::get().getInstance().getScene()->reassignGOToChunks();
+				if (ImGui::MenuItem("Click to reorder GO"))
+					WaterDropEngine::get().getInstance().getScene()->reorderGO();
+				ImGui::PopFont();
 			}
 
 			ImGui::EndMenu();

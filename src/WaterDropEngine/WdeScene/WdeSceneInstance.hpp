@@ -84,10 +84,14 @@ namespace wde::scene {
 			 */
 			void removeChunk(glm::ivec2 chunkID);
 
+
+			// Chunks management
 			/** Create and unload chunks */
 			void manageChunks();
 			/** Reassign game objects to nearest chunk */
 			void reassignGOToChunks();
+			/** Reorder game objects inside the scene (optimised for culling) */
+			void reorderGO();
 
 
 
