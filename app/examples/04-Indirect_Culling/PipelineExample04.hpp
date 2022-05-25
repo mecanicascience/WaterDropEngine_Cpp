@@ -31,7 +31,7 @@ namespace examples {
 				});
 
 				// Create culling manager
-				//_cullingManager = std::make_unique<wde::scene::CullingInstance>(std::pair<int, int>{0, 0}, _objectsData);
+				_cullingManager = std::make_unique<wde::scene::CullingInstance>(std::pair<int, int>{0, 0});
 
 				// Initialize Gizmo
 				scene::GizmoManager::initialize(std::pair<int, int>{0, 1});
@@ -40,9 +40,49 @@ namespace examples {
 				gui::WdeGUI::initialize(std::pair<int, int>{0, 2});
 			}
 
-			void drawGizmo(scene::Gizmo& gizmo) override;
+			void drawGizmo(scene::Gizmo& gizmo) override {}
 
-			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override;
+			void render(CommandBuffer& commandBuffer, scene::WdeSceneInstance &scene) override {
+				beginRenderPass(0);
+					beginRenderSubPass(0);
+						// Cull for every chunk
+						for (auto& c : scene.getActiveChunks()) {
+							if (c.second->getGameObjects().empty())
+								continue;
+
+							// Do culling
+							_cullingManager->createBatches(c.second->getGameObjects());
+
+							if (scene.getActiveCamera() != nullptr && scene.getActiveCamera()->name == "Editor Camera")
+								_cullingManager->cull(scene.getFirstGameCamera(), *c.second);
+							else
+								_cullingManager->cull(scene.getActiveCamera(), *c.second);
+
+							// Render culling
+							_cullingManager->render(commandBuffer, *c.second);
+						}
+					endRenderSubPass();
+
+					beginRenderSubPass(1);
+						// Render Gizmo
+						scene::GizmoManager::render(commandBuffer);
+
+						// Draw gizmo on active game object
+						auto activeGO = scene.getActiveGameObject();
+						if (activeGO != nullptr && scene.getActiveGameObject() != nullptr &&
+						    scene.getActiveGameObject()->getModule<wde::scene::CameraModule>() == nullptr) {
+							scene::GizmoManager::_gizmoInstance->setColor(Color::GREEN);
+							scene::GizmoManager::_gizmoInstance->drawCube(activeGO->transform->position, activeGO->transform->rotation,
+							                                              activeGO->transform->scale);
+						}
+					endRenderSubPass();
+
+					beginRenderSubPass(2);
+						// Render GUI
+						gui::WdeGUI::render(commandBuffer);
+					endRenderSubPass();
+				endRenderPass();
+			}
 
 			void cleanUp() override { }
 

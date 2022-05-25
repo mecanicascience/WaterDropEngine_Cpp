@@ -1,6 +1,7 @@
 #include "Chunk.hpp"
 #include "../../WaterDropEngine.hpp"
 #include "../../WdeScene/WdeSceneInstance.hpp"
+#include "../../WdeScene/culling/CullingInstance.hpp"
 
 namespace wde::scene {
 	uint32_t Chunk::_gameObjectsIDCurr = 0;
@@ -25,6 +26,17 @@ namespace wde::scene {
 					.bind_buffer(0, *_cameraData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 					.bind_buffer(1, *_objectsData, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
 				.build(_globalSet.first, _globalSet.second);
+
+			// GPU buffer that holds the scene data to describe to the compute shader
+			_cullingSceneBuffer = std::make_unique<render::Buffer>(
+					sizeof(CullingInstance::GPUSceneData),
+					VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+
+			// Create culling set
+			render::DescriptorBuilder::begin()
+					.bind_buffer(0, *_cullingSceneBuffer, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+					.bind_buffer(1, *_objectsData, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+				.build(_cullingSet.first, _cullingSet.second);
 		}
 
 		// Load chunk
@@ -233,8 +245,9 @@ namespace wde::scene {
 			if (!go->active || mesh == nullptr || mesh->getMesh() == nullptr || mesh->getMaterial() == nullptr)
 				continue;
 
-			// Set transform
-			objectsData[iterator++].transformWorldSpace = go->transform->getTransform();
+			// Set data
+			objectsData[iterator].transformWorldSpace = go->transform->getTransform();
+			objectsData[iterator++].collisionSphere = mesh->getMesh()->getCollisionSphere();
 		}
 		_objectsData->unmap();
 	}

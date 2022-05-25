@@ -26,9 +26,7 @@ layout(std140, set = 0, binding = 1) readonly buffer ObjectBuffer {
 // ======== OBJECTS DATA =========
 // Objects render batches
 struct ObjectBatch {
-    uint objectID;
     uint batchID;
-    uint objectSceneIndex;
     uint indicesCount;
 };
 layout (set = 1, binding = 0) readonly buffer ObjectBatchesBuffer {
@@ -53,7 +51,7 @@ layout(set = 1, binding = 2) buffer ObjectsID {
 } objectsIDs;
 
 
-// Objects ID (will match to gl_instanceID)
+// Drawing commands
 struct VkDrawIndexedIndirectCommand {
     uint indexCount;
     uint instanceCount;
@@ -69,15 +67,15 @@ layout(set = 1, binding = 3) buffer CommandsBuffer {
 
 
 // Return true if the object is visible on the screen
-bool isVisible(uint objectSceneIndex) {
+bool isVisible(uint index) {
     // Grep object data
     vec3 center = vec3(
-        inObjectBuffer.objects[objectSceneIndex].model[3][0] + inObjectBuffer.objects[objectSceneIndex].collisionSphere.x,
-        inObjectBuffer.objects[objectSceneIndex].model[3][1] + inObjectBuffer.objects[objectSceneIndex].collisionSphere.y,
-        inObjectBuffer.objects[objectSceneIndex].model[3][2] + inObjectBuffer.objects[objectSceneIndex].collisionSphere.z
+        inObjectBuffer.objects[index].model[3][0] + inObjectBuffer.objects[index].collisionSphere.x,
+        inObjectBuffer.objects[index].model[3][1] + inObjectBuffer.objects[index].collisionSphere.y,
+        inObjectBuffer.objects[index].model[3][2] + inObjectBuffer.objects[index].collisionSphere.z
     );
     center = (inSceneData.view * vec4(center, 1.0f)).xyz;
-    float radius = inObjectBuffer.objects[objectSceneIndex].collisionSphere.w;
+    float radius = inObjectBuffer.objects[index].collisionSphere.w;
     if (radius <= 0.0)
         return true;
 
@@ -97,24 +95,22 @@ void main() {
     if(gID < inSceneData.objectsCount) {
         // Get object batch index
         uint batchIndex = objectBatches.objects[gID].batchID;
-        uint objectIndex = objectBatches.objects[gID].objectID;
-        uint objectSceneIndex = objectBatches.objects[gID].objectSceneIndex;
 
         // If visible, add object to the render list
-        if (isVisible(objectSceneIndex)) {
+        if (isVisible(gID)) {
             // Add a drawing count to the gameobject batch
             uint countIndex = atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
 
             // Write the object ID into the instance buffer that will map gl_instanceID
             uint instanceIndex = renderBatches.batches[batchIndex].firstIndex + countIndex;
-            objectsIDs.ids[instanceIndex] = objectSceneIndex;
+            objectsIDs.ids[instanceIndex] = gID;
 
             // Create render command
             renderCommands.commands[instanceIndex].firstIndex = 0;
             renderCommands.commands[instanceIndex].vertexOffset = 0;
             renderCommands.commands[instanceIndex].indexCount = objectBatches.objects[gID].indicesCount;
             renderCommands.commands[instanceIndex].instanceCount = 1;
-            renderCommands.commands[instanceIndex].firstInstance = objectSceneIndex;
+            renderCommands.commands[instanceIndex].firstInstance = gID;
         }
     }
 }

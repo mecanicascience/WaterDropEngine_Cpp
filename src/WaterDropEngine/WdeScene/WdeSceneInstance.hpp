@@ -62,6 +62,8 @@ namespace wde::scene {
 				return {cc.x, cc.y};
 			}
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getDefaultGlobalSet() { return _globalSetDefault; }
+			std::unique_ptr<render::Buffer>& getDefaultObjectsBuffer() { return _objectsData; }
+			std::unique_ptr<render::Buffer>& getDefaultCameraBuffer() { return _cameraData; }
 
 			/**
 			 * @param chunkID Unique chunk position identifier

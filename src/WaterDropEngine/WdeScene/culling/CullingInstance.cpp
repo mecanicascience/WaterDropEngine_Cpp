@@ -5,8 +5,9 @@
 
 namespace wde::scene {
 	// Core functions
-	CullingInstance::CullingInstance(std::pair<int, int> renderStage, const std::unique_ptr<render::Buffer> &sceneObjectsBuffer) : _renderStage(std::move(renderStage)) {
+	CullingInstance::CullingInstance(std::pair<int, int> renderStage) : _renderStage(std::move(renderStage)) {
 		WDE_PROFILE_FUNCTION();
+
 		// === Create buffers ===
 		int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
 
@@ -41,9 +42,10 @@ namespace wde::scene {
 		// === Create culling pipeline ===
 		{
 			// Create compute shader scene descriptor set
+			auto sceneInstance = WaterDropEngine::get().getInstance().getScene();
 			render::DescriptorBuilder::begin()
 						.bind_buffer(0, *_gpuSceneData, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
-						.bind_buffer(1, *sceneObjectsBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
+						.bind_buffer(1, *sceneInstance->getDefaultObjectsBuffer(), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_COMPUTE_BIT)
 					.build(_generalComputeSet.first, _generalComputeSet.second);
 
 			// Create compute shader resources descriptor set
@@ -55,18 +57,10 @@ namespace wde::scene {
 					.build(_computeSet.first, _computeSet.second);
 
 			// Create compute pipeline
-			auto path = WaterDropEngine::get().getInstance().getScene()->getPath();
-			_cullingPipeline = std::make_unique<render::PipelineCompute>(path + "data/shaders/common/culling/culling_indirect.comp");
+			_cullingPipeline = std::make_unique<render::PipelineCompute>(sceneInstance->getPath() + "data/shaders/common/culling/culling_indirect.comp");
 			_cullingPipeline->addDescriptorSet(_generalComputeSet.second);
 			_cullingPipeline->addDescriptorSet(_computeSet.second);
 			_cullingPipeline->initialize();
-
-
-			// Create drawing descriptor set // TODO
-			/*render::DescriptorBuilder::begin()
-						.bind_buffer(0, WaterDropEngine::get().getInstance().getPipeline().getCameraBuffer(), VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-						.bind_buffer(1, *sceneObjectsBuffer, VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
-					.build(_drawingDescriptorSet.first, _drawingDescriptorSet.second);*/
 		}
 	}
 
@@ -136,8 +130,6 @@ namespace wde::scene {
 
 				// Set this object batch
 				gpuObjectsBatches[goActiveID].batchID = _renderBatches.size();
-				gpuObjectsBatches[goActiveID].objectID = goActiveID;
-				gpuObjectsBatches[goActiveID].objectSceneIndex = go->getID();
 				gpuObjectsBatches[goActiveID].indicesCount = meshModule->getMesh()->getIndexCount();
 				goActiveID++;
 				continue;
@@ -165,8 +157,6 @@ namespace wde::scene {
 
 				// Set this object batch
 				gpuObjectsBatches[goActiveID].batchID = _renderBatches.size();
-				gpuObjectsBatches[goActiveID].objectID = goActiveID;
-				gpuObjectsBatches[goActiveID].objectSceneIndex = go->getID();
 				goActiveID++;
 				continue;
 			}
@@ -181,8 +171,6 @@ namespace wde::scene {
 
 			// Set this object batch
 			gpuObjectsBatches[goActiveID].batchID = _renderBatches.size();
-			gpuObjectsBatches[goActiveID].objectID = goActiveID;
-			gpuObjectsBatches[goActiveID].objectSceneIndex = go->getID();
 			gpuObjectsBatches[goActiveID].indicesCount = meshModule->getMesh()->getIndexCount();
 
 			goActiveID++;
@@ -205,13 +193,14 @@ namespace wde::scene {
 		_gpuRenderBatches->unmap();
 	}
 
-	void CullingInstance::cull(GameObject* cullingCamera) {
+	void CullingInstance::cull(GameObject* cullingCamera, Chunk& chunk) {
 		WDE_PROFILE_FUNCTION();
+
 		if (cullingCamera == nullptr)
 			return;
 
 		// Update scene
-		updateScene(cullingCamera);
+		updateScene(cullingCamera, chunk);
 
 		// Do culling
 		render::CommandBuffer cullingCmd {true};
@@ -222,7 +211,7 @@ namespace wde::scene {
 		// Bind pipeline and descriptors
 		_cullingPipeline->bind(cullingCmd);
 		vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_COMPUTE,
-		                        _cullingPipeline->getLayout(), 0, 1, &_generalComputeSet.first, 0, nullptr);
+		                        _cullingPipeline->getLayout(), 0, 1, &chunk.getCullingSet().first, 0, nullptr);
 		vkCmdBindDescriptorSets(cullingCmd, VK_PIPELINE_BIND_POINT_COMPUTE,
 		                        _cullingPipeline->getLayout(), 1, 1, &_computeSet.first, 0, nullptr);
 
@@ -233,8 +222,9 @@ namespace wde::scene {
 		cullingCmd.waitForQueueIdle();
 	}
 
-	void CullingInstance::render(render::CommandBuffer &commandBuffer) {
+	void CullingInstance::render(render::CommandBuffer &commandBuffer, Chunk& chunk) {
 		WDE_PROFILE_FUNCTION();
+
 		// Read GPU Batches
 		void *gpuBatchesData = _gpuRenderBatches->map();
 		auto* gpuBatches = (GPURenderBatch*) gpuBatchesData;
@@ -254,7 +244,7 @@ namespace wde::scene {
 			if (lastMaterial == nullptr || lastMaterial->getID() != batch.material->getID()) {
 				lastMaterial = batch.material;
 				vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS,
-				                        batch.material->getPipeline().getLayout(), 0, 1, &_drawingDescriptorSet.first, 0, nullptr);
+				                        batch.material->getPipeline().getLayout(), 0, 1, &chunk.getGlobalSet().first, 0, nullptr);
 				batch.material->bind(commandBuffer);
 			}
 
@@ -278,8 +268,9 @@ namespace wde::scene {
 
 
 	// Helper functions
-	void CullingInstance::updateScene(GameObject* cullingCamera) {
+	void CullingInstance::updateScene(GameObject* cullingCamera, Chunk& chunk) {
 		WDE_PROFILE_FUNCTION();
+
 		if (cullingCamera == nullptr)
 			throw WdeException(LogChannel::SCENE, "Trying to run culling without a camera set.");
 
@@ -306,8 +297,8 @@ namespace wde::scene {
 		sceneData.objectsCount = _renderBatchesObjectCount;
 
 		// Map data
-		void *data = _gpuSceneData->map();
+		void *data = chunk.getCullingSceneBuffer()->map();
 		memcpy(data, &sceneData, sizeof(GPUSceneData));
-		_gpuSceneData->unmap();
+		chunk.getCullingSceneBuffer()->unmap();
 	}
 }

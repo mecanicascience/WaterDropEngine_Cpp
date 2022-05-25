@@ -6,6 +6,7 @@
 #include "../modules/MeshRendererModule.hpp"
 #include "../../WdeRender/pipelines/PipelineCompute.hpp"
 #include "../modules/CameraModule.hpp"
+#include "../terrain/Chunk.hpp"
 
 namespace wde::scene {
 	/**
@@ -33,9 +34,7 @@ namespace wde::scene {
 
 			/** Describes a scene game object corresponding batch data */
 			struct GPUObjectBatch {
-				uint32_t objectID;           // Objects ID in the batch
 				uint32_t batchID;            // ID of the object batch
-				uint32_t objectSceneIndex;   // Object UUID
 				uint32_t indicesCount;       // Number of indices in the object mesh (used to create object render commands)
 			};
 
@@ -55,7 +54,7 @@ namespace wde::scene {
 			 * @param renderStage The allowed material of the render stage
 			 * @param sceneObjectsBuffer The culling instance objects buffer
 			 */
-			explicit CullingInstance(std::pair<int, int> renderStage, const std::unique_ptr<render::Buffer>& sceneObjectsBuffer);
+			explicit CullingInstance(std::pair<int, int> renderStage);
 
 
 
@@ -71,14 +70,16 @@ namespace wde::scene {
 			/**
 			 * Do culling based on it's batches for a specific scene camera
 			 * @param cullingCamera
+			 * @param chunk
 			 */
-			void cull(GameObject* cullingCamera);
+			void cull(GameObject* cullingCamera, Chunk& chunk);
 
 			 /**
 			  * Draws the objects in the culled buffers
 			  * @param commandBuffer Rendering command buffer
+			  * @param chunk
 			  */
-			 void render(render::CommandBuffer& commandBuffer);
+			 void render(render::CommandBuffer& commandBuffer, Chunk& chunk);
 
 
 
@@ -105,13 +106,12 @@ namespace wde::scene {
 			std::unique_ptr<render::PipelineCompute> _cullingPipeline;
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _generalComputeSet;
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _computeSet;
-			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _drawingDescriptorSet;
 
 
 
 			// Helper functions
 			/** Update the culling scene parameters based on the scene and on it's configured camera */
-			void updateScene(GameObject* cullingCamera);
+			void updateScene(GameObject* cullingCamera, Chunk& chunk);
 
 			inline static glm::vec4 normalizePlane(glm::vec4 p) {
 				return p / glm::length(glm::vec3(p));

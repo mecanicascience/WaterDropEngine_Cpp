@@ -42,6 +42,8 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
 			static void setObjectIDCurrent(uint32_t id) { _gameObjectsIDCurr = id; }
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getCullingSet() { return _cullingSet; }
+			std::unique_ptr<render::Buffer>& getCullingSceneBuffer() { return _cullingSceneBuffer; }
 
 
 			// Game Objects Manager
@@ -109,11 +111,12 @@ namespace wde::scene {
 
 			// Passes common descriptor sets
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _globalSet;
-
-			// Global set
 			std::unique_ptr<render::Buffer> _cameraData;
 			std::unique_ptr<render::Buffer> _objectsData;
 
+			// Culling
+			std::unique_ptr<render::Buffer> _cullingSceneBuffer;
+			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _cullingSet;
 			
 			// Helper functions
 			/**
