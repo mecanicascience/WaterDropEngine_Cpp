@@ -40,7 +40,7 @@ namespace wde::Config {
 	extern uint32_t VULKAN_VERSION;
 
 	// Scene data
-	extern int MAX_SCENE_OBJECTS_COUNT;
+	extern int MAX_CHUNK_OBJECTS_COUNT;
 	extern int MAX_GIZMO_OBJECTS_COUNT;
 
 	// World config

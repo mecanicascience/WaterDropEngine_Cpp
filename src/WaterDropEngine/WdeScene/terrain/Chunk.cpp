@@ -18,7 +18,7 @@ namespace wde::scene {
 			_cameraData = std::make_unique<render::Buffer>(sizeof(GPUCameraData), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 
 			// Objects buffer
-			_objectsData = std::make_unique<render::Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * Config::MAX_SCENE_OBJECTS_COUNT,
+			_objectsData = std::make_unique<render::Buffer>(sizeof(scene::GameObject::GPUGameObjectData) * Config::MAX_CHUNK_OBJECTS_COUNT,
 															VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
 			// Create global descriptor set

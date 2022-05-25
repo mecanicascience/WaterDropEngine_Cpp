@@ -39,7 +39,7 @@ namespace examples {
 				gui::WdeGUI::initialize(std::pair<int, int>{0, 1});
 
 				// Indirect drawing buffer
-				int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
+				int MAX_COMMANDS = Config::MAX_CHUNK_OBJECTS_COUNT;
 				_indirectCommandsBuffer = std::make_unique<Buffer>(
 						MAX_COMMANDS * sizeof(VkDrawIndexedIndirectCommand),
 						VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_STORAGE_BUFFER_BIT |  VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT);

@@ -9,7 +9,7 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 
 		// === Create buffers ===
-		int MAX_COMMANDS = Config::MAX_SCENE_OBJECTS_COUNT;
+		int MAX_COMMANDS = Config::MAX_CHUNK_OBJECTS_COUNT;
 
 		{
 			// List of rendered indirect commands created by the compute shader
@@ -24,12 +24,12 @@ namespace wde::scene {
 
 			// GPU Objects buffer batches and IDs
 			_gpuObjectsBatches = std::make_unique<render::Buffer>(
-					Config::MAX_SCENE_OBJECTS_COUNT * sizeof(GPUObjectBatch),
+					Config::MAX_CHUNK_OBJECTS_COUNT * sizeof(GPUObjectBatch),
 					VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
 
 			// List of game objects IDs in the batches (will match to gl_instanceID, filled by the compute shader)
 			_gpuObjectsIDs = std::make_unique<render::Buffer>(
-					Config::MAX_SCENE_OBJECTS_COUNT * sizeof(uint32_t),
+					Config::MAX_CHUNK_OBJECTS_COUNT * sizeof(uint32_t),
 					VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
 
 			// GPU buffer that holds the scene data to describe to the compute shader
