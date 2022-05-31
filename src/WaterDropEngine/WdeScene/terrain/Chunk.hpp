@@ -40,7 +40,6 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>>& getGameObjects() { return _gameObjects; }
 			std::vector<std::shared_ptr<GameObject>>& getStaticGameObjects()  { return _gameObjectsStatic; }
 			std::vector<std::shared_ptr<GameObject>>& getDynamicGameObjects() { return _gameObjectsDynamic; }
-			static void setObjectIDCurrent(uint32_t id) { _gameObjectsIDCurr = id; }
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getCullingSet() { return _cullingSet; }
 			std::unique_ptr<render::Buffer>& getCullingSceneBuffer() { return _cullingSceneBuffer; }
@@ -107,7 +106,7 @@ namespace wde::scene {
 
 			// Chunk game objects data
 			/** Last create game object ID */
-			static uint32_t _gameObjectsIDCurr;
+			uint32_t _gameObjectsIDCurr = 0;
 
 			// Passes common descriptor sets
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout> _globalSet;
@@ -124,6 +123,6 @@ namespace wde::scene {
 			 * @param go GameObject
 			 * @param selected True if the GameObject is selected
 			 */
-			void drawGUIForGo(const std::shared_ptr<GameObject>& go, GameObject*& selected) const;
+			void drawGUIForGo(GameObject* go, GameObject*& selected) const;
 	};
 }

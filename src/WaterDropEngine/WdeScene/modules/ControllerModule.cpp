@@ -15,7 +15,7 @@ namespace wde::scene {
 		WDE_PROFILE_FUNCTION();
 		// Only active if this game object has a camera, and the camera is selected
 		auto cameraMod = WaterDropEngine::get().getInstance().getScene()->getActiveCamera();
-		if (cameraMod == nullptr || _gameObject.getID() != cameraMod->getID())
+		if (cameraMod == nullptr || &_gameObject != cameraMod)
 			return;
 
 		auto newTime = std::chrono::steady_clock::now();

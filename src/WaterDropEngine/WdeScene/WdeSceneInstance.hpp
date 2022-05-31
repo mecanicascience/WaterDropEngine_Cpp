@@ -39,7 +39,7 @@ namespace wde::scene {
 				for (auto& c : _activeChunks) {
 					for (auto& go : c.second->getDynamicGameObjects()) {
 						auto mod = go->getModule<CameraModule>();
-						if (mod != nullptr && go->name != "Editor Camera")
+						if (mod != nullptr)
 							return go.get();
 					}
 				}
@@ -47,6 +47,7 @@ namespace wde::scene {
 			}
 			void setActiveCamera(GameObject* camera) { _activeCamera = camera; }
 			GameObject* getActiveCamera() const { return _activeCamera; }
+			GameObject* getEditorCamera() { return _editorCamera.get(); }
 
 			// Chunks manager
 			std::vector<glm::ivec2>& getLoadingChunks() { return _loadingChunks; }
@@ -110,6 +111,10 @@ namespace wde::scene {
 			GameObject* _selectedGameObject = nullptr;
 			/** Active camera (none = nullptr) */
 			GameObject* _activeCamera = nullptr;
+			/** Editor camera (none = nullptr) */
+			std::unique_ptr<GameObject> _editorCamera {};
+			/** True if this is the first tick of the scene */
+			bool _isFirstTick = true;
 
 
 			// Scene chunks

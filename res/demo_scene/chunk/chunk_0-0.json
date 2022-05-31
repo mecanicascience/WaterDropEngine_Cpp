@@ -71,6 +71,33 @@
                         }
                     }
                 ]
+            },
+            {
+                "type" : "gameObject",
+                "name" : "Palmier Mesh 2",
+                "data" : {
+                    "id" : 3,
+                    "active" : true,
+                    "static" : false
+                },
+                "modules":[
+                    {
+                        "name" : "Transform",
+                        "data" : {
+                            "parentID" : 2,
+                            "position" : [80.0,0.0,0.0],
+                            "rotation" : [2.8,0.0,0.0],
+                            "scale" : [1.0,1.0,1.0]
+                        }
+                    },
+                    {
+                        "name" : "Mesh Renderer",
+                        "data" : {
+                            "material" : "fougere.json",
+                            "mesh" : "fougere.json"
+                        }
+                    }
+                ]
             }
         ]
     }

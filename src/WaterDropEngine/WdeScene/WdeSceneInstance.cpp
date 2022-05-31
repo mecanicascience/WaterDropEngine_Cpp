@@ -22,6 +22,21 @@ namespace wde::scene {
 	}
 
 	void WdeSceneInstance::tick() {
+		// Create editor camera
+#ifdef WDE_ENGINE_MODE_DEBUG
+		if (_isFirstTick) {
+			_isFirstTick = false;
+			_editorCamera = std::make_unique<GameObject>(-1, "Editor Camera", false);
+			auto camModule = _editorCamera->addModule<scene::CameraModule>();
+			camModule->setAsActive();
+			camModule->setFarPlane(std::numeric_limits<float>::max());
+			setActiveCamera(_editorCamera.get());
+			_editorCamera->addModule<scene::ControllerModule>();
+			_editorCamera->transform->position = glm::vec3 {0.0f, 0.0f, 0.0f};
+			_editorCamera->transform->rotation = glm::vec3 {0.0f, 0.0f, 0.0f};
+		}
+#endif
+
 		// Load and unload chunks
 		manageChunks();
 
@@ -33,20 +48,21 @@ namespace wde::scene {
 		{
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::updateCameraChunk()");
 			static glm::ivec2 lastCC = cc;
-			if (lastCC != cc) {
-				std::shared_ptr<GameObject> camGo = nullptr;
-				for (auto &go : getChunkSync(lastCC)->getDynamicGameObjects()) {
-					if (cam != nullptr && go->getID() == cam->getID()) {
-						camGo = go;
+			if (cam != nullptr && lastCC != cc && cam->name != "Editor Camera") {
+				for (auto& go : getChunkSync(lastCC)->getGameObjects()) {
+					if (go.get() == cam) {
+						getChunkSync(cc)->addGameObject(go);
+						getChunkSync(lastCC)->removeGameObject(cam);
 						break;
 					}
 				}
-				if (camGo != nullptr) {
-					getChunkSync(cc)->addGameObject(camGo);
-					getChunkSync(lastCC)->removeGameObject(cam);
-					lastCC = cc;
-				}
 			}
+			lastCC = cc;
+
+			// Update editor camera
+#ifdef WDE_ENGINE_MODE_DEBUG
+			_editorCamera->tick();
+#endif
 		}
 
 
@@ -66,13 +82,16 @@ namespace wde::scene {
 		{
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::tickForChunks()");
 			int dist = Config::CHUNK_LOADED_DISTANCE;
-			for (auto& c : _activeChunks) {
+			auto it = _activeChunks.begin();
+			while(it != _activeChunks.end()) {
 				// Tick
-				c.second->tick();
+				it->second->tick();
 
 				// Remove not-near chunks
-				if ((c.first.x - cc.x)*(c.first.x - cc.x) + (c.first.y - cc.y)*(c.first.y - cc.y) > dist*dist)
-					removeChunk(c.first);
+				if ((it->first.x - cc.x)*(it->first.x - cc.x) + (it->first.y - cc.y)*(it->first.y - cc.y) > dist*dist)
+					removeChunk(it->first);
+
+				it++;
 			}
 		}
 	}
@@ -197,7 +216,6 @@ namespace wde::scene {
 		if (_removingChunks.contains(chunkID) || !_activeChunks.contains(chunkID))
 			return;
 		_removingChunks.emplace(chunkID, _activeChunks.at(chunkID));
-		_activeChunks.erase(chunkID);
 	}
 
 
@@ -224,21 +242,20 @@ namespace wde::scene {
 		{
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::removeChunks()");
 			auto itr = _removingChunks.begin();
-			while (itr != _removingChunks.end()) {
+			while(itr != _removingChunks.end()) {
 				auto id = itr->first;
 				// Chunk is loading
-				if (std::find(_loadingChunks.begin(), _loadingChunks.end(), id) == _loadingChunks.end()) {
-					itr = _removingChunks.erase(itr);
+				if (std::find(_loadingChunks.begin(), _loadingChunks.end(), id) != _loadingChunks.end()) {
+					itr++;
 					continue;
 				}
 
 				// Remove from active chunks
 				if (_activeChunks.contains(id))
 					_activeChunks.erase(id);
-
-				// Remove from removing chunks
-				itr = _removingChunks.erase(itr);
+				itr++;
 			}
+			_removingChunks.clear();
 		}
 	}
 

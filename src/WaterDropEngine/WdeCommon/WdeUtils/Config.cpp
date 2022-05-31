@@ -34,5 +34,5 @@ namespace wde::Config {
 	/** Max chunks active in the scene */
 	int MAX_CHUNKS_COUNT = 10000;
 	/** Radius of the loaded chunks */
-	int CHUNK_LOADED_DISTANCE = 3;
+	int CHUNK_LOADED_DISTANCE = 1;
 }

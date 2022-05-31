@@ -102,7 +102,6 @@ namespace wde::scene {
 
 		// Kill last scene
 		WaterDropEngine::get().getInstance().getScene()->cleanUp();
-		Chunk::setObjectIDCurrent(0);
 
 		// Create empty scene
 		auto fileData = json::parse(content);
