@@ -94,6 +94,18 @@ namespace wde::scene {
 				it++;
 			}
 		}
+
+
+		// Update keys
+		{
+			auto& inputManager = WaterDropEngine::get().getInput();
+			if (inputManager.isKeyDown("gizmoTranslate"))
+				_gizmoManipulationType = ImGuizmo::TRANSLATE;
+			else if (inputManager.isKeyDown("gizmoRotate"))
+				_gizmoManipulationType = ImGuizmo::ROTATE;
+			else if (inputManager.isKeyDown("gizmoScale"))
+				_gizmoManipulationType = ImGuizmo::SCALE;
+		}
 	}
 
 	void WdeSceneInstance::cleanUp() {
@@ -138,12 +150,13 @@ namespace wde::scene {
 
 	void WdeSceneInstance::onNotify(const core::Event& event) {
 #ifdef WDE_GUI_ENABLED
+		static ImGuiID dockIDRight = 0;
 		if (event.channel == LogChannel::GUI && event.name == "CreateGUI") {
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::createGUI()");
 
 			// Create a game objects list tab
 			ImGuiID dockspaceID = ImGui::GetID(WaterDropEngine::get().getGUI().DOCKSPACE_ROOT_ID.c_str());
-			ImGuiID dockIDRight = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.19f, nullptr, &dockspaceID);
+			dockIDRight = ImGui::DockBuilderSplitNode(dockspaceID, ImGuiDir_Right, 0.19f, nullptr, &dockspaceID);
 			ImGui::DockBuilderDockWindow("Scene Components", dockIDRight);
 
 			// Create a properties list
@@ -154,6 +167,27 @@ namespace wde::scene {
 		if (event.channel == LogChannel::GUI && event.name == "DrawGUI") {
 			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::drawGUI()");
 
+			// Render tab for gizmo
+			auto s = WaterDropEngine::get().getRender().getWindow().getSize();
+			auto s2 = ImGui::DockBuilderGetNode(dockIDRight)->Size;
+			ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_ResizeGrip, ImVec4(0, 0, 0, 0));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0, 0, 0, 0));
+			ImGui::SetNextWindowPos(ImVec2(0, 0));
+			ImGui::SetNextWindowSize(ImVec2(((float) s.first - s2.x) * 0.99f, (float) s.second));
+			ImGui::Begin("##Render", nullptr, ImGuiWindowFlags_NoTitleBar               // No title bar
+			                                  | ImGuiWindowFlags_NoCollapse             // Doesn't allow collapsing
+			                                  | ImGuiWindowFlags_NoResize               // Resize is handled by the program
+			                                  | ImGuiWindowFlags_NoMove                 // Cannot move window around
+			                                  | ImGuiWindowFlags_NoFocusOnAppearing     // Disable focus animation
+			                                  | ImGuiWindowFlags_NoBringToFrontOnFocus  // Disable focus grayish color
+			                                  | ImGuiWindowFlags_NoNavFocus             // Cannot focus window (auto-focused)
+			                                  | ImGuiWindowFlags_NoDocking);            // Main CoreWindow cannot be docked
+			ImGui::PopStyleColor(3);
+			ImGuizmo::SetOrthographic(false);
+			ImGuizmo::SetDrawlist();
+			ImGuizmo::SetRect(0, 0, (float) s.first, (float) s.second);
+
 			// Draw GUI for selected chunk (= chunk of current camera)
 			{
 				_selectedGameObjectChunkID = getCurrentChunkID();
@@ -161,7 +195,7 @@ namespace wde::scene {
 				if (ch != nullptr)
 					ch->drawGUI();
 			}
-
+			ImGui::End();
 
 			// Display GUI of loaded chunks
 			_worldPartitionPanel->renderPanel();

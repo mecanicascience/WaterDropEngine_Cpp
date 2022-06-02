@@ -274,33 +274,57 @@ namespace wde::scene {
 		ImGui::Separator();
 
 		// Scene game objects
-		ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_NoClip;
-		if (ImGui::BeginTable("Game Objects List", 3, flags)) {
-			// Editor camera
+		{
+			ImGuiTableFlags flags = ImGuiTableFlags_ScrollY | ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_NoClip;
+			if (ImGui::BeginTable("Game Objects List", 3, flags)) {
+				// Editor camera
 #ifdef WDE_ENGINE_MODE_DEBUG
-			if (scene->getEditorCamera() != nullptr) {
-				ImGui::TableNextRow();
-				drawGUIForGo(scene->getEditorCamera(), scene->getActiveGameObject());
-			}
+				if (scene->getEditorCamera() != nullptr) {
+					ImGui::TableNextRow();
+					drawGUIForGo(scene->getEditorCamera(), scene->getActiveGameObject());
+				}
 #endif
 
-			// Draw game objects list
-			for (auto& go : _gameObjects) {
-				if (go->transform->getParent() == nullptr) {
-					ImGui::TableNextRow();
-					drawGUIForGo(go.get(), scene->getActiveGameObject());
+				// Draw game objects list
+				for (auto& go : _gameObjects) {
+					if (go->transform->getParent() == nullptr) {
+						ImGui::TableNextRow();
+						drawGUIForGo(go.get(), scene->getActiveGameObject());
+					}
 				}
+				ImGui::EndTable();
 			}
-			ImGui::EndTable();
 		}
 
 		// Selected game object changed
-		if (oldSelected != scene->getActiveGameObject()) {
-			if (oldSelected != nullptr)
-				oldSelected->setSelected(false);
-			if (scene->getActiveGameObject() != nullptr)
-				scene->getActiveGameObject()->setSelected(true);
+		{
+			if (oldSelected != scene->getActiveGameObject()) {
+				if (oldSelected != nullptr)
+					oldSelected->setSelected(false);
+				if (scene->getActiveGameObject() != nullptr)
+					scene->getActiveGameObject()->setSelected(true);
+			}
 		}
+
+		// Draw selected game object gizmo
+		if (cam != nullptr && scene->getActiveGameObject() != nullptr && scene->getActiveGameObject() != scene->getActiveCamera()) {
+			auto camMod = cam->getModule<CameraModule>();
+			auto activeGOMatrix = scene->getActiveGameObject()->transform->getTransform();
+			ImGuizmo::Manipulate(&camMod->getView()[0][0], &camMod->getProjection()[0][0],
+			                     (ImGuizmo::OPERATION) scene->getGizmoManipulationType(), ImGuizmo::LOCAL, &activeGOMatrix[0][0],
+			                     nullptr, nullptr);
+
+			if (ImGuizmo::IsUsing()) {
+				glm::vec3 position {};
+				glm::vec3 rotation {};
+				glm::vec3 scale {};
+				TransformModule::decomposeTransform(activeGOMatrix, position, rotation, scale);
+				scene->getActiveGameObject()->transform->position = position;
+				scene->getActiveGameObject()->transform->rotation = rotation;
+				scene->getActiveGameObject()->transform->scale = scale;
+			}
+		}
+
 
 		ImGui::EndChild();
 		ImGui::End();

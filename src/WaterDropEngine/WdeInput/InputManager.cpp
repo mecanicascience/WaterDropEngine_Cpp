@@ -34,6 +34,11 @@ namespace wde::input {
 		addKey("lookRight", GLFW_KEY_RIGHT);
 		addKey("lookLeft", GLFW_KEY_LEFT);
 
+		// Gizmo
+		addKey("gizmoRotate", GLFW_KEY_R);
+		addKey("gizmoTranslate", GLFW_KEY_T);
+		addKey("gizmoScale", GLFW_KEY_Y);
+
 		// Check if number of keys is as expected
 		if (_userKeyMapping.size() != KEY_COUNT)
 			throw WdeException(LogChannel::INPUT, "The default key mapping misses " + std::to_string(glm::abs(KEY_COUNT - _userKeyMapping.size())) + " key binding(s).");

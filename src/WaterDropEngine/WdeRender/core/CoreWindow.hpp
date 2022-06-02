@@ -16,6 +16,7 @@ namespace wde::render {
 
 			// Getters and setters
 			GLFWwindow* getWindow() { return _window; }
+			std::pair<int, int> getSize() { return _windowSize; }
 
 
 		private:

@@ -65,20 +65,19 @@ namespace wde::scene {
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getDefaultGlobalSet() { return _globalSetDefault; }
 			std::unique_ptr<render::Buffer>& getDefaultObjectsBuffer() { return _objectsData; }
 			std::unique_ptr<render::Buffer>& getDefaultCameraBuffer() { return _cameraData; }
+			ImGuizmo::OPERATION& getGizmoManipulationType() { return _gizmoManipulationType; }
 
 			/**
 			 * @param chunkID Unique chunk position identifier
 			 * @return The pointer to the chunk (nullptr if added to load list)
 			 */
 			Chunk* getChunk(glm::ivec2 chunkID);
-
 			/**
 			 * Loads a chunk synchronously
 			* @param chunkID Unique chunk position identifier
 			* @return The pointer to the chunk
 			*/
 			Chunk* getChunkSync(glm::ivec2 chunkID);
-
 			/**
 			 * Remove a chunk from the list if the chunk exists
 			 * @param chunkID
@@ -133,5 +132,6 @@ namespace wde::scene {
 			std::unique_ptr<gui::WorldPartitionPanel> _worldPartitionPanel {};
 			std::unique_ptr<render::Buffer> _cameraData {};
 			std::unique_ptr<render::Buffer> _objectsData {};
+			ImGuizmo::OPERATION _gizmoManipulationType = ImGuizmo::OPERATION::TRANSLATE;
 	};
 }

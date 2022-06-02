@@ -120,6 +120,8 @@ namespace wde::gui {
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		ImGuizmo::BeginFrame();
+		ImGuizmo::SetImGuiContext(ImGui::GetCurrentContext());
 
 		// RENDER
 		// Setup main window

@@ -26,7 +26,7 @@ namespace wde::input {
 
 		private:
 			/** The number of keys that needs to be setup */
-			const int KEY_COUNT = 10;
+			const int KEY_COUNT = 13;
 			/** User defined key map */
 			KeyMapping _userKeyMapping {};
 

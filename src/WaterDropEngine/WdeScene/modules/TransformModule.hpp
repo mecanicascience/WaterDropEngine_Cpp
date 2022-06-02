@@ -2,6 +2,8 @@
 
 #include "Module.hpp"
 #include "../../WdeGUI/GUIRenderer.hpp"
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/matrix_decompose.hpp>
 
 namespace wde::scene {
 	class TransformModule : public Module {
@@ -30,6 +32,15 @@ namespace wde::scene {
 			void setParent(TransformModule* parent);
 			const TransformModule* getParent() { return _parent; }
 			const std::vector<int>& getChildrenIDs() { return _childrenIDs; }
+
+			/**
+			 * Extract position, rotation and scale from a transform
+			 * @param transform
+			 * @param position
+			 * @param rotation
+			 * @param scale
+			 */
+			static void decomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale);
 
 
 

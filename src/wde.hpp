@@ -36,3 +36,4 @@ using json = nlohmann::json;
 #include "../lib/imgui/backends/imgui_impl_vulkan.h"
 #include "../lib/imgui/imgui_internal.h"
 #include "../lib/IconFontCppHeaders/IconsFontAwesome5.h"
+#include "../lib/ImGuizmo/ImGuizmo.h"
