@@ -307,9 +307,10 @@ namespace wde::scene {
 		}
 
 		// Draw selected game object gizmo
-		if (cam != nullptr && scene->getActiveGameObject() != nullptr && scene->getActiveGameObject() != scene->getActiveCamera()) {
+		auto activeGO = scene->getActiveGameObject();
+		if (cam != nullptr && activeGO != nullptr && activeGO != scene->getActiveCamera()) {
 			auto camMod = cam->getModule<CameraModule>();
-			auto activeGOMatrix = scene->getActiveGameObject()->transform->getTransform();
+			auto activeGOMatrix = activeGO->transform->getTransform();
 			ImGuizmo::Manipulate(&camMod->getView()[0][0], &camMod->getProjection()[0][0],
 			                     (ImGuizmo::OPERATION) scene->getGizmoManipulationType(), ImGuizmo::LOCAL, &activeGOMatrix[0][0],
 			                     nullptr, nullptr);
@@ -318,10 +319,21 @@ namespace wde::scene {
 				glm::vec3 position {};
 				glm::vec3 rotation {};
 				glm::vec3 scale {};
-				TransformModule::decomposeTransform(activeGOMatrix, position, rotation, scale);
-				scene->getActiveGameObject()->transform->position = position;
-				scene->getActiveGameObject()->transform->rotation = rotation;
-				scene->getActiveGameObject()->transform->scale = scale;
+
+				TransformModule* currentGO = activeGO->transform;
+				while (true) {
+					if (currentGO->getParent() == nullptr)
+						break;
+					currentGO = currentGO->getParent();
+					activeGOMatrix = glm::inverse(currentGO->getTransform()) * activeGOMatrix;
+				}
+
+
+				if (TransformModule::decomposeTransform(activeGOMatrix, position, rotation, scale)) {
+					scene->getActiveGameObject()->transform->position = position;
+					scene->getActiveGameObject()->transform->rotation = rotation;
+					scene->getActiveGameObject()->transform->scale = scale;
+				}
 			}
 		}
 

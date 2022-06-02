@@ -30,7 +30,7 @@ namespace wde::scene {
 			 * @param parent
 			 */
 			void setParent(TransformModule* parent);
-			const TransformModule* getParent() { return _parent; }
+			TransformModule* getParent() { return _parent; }
 			const std::vector<int>& getChildrenIDs() { return _childrenIDs; }
 
 			/**
@@ -39,8 +39,9 @@ namespace wde::scene {
 			 * @param position
 			 * @param rotation
 			 * @param scale
+			 * @return True if the values should be set
 			 */
-			static void decomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale);
+			static bool decomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale);
 
 
 

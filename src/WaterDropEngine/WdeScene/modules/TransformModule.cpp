@@ -104,14 +104,14 @@ namespace wde::scene {
 	}
 
 
-	void TransformModule::decomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale) {
+	bool TransformModule::decomposeTransform(const glm::mat4& transform, glm::vec3& position, glm::vec3& rotation, glm::vec3& scale) {
 		using namespace glm;
 		using T = float;
 		mat4 LocalMatrix (transform);
 
 		// Normalize matrix
 		if (epsilonEqual(LocalMatrix[3][3], static_cast<float>(0), epsilon<T>()))
-			return;
+			return false;
 
 		// Isolate perspective
 		if (
@@ -151,6 +151,7 @@ namespace wde::scene {
 			rotation.x = atan2(-Row[2][0], Row[1][1]);
 			rotation.z = 0;
 		}
+		return true;
 	}
 }
 
