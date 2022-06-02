@@ -30,9 +30,9 @@ namespace wde::Config {
 
 	// World config
 	/** Size of a chunk */
-	int CHUNK_SIZE = 126;
+	int CHUNK_SIZE = 256;
 	/** Max chunks active in the scene */
 	int MAX_CHUNKS_COUNT = 10000;
 	/** Radius of the loaded chunks */
-	int CHUNK_LOADED_DISTANCE = 1;
+	int CHUNK_LOADED_DISTANCE = 3;
 }
