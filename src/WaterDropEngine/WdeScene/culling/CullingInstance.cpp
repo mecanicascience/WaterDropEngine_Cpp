@@ -275,7 +275,6 @@ namespace wde::scene {
 			throw WdeException(LogChannel::SCENE, "Trying to run culling without a camera set.");
 
 		GPUSceneData sceneData {};
-
 		// Camera data
 		auto cameraModule = cullingCamera->getModule<scene::CameraModule>();
 		sceneData.view = cameraModule->getView();
@@ -295,6 +294,9 @@ namespace wde::scene {
 
 		// Update objects count
 		sceneData.objectsCount = _renderBatchesObjectCount;
+
+		// Enable or disable culling
+		sceneData.cullingEnabled = Chunk::isCullingEnabled() ? 1 : 0;
 
 		// Map data
 		void *data = chunk.getCullingSceneBuffer()->map();

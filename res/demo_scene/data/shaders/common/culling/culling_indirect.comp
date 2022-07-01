@@ -10,6 +10,7 @@ layout(set = 0, binding = 0) uniform SceneBuffer {
     vec4 frustum;
     vec2 zPlanes;
     int objectsCount;
+    int cullingEnabled;
 } inSceneData;
 
 // Objects set
@@ -96,8 +97,8 @@ void main() {
         // Get object batch index
         uint batchIndex = objectBatches.objects[gID].batchID;
 
-        // If visible, add object to the render list
-        if (isVisible(gID)) {
+        // If visible or culling disabled, add object to the render list
+        if (inSceneData.cullingEnabled == 0 || isVisible(gID)) {
             // Add a drawing count to the gameobject batch
             uint countIndex = atomicAdd(renderBatches.batches[batchIndex].instanceCount, 1);
 

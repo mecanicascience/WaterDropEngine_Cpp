@@ -30,7 +30,8 @@ namespace wde {
 		/** Common engine classes */   COMMON,
 		/** Scene engine */	           SCENE,
 		/** Input manager engine */    INPUT,
-		/** Resource manager module */ RES
+		/** Resource manager module */ RES,
+		/** Physics engine */          PHYS
 	};
 
 

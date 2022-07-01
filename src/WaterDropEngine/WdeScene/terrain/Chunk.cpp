@@ -4,6 +4,10 @@
 #include "../../WdeScene/culling/CullingInstance.hpp"
 
 namespace wde::scene {
+	// Static vars
+	bool Chunk::_cullingEnabled = true; // Culling enabled by default
+	bool Chunk::_showGOBoundingBox = false; // Do not show every objects collision box by default
+
 	Chunk::Chunk(WdeSceneInstance* sceneInstance, glm::ivec2 pos) : _sceneInstance(sceneInstance), _pos(pos) {
 		WDE_PROFILE_FUNCTION();
 		logger::log(LogLevel::DEBUG, LogChannel::SCENE) << "Loading chunk (" << _pos.x << ", " << _pos.y << ")." << logger::endl;
@@ -81,6 +85,11 @@ namespace wde::scene {
 				}
 			}
 		}
+
+		// Load terrain
+		{
+			_terrainTile = std::make_unique<TerrainTile>();
+		}
 	}
 
 	void Chunk::save() {
@@ -150,7 +159,7 @@ namespace wde::scene {
 
 		// Remove game objects to delete
 		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::deleteGameObjects");
+			WDE_PROFILE_SCOPE("wde::scene::Chunk::tick::deleteGameObjects");
 
 			auto sceneInstance = WaterDropEngine::get().getInstance().getScene();
 			if (!_gameObjectsToDelete.empty()) {
@@ -182,7 +191,7 @@ namespace wde::scene {
 
 		// Update game objects
 		{
-			WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::tick::dynamicGameObjects");
+			WDE_PROFILE_SCOPE("wde::scene::Chunk::tick::dynamicGameObjects");
 
 			for (auto &go: _gameObjectsDynamic)
 				go->tick();
@@ -240,7 +249,7 @@ namespace wde::scene {
 
 	void Chunk::drawGUI() {
 #ifdef WDE_GUI_ENABLED
-		WDE_PROFILE_SCOPE("wde::scene::WdeSceneInstance::onNotify::drawGUI");
+		WDE_PROFILE_SCOPE("wde::scene::Chunk::onNotify::drawGUI");
 
 		// Main class values
 		double chunkSize = Config::CHUNK_SIZE;

@@ -6,6 +6,7 @@
 #include "../modules/CameraModule.hpp"
 #include "../../WdeRender/buffers/Buffer.hpp"
 #include "../../WdeScene/GameObject.hpp"
+#include "TerrainTile.hpp"
 
 #include <utility>
 
@@ -43,6 +44,10 @@ namespace wde::scene {
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getGlobalSet() { return _globalSet; }
 			std::pair<VkDescriptorSet, VkDescriptorSetLayout>& getCullingSet() { return _cullingSet; }
 			std::unique_ptr<render::Buffer>& getCullingSceneBuffer() { return _cullingSceneBuffer; }
+			static bool isCullingEnabled() { return _cullingEnabled; }
+			static bool* isCullingEnabledPtr() { return &_cullingEnabled; }
+			static bool showGOBoundingBoxes() { return _showGOBoundingBox; }
+			static bool* showGOBoundingBoxesPtr() { return &_showGOBoundingBox; }
 
 
 			// Game Objects Manager
@@ -94,6 +99,10 @@ namespace wde::scene {
 			WdeSceneInstance* _sceneInstance;
 			glm::ivec2 _pos;
 
+			// Chunk visualisation
+			static bool _cullingEnabled;
+			static bool _showGOBoundingBox;
+
 			// Chunk game objects handling
 			/** List of all scene game objects */
 			std::vector<std::shared_ptr<GameObject>> _gameObjects {};
@@ -103,6 +112,8 @@ namespace wde::scene {
 			std::vector<std::shared_ptr<GameObject>> _gameObjectsDynamic {};
 			/** List of all scene game objects to delete on next tick */
 			std::vector<GameObject*> _gameObjectsToDelete {};
+			/** Chunk terrain instance */
+			std::unique_ptr<TerrainTile> _terrainTile {};
 
 			// Chunk game objects data
 			/** Last create game object ID */

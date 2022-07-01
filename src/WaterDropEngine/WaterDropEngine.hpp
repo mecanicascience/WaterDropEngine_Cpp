@@ -10,6 +10,7 @@
 #include "WdeRender/descriptors/DescriptorBuilder.hpp"
 #include "WdeScene/gizmo/GizmoManager.hpp"
 #include "WdeResourceManager/WdeResourceManager.hpp"
+#include "WdePhysics/WdePhysics.hpp"
 
 namespace wde {
 	/**
@@ -51,6 +52,10 @@ namespace wde {
 				// Input manager core
 				_input = std::make_shared<input::InputManager>();
 
+				// Physics Manager
+				_physics = std::make_shared<physics::WdePhysics>(_subject);
+				_subject->addObserver(_physics);
+
 				// Scene core
 				_scene = std::make_shared<scene::WdeScene>(_subject);
 				_subject->addObserver(_scene);
@@ -74,6 +79,7 @@ namespace wde {
 				_gui->addObserver(instance.getScene(), true);
 				_gui->addObserver(_resourceManager);
 				_gui->addObserver(_scene);
+				_gui->addObserver(_physics);
 				_gui->addObserver(instance.getPipelinePtr());
 
 				logger::log(LogLevel::INFO, LogChannel::CORE) << "======== End of initialization ========" << logger::endl << logger::endl;
@@ -122,6 +128,7 @@ namespace wde {
 						_input->tick();
 						_render->tick();
 						_gui->tick();
+						_physics->tick();
 
 						logger::log(LogLevel::INFO, LogChannel::CORE) << "Ticking for engine instance." << logger::endl;
 						instance.tickInstance();
@@ -158,6 +165,7 @@ namespace wde {
 				_input.reset();
 				_resourceManager->cleanUp();
 				_scene->cleanUp();
+				_physics->cleanUp();
 				_gui->cleanUp();
 				scene::GizmoManager::cleanUp();
 				_render->cleanUp();
@@ -181,6 +189,7 @@ namespace wde {
 			scene::WdeScene& getSceneManager() { return *_scene; }
 			input::InputManager& getInput() { return *_input; }
 			resource::WdeResourceManager& getResourceManager() { return *_resourceManager; }
+			physics::WdePhysics& getPhysics() { return *_physics; }
 
 
 		private:
@@ -190,6 +199,7 @@ namespace wde {
 			std::shared_ptr<scene::WdeScene> _scene;
 			std::shared_ptr<input::InputManager> _input;
 			std::shared_ptr<resource::WdeResourceManager> _resourceManager;
+			std::shared_ptr<physics::WdePhysics> _physics;
 
 			// Modules communication subject
 			std::shared_ptr<core::Subject> _subject;

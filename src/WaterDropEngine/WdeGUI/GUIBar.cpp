@@ -39,6 +39,9 @@ namespace wde::gui {
 					WaterDropEngine::get().getInstance().getScene()->reassignGOToChunks();
 				if (ImGui::MenuItem("Click to reorder GO"))
 					WaterDropEngine::get().getInstance().getScene()->reorderGO();
+				ImGui::Dummy(ImVec2(0.0, 0.5));
+				ImGui::Checkbox("Enable culling", scene::Chunk::isCullingEnabledPtr());
+				ImGui::Checkbox("Show GO collision boxes", scene::Chunk::showGOBoundingBoxesPtr());
 				ImGui::PopFont();
 			}
 

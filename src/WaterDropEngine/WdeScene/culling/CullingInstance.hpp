@@ -44,6 +44,7 @@ namespace wde::scene {
 				glm::vec4 frustum;
 				glm::vec2 zPlanes;
 				int objectsCount;
+				int cullingEnabled;
 			};
 
 
